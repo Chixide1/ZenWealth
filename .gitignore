@@ -365,4 +365,5 @@ FodyWeavers.xsd
 # Custom
 .idea/
 .vscode/
+.vs/
 appsettings.*
