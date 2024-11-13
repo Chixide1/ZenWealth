@@ -20,7 +20,7 @@ export function LoginForm() {
             </div>
             <Button type="submit"
                     variant="accent"
-                    className="mt-6 font-medium w-full hover:animate-pulse">Continue
+                    className="mt-6 font-medium w-full hover:bg-accent/80">Continue
             </Button>
             <p className="mt-8">Don't have an account? <a href="#" className="text-accent">Sign up</a></p>
         </form>

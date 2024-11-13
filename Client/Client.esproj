@@ -17,4 +17,8 @@
     <None Remove="CHANGELOG.md" />
     <None Remove="nuget.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="public\" />
+    <Folder Include="src\assets\" />
+  </ItemGroup>
 </Project>
