@@ -14,6 +14,7 @@ export function LoginPage() {
                 <h2 className="text-3xl font-semibold mb-2">Login</h2>
                 <p className="text-neutral-400 text-sm mb-6">Welcome back, please login</p>
                 <LoginForm/>
+                <p className="mt-8 text-sm">Don't have an account? <a href="#" className="text-accent">Sign up</a></p>
             </div>
         </main>
     );

@@ -11,7 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login.tsx'
+import { Route as LoginImport } from './routes/login'
 
 // Create/Update Routes
 
