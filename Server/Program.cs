@@ -20,9 +20,11 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "LocalHost Origins", policy =>
+    options.AddPolicy(name: "dev", policy =>
     {
-        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
 
@@ -46,7 +48,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors("LocalHost Origins");
+    app.UseCors("dev");
 }
 
 app.UseHttpsRedirection();

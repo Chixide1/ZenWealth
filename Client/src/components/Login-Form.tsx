@@ -6,7 +6,7 @@ import {Controller, useForm } from "react-hook-form"
 import { z } from "zod"
 import {Input} from "@/components/ui/input.tsx";
 import { Mail, Lock } from "lucide-react";
-import { useEffect } from "react";
+import axios from "axios";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -24,16 +24,34 @@ export function LoginForm() {
         resolver: zodResolver(formSchema)
     })
     
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        const response = await axios({
+            method: 'post',
+            url: 'http://localhost:5093/Identity/login',
+            params: {
+                useCookies: true,
+                useSessionCookies: false
+            },
+            data: {
+                email: values.email,
+                password: values.password
+            },
+            withCredentials: true,
+        })
+            .catch(error => {console.log(error)})
+        
+        if (response && response.status === 200) {
+            
+            console.debug("%cSuccessfully logged in", "color: #bada55")
+        }
     }
 
-    useEffect(() => {
-        if (Object.keys(errors).length > 0) {
-            console.log("Form validation errors:", errors)
-        }
-    }, [errors])
-    
+    // useEffect(() => {
+    //     if (Object.keys(errors).length > 0) {
+    //         console.log("Form validation errors:", errors)
+    //     }
+    // }, [errors])
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center w-9/12 text-sm">
             <div className="overflow-hidden rounded-md w-full text-secondary">

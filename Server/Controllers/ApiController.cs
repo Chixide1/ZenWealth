@@ -85,9 +85,9 @@ namespace Personal_Finance_App.Server.Controllers
 
         [Authorize]
         [HttpGet("[action]")]
-        public IActionResult Hello()
+        public IActionResult Auth()
         {
-            return Ok($"Hello {this.User.Identity!.Name}");
+            return Ok();
         }
     }
 }
