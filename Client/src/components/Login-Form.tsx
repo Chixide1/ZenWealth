@@ -7,24 +7,33 @@ import { z } from "zod"
 import {Input} from "@/components/ui/input.tsx";
 import { Mail, Lock } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 const formSchema = z.object({
     email: z.string().email(),
     password: z.string().min(1, "Password cannot be empty"),
-    rememberMe: z.boolean().default(false)
+    rememberMe: z.boolean()
 })
 
 export function LoginForm() {
+    const navigate = useNavigate()
     const {
         control,
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema)
     })
     
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    async function formSubmit(values: z.infer<typeof formSchema>) {
+        if(values.rememberMe){
+            localStorage.setItem("email", values.email)
+            localStorage.setItem("password", values.password)
+        }
+        
         const response = await axios({
             method: 'post',
             url: 'http://localhost:5093/Identity/login',
@@ -37,14 +46,21 @@ export function LoginForm() {
                 password: values.password
             },
             withCredentials: true,
-        })
-            .catch(error => {console.log(error)})
+        }).catch(error => {console.log(error)})
         
         if (response && response.status === 200) {
-            
             console.debug("%cSuccessfully logged in", "color: #bada55")
+            return navigate({to: "/dashboard"})
         }
     }
+
+    useEffect(() => {
+        const storedEmail = localStorage.getItem("email") || "";
+        const storedPass = localStorage.getItem("password") || "";
+        
+        setValue("email", storedEmail)
+        setValue("password", storedPass)
+    }, []);
 
     // useEffect(() => {
     //     if (Object.keys(errors).length > 0) {
@@ -53,7 +69,7 @@ export function LoginForm() {
     // }, [errors])
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center w-9/12 text-sm">
+        <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col items-center w-9/12 text-sm">
             <div className="overflow-hidden rounded-md w-full text-secondary">
                 <div className="relative">
                     <Label
@@ -64,7 +80,6 @@ export function LoginForm() {
                     <Label htmlFor="loginEmail"
                            className="absolute left-14 top-2 text-xs text-neutral-500">Email</Label>
                     <Input
-                        // defaultValue={""}
                         className="pl-14 pb-5 bg-neutral-300/[0.07] border-0 placeholder:text-transparent rounded-none border-b-0 pt-9"
                         placeholder="Email"
                         type="email"
@@ -81,7 +96,6 @@ export function LoginForm() {
                     <Label htmlFor="loginPass"
                            className="absolute left-14 top-2 text-xs text-neutral-500">Password</Label>
                     <Input
-                        // defaultValue={""}
                         className="pl-14 pb-5 bg-neutral-300/[0.07] placeholder:text-transparent rounded-none pt-9 border-0 border-t border-neutral-700 focus-visible:ring-0"
                         placeholder="Password"
                         type="password"
@@ -115,7 +129,7 @@ export function LoginForm() {
             {errors.password && <span className="text-red-500">{errors.password.message}</span>}
             <Button type="submit"
                     variant="accent"
-                    className="mt-6 font-medium w-full hover:bg-accent/80">Continue
+                    className="mt-6 font-medium w-full">Continue
             </Button>
         </form>
     )

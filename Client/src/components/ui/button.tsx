@@ -12,7 +12,7 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         accent:
-          "bg-accent text-black rounded-lg py-2 px-10",
+          "bg-accent text-black rounded-lg py-2 px-10 hover:bg-accent/80",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
