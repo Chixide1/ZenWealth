@@ -1,5 +1,5 @@
 ﻿import { createFileRoute } from '@tanstack/react-router'
-import {Auth} from "@/lib/auth.tsx";
+import {Auth} from "@/components/Auth.tsx";
 
 export const Route = createFileRoute('/dashboard/')({
   beforeLoad: Auth,

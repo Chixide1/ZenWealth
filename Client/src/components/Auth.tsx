@@ -2,7 +2,8 @@
 import axios, { AxiosResponse } from 'axios'
 
 export async function Auth(){
-    const response = await axios.get("http://localhost:5093/Api/Auth", { withCredentials: true })
+    const backend = import.meta.env.VITE_ASPNETCORE_URLS
+    const response = await axios.get(`${backend}/Api/Auth`, { withCredentials: true })
         .then((response: AxiosResponse) => {
             if(response.status === 200){
                 console.debug("%cSuccessfully authenticated", "color: #bada55");
@@ -11,7 +12,7 @@ export async function Auth(){
         })
         .catch((error: AxiosResponse) => {
             console.error("Error occurred", error)
-           return 401;
+            return error.status
         })
     
     if(response === 401){
