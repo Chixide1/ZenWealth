@@ -5,17 +5,22 @@ using Going.Plaid.Entity;
 using Going.Plaid.Item;
 using Going.Plaid.Link;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Personal_Finance_App.Server.Utils;
+using Server.Models;
+using Item = Server.Models.Item;
 
-namespace Personal_Finance_App.Server.Controllers
+namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class ApiController(
         ILogger<ApiController> logger,
         IConfiguration configuration,
-        PlaidClient client)
+        PlaidClient client,
+        ApplicationDbContext context,
+        UserManager<IdentityUser> userManager)
         : ControllerBase
     {
         [HttpGet("[action]")]
@@ -57,13 +62,13 @@ namespace Personal_Finance_App.Server.Controllers
         [HttpPost("[action]")]
         [ProducesResponseType( StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(PlaidError), StatusCodes.Status400BadRequest, contentType: "application/json")]
-        public async Task<IActionResult> GetAccessToken([FromBody]string publicToken)
+        public async Task<IActionResult> ExchangePublicToken([FromBody] Responses.ExchangePublicTokenResponse data)
         {
             try
             {
                 var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest()
                 {
-                    PublicToken = publicToken
+                    PublicToken = data.PublicToken
                 });
 
                 if (response.Error != null)
@@ -75,6 +80,15 @@ namespace Personal_Finance_App.Server.Controllers
                     return StatusCode(StatusCodes.Status400BadRequest, response);
                 }
 
+                var item = new Item()
+                {
+                    AccessToken = response.AccessToken,
+                    User = await userManager.GetUserAsync(User)
+                };
+                
+                context.Items.Add(item);
+                await context.SaveChangesAsync();
+                
                 return Ok(response);
             }
             catch (Exception ex)

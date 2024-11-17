@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Personal_Finance_App.Server.Utils;
-
-public class User : IdentityUser {}
+namespace Server.Models;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<IdentityUser>(options);
+    : IdentityDbContext<IdentityUser>(options)
+{
+    public DbSet<Item> Items { get; set; }
+}
