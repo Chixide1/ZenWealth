@@ -99,7 +99,7 @@ export function LoginForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center w-9/12 text-sm">
-            <div className="overflow-hidden rounded-md w-full text-secondary">
+            <div className="overflow-hidden rounded-md w-full text-primary">
                 <div className="relative">
                     <Label
                         htmlFor="loginEmail"
@@ -144,6 +144,7 @@ export function LoginForm() {
                         control={control}
                         render={({ field }) => (
                             <Checkbox
+                                className={"border-secondary"}
                                 id="rememberMe"
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
@@ -157,11 +158,11 @@ export function LoginForm() {
                         Remember Me
                     </Label>
                 </div>
-                <a href="#" className="text-accent font-normal">Forgot Password?</a>
+                <a href="#" className="text-secondary font-normal">Forgot Password?</a>
             </div>
             <Button
                 type="submit"
-                variant="accent"
+                variant="secondary"
                 disabled={isSubmitting}
                 className="mt-6 font-medium w-full flex items-center justify-center"
             >

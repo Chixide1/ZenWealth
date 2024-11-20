@@ -1,11 +1,10 @@
-﻿import {PlaidButton} from "@/components/Plaid-Button.tsx";
+﻿import {LinkStart} from "@/components/Link-Start.tsx";
 
 
 export function DashboardPage() {
     return (
-        <main className={"h-screen w-full"}>
-            <h1 className={'text-5xl text-secondary'}>Dashboard</h1>
-            <PlaidButton />
+        <main className={"h-screen w-full flex flex-col items-center justify-center"}>
+            <LinkStart />
         </main>
     )
 }

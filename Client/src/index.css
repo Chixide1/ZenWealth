@@ -10,22 +10,18 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    
+
+    /*Pearl White*/
+    --primary: 230 86% 97%;
+    /*Electric Lime*/
+    --secondary: 68 99% 66%;
     /*Lavender Pink*/
-    --primary: 291 95% 91%;
+    --accent: 291 95% 91%;
     
     --primary-foreground: 0 0% 98%;
-    
-    /*Pearl White*/
-    --secondary: 230 86% 97%;
-    
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
-    
-    /*Electric Lime*/
-    --accent: 68 99% 66%;
-    
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
