@@ -8,12 +8,10 @@ public class Item
 {
     public int Id { get; set; }
     
-    [Required]
     [Column("UserId")]
     [ForeignKey(nameof(IdentityUser))]
-    public IdentityUser? User { get; set; }
+    public required IdentityUser User { get; set; }
     
-    [Required]
     [Column(TypeName = "varchar(100)")]
-    public string? AccessToken { get; set; }
+    public required string AccessToken { get; set; }
 }

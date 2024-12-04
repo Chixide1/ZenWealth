@@ -4,15 +4,19 @@ using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Item;
 using Going.Plaid.Link;
+using Going.Plaid.Transactions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Personal_Finance_App.Server.Utils;
+using Microsoft.EntityFrameworkCore;
 using Server.Models;
+using Server.Utils;
 using Item = Server.Models.Item;
 
 namespace Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ApiController(
@@ -23,85 +27,113 @@ namespace Server.Controllers
         UserManager<IdentityUser> userManager)
         : ControllerBase
     {
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [Route("/error")]
+        public IActionResult HandleError()
+        {
+            return Problem();
+        }
+        
         [HttpGet("[action]")]
-        [ProducesResponseType(typeof(Responses.GetLinkTokenResponse), StatusCodes.Status200OK, contentType: "application/json")]
-        [ProducesResponseType(typeof(PlaidError), StatusCodes.Status400BadRequest,contentType: "application/json")]
+        public IActionResult Auth()
+        {
+            return Ok();
+        }
+        
+        [HttpGet("[action]")]
+        [ProducesResponseType(typeof(Responses.GetLinkTokenResponse), StatusCodes.Status200OK, "application/json")]
+        [ProducesResponseType(typeof(PlaidError), StatusCodes.Status400BadRequest,"application/json")]
         public async Task<IActionResult> GetLinkToken()
         {
-            try
+            var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest()
             {
-                var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest()
-                {
-                    User = new LinkTokenCreateRequestUser { ClientUserId = Guid.NewGuid().ToString(), },
-                    ClientName = "Personal Finance App",
-                    Products = [Products.Auth, Products.Identity, Products.Transactions],
-                    Language = Language.English,
-                    CountryCodes = [CountryCode.Gb],
-                });
+                User = new LinkTokenCreateRequestUser { ClientUserId = Guid.NewGuid().ToString(), },
+                ClientName = "ZenWealth",
+                Products = [Products.Auth, Products.Identity, Products.Transactions],
+                Language = Language.English,
+                CountryCodes = [CountryCode.Gb],
+            });
 
-                if (response.Error != null)
-                {
-                    dynamic error = JsonNode.Parse(JsonSerializer.Serialize(response.Error))!;
-                    string msg = (string)error["error_message"];
-
-                    logger.LogError("{msg}", msg);
-                    logger.LogDebug("{test}", typeof(Responses.GetLinkTokenResponse));
-                    return StatusCode(StatusCodes.Status400BadRequest, response);
-                }
-
-                logger.LogInformation("Successfully obtained link token: {token}", response.LinkToken);
-                return Ok(new Responses.GetLinkTokenResponse(response.LinkToken));
-            }
-            catch (Exception ex)
+            if (response.Error != null)
             {
-                return StatusCode(500, ex.Message);
+                dynamic error = JsonNode.Parse(JsonSerializer.Serialize(response.Error))!;
+                string msg = (string)error["error_message"];
+
+                logger.LogError("{msg}", msg);
+                return StatusCode(StatusCodes.Status400BadRequest, response);
             }
+
+            logger.LogInformation("Successfully obtained link token: {token}", response.LinkToken);
+            return Ok(new Responses.GetLinkTokenResponse(response.LinkToken));
         }
 
 
         [HttpPost("[action]")]
         [ProducesResponseType( StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(PlaidError), StatusCodes.Status400BadRequest, contentType: "application/json")]
+        [ProducesResponseType<PlaidError>(StatusCodes.Status400BadRequest, "application/json")]
         public async Task<IActionResult> ExchangePublicToken([FromBody] Responses.ExchangePublicTokenResponse data)
         {
-            try
+            var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest()
             {
-                var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest()
-                {
-                    PublicToken = data.PublicToken
-                });
+                PublicToken = data.PublicToken
+            });
 
-                if (response.Error != null)
-                {
-                    dynamic error = JsonNode.Parse(JsonSerializer.Serialize(response.Error))!;
-                    string msg = (string)error["error_message"];
-
-                    logger.LogError("{msg}", msg);
-                    return StatusCode(StatusCodes.Status400BadRequest, response);
-                }
-
-                var item = new Item()
-                {
-                    AccessToken = response.AccessToken,
-                    User = await userManager.GetUserAsync(User)
-                };
-                
-                context.Items.Add(item);
-                await context.SaveChangesAsync();
-                
-                return Ok(response);
-            }
-            catch (Exception ex)
+            if (response.Error != null)
             {
-                return StatusCode(500, ex);
+                dynamic error = JsonNode.Parse(JsonSerializer.Serialize(response.Error))!;
+                var msg = (string)error["error_message"];
+
+                logger.LogError("{msg}", msg);
+                return StatusCode(StatusCodes.Status400BadRequest, response);
             }
+
+            var user = await userManager.GetUserAsync(User);
+                
+            var item = new Item()
+            {
+                AccessToken = response.AccessToken,
+                User = user!
+            };
+            
+            context.Items.Add(item);
+            await context.SaveChangesAsync();
+            
+            return Ok(response);
         }
 
-        [Authorize]
         [HttpGet("[action]")]
-        public IActionResult Auth()
+        [ProducesResponseType(typeof(Responses.IsAccountConnectedResponse),StatusCodes.Status200OK, "application/json")]
+        public async Task<IActionResult> IsAccountConnected()
         {
-            return Ok();
+            var user = await userManager.GetUserAsync(User);
+            var connected = await context.Items.AnyAsync(i => i.User == user);
+            
+            return Ok(new Responses.IsAccountConnectedResponse(connected));
+        }
+        
+        [ProducesResponseType(typeof(Ok<IReadOnlyList<Transaction>>), StatusCodes.Status200OK, "application/json" )]
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetTransactions()
+        {
+            var user = await userManager.GetUserAsync(User);
+
+            var accessToken = context.Items
+                .Where(i => i.User == user)
+                .Select(i => i.AccessToken)
+                .First();
+            
+            var data = await client.TransactionsGetAsync(new TransactionsGetRequest()
+            {
+                AccessToken = accessToken,
+                StartDate = new DateOnly(2023, 1, 1),
+                EndDate = new DateOnly(2024, 1, 1),
+                Options = new TransactionsGetRequestOptions()
+                {
+                    Count = 10
+                }
+            });
+            
+            return Ok(data.Transactions);
         }
     }
 }

@@ -1,7 +1,6 @@
 using Going.Plaid;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Personal_Finance_App.Server.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Server.Models;
@@ -54,6 +53,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseExceptionHandler("/error");
 app.UseAuthentication();
 app.UseAuthorization();
 
