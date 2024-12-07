@@ -23,7 +23,7 @@ export function DashboardPage() {
     },[connected])
     
     return (
-        <main className={"h-screen w-full flex flex-col items-center justify-center"}>
+        <main className="">
             { connected ? <Home />: <LinkStart />}
         </main>
     )

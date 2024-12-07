@@ -43,17 +43,22 @@
   }
   body {
     @apply bg-background text-foreground;
-  }
-
-  #root {
+    
     background:
             radial-gradient(circle at 10% 120%, #5A2419 0%, #0C0610 40%, transparent),
             radial-gradient(circle at 100% -20%, #8e519c 0%, #0B050E 35%);
+    
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+  #root {
+    min-height: 100vh;
   }
   
   .montserrat {
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
-}
+  }
 }
