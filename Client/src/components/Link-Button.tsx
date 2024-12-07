@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { usePlaidLink } from 'react-plaid-link';
+import { useState, useEffect, useCallback } from 'react';
+import {PlaidLinkError, PlaidLinkOnExit, PlaidLinkOnExitMetadata, usePlaidLink } from 'react-plaid-link';
 import {Button} from "@/components/ui/button.tsx";
 import axios from 'axios'
 
@@ -31,7 +31,13 @@ export function LinkButton(){
                 {publicToken: publicToken}, 
                 {withCredentials: true}
             )
-        }, 
+        },
+        onExit: useCallback<PlaidLinkOnExit>(
+            (error: PlaidLinkError | null, metadata: PlaidLinkOnExitMetadata) => {
+                console.log(error)
+                console.log(metadata)
+            },[]
+        )
     });
 
     return(

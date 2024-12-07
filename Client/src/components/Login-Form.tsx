@@ -98,7 +98,7 @@ export function LoginForm() {
     }, [errors])
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center w-9/12 text-sm">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center px-9 w-full sm:w-9/12 text-sm">
             <div className="overflow-hidden rounded-md w-full text-primary">
                 <div className="relative">
                     <Label
@@ -137,7 +137,7 @@ export function LoginForm() {
                     />
                 </div>
             </div>
-            <div className="flex items-center justify-between w-full mt-3">
+            <div className="flex items-center justify-between w-full mt-6 sm:mt-3">
                 <div className="flex items-center space-x-2">
                     <Controller
                         name="rememberMe"
