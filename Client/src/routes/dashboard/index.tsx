@@ -3,6 +3,5 @@ import {Auth} from "@/components/Auth.tsx";
 import { DashboardPage } from '@/components/Dashboard-Page';
 
 export const Route = createFileRoute('/dashboard/')({
-  // beforeLoad: Auth,
   component: DashboardPage,
 })
