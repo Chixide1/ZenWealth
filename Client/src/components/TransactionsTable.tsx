@@ -5,16 +5,14 @@ import {
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
+    SortingState,
+    getsortingRowModel,
     useReactTable,
 } from "@tanstack/react-table"
 
 import {
-    Table,
-    TableBody, TableCaption,
-    TableCell, TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
+    Table, TableBody, TableCell, TableFooter,
+    TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import {Button} from "@/components/ui/button.tsx";
 import { useState } from "react";
@@ -26,6 +24,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function TransactionsTable<TData, TValue>({columns, data, total_transactions,}: DataTableProps<TData, TValue>) {
+    const [sorting, setSorting] = useState<SortingState>([])
     const [pagination, setPagination] = useState({
         pageIndex: 0, //initial page index
         pageSize: 10, //default page size
@@ -36,8 +35,12 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        state: {pagination},
-        onPaginationChange: setPagination
+        state: {
+            pagination,
+            sorting,
+        },
+        onPaginationChange: setPagination,
+        onSortingChange: setSorting,
     })
 
     return (
@@ -98,7 +101,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                         >
                             Previous
                         </Button>
-                        {pagination.pageIndex}
+                        <span>{pagination.pageIndex}</span>
                         <Button
                             className="ml-10"
                             variant="accent"

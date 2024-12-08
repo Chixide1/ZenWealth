@@ -1,14 +1,14 @@
 ﻿import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
-import {transactionsCols, Transaction} from "@/components/transactions-cols.tsx";
-import {TransactionsTable} from "@/components/transactions-table.tsx";
+import {transactionsCols, Transaction} from "@/components/TransactionsCols.tsx";
+import {TransactionsTable} from "@/components/TransactionsTable.tsx";
 
 interface TransactionData {
     transactions: Transaction[];
     total_transactions: number;
 }
 
-export default function Home(){
+export default function HomePage(){
     const [transactionsData, setTransactionsData] = useState<TransactionData>({transactions: [], total_transactions: 0});
     
     useEffect(() => {
