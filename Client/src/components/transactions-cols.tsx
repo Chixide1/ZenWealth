@@ -1,6 +1,7 @@
 ﻿"use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import { ReceiptText } from "lucide-react";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -17,16 +18,32 @@ export interface Transaction {
     date_time: string;
     iso_currency_code: string;
     unofficial_currency_code: string;
+    logo_url: string;
 }
 
-export const columns: ColumnDef<Transaction>[] = [
+export const transactionsCols: ColumnDef<Transaction>[] = [
     {
         accessorKey: "name",
         header: "Name",
         cell: ({row}) => {
             const name = row.original.merchant_name || row.original.name
+            const imageSize = 30
 
-            return <div>{name}</div>
+            return (
+                <div className="flex gap-2 items-center">
+                    {row.original.logo_url ? 
+                        (<img 
+                            src={row.original.logo_url}
+                            alt="an image of the transaction logo"
+                            className="rounded"
+                            height={imageSize}
+                            width={imageSize}
+                        />):
+                        <ReceiptText height={imageSize} width={imageSize} className="text-primary"/>
+                    }
+                    <span>{name}</span>
+                </div>
+            )
         }
     },
     {
@@ -49,7 +66,7 @@ export const columns: ColumnDef<Transaction>[] = [
                 currencyDisplay: "symbol",
             }).format(amount)
 
-            return <div className="font-medium">{formatted}</div>
+            return <div className="">{formatted}</div>
         },
     },
     {
@@ -58,7 +75,7 @@ export const columns: ColumnDef<Transaction>[] = [
         cell: ({ row }) => {
             const date = new Date(row.original.date_time || row.original.date)
 
-            return <div className="font-medium">{date.toLocaleDateString()}</div>
+            return <div className="">{date.toLocaleDateString()}</div>
         },
     },
 ]

@@ -1,38 +1,36 @@
 ﻿import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
-import {columns, Transaction} from "@/components/columns.tsx";
-import {DataTable} from "@/components/data-table.tsx";
+import {transactionsCols, Transaction} from "@/components/transactions-cols.tsx";
+import {TransactionsTable} from "@/components/transactions-table.tsx";
+
+interface TransactionData {
+    transactions: Transaction[];
+    total_transactions: number;
+}
 
 export default function Home(){
-    const [transactions, setTransactions] = useState<Transaction[]>([])
+    const [transactionsData, setTransactionsData] = useState<TransactionData>({transactions: [], total_transactions: 0});
     
     useEffect(() => {
-        async function getTransactions(){
+        async function getTransactionsData(){
             const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}/api`
             await axios.get(`${backend}/GetTransactions`, { withCredentials: true })
-                .then((response: AxiosResponse<Transaction[]>) => {
-                    setTransactions(response.data);
+                .then((response: AxiosResponse<TransactionData>) => {
+                    setTransactionsData(response.data);
                 })
                 .catch((error: AxiosResponse) => {
                     console.error("Error occurred", error)
                 })
         }
-        getTransactions();
+        getTransactionsData();
     },[])
     
-    console.log(transactions)
+    console.log(transactionsData)
     return(
-        <div className="w-fit bg-primary/[0.06] p-6 rounded-2xl text-primary my-20 ml-20">
-            {/*{transactions && transactions.map((transaction) => (*/}
-            {/*    <div key={transaction.transaction_id}>*/}
-            {/*        {transaction.merchant_name || transaction.name} |&nbsp;*/}
-            {/*        £{transaction.amount} |&nbsp;*/}
-            {/*        {transaction.personal_finance_category.primary} |&nbsp;*/}
-            {/*        {new Date(transaction.date_time || transaction.date).toLocaleDateString()}*/}
-            {/*    </div>*/}
-            {/*))}*/}
-            
-            <DataTable columns={columns} data={transactions}/>
-        </div>
+        <TransactionsTable
+            columns={transactionsCols}
+            data={transactionsData.transactions}
+            total_transactions={transactionsData.total_transactions} 
+        />
     )
 }

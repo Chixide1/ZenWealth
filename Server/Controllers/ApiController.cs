@@ -111,12 +111,12 @@ namespace Server.Controllers
             return Ok(new Responses.IsAccountConnectedResponse(connected));
         }
         
-        [ProducesResponseType(typeof(Ok<IReadOnlyList<Transaction>>), StatusCodes.Status200OK, "application/json" )]
+        [ProducesResponseType(typeof(Ok<TransactionsGetResponse>), StatusCodes.Status200OK, "application/json" )]
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetTransactions()
+        public async Task<IActionResult> GetTransactions([FromQuery] int skip = 0)
         {
             var user = await userManager.GetUserAsync(User);
-
+            var startDate = DateTime.UtcNow.AddDays(-1);
             var accessToken = context.Items
                 .Where(i => i.User == user)
                 .Select(i => i.AccessToken)
@@ -125,15 +125,16 @@ namespace Server.Controllers
             var data = await client.TransactionsGetAsync(new TransactionsGetRequest()
             {
                 AccessToken = accessToken,
-                StartDate = new DateOnly(2023, 1, 1),
-                EndDate = new DateOnly(2024, 1, 1),
+                StartDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-2)),
+                EndDate = DateOnly.FromDateTime(DateTime.Now),
                 Options = new TransactionsGetRequestOptions()
                 {
-                    Count = 10
+                    Count = 500,
+                    Offset = skip
                 }
             });
             
-            return Ok(data.Transactions);
+            return Ok(data);
         }
     }
 }

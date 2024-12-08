@@ -13,7 +13,6 @@ export function DashboardPage() {
             await axios.get(`${backend}/IsAccountConnected`, { withCredentials: true })
                 .then((response: AxiosResponse<{connected: boolean}>) => {
                     setConnected(response.data.connected);
-                    console.log(response)
                 })
                 .catch((error: AxiosResponse) => {
                     console.error("Error occurred", error)
