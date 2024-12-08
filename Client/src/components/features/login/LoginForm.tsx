@@ -1,16 +1,16 @@
-﻿import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { zodResolver } from "@hookform/resolvers/zod"
+﻿import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
-import { Input } from "@/components/ui/input"
 import { Mail, Lock, Loader2 } from 'lucide-react'
 import axios from "axios"
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
-import { Toaster } from "@/components/ui/toaster"
 import {useToast} from "@/hooks/use-toast.ts";
+import { Label } from "@/components/core/label"
+import {Input} from "@/components/core/input.tsx";
+import {Checkbox} from "@/components/core/checkbox.tsx";
+import {Button} from "@/components/core/button.tsx";
+import {Toaster} from "@/components/core/toaster.tsx";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -62,7 +62,7 @@ export function LoginForm() {
 
             if (response.status === 200) {
                 console.debug("%cSuccessfully logged in", "color: #bada55")
-                navigate({ to: "/dashboard" })
+                navigate({ to: "/" })
             }
         } catch (error) {
             console.error("Login error:", error)

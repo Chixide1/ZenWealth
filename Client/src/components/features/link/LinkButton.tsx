@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {PlaidLinkError, PlaidLinkOnExit, PlaidLinkOnExitMetadata, usePlaidLink } from 'react-plaid-link';
-import {Button} from "@/components/ui/button.tsx";
 import axios from 'axios'
+import { Button } from '@/components/core/button';
 
 type LinkTokenResponse = {
     value: string

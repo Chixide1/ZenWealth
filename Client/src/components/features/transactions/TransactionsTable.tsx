@@ -3,19 +3,24 @@
 import {
     ColumnDef,
     flexRender,
+    ColumnFiltersState,
     getCoreRowModel,
     getPaginationRowModel,
     SortingState,
-    getsortingRowModel,
+    getSortedRowModel,
     useReactTable,
+    getFilteredRowModel,
 } from "@tanstack/react-table"
 
 import {
     Table, TableBody, TableCell, TableFooter,
     TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
-import {Button} from "@/components/ui/button.tsx";
+} from "@/components/core/table"
+import {Button} from "@/components/core/button.tsx";
 import { useState } from "react";
+import { Input } from "@/components/core/input";
+import {Filter, Loader2, Search } from "lucide-react";
+import {Label} from "@/components/core/label.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -25,6 +30,7 @@ interface DataTableProps<TData, TValue> {
 
 export function TransactionsTable<TData, TValue>({columns, data, total_transactions,}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [pagination, setPagination] = useState({
         pageIndex: 0, //initial page index
         pageSize: 10, //default page size
@@ -33,21 +39,46 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
     const table = useReactTable({
         data,
         columns,
+        onColumnFiltersChange: setColumnFilters,
+        getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
+        onPaginationChange: setPagination,
+        onSortingChange: setSorting,
         getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         state: {
             pagination,
             sorting,
+            columnFilters,
         },
-        onPaginationChange: setPagination,
-        onSortingChange: setSorting,
     })
 
     return (
         <Table className="bg-primary/[0.09] rounded-2xl text-primary my-20 mx-20 w-[60rem]">
             <TableHeader>
                 <TableRow className="">
-                    <TableCell className="px-6 text-2xl font-semibold">Transactions</TableCell>
+                    <TableCell className="px-6 text-2xl font-semibold" colSpan={1}>Transactions</TableCell>
+                    <TableCell className="px-6" colSpan={2}>
+                        <div className="flex items-center ml-auto">
+                            <Label htmlFor="searchTransactions" className="bg-primary/[0.09] p-2 rounded-full">
+                                <Search height={18} width={18}/>
+                            </Label>
+                            <Input
+                                id="searchTransactions"
+                                placeholder="Search for Transactions"
+                                value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                                onChange={(event) =>
+                                    table.getColumn("name")?.setFilterValue(event.target.value)
+                                }
+                                className="max-w-sm mx-auto border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none"
+                            />
+                        </div>
+                    </TableCell>
+                    <TableCell className="px-6" colSpan={1}>
+                        <Button variant="accent" className="flex items-center gap-1 ml-auto">
+                            <Filter className="mt-0.5"/> Filters
+                        </Button>
+                    </TableCell>
                 </TableRow>
                 {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
@@ -83,8 +114,8 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                     ))
                 ) : (
                     <TableRow>
-                        <TableCell colSpan={columns.length} className="h-24 text-center">
-                            No results.
+                        <TableCell colSpan={columns.length} className="h-24">
+                            <Loader2 className="mt-0.5 animate-spin mx-auto"  height={40} width={40} />
                         </TableCell>
                     </TableRow>
                 )}
@@ -93,7 +124,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                 <TableRow>
                     <TableCell colSpan={columns.length} className="p-6 text-center">
                         <Button
-                            className="mr-10"
+                            className="mx-10"
                             variant="accent"
                             size="sm"
                             onClick={() => table.previousPage()}
@@ -103,7 +134,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                         </Button>
                         <span>{pagination.pageIndex}</span>
                         <Button
-                            className="ml-10"
+                            className="mx-10"
                             variant="accent"
                             size="sm"
                             onClick={() => table.nextPage()}

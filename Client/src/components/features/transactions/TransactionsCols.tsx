@@ -1,7 +1,8 @@
 ﻿"use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ReceiptText } from "lucide-react";
+import {ArrowUpDown, ReceiptText } from "lucide-react";
+import { Button } from "../../core/button.tsx";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -48,7 +49,18 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "personal_finance_category",
-        header: "Category",
+        header: ({ column }) => {
+            return (
+                <Button
+                    className="text-left p-0 flex items-center"
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Category
+                    <ArrowUpDown className="h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({row}) => {
             const category = row.original.personal_finance_category.primary || row.original.category
          
@@ -57,7 +69,18 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "amount",
-        header: "Amount",
+        header: ({ column }) => {
+            return (
+                <Button
+                    className="text-left p-0 flex items-center"
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Amount
+                    <ArrowUpDown className="h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("amount"))
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
@@ -71,7 +94,18 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "date",
-        header: "Date",
+        header: ({ column }) => {
+            return (
+                <Button
+                    className="text-left p-0 flex items-center"
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Date
+                    <ArrowUpDown className="h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({ row }) => {
             const date = new Date(row.original.date_time || row.original.date)
 

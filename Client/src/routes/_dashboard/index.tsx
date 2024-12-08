@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import {
   transactionsCols,
   Transaction,
-} from '@/components/TransactionsCols.tsx'
-import { TransactionsTable } from '@/components/TransactionsTable.tsx'
+} from '@/components/features/transactions/TransactionsCols.tsx'
+import { TransactionsTable } from '@/components/features/transactions/TransactionsTable.tsx'
 
 export const Route = createFileRoute('/_dashboard/')({
   component: HomePage,

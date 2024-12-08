@@ -1,4 +1,4 @@
-﻿import {LinkStart} from "@/components/LinkStart.tsx";
+﻿import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
 import axios, { AxiosResponse } from "axios";
 
