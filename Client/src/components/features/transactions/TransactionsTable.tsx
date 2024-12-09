@@ -56,28 +56,28 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
     return (
         <Table className="bg-primary/[0.09] rounded-2xl text-primary my-20 mx-20 w-[60rem]">
             <TableHeader>
-                <TableRow className="">
-                    <TableCell className="px-6 text-2xl font-semibold" colSpan={1}>Transactions</TableCell>
-                    <TableCell className="px-6" colSpan={2}>
-                        <div className="flex items-center ml-auto">
-                            <Label htmlFor="searchTransactions" className="bg-primary/[0.09] p-2 rounded-full">
-                                <Search height={18} width={18}/>
-                            </Label>
-                            <Input
-                                id="searchTransactions"
-                                placeholder="Search for Transactions"
-                                value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-                                onChange={(event) =>
-                                    table.getColumn("name")?.setFilterValue(event.target.value)
-                                }
-                                className="max-w-sm mx-auto border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none"
-                            />
+                <TableRow>
+                    <TableCell className="px-6 py-6 text-2xl font-semibold" colSpan={1}>Transactions</TableCell>
+                    <TableCell className="px-6 py-6" colSpan={3}>
+                        <div className="flex items-center justify-end gap-4">
+                            <div className="relative w-full max-w-sm">
+                                <Label htmlFor="searchTransactions" className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                    <Search className="h-4 w-4 text-muted-foreground" />
+                                </Label>
+                                <Input
+                                    id="searchTransactions"
+                                    placeholder="Search"
+                                    value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+                                    onChange={(event) =>
+                                        table.getColumn("name")?.setFilterValue(event.target.value)
+                                    }
+                                    className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
+                                />
+                            </div>
+                            <Button variant="accent" className="flex items-center gap-1" size="sm">
+                                <Filter className="mt-0.5"/> Filters
+                            </Button>
                         </div>
-                    </TableCell>
-                    <TableCell className="px-6" colSpan={1}>
-                        <Button variant="accent" className="flex items-center gap-1 ml-auto">
-                            <Filter className="mt-0.5"/> Filters
-                        </Button>
                     </TableCell>
                 </TableRow>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -114,15 +114,16 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                     ))
                 ) : (
                     <TableRow>
-                        <TableCell colSpan={columns.length} className="h-24">
-                            <Loader2 className="mt-0.5 animate-spin mx-auto"  height={40} width={40} />
+                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                            {/*<Loader2 className="mt-0.5 animate-spin mx-auto"  height={40} width={40} />*/}
+                            No Results Found
                         </TableCell>
                     </TableRow>
                 )}
             </TableBody>
             <TableFooter className="bg-transparent">
-                <TableRow>
-                    <TableCell colSpan={columns.length} className="p-6 text-center">
+                <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
+                    <TableCell colSpan={columns.length} className="px-6 py-6 text-center">
                         <Button
                             className="mx-10"
                             variant="accent"
@@ -132,7 +133,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                         >
                             Previous
                         </Button>
-                        <span>{pagination.pageIndex}</span>
+                        <span>{pagination.pageIndex + 1}</span>
                         <Button
                             className="mx-10"
                             variant="accent"
