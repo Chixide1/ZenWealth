@@ -39,6 +39,11 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
     const table = useReactTable({
         data,
         columns,
+        defaultColumn: {
+          size: 100,
+          minSize: 100,
+          maxSize: 150,  
+        },
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
@@ -54,7 +59,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
     })
 
     return (
-        <Table className="bg-primary/[0.09] rounded-2xl text-primary my-20 mx-20 w-[60rem]">
+        <Table className="bg-primary/[0.09] rounded-2xl text-primary text-sm my-20 mx-20 max-w-screen-lg">
             <TableHeader>
                 <TableRow>
                     <TableCell className="px-6 py-6 text-2xl font-semibold" colSpan={1}>Transactions</TableCell>
@@ -84,7 +89,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {
                             return (
-                                <TableHead key={header.id} className="text-primary bg-neutral-600/[0.2] px-6">
+                                <TableHead key={header.id} className="text-primary bg-neutral-600/[0.2] px-6" style={{ width: `${header.getSize()}px` }}>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(
@@ -115,7 +120,6 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                 ) : (
                     <TableRow>
                         <TableCell colSpan={columns.length} className="h-24 text-center">
-                            {/*<Loader2 className="mt-0.5 animate-spin mx-auto"  height={40} width={40} />*/}
                             No Results Found
                         </TableCell>
                     </TableRow>
