@@ -26,7 +26,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     {
         accessorKey: "name",
         header: "Name",
-        size: 200,
+        size: 250,
         cell: ({row}) => {
             const name = row.original.merchant_name || row.original.name
             const imageSize = 30
@@ -70,6 +70,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "amount",
+        size: 200,
         header: ({ column }) => {
             return (
                 <Button

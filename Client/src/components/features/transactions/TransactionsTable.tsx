@@ -89,7 +89,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                     <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {
                             return (
-                                <TableHead key={header.id} className="text-primary bg-neutral-600/[0.2] px-6" style={{ width: `${header.getSize()}px` }}>
+                                <TableHead key={header.id} className="text-primary bg-neutral-600/[0.2] px-6">
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(
