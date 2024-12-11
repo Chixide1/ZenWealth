@@ -39,10 +39,12 @@ export default function HomePage() {
 
   console.log(transactionsData)
   return (
-    <TransactionsTable
-      columns={transactionsCols}
-      data={transactionsData.transactions}
-      total_transactions={transactionsData.total_transactions}
-    />
+      <div className="w-9/12 mx-auto py-6">
+        <TransactionsTable
+            columns={transactionsCols}
+            data={transactionsData.transactions}
+            total_transactions={transactionsData.total_transactions}
+        />
+      </div>
   )
 }

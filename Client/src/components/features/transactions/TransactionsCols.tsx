@@ -26,22 +26,20 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     {
         accessorKey: "name",
         header: "Name",
-        size: 250,
         cell: ({row}) => {
             const name = row.original.merchant_name || row.original.name
             const imageSize = 30
 
             return (
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center justify-start">
                     {row.original.logo_url ? 
                         (<img 
                             src={row.original.logo_url}
                             alt="an image of the transaction logo"
-                            className="rounded"
-                            height={imageSize}
+                            className="rounded min-w-6 h-auto ms-1"
                             width={imageSize}
                         />):
-                        <ReceiptText height={imageSize} width={imageSize} className="text-primary"/>
+                        <ReceiptText width={imageSize} height={imageSize} className="text-primary min-w-9"/>
                     }
                     <span>{name}</span>
                 </div>
@@ -70,7 +68,6 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "amount",
-        size: 200,
         header: ({ column }) => {
             return (
                 <Button
