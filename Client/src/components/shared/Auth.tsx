@@ -1,7 +1,12 @@
-﻿import { redirect} from '@tanstack/react-router';
+﻿import {ParsedLocation, redirect} from '@tanstack/react-router';
 import axios, { AxiosResponse } from 'axios'
 
-export async function Auth(){
+export async function Auth({location}: {location: ParsedLocation}) {
+    
+    if(location.pathname === '/login'){
+        return    
+    }
+    
     const backend = import.meta.env.VITE_ASPNETCORE_URLS
     const responseCode = await axios.get(`${backend}/Api/Auth`, { withCredentials: true })
         .then((response: AxiosResponse) => {
