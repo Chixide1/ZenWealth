@@ -20,6 +20,7 @@ export interface Transaction {
     iso_currency_code: string;
     unofficial_currency_code: string;
     logo_url: string;
+    personal_finance_category_icon_url: string;
 }
 
 export const transactionsCols: ColumnDef<Transaction>[] = [
@@ -47,7 +48,8 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
         }
     },
     {
-        accessorKey: "personal_finance_category",
+        id: 'category',
+        accessorFn: row => `${row.personal_finance_category.primary}`,
         header: ({ column }) => {
             return (
                 <Button
@@ -62,13 +64,22 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
         },
         cell: ({row}) => {
             const category = row.original.personal_finance_category.primary || row.original.category
-         
-         return <div>{category}</div>   
+            
+            return (
+                 <div className="flex gap-2 items-center">
+                     <img
+                         src={row.original.personal_finance_category_icon_url}
+                         alt="an image of the transaction logo"
+                         className="rounded min-w-6 h-auto ms-1 w-7"
+                     /> 
+                     {category}
+                 </div>
+            )
         }
     },
     {
         accessorKey: "amount",
-        header: ({ column }) => {
+        header: ({column}) => {
             return (
                 <Button
                     className="text-left p-0 flex items-center"
@@ -88,7 +99,11 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
                 currencyDisplay: "symbol",
             }).format(amount)
 
-            return <div className="">{formatted}</div>
+            return( 
+            <div className="">
+                {formatted}
+            </div>
+            )
         },
     },
     {

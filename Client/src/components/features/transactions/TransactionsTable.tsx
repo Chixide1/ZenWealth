@@ -128,26 +128,30 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                 </TableBody>
                 <TableFooter className="bg-transparent">
                     <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
-                        <TableCell colSpan={columns.length} className="px-6 py-6 text-center">
-                            <Button
-                                className="mx-10"
-                                variant="accent"
-                                size="sm"
-                                onClick={() => table.previousPage()}
-                                disabled={!table.getCanPreviousPage()}
-                            >
-                                Previous
-                            </Button>
-                            <span>{pagination.pageIndex + 1}</span>
-                            <Button
-                                className="mx-10"
-                                variant="accent"
-                                size="sm"
-                                onClick={() => table.nextPage()}
-                                disabled={!table.getCanNextPage()}
-                            >
-                                Next
-                            </Button>
+                        <TableCell colSpan={columns.length} className="px-6 py-6">
+                            <div className="flex items-center justify-between">
+                                <span className="pl-2 font-semibold">Total Transactions: <span className="text-secondary font-medium">{table.getCoreRowModel().rows.length}</span></span>
+                                <span>{pagination.pageIndex + 1}</span>
+                                <div className="">
+                                    <Button
+                                        className="me-2"
+                                        variant="accent"
+                                        size="sm"
+                                        onClick={() => table.previousPage()}
+                                        disabled={!table.getCanPreviousPage()}
+                                    >
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        className=""
+                                        variant="accent"
+                                        size="sm"
+                                        onClick={() => table.nextPage()}
+                                        disabled={!table.getCanNextPage()}
+                                    >
+                                        Next
+                                    </Button></div>
+                            </div>
                         </TableCell>
                     </TableRow>
                 </TableFooter>
