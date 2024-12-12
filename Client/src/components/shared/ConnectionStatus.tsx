@@ -31,7 +31,11 @@ export function ConnectionStatus() {
     }
     
     if(!connected){
-        return <LinkStart />
+        return (
+            <div className={"w-full h-screen flex items-center justify-center"}>
+                <LinkStart />       
+            </div>
+        )
     }
     
     return <Outlet />
