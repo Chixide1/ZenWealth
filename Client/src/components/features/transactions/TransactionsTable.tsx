@@ -39,11 +39,6 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
     const table = useReactTable({
         data,
         columns,
-        defaultColumn: {
-          size: 100,
-          minSize: 100,
-          maxSize: 150,  
-        },
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),

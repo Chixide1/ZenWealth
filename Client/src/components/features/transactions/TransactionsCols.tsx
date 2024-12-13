@@ -74,7 +74,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
                          alt="an image of the transaction logo"
                          className="rounded min-w-6 h-auto ms-1 w-7"
                      /> 
-                     {category}
+                     {category.replace(/_/g, " ")}
                  </div>
             )
         }
