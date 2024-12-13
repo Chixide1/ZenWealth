@@ -26,7 +26,18 @@ export interface Transaction {
 export const transactionsCols: ColumnDef<Transaction>[] = [
     {
         accessorKey: "name",
-        header: "Name",
+        header: ({ column }) => {
+            return (
+                <Button
+                    className="text-left p-0 flex items-center"
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Name
+                    <ArrowUpDown className="h-4 w-4" />
+                </Button>
+            )
+        },
         size: 200,
         cell: ({row}) => {
             const name = row.original.merchant_name || row.original.name

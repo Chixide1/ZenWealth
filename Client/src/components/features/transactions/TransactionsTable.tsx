@@ -54,8 +54,8 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
     })
 
     return (
-        <div className="border bg-transparent border-neutral-500/[0.3] overflow-auto rounded-2xl">
-            <Table className="bg-primary/[0.09] rounded-2xl text-primary text-sm w-full">
+        <div className="border bg-primary/[0.09] backdrop-blur-3xl border-neutral-500/[0.3] overflow-auto rounded-2xl">
+            <Table className="rounded-2xl text-primary text-sm w-full">
                 <TableHeader>
                     <TableRow>
                         <TableCell className="px-6 py-6 text-2xl font-semibold" colSpan={1}>Transactions</TableCell>
