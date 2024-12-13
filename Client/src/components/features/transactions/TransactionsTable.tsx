@@ -19,7 +19,7 @@ import {
 import {Button} from "@/components/core/button.tsx";
 import { useState } from "react";
 import { Input } from "@/components/core/input";
-import {Filter, Loader2, Search } from "lucide-react";
+import {Filter, Search } from "lucide-react";
 import {Label} from "@/components/core/label.tsx";
 
 interface DataTableProps<TData, TValue> {
@@ -90,7 +90,11 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <TableHead key={header.id} className="text-primary bg-neutral-600/[0.2] px-6">
+                                    <TableHead 
+                                        key={header.id}
+                                        className="text-primary bg-neutral-600/[0.2] px-6"
+                                        style={{width: header.getSize()}}
+                                    >
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -112,7 +116,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                                 data-state={row.getIsSelected() && "selected"}
                             >
                                 {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id} className="px-6">
+                                    <TableCell key={cell.id} className="px-6" style={{width: cell.column.getSize()}}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
                                 ))}
