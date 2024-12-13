@@ -54,7 +54,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
     })
 
     return (
-        <div className="border border-neutral-500/[0.3] overflow-auto rounded-2xl">
+        <div className="border bg-transparent border-neutral-500/[0.3] overflow-auto rounded-2xl">
             <Table className="bg-primary/[0.09] rounded-2xl text-primary text-sm w-full">
                 <TableHeader>
                     <TableRow>
@@ -130,7 +130,7 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between">
                                 <span className="pl-2 font-semibold">Total Transactions: <span className="text-secondary font-medium">{table.getCoreRowModel().rows.length}</span></span>
-                                <span>{pagination.pageIndex + 1}</span>
+                                {/*<span>{pagination.pageIndex + 1}</span>*/}
                                 <div className="">
                                     <Button
                                         className="me-2"

@@ -110,6 +110,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "date",
+        sortingFn: 'datetime',
         header: ({ column }) => {
             return (
                 <Button
@@ -123,9 +124,13 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
             )
         },
         cell: ({ row }) => {
-            const date = new Date(row.original.date_time || row.original.date)
-
-            return <div className="">{date.toLocaleDateString()}</div>
+            const dateTime = new Date(row.original.date_time || row.original.date)
+            const formatted = new Intl.DateTimeFormat('en-GB', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+            }).format(dateTime)
+            
+            return <div className="">{formatted}</div>
         },
     },
 ]
