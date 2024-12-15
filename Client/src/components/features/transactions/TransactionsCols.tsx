@@ -1,8 +1,8 @@
 ﻿"use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import {ArrowUpDown, ReceiptText } from "lucide-react";
-import { Button } from "../../core/button.tsx";
+import { ReceiptText } from "lucide-react";
+import ColHeader from "@/components/features/transactions/ColHeader.tsx";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -27,17 +27,8 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     {
         accessorKey: "name",
         enableHiding: false,
-        header: ({ column }) => {
-            return (
-                <Button
-                    className="text-left p-0 flex items-center"
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Name
-                    <ArrowUpDown className="h-4 w-4" />
-                </Button>
-            )
+        header: ({column}) => {
+            return <ColHeader column={column}/>
         },
         size: 200,
         cell: ({row}) => {
@@ -63,49 +54,34 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     {
         id: 'category',
         size: 200,
-        accessorFn: row => `${row.personal_finance_category.primary}`,
-        header: ({ column }) => {
-            return (
-                <Button
-                    className="text-left p-0 flex items-center"
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Category
-                    <ArrowUpDown className="h-4 w-4" />
-                </Button>
-            )
+        accessorFn: row => `${row.personal_finance_category.primary.replace(/_/g, " ")}`,
+        header: ({column}) => {
+            return <ColHeader column={column}/>
         },
         cell: ({row}) => {
-            const category = row.original.personal_finance_category.primary || row.original.category
-            
+            const category: string = row.getValue("category")
+
             return (
-                 <div className="flex gap-2 items-center">
-                     <img
-                         src={row.original.personal_finance_category_icon_url}
-                         alt="an image of the transaction logo"
-                         className="rounded min-w-6 h-auto ms-1 w-7"
-                     /> 
-                     {category.replace(/_/g, " ")}
-                 </div>
+                <div className="flex gap-2 items-center">
+                    <img
+                        src={row.original.personal_finance_category_icon_url}
+                        alt="an image of the transaction logo"
+                        className="rounded min-w-6 h-auto ms-1 w-7"
+                    />
+                    {category}
+                </div>
             )
+        },
+        filterFn: (row, columnId: string, filterValue: string[]) => {
+            return !filterValue.includes(row.getValue(columnId))
         }
     },
     {
         accessorKey: "amount",
         header: ({column}) => {
-            return (
-                <Button
-                    className="text-left p-0 flex items-center"
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Amount
-                    <ArrowUpDown className="h-4 w-4" />
-                </Button>
-            )
+            return <ColHeader column={column}/>
         },
-        cell: ({ row }) => {
+        cell: ({row}) => {
             const amount = parseFloat(row.getValue("amount"))
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
                 style: "currency",
@@ -113,35 +89,26 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
                 currencyDisplay: "symbol",
             }).format(amount)
 
-            return( 
-            <div className="">
-                {formatted}
-            </div>
+            return (
+                <div className="">
+                    {formatted}
+                </div>
             )
         },
     },
     {
         accessorKey: "date",
         sortingFn: 'datetime',
-        header: ({ column }) => {
-            return (
-                <Button
-                    className="text-left p-0 flex items-center"
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Date
-                    <ArrowUpDown className="h-4 w-4" />
-                </Button>
-            )
+        header: ({column}) => {
+            return <ColHeader column={column}/>
         },
-        cell: ({ row }) => {
+        cell: ({row}) => {
             const dateTime = new Date(row.original.date_time || row.original.date)
             const formatted = new Intl.DateTimeFormat('en-GB', {
                 dateStyle: 'medium',
                 timeStyle: 'short',
             }).format(dateTime)
-            
+
             return <div className="">{formatted}</div>
         },
     },

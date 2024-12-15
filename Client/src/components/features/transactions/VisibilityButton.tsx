@@ -7,9 +7,6 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/core/dropdown-menu"
 
@@ -34,7 +31,7 @@ export default function VisibilityButton({columns}: { columns: Column<Transactio
                     .filter((column) => column.getCanHide())
                     .map(column => (
                             <DropdownMenuCheckboxItem
-                                key={column.id} className="capitalize focus:bg-secondary transition-colors duration-200"
+                                key={column.id} className="text-sm capitalize focus:bg-secondary transition-colors duration-200"
                                 checked={column.getIsVisible()}
                                 onCheckedChange={(value) =>
                                     column.toggleVisibility(!!value)

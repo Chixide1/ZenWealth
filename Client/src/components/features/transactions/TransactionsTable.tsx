@@ -10,7 +10,7 @@ import {
     getSortedRowModel,
     useReactTable,
     getFilteredRowModel,
-    OnChangeFn,
+    Updater,
     VisibilityState,
 } from "@tanstack/react-table"
 
@@ -21,7 +21,7 @@ import {
 import {Button} from "@/components/core/button.tsx";
 import { useState } from "react";
 import { Input } from "@/components/core/input";
-import {ChevronDown, Eye, Filter, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import {Label} from "@/components/core/label.tsx";
 import VisibilityButton from "@/components/features/transactions/VisibilityButton.tsx";
 import {Transaction} from "@/components/features/transactions/TransactionsCols.tsx";
@@ -34,7 +34,7 @@ interface DataTableProps<TData, TValue> {
 export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [columnVisibility, setColumnVisibility] = useState({
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         category: true,
         amount: true,
@@ -48,14 +48,14 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
     const table = useReactTable<Transaction>({
         data,
         columns,
-        onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        onColumnVisibilityChange: setColumnVisibility as OnChangeFn<VisibilityState>,
+        onColumnVisibilityChange: setColumnVisibility,
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
         state: {
             pagination,
             sorting,
@@ -63,13 +63,39 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
             columnVisibility,
         },
     })
-
+    // console.log(table.getState().columnFilters)
+    
     return (
         <div className="border bg-primary/[0.09] backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
             <Table className="rounded-2xl text-primary text-sm w-full">
                 <TableHeader>
                     <TableRow>
-                        <TableCell className="px-6 py-6 text-2xl font-semibold" colSpan={1}>Transactions</TableCell>
+                        <TableCell className="px-6 py-6 text-2xl font-semibold" colSpan={1}>
+                            Transactions 
+                            {/*<Button*/}
+                            {/*    variant="accent"*/}
+                            {/*    onClick={(e) => {*/}
+                            {/*        let col = table.getColumn("category")!*/}
+                            {/*        col.setFilterValue(["GENERAL MERCHANDISE", "BANK FEES"])*/}
+                            {/*        */}
+                            {/*        // col.setFilterValue((prev: Updater<ColumnFiltersState>) => console.log(prev))*/}
+                            {/*    }}*/}
+                            {/*>*/}
+                            {/*    General Merchandise*/}
+                            {/*</Button>*/}
+                            {/*<Button*/}
+                            {/*    variant="accent"*/}
+                            {/*    onClick={(e) => {*/}
+                            {/*        table.setColumnFilters((old) => {*/}
+                            {/*            let updated = old*/}
+                            {/*            updated.push({id: "category", value: "BANK FEES"})*/}
+                            {/*            return updated*/}
+                            {/*        })*/}
+                            {/*    }}*/}
+                            {/*>*/}
+                            {/*    Test*/}
+                            {/*</Button>*/}
+                        </TableCell>
                         <TableCell className="px-6 py-6" colSpan={3}>
                             <div className="flex items-center justify-end gap-4">
                                 <div className="relative w-full max-w-sm">
@@ -86,7 +112,6 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
                                         className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
                                     />
                                 </div>
-                                {/*<Filter className="mt-0.5"/> Filters*/}
                                 <VisibilityButton columns={table.getAllColumns()} />
                             </div>
                         </TableCell>
