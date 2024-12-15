@@ -70,37 +70,13 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
             <Table className="rounded-2xl text-primary text-sm w-full">
                 <TableHeader>
                     <TableRow>
-                        <TableCell className="px-6 py-6 text-2xl font-semibold" colSpan={1}>
-                            Transactions 
-                            {/*<Button*/}
-                            {/*    variant="accent"*/}
-                            {/*    onClick={(e) => {*/}
-                            {/*        let col = table.getColumn("category")!*/}
-                            {/*        col.setFilterValue(["GENERAL MERCHANDISE", "BANK FEES"])*/}
-                            {/*        */}
-                            {/*        // col.setFilterValue((prev: Updater<ColumnFiltersState>) => console.log(prev))*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    General Merchandise*/}
-                            {/*</Button>*/}
-                            {/*<Button*/}
-                            {/*    variant="accent"*/}
-                            {/*    onClick={(e) => {*/}
-                            {/*        table.setColumnFilters((old) => {*/}
-                            {/*            let updated = old*/}
-                            {/*            updated.push({id: "category", value: "BANK FEES"})*/}
-                            {/*            return updated*/}
-                            {/*        })*/}
-                            {/*    }}*/}
-                            {/*>*/}
-                            {/*    Test*/}
-                            {/*</Button>*/}
-                        </TableCell>
-                        <TableCell className="px-6 py-6" colSpan={3}>
+                        <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
+                                <span className="text-2xl font-semibold mr-auto pr-10">Transactions</span>
                                 <div className="relative w-full max-w-sm">
-                                    <Label htmlFor="searchTransactions" className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                        <Search className="h-4 w-4 text-muted-foreground" />
+                                    <Label htmlFor="searchTransactions"
+                                           className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                        <Search className="h-4 w-4 text-muted-foreground"/>
                                     </Label>
                                     <Input
                                         id="searchTransactions"
@@ -112,7 +88,7 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
                                         className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
                                     />
                                 </div>
-                                <VisibilityButton columns={table.getAllColumns()} />
+                                <VisibilityButton columns={table.getAllColumns()}/>
                             </div>
                         </TableCell>
                     </TableRow>
@@ -120,7 +96,7 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <TableHead 
+                                    <TableHead
                                         key={header.id}
                                         className="text-primary bg-neutral-600/[0.2] px-6"
                                         style={{width: header.getSize()}}

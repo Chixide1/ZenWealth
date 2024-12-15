@@ -1,11 +1,11 @@
 ﻿"use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ReceiptText } from "lucide-react";
+import {ChevronDown, Filter, ReceiptText } from "lucide-react";
 import ColHeader from "@/components/features/transactions/ColHeader.tsx";
+import {Button} from "@/components/core/button.tsx";
+import CategoryButton from "@/components/features/transactions/CategoryButton.tsx";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export interface Transaction {
     transaction_id: string;
     merchant_name: string;
@@ -28,7 +28,12 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
         accessorKey: "name",
         enableHiding: false,
         header: ({column}) => {
-            return <ColHeader column={column}/>
+            return (
+                <div className="flex items-center">
+                    <span className="capitalize">{column.id}</span>
+                    <ColHeader column={column}/>
+                </div>
+            )
         },
         size: 200,
         cell: ({row}) => {
@@ -56,14 +61,19 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
         size: 200,
         accessorFn: row => `${row.personal_finance_category.primary.replace(/_/g, " ")}`,
         header: ({column}) => {
-            return <ColHeader column={column}/>
+            return (
+                <div className="flex items-center">
+                    <CategoryButton column={column} />
+                    <ColHeader column={column}/>
+                </div>
+            )
         },
         cell: ({row}) => {
             const category: string = row.getValue("category")
 
             return (
                 <div className="flex gap-2 items-center">
-                    <img
+                <img
                         src={row.original.personal_finance_category_icon_url}
                         alt="an image of the transaction logo"
                         className="rounded min-w-6 h-auto ms-1 w-7"
@@ -73,13 +83,19 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
             )
         },
         filterFn: (row, columnId: string, filterValue: string[]) => {
-            return !filterValue.includes(row.getValue(columnId))
+            let colVals: string = row.getValue(columnId)
+            return !filterValue.includes(colVals.toLowerCase())
         }
     },
     {
         accessorKey: "amount",
         header: ({column}) => {
-            return <ColHeader column={column}/>
+            return (
+                <div className="flex items-center">
+                    <span className="capitalize">{column.id}</span>
+                    <ColHeader column={column}/>
+                </div>
+            )
         },
         cell: ({row}) => {
             const amount = parseFloat(row.getValue("amount"))
@@ -100,7 +116,12 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
         accessorKey: "date",
         sortingFn: 'datetime',
         header: ({column}) => {
-            return <ColHeader column={column}/>
+            return (
+                <div className="flex items-center">
+                    <span className="capitalize">{column.id}</span>
+                    <ColHeader column={column}/>
+                </div>
+            )
         },
         cell: ({row}) => {
             const dateTime = new Date(row.original.date_time || row.original.date)
