@@ -76,5 +76,5 @@ const categories = [
     "general services",
     "personal care",
     "travel",
-    "government and non-profit"
+    "government and non profit"
 ];
