@@ -26,6 +26,7 @@ export interface Transaction {
 export const transactionsCols: ColumnDef<Transaction>[] = [
     {
         accessorKey: "name",
+        enableHiding: false,
         header: ({ column }) => {
             return (
                 <Button

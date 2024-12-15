@@ -10,6 +10,8 @@ import {
     getSortedRowModel,
     useReactTable,
     getFilteredRowModel,
+    OnChangeFn,
+    VisibilityState,
 } from "@tanstack/react-table"
 
 import {
@@ -19,42 +21,51 @@ import {
 import {Button} from "@/components/core/button.tsx";
 import { useState } from "react";
 import { Input } from "@/components/core/input";
-import {Filter, Search } from "lucide-react";
+import {ChevronDown, Eye, Filter, Search } from "lucide-react";
 import {Label} from "@/components/core/label.tsx";
+import VisibilityButton from "@/components/features/transactions/VisibilityButton.tsx";
+import {Transaction} from "@/components/features/transactions/TransactionsCols.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
-    total_transactions: number,
 }
 
-export function TransactionsTable<TData, TValue>({columns, data, total_transactions,}: DataTableProps<TData, TValue>) {
+export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] = useState({
+        name: true,
+        category: true,
+        amount: true,
+        date: true,
+    });
     const [pagination, setPagination] = useState({
         pageIndex: 0, //initial page index
         pageSize: 10, //default page size
     });
     
-    const table = useReactTable({
+    const table = useReactTable<Transaction>({
         data,
         columns,
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
-        onPaginationChange: setPagination,
-        onSortingChange: setSorting,
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        onColumnVisibilityChange: setColumnVisibility as OnChangeFn<VisibilityState>,
+        onPaginationChange: setPagination,
+        onSortingChange: setSorting,
         state: {
             pagination,
             sorting,
             columnFilters,
+            columnVisibility,
         },
     })
 
     return (
-        <div className="border bg-primary/[0.09] backdrop-blur-3xl border-neutral-500/[0.3] overflow-auto rounded-2xl">
+        <div className="border bg-primary/[0.09] backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
             <Table className="rounded-2xl text-primary text-sm w-full">
                 <TableHeader>
                     <TableRow>
@@ -75,9 +86,8 @@ export function TransactionsTable<TData, TValue>({columns, data, total_transacti
                                         className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
                                     />
                                 </div>
-                                <Button variant="accent" className="flex items-center gap-1" size="sm">
-                                    <Filter className="mt-0.5"/> Filters
-                                </Button>
+                                {/*<Filter className="mt-0.5"/> Filters*/}
+                                <VisibilityButton columns={table.getAllColumns()} />
                             </div>
                         </TableCell>
                     </TableRow>

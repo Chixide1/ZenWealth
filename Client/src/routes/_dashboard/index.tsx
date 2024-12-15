@@ -43,7 +43,6 @@ export default function HomePage() {
         <TransactionsTable
             columns={transactionsCols}
             data={transactionsData.transactions}
-            total_transactions={transactionsData.total_transactions}
         />
       </div>
   )
