@@ -10,6 +10,9 @@ import {
     getSortedRowModel,
     useReactTable,
     getFilteredRowModel,
+    getFacetedRowModel,
+    getFacetedUniqueValues,
+    getFacetedMinMaxValues,
     VisibilityState,
 } from "@tanstack/react-table"
 
@@ -79,6 +82,8 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
         onColumnVisibilityChange: setColumnVisibility,
         onPaginationChange: setPagination,
         onSortingChange: setSorting,

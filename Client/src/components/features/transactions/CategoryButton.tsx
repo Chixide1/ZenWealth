@@ -18,7 +18,7 @@ export default function CategoryButton({column}: {column:  Column<Transaction, u
         return curFilter[category]
     }
     
-    // console.log(curFilter)
+    // console.log(column.getFacetedUniqueValues())
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
@@ -28,7 +28,7 @@ export default function CategoryButton({column}: {column:  Column<Transaction, u
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="border-0 bg-neutral-700/[0.7] flex justify-center flex-wrap max-w-[23rem] gap-1 py-3 backdrop-blur-sm" align="center">
-                {categories.map(category => (
+                {Array.from<string, string>(column.getFacetedUniqueValues().keys(), (c) => c.toLowerCase()).map(category => (
                     <Toggle
                         className="capitalize data-[state=on]:hover:bg-secondary/[0.2] backdrop-blur-sm data-[state=on]:backdrop-blur-sm data-[state=on]:bg-secondary/[0.3]
                         data-[state=on]:text-secondary data-[state=on]:text-xs text-xs bg-muted/[0.3] text-neutral-300 hover:bg-muted/[0.2] hover:text-neutral-300"
@@ -47,22 +47,3 @@ export default function CategoryButton({column}: {column:  Column<Transaction, u
         </DropdownMenu>
     )
 }
-
-const categories = [
-    "bank fees",
-    "home improvement",
-    "rent and utilities",
-    "entertainment",
-    "income",
-    "transfer in",
-    "food and drink",
-    "loan payments",
-    "transfer out",
-    "general merchandise",
-    "medical",
-    "transportation",
-    "general services",
-    "personal care",
-    "travel",
-    "government and non profit"
-];
