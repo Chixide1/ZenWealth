@@ -1,7 +1,6 @@
 ﻿import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent, DropdownMenuSubContent,
+    DropdownMenuContent,
     DropdownMenuTrigger
 } from "@/components/core/dropdown-menu.tsx";
 import {Button} from "@/components/core/button.tsx";
@@ -9,9 +8,11 @@ import {Transaction} from "@/components/features/transactions/TransactionsCols.t
 import { Column } from "@tanstack/react-table";
 import { Filter } from "lucide-react";
 import { Toggle } from "@/components/core/toggle";
+import { useState } from "react";
 
 export default function CategoryButton({column}: {column:  Column<Transaction, unknown>}){
     const curFilter = column.getFilterValue() as Record<string, boolean>;
+    const [open, setOpen] = useState(false)
     
     function isFiltered(category: string){
         return curFilter[category]
@@ -19,14 +20,14 @@ export default function CategoryButton({column}: {column:  Column<Transaction, u
     
     console.log(curFilter)
     return (
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
-                <Button className="capitalize px-0.5" variant="ghost">
-                    <Filter className="mt-0.5"/>
+                <Button className={`capitalize px-0.5 focus-visible:ring-0`} variant="ghost">
+                    <Filter className={`mt-0.5 transition-colors duration-200 ${open && "text-secondary"}`}/>
                     {column.id}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="border-0 bg-neutral-700/[0.7] flex justify-center flex-wrap max-w-sm gap-1 py-3 backdrop-blur-sm" align="center">
+            <DropdownMenuContent className="border-0 bg-neutral-700/[0.7] flex justify-center flex-wrap max-w-[23rem] gap-1 py-3 backdrop-blur-sm" align="center">
                 {categories.map(category => (
                     <Toggle
                         className="capitalize data-[state=on]:hover:bg-secondary/[0.2] backdrop-blur-sm data-[state=on]:backdrop-blur-sm data-[state=on]:bg-secondary/[0.3]

@@ -1,9 +1,8 @@
 ﻿"use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import {ChevronDown, Filter, ReceiptText } from "lucide-react";
+import { ReceiptText } from "lucide-react";
 import ColHeader from "@/components/features/transactions/ColHeader.tsx";
-import {Button} from "@/components/core/button.tsx";
 import CategoryButton from "@/components/features/transactions/CategoryButton.tsx";
 
 export interface Transaction {
@@ -83,7 +82,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
             )
         },
         filterFn: (row, columnId: string, filterValue: Record<string, boolean>) => {
-            let colVal: string = row.getValue(columnId)
+            let colVal = row.getValue<string>(columnId)
             return filterValue[colVal.toLowerCase()]
         }
     },
@@ -98,7 +97,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
             )
         },
         cell: ({row}) => {
-            const amount = parseFloat(row.getValue("amount"))
+            const amount = row.getValue<number>("amount")
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
                 style: "currency",
                 currency: row.original.iso_currency_code || row.original.unofficial_currency_code,
