@@ -11,18 +11,13 @@ import { Filter } from "lucide-react";
 import { Toggle } from "@/components/core/toggle";
 
 export default function CategoryButton({column}: {column:  Column<Transaction, unknown>}){
-    const curFilter = column.getFilterValue() as string[] | undefined;
+    const curFilter = column.getFilterValue() as Record<string, boolean>;
     
     function isFiltered(category: string){
-        if(curFilter){
-            return !curFilter.includes(category);
-        }
-        else {
-            return true;
-        }
+        return curFilter[category]
     }
     
-    // console.log(curFilter)
+    console.log(curFilter)
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -39,17 +34,9 @@ export default function CategoryButton({column}: {column:  Column<Transaction, u
                         key={category + " Toggle"}
                         pressed={isFiltered(category)}
                         onPressedChange={() => {
-                            if(!curFilter){
-                                column.setFilterValue([`${category}`])
-                            }
-                            else if(curFilter.includes(category)){
-                                const updated = curFilter.filter((item) => item !== category);
-                                column.setFilterValue(updated);
-                            }
-                            else{
-                                curFilter.push(category)
-                                column.setFilterValue(curFilter)
-                            }
+                            const updated = curFilter
+                            updated[category] = !updated[category];
+                            column.setFilterValue(updated)
                         }}
                     >
                         {category}

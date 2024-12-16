@@ -82,9 +82,9 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
                 </div>
             )
         },
-        filterFn: (row, columnId: string, filterValue: string[]) => {
-            let colVals: string = row.getValue(columnId)
-            return !filterValue.includes(colVals.toLowerCase())
+        filterFn: (row, columnId: string, filterValue: Record<string, boolean>) => {
+            let colVal: string = row.getValue(columnId)
+            return filterValue[colVal.toLowerCase()]
         }
     },
     {

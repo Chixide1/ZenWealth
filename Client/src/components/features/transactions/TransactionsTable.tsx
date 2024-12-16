@@ -33,7 +33,29 @@ interface DataTableProps<TData, TValue> {
 
 export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+        {
+            id: "category",
+            value: {
+                "bank fees": true,
+                "home improvement": true,
+                "rent and utilities": true,
+                "entertainment": true,
+                "income": true,
+                "transfer in": true,
+                "food and drink": true,
+                "loan payments": true,
+                "transfer out": true,
+                "general merchandise": true,
+                "medical": true,
+                "transportation": true,
+                "general services": true,
+                "personal care": true,
+                "travel": true,
+                "government and non profit": true,
+            }
+        },
+    ])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         category: true,
