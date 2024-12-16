@@ -162,8 +162,7 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
                     <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between">
-                                <span className="pl-2 font-semibold">Total Transactions: <span className="text-secondary font-medium">{table.getCoreRowModel().rows.length}</span></span>
-                                {/*<span>{pagination.pageIndex + 1}</span>*/}
+                                <span className="pl-2 font-semibold">Total Transactions: <span className="text-secondary font-medium">{table.getFilteredRowModel().rows.length}</span></span>
                                 <div className="">
                                     <Button
                                         className="me-2"
