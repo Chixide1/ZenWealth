@@ -10,7 +10,6 @@ import {
     getSortedRowModel,
     useReactTable,
     getFilteredRowModel,
-    Updater,
     VisibilityState,
 } from "@tanstack/react-table"
 
@@ -24,7 +23,6 @@ import { Input } from "@/components/core/input";
 import { Search } from "lucide-react";
 import {Label} from "@/components/core/label.tsx";
 import VisibilityButton from "@/components/features/transactions/VisibilityButton.tsx";
-import {Transaction} from "@/components/features/transactions/TransactionsCols.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -55,6 +53,13 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
                 "government and non profit": true,
             }
         },
+        {
+           id: "amount",
+           value: {
+               min: Number.NEGATIVE_INFINITY,
+               max: Number.POSITIVE_INFINITY,
+           } 
+        },
     ])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
@@ -67,7 +72,7 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
         pageSize: 10, //default page size
     });
     
-    const table = useReactTable<Transaction>({
+    const table = useReactTable({
         data,
         columns,
         getFilteredRowModel: getFilteredRowModel(),
@@ -110,7 +115,7 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
                                         className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
                                     />
                                 </div>
-                                <VisibilityButton columns={table.getAllColumns()}/>
+                                <VisibilityButton columns={table.getAllColumns() as any}/>
                             </div>
                         </TableCell>
                     </TableRow>

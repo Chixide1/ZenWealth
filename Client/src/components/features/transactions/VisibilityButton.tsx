@@ -26,12 +26,12 @@ export default function VisibilityButton({columns}: { columns: Column<Transactio
                     Columns
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-secondary/90 backdrop-blur-md border-0" align="end">
+            <DropdownMenuContent className="bg-secondary border-0" align="end">
                 {columns
                     .filter((column) => column.getCanHide())
                     .map(column => (
                             <DropdownMenuCheckboxItem
-                                key={column.id} className="text-sm capitalize focus:bg-secondary transition-colors duration-200"
+                                key={column.id} className="text-sm capitalize bg-secondary focus:bg-[#c7da4fcc] transition-colors duration-200"
                                 checked={column.getIsVisible()}
                                 onCheckedChange={(value) =>
                                     column.toggleVisibility(!!value)

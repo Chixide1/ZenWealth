@@ -110,6 +110,11 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
                 </div>
             )
         },
+        filterFn: (row, columnId: string, filterValue: {min: number, max: number}) => {
+            let colVal = row.getValue<number>(columnId)
+            
+            return colVal > filterValue.min && colVal < filterValue.max
+        }
     },
     {
         accessorKey: "date",

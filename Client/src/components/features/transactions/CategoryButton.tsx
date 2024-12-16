@@ -18,7 +18,7 @@ export default function CategoryButton({column}: {column:  Column<Transaction, u
         return curFilter[category]
     }
     
-    console.log(curFilter)
+    // console.log(curFilter)
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
