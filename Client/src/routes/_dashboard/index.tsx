@@ -2,10 +2,10 @@
 import axios, { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
 import {
-  transactionsCols,
+  transactionColumns,
   Transaction,
-} from '@/components/features/transactions/TransactionsCols.tsx'
-import { TransactionsTable } from '@/components/features/transactions/TransactionsTable.tsx'
+} from '@/components/features/transactions/TransactionColumns.tsx'
+import { TransactionTable } from '@/components/features/transactions/TransactionTable.tsx'
 
 export const Route = createFileRoute('/_dashboard/')({
   component: HomePage,
@@ -40,8 +40,8 @@ export default function HomePage() {
   console.log(transactionsData)
   return (
       <div className="w-9/12 mx-auto py-6">
-        <TransactionsTable
-            columns={transactionsCols}
+        <TransactionTable
+            columns={transactionColumns}
             data={transactionsData.transactions}
         />
       </div>

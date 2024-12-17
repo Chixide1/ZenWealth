@@ -25,14 +25,14 @@ import { useState } from "react";
 import { Input } from "@/components/core/input";
 import { Search } from "lucide-react";
 import {Label} from "@/components/core/label.tsx";
-import VisibilityButton from "@/components/features/transactions/VisibilityButton.tsx";
+import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[],
 }
 
-export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
+export function TransactionTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -96,6 +96,8 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
             columnVisibility,
         },
     })
+    
+    // table.getColumn("amount").getFacetedMinMaxValues
     // console.log(table.getState().columnFilters)
     
     return (
@@ -121,7 +123,7 @@ export function TransactionsTable<TData, TValue>({columns, data}: DataTableProps
                                         className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
                                     />
                                 </div>
-                                <VisibilityButton columns={table.getAllColumns() as any}/>
+                                <ColumnVisibilityButton columns={table.getAllColumns() as any}/>
                             </div>
                         </TableCell>
                     </TableRow>

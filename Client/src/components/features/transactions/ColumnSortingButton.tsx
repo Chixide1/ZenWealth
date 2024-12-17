@@ -1,9 +1,9 @@
 ﻿import {Button} from "@/components/core/button.tsx";
 import {Column} from "@tanstack/react-table";
-import {Transaction} from "@/components/features/transactions/TransactionsCols.tsx";
+import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
 import { ArrowUpDown } from "lucide-react";
 
-export default function ColHeader({column}: {column:  Column<Transaction, unknown>}) {
+export default function ColumnSortingButton({column}: {column:  Column<Transaction, unknown>}) {
     return(
         <Button
             className="capitalize text-left py-2 px-3 flex items-center ml-auto"

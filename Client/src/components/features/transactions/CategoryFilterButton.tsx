@@ -4,13 +4,13 @@
     DropdownMenuTrigger
 } from "@/components/core/dropdown-menu.tsx";
 import {Button} from "@/components/core/button.tsx";
-import {Transaction} from "@/components/features/transactions/TransactionsCols.tsx";
+import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
 import { Column } from "@tanstack/react-table";
 import { Filter } from "lucide-react";
 import { Toggle } from "@/components/core/toggle";
 import { useState } from "react";
 
-export default function CategoryButton({column}: {column:  Column<Transaction, unknown>}){
+export default function CategoryFilterButton({column}: {column:  Column<Transaction, unknown>}){
     const curFilter = column.getFilterValue() as Record<string, boolean>;
     const [open, setOpen] = useState(false)
     

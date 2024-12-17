@@ -2,8 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { ReceiptText } from "lucide-react";
-import ColHeader from "@/components/features/transactions/ColHeader.tsx";
-import CategoryButton from "@/components/features/transactions/CategoryButton.tsx";
+import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
+import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
+import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
+import { useEffect, useState } from "react";
 
 export interface Transaction {
     transaction_id: string;
@@ -22,7 +24,7 @@ export interface Transaction {
     personal_finance_category_icon_url: string;
 }
 
-export const transactionsCols: ColumnDef<Transaction>[] = [
+export const transactionColumns: ColumnDef<Transaction>[] = [
     {
         accessorKey: "name",
         enableHiding: false,
@@ -30,7 +32,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
             return (
                 <div className="flex items-center">
                     <span className="capitalize">{column.id}</span>
-                    <ColHeader column={column}/>
+                    <ColumnSortingButton column={column}/>
                 </div>
             )
         },
@@ -62,8 +64,8 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
         header: ({column}) => {
             return (
                 <div className="flex items-center">
-                    <CategoryButton column={column} />
-                    <ColHeader column={column}/>
+                    <CategoryFilterButton column={column} />
+                    <ColumnSortingButton column={column}/>
                 </div>
             )
         },
@@ -88,11 +90,21 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "amount",
-        header: ({column}) => {
+        header: ({column, table}) => {
+            const [minMax, setMinMax] = useState<[number, number]>([0,0])
+            const t = table.getIsAllColumnsVisible()
+            
+            useEffect(() => {
+                setMinMax(column.getFacetedMinMaxValues() ?? [0,1000])
+            }, [t]);
+            
+            // const minMax = column.getFacetedMinMaxValues()
+            console.log(minMax)
+            
             return (
                 <div className="flex items-center">
-                    <span className="capitalize">{column.id}</span>
-                    <ColHeader column={column}/>
+                    <AmountFilterButton column={column} minMax={minMax}/>
+                    <ColumnSortingButton column={column}/>
                 </div>
             )
         },
@@ -123,7 +135,7 @@ export const transactionsCols: ColumnDef<Transaction>[] = [
             return (
                 <div className="flex items-center">
                     <span className="capitalize">{column.id}</span>
-                    <ColHeader column={column}/>
+                    <ColumnSortingButton column={column}/>
                 </div>
             )
         },

@@ -2,7 +2,7 @@
 import {ChevronDown} from 'lucide-react';
 import {Button} from "../../core/button";
 import {Column} from "@tanstack/react-table";
-import {Transaction} from "@/components/features/transactions/TransactionsCols.tsx";
+import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -11,7 +11,7 @@ import {
 } from "@/components/core/dropdown-menu"
 
 
-export default function VisibilityButton({columns}: { columns: Column<Transaction>[] }) {
+export default function ColumnVisibilityButton({columns}: { columns: Column<Transaction>[] }) {
     const [open, setOpen] = useState(false);
 
     return (
