@@ -96,7 +96,7 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
             
             useEffect(() => {
                 setMinMax(column.getFacetedMinMaxValues() ?? [0,1000])
-            }, [t]);
+            }, [table.getState()]);
             
             // const minMax = column.getFacetedMinMaxValues()
             console.log(minMax)
