@@ -1,33 +1,25 @@
-﻿import {
+﻿import { useState } from "react";
+import { Filter } from 'lucide-react';
+import { Column } from "@tanstack/react-table";
+
+import { Button } from "@/components/core/button";
+import { Input } from "@/components/core/input";
+import { Label } from "@/components/core/label";
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger
-} from "@/components/core/dropdown-menu.tsx";
-import {Button} from "@/components/core/button.tsx";
-import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
-import { Column } from "@tanstack/react-table";
-import { Filter } from 'lucide-react';
-import { useEffect, useState } from "react";
-import {DualRangeSlider} from "@/components/core/dual-range-slider.tsx";
+} from "@/components/core/dropdown-menu";
+import { DualRangeSlider } from "@/components/core/dual-range-slider";
 
-export default function AmountFilterButton({column, minMax}: {column: Column<Transaction, unknown>, minMax: [number, number]}) {
-    const [open, setOpen] = useState(false)
-    const [values, setValues] = useState<[number, number]>();
+import { Transaction } from "@/components/features/transactions/TransactionColumns";
 
-    // useEffect(() => {
-    //     const vals = column.getFacetedMinMaxValues();
-    //     if (vals) {
-    //         setMinMaxVals(vals as [number, number]);
-    //         setValues(vals as [number, number]);
-    //     }
-    //     console.log(vals)
-    // }, []);
-    //
-    // // function isFiltered(category: string){
-    // //     return curFilter[category]
-    // // }
-    //
-    // console.log(minMaxVals);
+export default function AmountFilterButton({ column }: { column: Column<Transaction, unknown> }) {
+    const [open, setOpen] = useState(false);
+    const [values, setValues] = useState<number[]>();
+
+    const minValue = column.getFacetedMinMaxValues()?.[0] ?? 0;
+    const maxValue = column.getFacetedMinMaxValues()?.[1] ?? 100;
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -37,20 +29,62 @@ export default function AmountFilterButton({column, minMax}: {column: Column<Tra
                     {column.id}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="border-0 bg-neutral-700/[0.7] flex justify-center flex-wrap w-[21rem] gap-1 py-3 backdrop-blur-sm" align="center">
-                <div className="w-full pt-10 px-10">
+            <DropdownMenuContent className="w-80 p-4 bg-neutral-700/[0.7] backdrop-blur-sm border-0 text-primary">
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h4 className="font-medium leading-none">Filter by Amount</h4>
+                        <Button 
+                            className="text-secondary"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setValues([minValue, maxValue])}
+                        >
+                            Reset
+                        </Button>
+                    </div>
                     <DualRangeSlider
-                        label={(value) => `$${value}`}
                         value={values}
-                        defaultValue={minMax}
+                        defaultValue={[minValue, maxValue]}
                         onValueChange={setValues}
-                        min={minMax[0]}
-                        max={minMax[1]}
+                        min={minValue}
+                        max={maxValue}
                         step={10}
+                        currencySymbol="£"
                     />
+                    <form className="space-y-4">
+                        <div className="flex gap-4">
+                            <div className="grow">
+                                <Label htmlFor="min-amount">Min</Label>
+                                <Input
+                                    id="min-amount"
+                                    type="number"
+                                    min={minValue}
+                                    max={maxValue}
+                                    placeholder={`£${minValue}`}
+                                    value={values?.[0]}
+                                    onChange={(e) => setValues([Number(e.target.value), values?.[1] ?? maxValue])}
+                                />
+                            </div>
+                            <div className="grow">
+                                <Label htmlFor="max-amount">Max</Label>
+                                <Input
+                                    id="max-amount"
+                                    type="number"
+                                    min={minValue}
+                                    max={maxValue}
+                                    placeholder={`£${maxValue}`}
+                                    value={values?.[1]}
+                                    onChange={(e) => setValues([values?.[0] ?? minValue, Number(e.target.value)])}
+                                />
+                            </div>
+                        </div>
+                        <Button type="submit" className="w-full" variant="accent">
+                            Apply Filter
+                        </Button>
+                    </form>
                 </div>
             </DropdownMenuContent>
         </DropdownMenu>
-    )
+    );
 }
 

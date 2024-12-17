@@ -8,13 +8,22 @@ import { cn } from '@/lib/utils';
 interface DualRangeSliderProps extends React.ComponentProps<typeof SliderPrimitive.Root> {
     labelPosition?: 'top' | 'bottom';
     label?: (value: number | undefined) => React.ReactNode;
+    currencySymbol?: string;
 }
 
 const DualRangeSlider = React.forwardRef<
     React.ElementRef<typeof SliderPrimitive.Root>,
     DualRangeSliderProps
->(({ className, label, labelPosition = 'top', ...props }, ref) => {
+>(({ className, label, labelPosition = 'top', currencySymbol, ...props }, ref) => {
     const initialValue = Array.isArray(props.value) ? props.value : [props.min, props.max];
+
+    const formatValueWithCurrency = (value: number | undefined) => {
+        if (value === undefined) return '';
+        const absValue = Math.abs(value);
+        return value < 0
+            ? `-${currencySymbol}${absValue}`
+            : `${currencySymbol}${value}`;
+    };
 
     return (
         <SliderPrimitive.Root
@@ -22,7 +31,7 @@ const DualRangeSlider = React.forwardRef<
             className={cn('relative flex w-full touch-none select-none items-center', className)}
             {...props}
         >
-            <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
+            <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-neutral-400/80">
                 <SliderPrimitive.Range className="absolute h-full bg-primary" />
             </SliderPrimitive.Track>
             {initialValue.map((value, index) => (
@@ -31,12 +40,12 @@ const DualRangeSlider = React.forwardRef<
                         {label && (
                             <span
                                 className={cn(
-                                    'absolute text-primary flex w-full justify-center',
+                                    'absolute text-primary flex w-full justify-center whitespace-nowrap',
                                     labelPosition === 'top' && '-top-7',
                                     labelPosition === 'bottom' && 'top-4',
                                 )}
                             >
-                                {label(value)}
+                                {formatValueWithCurrency(value)}
                             </span>
                         )}
                     </SliderPrimitive.Thumb>
@@ -48,3 +57,4 @@ const DualRangeSlider = React.forwardRef<
 DualRangeSlider.displayName = 'DualRangeSlider';
 
 export { DualRangeSlider };
+

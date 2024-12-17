@@ -5,7 +5,6 @@ import { ReceiptText } from "lucide-react";
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
-import { useEffect, useState } from "react";
 
 export interface Transaction {
     transaction_id: string;
@@ -90,21 +89,11 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "amount",
-        header: ({column, table}) => {
-            const [minMax, setMinMax] = useState<[number, number]>([0,0])
-            const t = table.getIsAllColumnsVisible()
-            
-            useEffect(() => {
-                setMinMax(column.getFacetedMinMaxValues() ?? [0,1000])
-            }, [table.getState()]);
-            
-            // const minMax = column.getFacetedMinMaxValues()
-            console.log(minMax)
-            
+        header: ({column}) => {
             return (
                 <div className="flex items-center">
-                    <AmountFilterButton column={column} minMax={minMax}/>
-                    <ColumnSortingButton column={column}/>
+                    <AmountFilterButton column={column} />
+                    <ColumnSortingButton column={column} />
                 </div>
             )
         },
