@@ -100,10 +100,14 @@ export const transactionColumns = [
 
             return <div className="">{formatted}</div>
         },
-        filterFn: (row, columnId, filterValue: {min: number, max: number}) => {
-            let colVal = row.getValue<number>(columnId)
-            return colVal > filterValue.min && colVal < filterValue.max
-        }
+        // filterFn: (row, columnId, filterValue: {min: number, max: number}) => {
+        //     let colVal = row.getValue<number>(columnId)
+        //     console.log(colVal)
+        //     console.log(filterValue)
+        //     console.log(colVal > filterValue.min && colVal < filterValue.max)
+        //     return colVal > filterValue.min && colVal < filterValue.max
+        // }
+        filterFn: "inNumberRange"
     }),
     columnHelper.accessor("date", {
         sortingFn: 'datetime',

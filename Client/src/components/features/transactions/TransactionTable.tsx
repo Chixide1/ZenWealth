@@ -60,10 +60,10 @@ export function TransactionTable({
         },
         {
             id: "amount",
-            value: {
-                min: Number.NEGATIVE_INFINITY,
-                max: Number.POSITIVE_INFINITY,
-            }
+            value: [
+                {min: Number.NEGATIVE_INFINITY},
+                {max: Number.POSITIVE_INFINITY},
+            ]
         },
     ])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({

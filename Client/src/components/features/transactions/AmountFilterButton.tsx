@@ -16,7 +16,7 @@ import { Transaction } from "@/components/features/transactions/TransactionColum
 
 export default function AmountFilterButton({ column }: { column: Column<Transaction, unknown> }) {
     const [open, setOpen] = useState(false);
-    const [values, setValues] = useState<number[]>();
+    const [values, setValues] = useState<number[]>([Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY]);
 
     const minValue = column.getFacetedMinMaxValues()?.[0] ?? 0;
     const maxValue = column.getFacetedMinMaxValues()?.[1] ?? 100;
@@ -51,7 +51,13 @@ export default function AmountFilterButton({ column }: { column: Column<Transact
                         step={10}
                         currencySymbol="£"
                     />
-                    <form className="space-y-4">
+                    <form
+                        className="space-y-4"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            column.setFilterValue([values]);
+                        }}
+                    >
                         <div className="flex gap-4">
                             <div className="grow">
                                 <Label htmlFor="min-amount">Min</Label>
