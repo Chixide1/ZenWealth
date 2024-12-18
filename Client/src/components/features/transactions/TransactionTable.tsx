@@ -22,17 +22,19 @@ import {
 } from "@/components/core/table"
 import {Button} from "@/components/core/button.tsx";
 import { useState } from "react";
-import { Input } from "@/components/core/input";
-import { Search } from "lucide-react";
-import {Label} from "@/components/core/label.tsx";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
+import TransactionSearchButton from "@/components/features/transactions/TransactionSearchButton.tsx";
+import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[],
+interface TransactionTableProps {
+    columns: ColumnDef<Transaction>[]
+    data: Transaction[],
 }
 
-export function TransactionTable<TData, TValue>({columns, data}: DataTableProps<TData, TValue>) {
+export function TransactionTable({
+                                     columns,
+                                     data
+                                 }: TransactionTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -57,11 +59,11 @@ export function TransactionTable<TData, TValue>({columns, data}: DataTableProps<
             }
         },
         {
-           id: "amount",
-           value: {
-               min: Number.NEGATIVE_INFINITY,
-               max: Number.POSITIVE_INFINITY,
-           } 
+            id: "amount",
+            value: {
+                min: Number.NEGATIVE_INFINITY,
+                max: Number.POSITIVE_INFINITY,
+            }
         },
     ])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -74,8 +76,8 @@ export function TransactionTable<TData, TValue>({columns, data}: DataTableProps<
         pageIndex: 0, //initial page index
         pageSize: 10, //default page size
     });
-    
-    const table = useReactTable({
+
+    const table = useReactTable<Transaction>({
         data,
         columns,
         getFilteredRowModel: getFilteredRowModel(),
@@ -96,10 +98,7 @@ export function TransactionTable<TData, TValue>({columns, data}: DataTableProps<
             columnVisibility,
         },
     })
-    
-    // table.getColumn("amount").getFacetedMinMaxValues
-    // console.log(table.getState().columnFilters)
-    
+
     return (
         <div className="border bg-primary/[0.09] backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
             <Table className="rounded-2xl text-primary text-sm w-full">
@@ -108,22 +107,8 @@ export function TransactionTable<TData, TValue>({columns, data}: DataTableProps<
                         <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
                                 <span className="text-2xl font-semibold mr-auto pr-10">Transactions</span>
-                                <div className="relative w-full max-w-sm">
-                                    <Label htmlFor="searchTransactions"
-                                           className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                                        <Search className="h-4 w-4 text-muted-foreground"/>
-                                    </Label>
-                                    <Input
-                                        id="searchTransactions"
-                                        placeholder="Search"
-                                        value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-                                        onChange={(event) =>
-                                            table.getColumn("name")?.setFilterValue(event.target.value)
-                                        }
-                                        className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
-                                    />
-                                </div>
-                                <ColumnVisibilityButton columns={table.getAllColumns() as any}/>
+                                <TransactionSearchButton column={table.getColumn("name")} />
+                                <ColumnVisibilityButton columns={table.getAllColumns()}/>
                             </div>
                         </TableCell>
                     </TableRow>
@@ -203,3 +188,4 @@ export function TransactionTable<TData, TValue>({columns, data}: DataTableProps<
         </div>
     )
 }
+

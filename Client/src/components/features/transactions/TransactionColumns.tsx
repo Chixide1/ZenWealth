@@ -1,7 +1,7 @@
 ﻿"use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { ReceiptText } from "lucide-react";
+import { createColumnHelper } from "@tanstack/react-table"
+import { ReceiptText } from 'lucide-react';
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
@@ -23,27 +23,24 @@ export interface Transaction {
     personal_finance_category_icon_url: string;
 }
 
-export const transactionColumns: ColumnDef<Transaction>[] = [
-    {
-        accessorKey: "name",
-        enableHiding: false,
-        header: ({column}) => {
-            return (
-                <div className="flex items-center">
-                    <span className="capitalize">{column.id}</span>
-                    <ColumnSortingButton column={column}/>
-                </div>
-            )
-        },
-        size: 200,
+const columnHelper = createColumnHelper<Transaction>()
+
+export const transactionColumns = [
+    columnHelper.accessor("name", {
+        header: ({column}) => (
+            <div className="flex items-center">
+                <span className="capitalize">{column.id}</span>
+                <ColumnSortingButton column={column}/>
+            </div>
+        ),
         cell: ({row}) => {
             const name = row.original.merchant_name || row.original.name
             const imageSize = 30
 
             return (
                 <div className="flex gap-2 items-center justify-start">
-                    {row.original.logo_url ? 
-                        (<img 
+                    {row.original.logo_url ?
+                        (<img
                             src={row.original.logo_url}
                             alt="an image of the transaction logo"
                             className="rounded min-w-6 h-auto ms-1"
@@ -54,26 +51,24 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
                     <span>{name}</span>
                 </div>
             )
-        }
-    },
-    {
-        id: 'category',
-        size: 200,
-        accessorFn: row => `${row.personal_finance_category.primary.replace(/_/g, " ")}`,
-        header: ({column}) => {
-            return (
-                <div className="flex items-center">
-                    <CategoryFilterButton column={column} />
-                    <ColumnSortingButton column={column}/>
-                </div>
-            )
         },
+        enableHiding: false,
+        size: 200,
+    }),
+    columnHelper.accessor(row => `${row.personal_finance_category.primary.replace(/_/g, " ")}`, {
+        id: 'category',
+        header: ({column}) => (
+            <div className="flex items-center">
+                <CategoryFilterButton column={column} />
+                <ColumnSortingButton column={column}/>
+            </div>
+        ),
         cell: ({row}) => {
             const category: string = row.getValue("category")
 
             return (
                 <div className="flex gap-2 items-center">
-                <img
+                    <img
                         src={row.original.personal_finance_category_icon_url}
                         alt="an image of the transaction logo"
                         className="rounded min-w-6 h-auto ms-1 w-7"
@@ -82,21 +77,19 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
                 </div>
             )
         },
-        filterFn: (row, columnId: string, filterValue: Record<string, boolean>) => {
+        filterFn: (row, columnId, filterValue: Record<string, boolean>) => {
             let colVal = row.getValue<string>(columnId)
             return filterValue[colVal.toLowerCase()]
-        }
-    },
-    {
-        accessorKey: "amount",
-        header: ({column}) => {
-            return (
-                <div className="flex items-center">
-                    <AmountFilterButton column={column} />
-                    <ColumnSortingButton column={column} />
-                </div>
-            )
         },
+        size: 200,
+    }),
+    columnHelper.accessor("amount", {
+        header: ({column}) => (
+            <div className="flex items-center">
+                <AmountFilterButton column={column} />
+                <ColumnSortingButton column={column} />
+            </div>
+        ),
         cell: ({row}) => {
             const amount = row.getValue<number>("amount")
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
@@ -105,29 +98,21 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
                 currencyDisplay: "symbol",
             }).format(amount)
 
-            return (
-                <div className="">
-                    {formatted}
-                </div>
-            )
+            return <div className="">{formatted}</div>
         },
-        filterFn: (row, columnId: string, filterValue: {min: number, max: number}) => {
+        filterFn: (row, columnId, filterValue: {min: number, max: number}) => {
             let colVal = row.getValue<number>(columnId)
-            
             return colVal > filterValue.min && colVal < filterValue.max
         }
-    },
-    {
-        accessorKey: "date",
+    }),
+    columnHelper.accessor("date", {
         sortingFn: 'datetime',
-        header: ({column}) => {
-            return (
-                <div className="flex items-center">
-                    <span className="capitalize">{column.id}</span>
-                    <ColumnSortingButton column={column}/>
-                </div>
-            )
-        },
+        header: ({column}) => (
+            <div className="flex items-center">
+                <span className="capitalize">{column.id}</span>
+                <ColumnSortingButton column={column}/>
+            </div>
+        ),
         cell: ({row}) => {
             const dateTime = new Date(row.original.date_time || row.original.date)
             const formatted = new Intl.DateTimeFormat('en-GB', {
@@ -137,5 +122,6 @@ export const transactionColumns: ColumnDef<Transaction>[] = [
 
             return <div className="">{formatted}</div>
         },
-    },
+    }),
 ]
+
