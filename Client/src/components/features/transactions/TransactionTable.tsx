@@ -60,10 +60,10 @@ export function TransactionTable({
         },
         {
             id: "amount",
-            value: [
-                {min: Number.NEGATIVE_INFINITY},
-                {max: Number.POSITIVE_INFINITY},
-            ]
+            value: {
+                min: Number.MIN_SAFE_INTEGER,
+                max: Number.MAX_SAFE_INTEGER,
+            }
         },
     ])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -99,6 +99,8 @@ export function TransactionTable({
         },
     })
 
+    console.log(table.getState().columnFilters)
+    
     return (
         <div className="border bg-primary/[0.09] backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
             <Table className="rounded-2xl text-primary text-sm w-full">
