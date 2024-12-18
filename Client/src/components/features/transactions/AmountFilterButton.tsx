@@ -16,9 +16,9 @@ import { Transaction } from "@/components/features/transactions/TransactionColum
 
 export default function AmountFilterButton({ column }: { column: Column<Transaction, unknown> }) {
     const [open, setOpen] = useState(false);
+    const [values, setValues] = useState<number[]>([0,0]);
     const minValue = column.getFacetedMinMaxValues()?.[0] ?? Number.MIN_SAFE_INTEGER;
     const maxValue = column.getFacetedMinMaxValues()?.[1] ?? Number.MAX_SAFE_INTEGER;
-    const [values, setValues] = useState<number[]>([minValue, maxValue]);
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -63,7 +63,7 @@ export default function AmountFilterButton({ column }: { column: Column<Transact
                     >
                         <div className="flex gap-4">
                             <div className="grow">
-                                <Label htmlFor="min-amount">Min</Label>
+                                <Label htmlFor="min-amount">Min £</Label>
                                 <Input
                                     id="min-amount"
                                     type="number"
@@ -75,7 +75,7 @@ export default function AmountFilterButton({ column }: { column: Column<Transact
                                 />
                             </div>
                             <div className="grow">
-                                <Label htmlFor="max-amount">Max</Label>
+                                <Label htmlFor="max-amount">Max £</Label>
                                 <Input
                                     id="max-amount"
                                     type="number"
