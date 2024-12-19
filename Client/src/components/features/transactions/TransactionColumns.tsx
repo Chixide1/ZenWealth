@@ -5,6 +5,7 @@ import { ReceiptText } from 'lucide-react';
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
+import DateFilterButton from "@/components/features/transactions/DateFilterButton.tsx";
 
 export interface Transaction {
     transaction_id: string;
@@ -112,7 +113,7 @@ export const transactionColumns = [
         sortingFn: 'datetime',
         header: ({column}) => (
             <div className="flex items-center">
-                <span className="capitalize">{column.id}</span>
+                <DateFilterButton column={column} />
                 <ColumnSortingButton column={column}/>
             </div>
         ),
