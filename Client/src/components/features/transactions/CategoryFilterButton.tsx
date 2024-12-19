@@ -1,19 +1,8 @@
-﻿import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger
-} from "@/components/core/dropdown-menu.tsx";
-import {Button} from "@/components/core/button.tsx";
+﻿import {Button} from "@/components/core/button.tsx";
 import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
 import { Column } from "@tanstack/react-table";
-import { Filter } from "lucide-react";
 import { Toggle } from "@/components/core/toggle";
-import { useState } from "react";
 import FilterButton from "@/components/shared/FilterButton.tsx";
-
-// type CategoryFields = {
-//     [field: string]: boolean;
-// }
 
 export default function CategoryFilterButton({column}: {column:  Column<Transaction, unknown>}){
     const curFilter = column.getFilterValue() as Record<string, boolean>;

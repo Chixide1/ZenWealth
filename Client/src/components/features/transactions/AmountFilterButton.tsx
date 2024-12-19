@@ -1,5 +1,4 @@
 ﻿import { useState } from "react";
-import { Filter } from 'lucide-react';
 import { Column } from "@tanstack/react-table";
 
 import { Button } from "@/components/core/button";
