@@ -6,6 +6,7 @@ import ColumnSortingButton from "@/components/features/transactions/ColumnSortin
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
 import DateFilterButton from "@/components/features/transactions/DateFilterButton.tsx";
+import {DateTimePicker} from "@/components/core/date-time-picker.tsx";
 
 export interface Transaction {
     transaction_id: string;
@@ -103,9 +104,6 @@ export const transactionColumns = [
         },
         filterFn: (row, columnId, filterValue: {min: number, max: number}) => {
             let colVal = row.getValue<number>(columnId)
-            console.log(colVal)
-            console.log(filterValue)
-            console.log(colVal > filterValue.min && colVal < filterValue.max)
             return colVal >= filterValue.min && colVal <= filterValue.max
         },
     }),
@@ -113,7 +111,7 @@ export const transactionColumns = [
         sortingFn: 'datetime',
         header: ({column}) => (
             <div className="flex items-center">
-                <DateFilterButton column={column} />
+                <DateFilterButton column={column}/>
                 <ColumnSortingButton column={column}/>
             </div>
         ),

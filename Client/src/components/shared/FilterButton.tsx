@@ -18,14 +18,17 @@ interface FilterButtonProps {
 
     /** In which position should the DropdownMenu be rendered */
     dropdownAlign?: "center" | "start" | "end";
+
+    /** The modality of the dropdown menu. When set to true, interaction with outside elements will be disabled and only menu content will be visible to screen readers. */
+    modal?: boolean;
 }
 
 /** This returns a filter button with the column name and a dropdown which can be provided as a child */
-export default function FilterButton({children, column, className, dropdownAlign}: FilterButtonProps) {
+export default function FilterButton({children, column, className, dropdownAlign, modal = false}: FilterButtonProps) {
     const [open, setOpen] = useState(false);
     
     return (
-        <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenu open={open} onOpenChange={setOpen} modal={modal}>
             <DropdownMenuTrigger asChild>
                 <Button className={`capitalize px-0.5 focus-visible:ring-0`} variant="ghost">
                     <Filter className={`mt-0.5 transition-colors duration-200 ${open && "text-secondary"}`}/>

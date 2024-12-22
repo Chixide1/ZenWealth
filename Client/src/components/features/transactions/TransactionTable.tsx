@@ -76,6 +76,7 @@ export function TransactionTable({
         pageIndex: 0, //initial page index
         pageSize: 10, //default page size
     });
+    const [columnOrder, setColumnOrder] = useState<string[]>(['name', 'amount', 'date', 'category']);
 
     const table = useReactTable<Transaction>({
         data,
@@ -96,10 +97,11 @@ export function TransactionTable({
             sorting,
             columnFilters,
             columnVisibility,
+            columnOrder,
         },
     })
 
-    console.log(table.getState().columnFilters)
+    // console.log(table.getState().columnFilters)
     
     return (
         <div className="border bg-primary/[0.09] backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
