@@ -17,7 +17,7 @@ function LoginPage() {
             </h1>
         </div>
         <div
-            className="text-primary sm:bg-primary/[0.06] rounded-2xl w-full sm:w-[31rem] mb-20 sm:mb-0 sm:py-8 flex flex-col items-center">
+            className="text-primary sm:bg-primary/10 rounded-2xl w-full sm:w-[31rem] mb-20 sm:mb-0 sm:py-8 flex flex-col items-center">
             <h2 className="text-5xl sm:text-3xl font-semibold mb-2">Login</h2>
         <p className="text-neutral-400 text-sm mb-11 sm:mb-6">
           Welcome back, please login
