@@ -6,7 +6,6 @@ import ColumnSortingButton from "@/components/features/transactions/ColumnSortin
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
 import DateFilterButton from "@/components/features/transactions/DateFilterButton.tsx";
-import {DateTimePicker} from "@/components/core/date-time-picker.tsx";
 
 export interface Transaction {
     transaction_id: string;
@@ -80,6 +79,10 @@ export const transactionColumns = [
             )
         },
         filterFn: (row, columnId, filterValue: Record<string, boolean>) => {
+            if(!filterValue){
+                return true
+            }
+            
             let colVal = row.getValue<string>(columnId)
             return filterValue[colVal.toLowerCase()]
         },
@@ -103,6 +106,10 @@ export const transactionColumns = [
             return <div className="">{formatted}</div>
         },
         filterFn: (row, columnId, filterValue: {min: number, max: number}) => {
+            if(!filterValue){
+                return true
+            }
+            
             let colVal = row.getValue<number>(columnId)
             return colVal >= filterValue.min && colVal <= filterValue.max
         },
@@ -125,7 +132,7 @@ export const transactionColumns = [
             return <div className="">{formatted}</div>
         },
         filterFn: (row, columnId, filterValue: {from: Date, to: Date}) => {
-            if(filterValue == undefined){
+            if(!filterValue){
                 return true
             }
             

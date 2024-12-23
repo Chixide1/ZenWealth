@@ -1,5 +1,6 @@
 ﻿import { createFileRoute } from '@tanstack/react-router'
 import { LoginForm } from '@/components/features/login/LoginForm.tsx'
+import logo from "@/assets/ZenWealth.png"
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -8,12 +9,16 @@ export const Route = createFileRoute('/login')({
 function LoginPage() {
   return (
     <main className="h-screen w-full flex flex-col items-center justify-center">
-      <h1 className="text-primary text-3xl font-semibold my-auto sm:mt-0 sm:mb-8 montserrat italic">
-        Zen
-        <span className="text-secondary font">W</span>ealth
-      </h1>
-      <div className="text-primary sm:bg-primary/[0.06] rounded-2xl w-full sm:w-[31rem] mb-20 sm:mb-0 sm:py-8 flex flex-col items-center">
-        <h2 className="text-5xl sm:text-3xl font-semibold mb-2">Login</h2>
+        <div className="flex items-center my-auto sm:mt-0 sm:mb-8">
+            <img src={logo} alt="A tree on a coin signifying wealth" className="h-auto w-8 mr-1"/>
+            <h1 className="text-primary text-3xl font-semibold montserrat italic">
+                Zen
+                <span className="text-secondary font">W</span>ealth
+            </h1>
+        </div>
+        <div
+            className="text-primary sm:bg-primary/[0.06] rounded-2xl w-full sm:w-[31rem] mb-20 sm:mb-0 sm:py-8 flex flex-col items-center">
+            <h2 className="text-5xl sm:text-3xl font-semibold mb-2">Login</h2>
         <p className="text-neutral-400 text-sm mb-11 sm:mb-6">
           Welcome back, please login
         </p>
