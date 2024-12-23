@@ -4,6 +4,8 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
+    
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -13,8 +15,10 @@
 
     /*Pearl White*/
     --primary: 230 86% 97%;
+    
     /*Electric Lime*/
     --secondary: 68 99% 66%;
+    
     /*Lavender Pink*/
     --accent: 291 95% 91%;
     
@@ -38,9 +42,11 @@
 }
 
 @layer base {
+  
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;

@@ -82,7 +82,7 @@ export default function DateTimeRangeFilterButton({
                     console.log(e)
                 }}
             >
-                <h4 className="font-medium leading-none space-y-2">Filter by Date and Time</h4>
+                <h4 className="font-medium leading-none space-y-2">Filter by Date & Time</h4>
                 <div className="grid gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="dateTimeCol-from">From</Label>
