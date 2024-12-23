@@ -31,7 +31,7 @@ export default function ColumnVisibilityButton({columns}: { columns: Column<Tran
                     .filter((column) => column.getCanHide())
                     .map(column => (
                             <DropdownMenuCheckboxItem
-                                key={column.id} className="text-sm capitalize bg-secondary focus:bg-[#c7da4fcc] transition-colors duration-200"
+                                key={column.id} className="text-sm capitalize bg-secondary focus:bg-black/10 transition-colors duration-200"
                                 checked={column.getIsVisible()}
                                 onCheckedChange={(value) =>
                                     column.toggleVisibility(!!value)

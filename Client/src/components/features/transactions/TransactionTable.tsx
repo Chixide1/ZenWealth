@@ -25,16 +25,20 @@ import { useState } from "react";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
 import TransactionSearchButton from "@/components/features/transactions/TransactionSearchButton.tsx";
 import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from "@/components/core/dropdown-menu.tsx";
+import { ChevronDown } from 'lucide-react';
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction>[]
     data: Transaction[],
 }
 
-export function TransactionTable({
-                                     columns,
-                                     data
-                                 }: TransactionTableProps) {
+export function TransactionTable({columns, data}: TransactionTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -76,7 +80,7 @@ export function TransactionTable({
         pageIndex: 0, //initial page index
         pageSize: 10, //default page size
     });
-    const [columnOrder, setColumnOrder] = useState<string[]>(['name', 'amount', 'date', 'category']);
+    const [columnOrder] = useState<string[]>(['name', 'amount', 'date', 'category']);
 
     const table = useReactTable<Transaction>({
         data,
@@ -101,8 +105,8 @@ export function TransactionTable({
         },
     })
 
-    // console.log(table.getState().columnFilters)
-    
+    const pageSizeOptions = [10, 20, 30, 40, 50]
+
     return (
         <div className="border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
             <Table className="rounded-2xl text-primary text-sm w-full">
@@ -164,7 +168,37 @@ export function TransactionTable({
                     <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between">
-                                <span className="pl-2 font-semibold">Total Transactions: <span className="text-secondary font-medium">{table.getFilteredRowModel().rows.length}</span></span>
+                                <span className="pl-2 font-semibold">
+                                    Total Transactions:&nbsp;
+                                    <span className="text-secondary font-medium">
+                                        {table.getFilteredRowModel().rows.length}
+                                    </span>
+                                </span>
+                                <div>
+                                    <span className="mr-2">Per Page:</span>
+                                    <DropdownMenu modal={false}>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="accent" className="gap-0.5 p-2" size="sm">
+                                                {table.getState().pagination.pageSize}
+                                                <ChevronDown className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-fit min-w-0 bg-accent">
+                                            {pageSizeOptions.map((size) => (
+                                                <DropdownMenuItem
+                                                    key={size}
+                                                    onClick={() => table.setPageSize(size)}
+                                                    className={
+                                                        "justify-center px-2.5 text-sm focus:bg-black/10" + 
+                                                        (pagination.pageSize === size ? " bg-black/10" : "")
+                                                    }
+                                                >
+                                                    {size}
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
                                 <div className="">
                                     <Button
                                         className="me-2"
