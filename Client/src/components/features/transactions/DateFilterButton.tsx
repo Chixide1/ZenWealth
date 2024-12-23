@@ -16,18 +16,6 @@ export default function DateTimeRangeFilterButton({column}: { column: Column<Tra
     const [toDate, setToDate] = useState("")
     const [toTime, setToTime] = useState("00:00")
 
-    // function handleSubmit(e: React.FormEvent) {
-    //     e.preventDefault()
-    //     const from = fromDate + "T" + fromTime
-    //     const to = toDate + "T" + toTime
-    //
-    //     console.log([from,to])
-    //     if (isValid(from) && isValid(to)) {
-    //         column.setFilterValue({from: from, to: to})
-    //         console.log(column.getFilterValue())
-    //     }
-    // }
-
     const handleClear = () => {
         setFromDate("")
         setFromTime("00:00")
@@ -47,7 +35,6 @@ export default function DateTimeRangeFilterButton({column}: { column: Column<Tra
                     
                     if (isValid(from) && isValid(to)) {
                         column.setFilterValue({from: from, to: to})
-                        console.log(column.getFilterValue())
                     }
                 }}
             >
