@@ -1,130 +1,105 @@
 ﻿"use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Column } from "@tanstack/react-table"
-import { format, parse, isValid } from "date-fns"
+import { isValid } from "date-fns"
 
 import { Button } from "@/components/core/button"
 import { Input } from "@/components/core/input"
 import { Label } from "@/components/core/label"
 import { Transaction } from "@/components/features/transactions/TransactionColumns"
-import FilterButton from "@/components/shared/FilterButton.tsx";
+import FilterButton from "@/components/shared/FilterButton.tsx"
 
-interface DateTimeRange {
-    from: { date: string; time: string }
-    to: { date: string; time: string }
-}
+export default function DateTimeRangeFilterButton({column}: { column: Column<Transaction, unknown> }) {
+    const [fromDate, setFromDate] = useState("")
+    const [fromTime, setFromTime] = useState("00:00")
+    const [toDate, setToDate] = useState("")
+    const [toTime, setToTime] = useState("00:00")
 
-export default function DateTimeRangeFilterButton({
-                                                      column,
-                                                  }: {
-    column: Column<Transaction, unknown>
-}) {
-    const [range, setRange] = useState<DateTimeRange>({
-        from: { date: "", time: "" },
-        to: { date: "", time: "" },
-    })
-    const [isOpen, setIsOpen] = useState(false)
-
-    useEffect(() => {
-        const fromDateTime = `${range.from.date}T${range.from.time}`
-        const toDateTime = `${range.to.date}T${range.to.time}`
-        const parsedFromDate = parse(fromDateTime, "yyyy-MM-dd'T'HH:mm", new Date())
-        const parsedToDate = parse(toDateTime, "yyyy-MM-dd'T'HH:mm", new Date())
-
-        if (isValid(parsedFromDate) && isValid(parsedToDate)) {
-            column.setFilterValue({ from: parsedFromDate, to: parsedToDate })
-        } else {
-            column.setFilterValue(undefined)
-        }
-    }, [range, column])
-
-    const handleInputChange = (
-        type: "from" | "to",
-        field: "date" | "time",
-        value: string
-    ) => {
-        setRange((prev) => ({
-            ...prev,
-            [type]: { ...prev[type], [field]: value },
-        }))
-    }
+    // function handleSubmit(e: React.FormEvent) {
+    //     e.preventDefault()
+    //     const from = fromDate + "T" + fromTime
+    //     const to = toDate + "T" + toTime
+    //
+    //     console.log([from,to])
+    //     if (isValid(from) && isValid(to)) {
+    //         column.setFilterValue({from: from, to: to})
+    //         console.log(column.getFilterValue())
+    //     }
+    // }
 
     const handleClear = () => {
-        setRange({
-            from: { date: "", time: "" },
-            to: { date: "", time: "" },
-        })
-        setIsOpen(false)
+        setFromDate("")
+        setFromTime("00:00")
+        setToDate("")
+        setToTime("00:00")
         column.setFilterValue(undefined)
     }
 
-    const handleApply = () => {
-        setIsOpen(false)
-    }
-
-    const formatRangeDisplay = () => {
-        const { from, to } = range
-        if (from.date && from.time && to.date && to.time) {
-            const fromDate = parse(`${from.date}T${from.time}`, "yyyy-MM-dd'T'HH:mm", new Date())
-            const toDate = parse(`${to.date}T${to.time}`, "yyyy-MM-dd'T'HH:mm", new Date())
-            return `${format(fromDate, "PPpp")} - ${format(toDate, "PPpp")}`
-        }
-        return "Select date and time range"
-    }
-
     return (
-        <FilterButton column={column} className="max-w-60">
+        <FilterButton column={column} className="w-auto">
             <form
                 className="grid gap-4"
                 onSubmit={(e) => {
                     e.preventDefault()
-                    console.log(e)
+                    const from = new Date(fromDate + "T" + fromTime)
+                    const to = new Date(toDate + "T" + toTime)
+                    
+                    if (isValid(from) && isValid(to)) {
+                        column.setFilterValue({from: from, to: to})
+                        console.log(column.getFilterValue())
+                    }
                 }}
             >
-                <h4 className="font-medium leading-none space-y-2">Filter by Date & Time</h4>
+                <div className="flex items-center justify-between">
+                    <h4 className="font-medium leading-none space-y-2">Filter by Date & Time</h4>
+                    <Button
+                        className="text-secondary"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClear}
+                    >
+                        Reset
+                    </Button>
+                </div>
                 <div className="grid gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="dateTimeCol-from">From</Label>
-                        <Input
-                            id="dateTimeCol-from"
-                            className="w-auto [word-spacing:10px]"
-                            type="datetime-local"
-                            value={range.from.date}
-                            onChange={(e) => handleInputChange("from", "date", e.target.value)}
-                        />
+                        <Label>From</Label>
+                        <div className="flex gap-2">
+                            <Input
+                                type="date"
+                                value={fromDate}
+                                onChange={(e) => setFromDate(e.target.value)}
+                                className="w-auto"
+                            />
+                            <Input
+                                type="time"
+                                value={fromTime}
+                                onChange={(e) => setFromTime(e.target.value)}
+                                className="w-auto"
+                            />
+                        </div>
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="dateTimeCol-to">To</Label>
-                        <Input
-                            id="dateTimeCol-to"
-                            className="w-auto [word-spacing:10px]"
-                            type="datetime-local"
-                            value={range.to.date}
-                            onChange={(e) => handleInputChange("to", "date", e.target.value)}
-                        />
+                        <Label>To</Label>
+                        <div className="flex gap-2">
+                            <Input
+                                type="date"
+                                value={toDate}
+                                onChange={(e) => setToDate(e.target.value)}
+                                className="w-auto"
+                            />
+                            <Input
+                                type="time"
+                                value={toTime}
+                                onChange={(e) => setToTime(e.target.value)}
+                                className="w-auto"
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col gap-2 mt-2">
-                    <Button
-                        variant="accent"
-                        onClick={handleClear} 
-                        type="submit"
-                        className=""
-                    >
-                        Clear
-                    </Button>
-                    <Button
-                        variant="accent"
-                        onClick={handleApply}
-                        type="submit"
-                        className=""
-                    >
-                        Apply Filter
-                    </Button>
-                </div>
+                <Button variant="accent" className="w-full" type="submit">Apply Filter</Button>
             </form>
         </FilterButton>
     )
 }
-

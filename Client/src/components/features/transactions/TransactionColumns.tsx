@@ -124,6 +124,14 @@ export const transactionColumns = [
 
             return <div className="">{formatted}</div>
         },
+        filterFn: (row, columnId, filterValue: {from: Date, to: Date}) => {
+            if(filterValue == undefined){
+                return true
+            }
+            
+            let colVal = new Date(row.getValue<string>(columnId))
+            return colVal >= filterValue.from && colVal <= filterValue.to
+        },
     }),
 ]
 
