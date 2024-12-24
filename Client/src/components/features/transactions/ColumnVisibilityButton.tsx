@@ -22,7 +22,7 @@ export default function ColumnVisibilityButton({columns}: { columns: Column<Tran
                     className="flex items-center justify-center gap-0.5 h-8"
                     size="sm"
                 >
-                    <ChevronDown className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}/>
+                    <ChevronDown className={`transition-transform duration-300 ${open && 'rotate-180'}`}/>
                     Columns
                 </Button>
             </DropdownMenuTrigger>

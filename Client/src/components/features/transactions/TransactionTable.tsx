@@ -81,6 +81,7 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
         pageSize: 10, //default page size
     });
     const [columnOrder] = useState<string[]>(['name', 'amount', 'date', 'category']);
+    const [pageSizeOpen, setPageSizeOpen] = useState(false)
 
     const table = useReactTable<Transaction>({
         data,
@@ -176,11 +177,11 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
                                 </span>
                                 <div>
                                     <span className="mr-2">Per Page:</span>
-                                    <DropdownMenu modal={false}>
+                                    <DropdownMenu modal={false} open={pageSizeOpen} onOpenChange={setPageSizeOpen}>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="accent" className="gap-0.5 p-2" size="sm">
-                                                {table.getState().pagination.pageSize}
-                                                <ChevronDown className="h-4 w-4" />
+                                            <Button variant="accent" className="gap-0.5 p-2 font-medium" size="sm">
+                                                {pagination.pageSize}
+                                                <ChevronDown className={"h-4 w-4 transition-all duration-300" + (pageSizeOpen && ' ' + 'rotate-180')} />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-fit min-w-0 bg-accent">
@@ -189,8 +190,8 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
                                                     key={size}
                                                     onClick={() => table.setPageSize(size)}
                                                     className={
-                                                        "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10" + 
-                                                        (pagination.pageSize === size ? " bg-black/10" : "")
+                                                        "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10 hover:bg-black/10" + 
+                                                        (pagination.pageSize === size && " bg-black/10")
                                                     }
                                                 >
                                                     {size}
