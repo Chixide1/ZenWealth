@@ -58,6 +58,7 @@ export default function DateTimeRangeFilterButton({column}: { column: Column<Tra
                                 value={fromDate}
                                 onChange={(e) => setFromDate(e.target.value)}
                                 className="w-auto"
+                                max={new Date().toISOString().split("T")[0]}
                             />
                             <Input
                                 type="time"
@@ -75,6 +76,7 @@ export default function DateTimeRangeFilterButton({column}: { column: Column<Tra
                                 value={toDate}
                                 onChange={(e) => setToDate(e.target.value)}
                                 className="w-auto"
+                                max={new Date().toISOString().split("T")[0]}
                             />
                             <Input
                                 type="time"

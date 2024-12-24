@@ -126,7 +126,7 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
                                 return (
                                     <TableHead
                                         key={header.id}
-                                        className="text-primary bg-neutral-600/[0.2] px-6"
+                                        className="text-primary bg-neutral-600/[0.3] px-6"
                                         style={{width: header.getSize()}}
                                     >
                                         {header.isPlaceholder
@@ -189,7 +189,7 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
                                                     key={size}
                                                     onClick={() => table.setPageSize(size)}
                                                     className={
-                                                        "justify-center px-2.5 text-sm focus:bg-black/10" + 
+                                                        "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10" + 
                                                         (pagination.pageSize === size ? " bg-black/10" : "")
                                                     }
                                                 >
