@@ -1,9 +1,9 @@
 ﻿import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
 import axios, { AxiosResponse } from "axios";
-import { Loader2 } from "lucide-react";
 import {useEffect, useState } from "react";
 import TransactionsProvider from "@/providers/TransactionsProvider.tsx";
+import Loading from "@/components/shared/Loading.tsx";
 
 export function ConnectionStatus() {
     const [connected, setConnected] = useState<boolean | null>(null)
@@ -24,11 +24,7 @@ export function ConnectionStatus() {
     }, []);
     
     if(connected == null){
-        return (
-            <div className="w-full h-screen flex items-center justify-center">
-                <Loader2 width={40} height={40} className={"animate-spin text-primary"}/>
-            </div>
-        )
+        return <Loading/>
     }
     
     if(!connected){

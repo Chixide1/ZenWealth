@@ -13,7 +13,7 @@ export default function HomePage() {
 
   // console.log(transactionsData)
   return (
-      <div className="w-9/12 mx-auto py-6">
+      <div className="w-11/12 mx-auto py-6">
         <TransactionTable
             columns={transactionColumns}
             data={transactionsData.transactions}

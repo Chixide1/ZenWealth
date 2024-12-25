@@ -2,6 +2,12 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 import './index.css'
+import {
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query'
+import { persistQueryClient } from '@tanstack/react-query-persist-client'
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 
 // Set up a Router instance
 const router = createRouter({
@@ -19,4 +25,30 @@ declare module '@tanstack/react-router' {
 
 const rootElement = document.getElementById('root')!
 const root = ReactDOM.createRoot(rootElement)
-root.render(<RouterProvider router={router} />)
+
+export const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: Infinity,
+            gcTime: 2 * 60 * 60 * 1000, // 2 hour
+        },
+    },
+    
+})
+
+const persister = createSyncStoragePersister({
+    storage: window.localStorage,
+})
+
+// Persist the cache
+persistQueryClient({
+    queryClient,
+    persister,
+    maxAge: 1000 * 60 * 60 * 2000, // 2 hours
+})
+
+root.render(
+    <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+    </QueryClientProvider>
+)

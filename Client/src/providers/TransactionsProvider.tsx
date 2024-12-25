@@ -1,6 +1,8 @@
-﻿import { createContext, useEffect, useState } from 'react';
-import {Transaction} from "@/types.ts";
+﻿import { createContext, ReactNode } from 'react';
+import { Transaction } from "@/types";
 import axios, { AxiosResponse } from 'axios';
+import { useQuery } from '@tanstack/react-query';
+import Loading from "@/components/shared/Loading.tsx";
 
 interface TransactionData {
     transactions: Transaction[]
@@ -12,30 +14,30 @@ export const TransactionsContext = createContext<TransactionData>({
     total_transactions: 0,
 });
 
-export default function TransactionsProvider({ children }: {children: React.ReactNode}) {
-    const [transactionsData, setTransactionsData] = useState<TransactionData>({
-        transactions: [],
-        total_transactions: 0,
-    })
+async function getTransactionsData(): Promise<TransactionData> {
+    const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}/api`;
+    const response: AxiosResponse<TransactionData> = await axios.get(`${backend}/GetTransactions`, { withCredentials: true })
+        .catch(error => {
+            throw new Error(error)
+        })
+    return response.data
+}
 
-    useEffect(() => {
-        async function getTransactionsData() {
-            const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}/api`
-            await axios
-                .get(`${backend}/GetTransactions`, { withCredentials: true })
-                .then((response: AxiosResponse<TransactionData>) => {
-                    setTransactionsData(response.data)
-                })
-                .catch((error: AxiosResponse) => {
-                    console.error('Error occurred', error)
-                })
-        }
-        getTransactionsData()
-    }, [])
-    
+export default function TransactionsProvider({ children }: { children: ReactNode }) {
+    const { data, dataUpdatedAt, isLoading } = useQuery({
+        queryKey: ['transactions'],
+        queryFn: getTransactionsData,
+    });
+
+    if (isLoading) {
+        return <Loading />
+    }
+    console.log(new Date(dataUpdatedAt))
+
     return (
-        <TransactionsContext.Provider value={transactionsData}>
+        <TransactionsContext.Provider value={data ?? { transactions: [], total_transactions: 0 }}>
             {children}
         </TransactionsContext.Provider>
-    )
+    );
 }
+
