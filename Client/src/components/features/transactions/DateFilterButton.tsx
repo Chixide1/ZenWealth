@@ -7,7 +7,7 @@ import { isValid } from "date-fns"
 import { Button } from "@/components/core/button"
 import { Input } from "@/components/core/input"
 import { Label } from "@/components/core/label"
-import { Transaction } from "@/components/features/transactions/TransactionColumns"
+import { Transaction } from "@/types"
 import FilterButton from "@/components/shared/FilterButton.tsx"
 
 export default function DateTimeRangeFilterButton({column}: { column: Column<Transaction, unknown> }) {

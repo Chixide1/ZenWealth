@@ -1,32 +1,16 @@
 ﻿"use client"
 
-import { createColumnHelper } from "@tanstack/react-table"
+import {ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { ReceiptText } from 'lucide-react';
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
 import DateFilterButton from "@/components/features/transactions/DateFilterButton.tsx";
-
-export interface Transaction {
-    transaction_id: string;
-    merchant_name: string;
-    name: string;
-    amount: number;
-    personal_finance_category: {
-        primary: string;
-    }
-    category: string;
-    date: string;
-    date_time: string;
-    iso_currency_code: string;
-    unofficial_currency_code: string;
-    logo_url: string;
-    personal_finance_category_icon_url: string;
-}
+import { Transaction } from "@/types";
 
 const columnHelper = createColumnHelper<Transaction>()
 
-export const transactionColumns = [
+export const transactionColumns: ColumnDef<Transaction, any>[] = [
     columnHelper.accessor("name", {
         header: ({column}) => (
             <div className="flex items-center">

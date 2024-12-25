@@ -2,7 +2,7 @@
 import {ChevronDown} from 'lucide-react';
 import {Button} from "../../core/button";
 import {Column} from "@tanstack/react-table";
-import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
+import {Transaction} from "@/types";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,

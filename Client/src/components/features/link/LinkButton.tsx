@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import {PlaidLinkError, PlaidLinkOnExit, PlaidLinkOnExitMetadata, usePlaidLink } from 'react-plaid-link';
 import axios from 'axios'
 import { Button } from '@/components/core/button';
-import { useNavigate } from '@tanstack/react-router';
 
 type LinkTokenResponse = {
     value: string
@@ -10,7 +9,6 @@ type LinkTokenResponse = {
 
 export function LinkButton(){
     const [linkToken, setLinkToken] = useState<string>("")
-    const navigate = useNavigate()
     const backend = import.meta.env.VITE_ASPNETCORE_URLS + "/Api"
 
     useEffect(() => {

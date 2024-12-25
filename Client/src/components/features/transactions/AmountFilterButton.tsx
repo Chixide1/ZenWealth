@@ -5,7 +5,7 @@ import { Button } from "@/components/core/button";
 import { Input } from "@/components/core/input";
 import { Label } from "@/components/core/label";
 import { DualRangeSlider } from "@/components/core/dual-range-slider";
-import { Transaction } from "@/components/features/transactions/TransactionColumns";
+import { Transaction } from "@/types";
 import FilterButton from "@/components/shared/FilterButton.tsx";
 
 export default function AmountFilterButton({ column }: { column: Column<Transaction, unknown> }) {

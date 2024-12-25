@@ -24,7 +24,7 @@ import {Button} from "@/components/core/button.tsx";
 import { useState } from "react";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
 import TransactionSearchButton from "@/components/features/transactions/TransactionSearchButton.tsx";
-import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
+import {Transaction} from "@/types";
 import {
     DropdownMenu,
     DropdownMenuContent,

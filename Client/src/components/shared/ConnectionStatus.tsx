@@ -3,6 +3,7 @@ import { Outlet } from "@tanstack/react-router";
 import axios, { AxiosResponse } from "axios";
 import { Loader2 } from "lucide-react";
 import {useEffect, useState } from "react";
+import TransactionsProvider from "@/providers/TransactionsProvider.tsx";
 
 export function ConnectionStatus() {
     const [connected, setConnected] = useState<boolean | null>(null)
@@ -38,5 +39,9 @@ export function ConnectionStatus() {
         )
     }
     
-    return <Outlet />
+    return (
+        <TransactionsProvider>
+            <Outlet />
+        </TransactionsProvider>
+    )
 }

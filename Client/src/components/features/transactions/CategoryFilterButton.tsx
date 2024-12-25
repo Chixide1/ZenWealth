@@ -1,5 +1,5 @@
 ﻿import {Button} from "@/components/core/button.tsx";
-import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
+import {Transaction} from "@/types";
 import { Column } from "@tanstack/react-table";
 import { Toggle } from "@/components/core/toggle";
 import FilterButton from "@/components/shared/FilterButton.tsx";

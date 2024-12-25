@@ -1,6 +1,6 @@
 ﻿import {Label} from "@/components/core/label.tsx";
 import {Input} from "@/components/core/input.tsx";
-import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
+import {Transaction} from "@/types";
 import { Column } from "@tanstack/react-table";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
