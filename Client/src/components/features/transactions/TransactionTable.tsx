@@ -32,13 +32,15 @@ import {
     DropdownMenuTrigger
 } from "@/components/core/dropdown-menu.tsx";
 import { ChevronDown } from 'lucide-react';
+import Loading from "@/components/shared/Loading.tsx";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction>[]
-    data: Transaction[],
+    data: Transaction[] | undefined,
+    isLoading?: boolean
 }
 
-export function TransactionTable({columns, data}: TransactionTableProps) {
+export function TransactionTable({columns, data, isLoading}: TransactionTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -77,14 +79,14 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
         date: true,
     });
     const [pagination, setPagination] = useState({
-        pageIndex: 0, //initial page index
-        pageSize: 10, //default page size
+        pageIndex: 0,
+        pageSize: 10,
     });
     const [columnOrder] = useState<string[]>(['name', 'amount', 'date', 'category']);
     const [pageSizeOpen, setPageSizeOpen] = useState(false)
 
     const table = useReactTable<Transaction>({
-        data,
+        data: data ?? [],
         columns,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
@@ -107,6 +109,7 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
     })
 
     const pageSizeOptions = [10, 20, 30, 40, 50]
+
 
     return (
         <div className="border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
@@ -143,7 +146,13 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
                     ))}
                 </TableHeader>
                 <TableBody className="border-0">
-                    {table.getRowModel().rows?.length ? (
+                    {isLoading || !data ? (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <Loading fullScreen={false}/>
+                            </TableCell>
+                        </TableRow>
+                    ) : table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
                                 className="transition-colors hover:bg-muted/[0.03] rounded-2xl"
@@ -190,7 +199,7 @@ export function TransactionTable({columns, data}: TransactionTableProps) {
                                                     key={size}
                                                     onClick={() => table.setPageSize(size)}
                                                     className={
-                                                        "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10 hover:bg-black/10" + 
+                                                        "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10 hover:bg-black/10" +
                                                         (pagination.pageSize === size && " bg-black/10")
                                                     }
                                                 >

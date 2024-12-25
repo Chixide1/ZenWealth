@@ -8,15 +8,15 @@ export const Route = createFileRoute('/_layout/')({
   component: HomePage,
 })
 
-export default function HomePage() {
-  const transactionsData = useContext(TransactionsContext)
-
-  // console.log(transactionsData)
+function HomePage() {
+  const [transactionsData, isLoading] = useContext(TransactionsContext)
+    
   return (
       <div className="w-11/12 mx-auto py-6">
         <TransactionTable
             columns={transactionColumns}
-            data={transactionsData.transactions}
+            data={transactionsData?.transactions}
+            isLoading={isLoading}
         />
       </div>
   )
