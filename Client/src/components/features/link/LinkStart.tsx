@@ -13,7 +13,7 @@ export function LinkStart() {
                 <BadgePoundSterling size={64} strokeWidth={1}/>
             </CardContent>
             <CardFooter className={"w-full"}>
-                <LinkButton />
+                <LinkButton>Connect Your Accounts</LinkButton>
             </CardFooter>
         </Card>
     )

@@ -1,13 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import {PlaidLinkError, PlaidLinkOnExit, PlaidLinkOnExitMetadata, usePlaidLink } from 'react-plaid-link';
 import axios from 'axios'
-import { Button } from '@/components/core/button';
+import { Button, ButtonProps } from '@/components/core/button';
+import {cn} from "@/lib/utils.ts";
 
 type LinkTokenResponse = {
     value: string
 }
 
-export function LinkButton(){
+type LinkButtonProps = ButtonProps & {
+    className?: string
+    children: React.ReactNode
+}
+
+export function LinkButton({children, className, ...props}: LinkButtonProps) {
     const [linkToken, setLinkToken] = useState<string>("")
     const backend = import.meta.env.VITE_ASPNETCORE_URLS + "/Api"
 
@@ -42,6 +48,13 @@ export function LinkButton(){
     });
 
     return(
-        <Button onClick={() => open()} className={"w-full"} variant={"secondary"}>Connect Your Account</Button>
+        <Button
+            onClick={() => open()}
+            className={cn("w-full", className)}
+            variant={"secondary"}
+            {...props}
+        >
+            {children}
+        </Button>
     )
 }

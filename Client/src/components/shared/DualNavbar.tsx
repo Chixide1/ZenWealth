@@ -8,7 +8,9 @@
 } from "@/components/core/sidebar.tsx";
 import Logo from "@/components/shared/Logo.tsx";
 import { Link, linkOptions, LinkProps, useLocation } from "@tanstack/react-router";
-import { PieChartIcon as ChartPie, Home, PoundSterling, WalletCards } from 'lucide-react';
+import { PieChartIcon as ChartPie, CircleUser, CreditCard, Home, PoundSterling, Search, WalletCards } from 'lucide-react';
+import {LinkButton} from "@/components/features/link/LinkButton.tsx";
+import {Input} from "@/components/core/input.tsx";
 
 type MenuItem = {
     title: string,
@@ -67,9 +69,7 @@ export default function DualNavbar({children}: DualNavbarProps) {
             <Sidebar className="bg-transparent" variant="sidebar" collapsible="offcanvas">
                 <SidebarHeader className={`${headerHeight} md:flex flex-row items-center justify-center hidden`} >
                     <div className="flex items-center">
-                        <SidebarMenuButton>
-                            <Logo className="w-5 flex-shrink-0" />
-                        </SidebarMenuButton>
+                        <Logo className="w-7 flex-shrink-0" />
                     </div>
                 </SidebarHeader>
                 <SidebarContent className={`pb-10`}>
@@ -97,11 +97,27 @@ export default function DualNavbar({children}: DualNavbarProps) {
                 </SidebarContent>
             </Sidebar>
             <main className="w-full h-screen flex flex-col overflow-hidden">
-                <header className={`${headerHeight} z-10 flex items-center ps-3 flex-shrink-0`}>
+                <header className={`${headerHeight} z-10 gap-4 flex items-center ps-3 pe-6 py-3 flex-shrink-0 justify-between w-full`}>
                     <SidebarTrigger className="text-primary hover:bg-neutral-700/30 p-4"/>
+                    <LinkButton className="w-auto rounded-full md:ml-20 mr-auto" size="sm">
+                        <CreditCard />
+                        <span className="hidden md:block">Add Accounts</span>
+                    </LinkButton>
+                    <form action="" className="md:mr-10 flex items-center">
+                        <Search />
+                        <Input
+                            placeholder="Start Searching here..."
+                            className="text-sm border-0 placeholder:text-neutral-400 focus-visible:ring-0
+                            placeholder:text-xs placeholder:truncate"
+                        />
+                    </form>
+                    <div className="flex items-center justify-center text-xs">
+                        <CircleUser className="mr-2" />
+                        <span>Chikezie Onuoha</span>
+                    </div>
                 </header>
                 <section
-                    className="flex-grow overflow-auto scroll-thin"
+                    className="flex-grow overflow-auto scrollbar-thin"
                 >
                     {children}
                 </section>
