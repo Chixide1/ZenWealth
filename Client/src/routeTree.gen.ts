@@ -15,6 +15,8 @@ import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutTransactionsImport } from './routes/_layout/transactions'
+import { Route as LayoutAnalyticsImport } from './routes/_layout/analytics'
+import { Route as LayoutAccountsImport } from './routes/_layout/accounts'
 
 // Create/Update Routes
 
@@ -41,6 +43,18 @@ const LayoutTransactionsRoute = LayoutTransactionsImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutAnalyticsRoute = LayoutAnalyticsImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutAccountsRoute = LayoutAccountsImport.update({
+  id: '/accounts',
+  path: '/accounts',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -58,6 +72,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
+    }
+    '/_layout/accounts': {
+      id: '/_layout/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof LayoutAccountsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/analytics': {
+      id: '/_layout/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof LayoutAnalyticsImport
+      parentRoute: typeof LayoutImport
     }
     '/_layout/transactions': {
       id: '/_layout/transactions'
@@ -79,11 +107,15 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface LayoutRouteChildren {
+  LayoutAccountsRoute: typeof LayoutAccountsRoute
+  LayoutAnalyticsRoute: typeof LayoutAnalyticsRoute
   LayoutTransactionsRoute: typeof LayoutTransactionsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutAccountsRoute: LayoutAccountsRoute,
+  LayoutAnalyticsRoute: LayoutAnalyticsRoute,
   LayoutTransactionsRoute: LayoutTransactionsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
@@ -94,12 +126,16 @@ const LayoutRouteWithChildren =
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
   '/login': typeof LoginRoute
+  '/accounts': typeof LayoutAccountsRoute
+  '/analytics': typeof LayoutAnalyticsRoute
   '/transactions': typeof LayoutTransactionsRoute
   '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/accounts': typeof LayoutAccountsRoute
+  '/analytics': typeof LayoutAnalyticsRoute
   '/transactions': typeof LayoutTransactionsRoute
   '/': typeof LayoutIndexRoute
 }
@@ -108,16 +144,25 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/login': typeof LoginRoute
+  '/_layout/accounts': typeof LayoutAccountsRoute
+  '/_layout/analytics': typeof LayoutAnalyticsRoute
   '/_layout/transactions': typeof LayoutTransactionsRoute
   '/_layout/': typeof LayoutIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/transactions' | '/'
+  fullPaths: '' | '/login' | '/accounts' | '/analytics' | '/transactions' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/transactions' | '/'
-  id: '__root__' | '/_layout' | '/login' | '/_layout/transactions' | '/_layout/'
+  to: '/login' | '/accounts' | '/analytics' | '/transactions' | '/'
+  id:
+    | '__root__'
+    | '/_layout'
+    | '/login'
+    | '/_layout/accounts'
+    | '/_layout/analytics'
+    | '/_layout/transactions'
+    | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
@@ -148,12 +193,22 @@ export const routeTree = rootRoute
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
+        "/_layout/accounts",
+        "/_layout/analytics",
         "/_layout/transactions",
         "/_layout/"
       ]
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/_layout/accounts": {
+      "filePath": "_layout/accounts.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/analytics": {
+      "filePath": "_layout/analytics.tsx",
+      "parent": "/_layout"
     },
     "/_layout/transactions": {
       "filePath": "_layout/transactions.tsx",

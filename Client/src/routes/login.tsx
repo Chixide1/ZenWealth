@@ -1,6 +1,6 @@
 ﻿import { createFileRoute } from '@tanstack/react-router'
 import { LoginForm } from '@/components/features/login/LoginForm.tsx'
-import logo from "@/assets/ZenWealth.png"
+import Logo from "@/components/shared/Logo.tsx";
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -10,7 +10,7 @@ function LoginPage() {
   return (
     <main className="h-screen w-full flex flex-col items-center justify-center">
         <div className="flex items-center my-auto sm:mt-0 sm:mb-8">
-            <img src={logo} alt="A tree on a coin signifying wealth" className="h-auto w-8 mr-1"/>
+            <Logo className="mr-1"/>
             <h1 className="text-primary text-3xl font-semibold montserrat italic">
                 Zen
                 <span className="text-secondary font">W</span>ealth

@@ -2,10 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/** Colors */
 @layer base {
   :root {
-    color-scheme: dark;
-    
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -47,6 +46,7 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+  
   .dark {
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -59,25 +59,34 @@
   }
 }
 
+/** Project Defaults */
 @layer base {
-  
-  * {
-    @apply border-border;
+  :root {
+    color-scheme: dark;
+    
+    @supports (scrollbar-width: thin) {
+      scrollbar-width: thin; 
+    }
   }
   
   body {
-    @apply bg-background text-foreground;
     min-height: 100vh;
-    background:
+    background: 
+            fixed
             radial-gradient(circle at 10% 120%, #5A2419 0%, #0C0610 40%, transparent),
             radial-gradient(circle at 100% -20%, #8e519c 0%, #0B050E 35%);
-    
-    background-attachment: fixed;
+  }
+}
+
+/** Fonts */
+@layer utilities {
+  .montserrat {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
   }
   
-  .montserrat {
-  font-family: "Montserrat", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+  .thin-scroll {
+    scrollbar-width: thin;
   }
 }

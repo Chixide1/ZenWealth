@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+import {AlignLeft, PanelLeft } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -16,10 +16,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/core/tooltip"
+import {
+    Drawer, DrawerClose,
+    DrawerContent,
+    DrawerDescription, DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger
+} from "@/components/core/drawer.tsx";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "10rem"
+const SIDEBAR_WIDTH = "5rem"
 const SIDEBAR_WIDTH_MOBILE = "15rem"
 const SIDEBAR_WIDTH_ICON = "5rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
@@ -192,21 +200,19 @@ const Sidebar = React.forwardRef<
 
     if (isMobile) {
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-          <SheetContent
-            data-sidebar="sidebar"
-            data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
-            }
-            side={side}
-          >
-            <div className="flex h-full w-full flex-col">{children}</div>
-          </SheetContent>
-        </Sheet>
+          <Drawer open={openMobile} onOpenChange={setOpenMobile}>
+              <DrawerContent
+                  className="bg-[#09090B] border border-neutral-700"
+                  data-sidebar="sidebar"
+                  data-mobile="true"
+              >
+                  <DrawerHeader className="pb-0">
+                      <DrawerTitle>Navigation Menu</DrawerTitle>
+                      <DrawerDescription>Explore ZenWealth</DrawerDescription>
+                  </DrawerHeader>
+                  <nav className="px-4">{children}</nav>
+              </DrawerContent>
+          </Drawer>
       )
     }
 
@@ -276,7 +282,8 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <PanelLeft />
+      {/*<PanelLeft />*/}
+        <AlignLeft />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
@@ -519,7 +526,7 @@ const sidebarMenuButtonVariants = cva(
           "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
       },
       size: {
-        default: "h-8 text-sm",
+        default: "h-8 text-sm p-3",
         sm: "h-7 text-xs",
         lg: "h-12 text-sm group-data-[collapsible=icon]:!p-0",
       },
@@ -581,8 +588,9 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isMobile}
+          hidden={isMobile}
           {...tooltip}
+          className="bg-neutral-700/70 backdrop-blur-sm"
         />
       </Tooltip>
     )
