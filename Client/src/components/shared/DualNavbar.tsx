@@ -101,7 +101,7 @@ export default function DualNavbar({children}: DualNavbarProps) {
                     <SidebarTrigger className="text-primary hover:bg-neutral-700/30 p-4"/>
                 </header>
                 <section
-                    className="flex-grow overflow-auto thin-scroll"
+                    className="flex-grow overflow-auto scroll-thin"
                 >
                     {children}
                 </section>

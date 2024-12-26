@@ -114,7 +114,7 @@ export function TransactionTable({columns, data, isLoading, className}: Transact
 
 
     return (
-        <div className={cn("border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl", className)}>
+        <div className={cn("border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl animate-fade-in-up", className)}>
             <Table className="rounded-2xl text-primary text-sm w-full">
                 <TableHeader>
                     <TableRow>
