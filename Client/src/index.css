@@ -80,10 +80,4 @@
   font-optical-sizing: auto;
   font-style: normal;
   }
-  
-  .other-bg {
-    background-color: rgba(29, 29, 29, 0.9) !important;
-    background-image:
-            radial-gradient(circle at -20% -20%, rgba(231, 254, 85, 0.3) 0%, #2b2a2a 40%, transparent);
-  }
 }

@@ -1,60 +1,74 @@
-﻿import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
+﻿import { ChartPie, Home, PoundSterling, WalletCards } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
+    SidebarGroupLabel, SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/core/sidebar"
+import {Link, linkOptions, LinkProps } from '@tanstack/react-router'
+
+type MenuItem = {
+    title: string,
+    url: LinkProps,
+    icon: React.FC,
+}
 
 // Menu items.
-const items = [
+const items: MenuItem[] = [
     {
         title: "Home",
-        url: "#",
+        url: linkOptions({
+            to: "/",
+            label: "Home",
+        }),
         icon: Home,
     },
     {
-        title: "Inbox",
-        url: "#",
-        icon: Inbox,
+        title: "Transactions",
+        url: linkOptions({
+            to: "/transactions",
+            label: "Transactions",
+        }),
+        icon: PoundSterling,
     },
     {
-        title: "Calendar",
-        url: "#",
-        icon: Calendar,
+        title: "Analytics",
+        url: linkOptions({
+            to: "/",
+            label: "Analytics",
+        }),
+        icon: ChartPie,
     },
     {
-        title: "Search",
-        url: "#",
-        icon: Search,
-    },
-    {
-        title: "Settings",
-        url: "#",
-        icon: Settings,
+        title: "Accounts",
+        url: linkOptions({
+            to: "/",
+            label: "Accounts",
+        }),
+        icon: WalletCards,
     },
 ]
 
 export function AppSidebar() {
     return (
-        <Sidebar>
+        <Sidebar className="bg-transparent" variant="sidebar" collapsible="icon">
+            <SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
-                                <SidebarMenuItem key={item.title}>
+                                <SidebarMenuItem key={item.title + "-sidebar"}>
                                     <SidebarMenuButton asChild>
-                                        <a href={item.url}>
+                                        <Link {...item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
-                                        </a>
+                                        </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
@@ -62,6 +76,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            </SidebarHeader>
         </Sidebar>
     )
 }

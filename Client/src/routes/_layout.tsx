@@ -5,8 +5,8 @@ import axios, { AxiosResponse } from "axios";
 import {useEffect, useState } from "react";
 import TransactionsProvider from "@/providers/TransactionsProvider.tsx";
 import Loading from "@/components/shared/Loading.tsx";
-// import { SidebarProvider, SidebarTrigger } from "@/components/core/sidebar"
-// import { AppSidebar } from "@/components/shared/AppSidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/core/sidebar"
+import { AppSidebar } from "@/components/shared/AppSidebar"
 
 export const Route = createFileRoute('/_layout')({
     component: Layout,
@@ -44,9 +44,15 @@ export function Layout() {
 
     return (
         <TransactionsProvider>
-            <main>
-                <Outlet />
-            </main>
+            <SidebarProvider>
+                <AppSidebar />
+                <main className="w-full">
+                    <div className="z-10 h-12 flex items-center ps-3">
+                        <SidebarTrigger className="text-primary hover:bg-neutral-700/30 p-4" />
+                    </div>
+                    <Outlet />
+                </main>
+            </SidebarProvider>
         </TransactionsProvider>
     )
 }

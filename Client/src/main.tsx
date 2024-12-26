@@ -8,9 +8,11 @@ import {
 } from '@tanstack/react-query'
 import { persistQueryClient } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+import Loading from './components/shared/Loading'
 
 // Set up a Router instance
 const router = createRouter({
+    defaultPendingComponent: Loading,
     routeTree,
     defaultPreload: 'intent',
     defaultStaleTime: 5000,

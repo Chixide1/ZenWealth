@@ -33,14 +33,16 @@ import {
 } from "@/components/core/dropdown-menu.tsx";
 import { ChevronDown } from 'lucide-react';
 import Loading from "@/components/shared/Loading.tsx";
+import { cn } from "@/lib/utils";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction>[]
     data: Transaction[] | undefined,
-    isLoading?: boolean
+    isLoading?: boolean,
+    className?: string,
 }
 
-export function TransactionTable({columns, data, isLoading}: TransactionTableProps) {
+export function TransactionTable({columns, data, isLoading, className}: TransactionTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -112,7 +114,7 @@ export function TransactionTable({columns, data, isLoading}: TransactionTablePro
 
 
     return (
-        <div className="border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl">
+        <div className={cn("border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl", className)}>
             <Table className="rounded-2xl text-primary text-sm w-full">
                 <TableHeader>
                     <TableRow>
