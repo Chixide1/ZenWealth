@@ -11,13 +11,5 @@ export const Route = createFileRoute('/_layout/transactions')({
 function TransactionsPage() {
   const [transactionsData, isLoading] = useContext(TransactionsContext)
 
-  return (
-    <div className="px-4 pb-10">
-      <TransactionTable
-        columns={transactionColumns}
-        data={transactionsData?.transactions}
-        isLoading={isLoading}
-      />
-    </div>
-  )
+  return <TransactionTable columns={transactionColumns} data={transactionsData?.transactions} isLoading={isLoading} />
 }

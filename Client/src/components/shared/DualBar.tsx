@@ -3,14 +3,12 @@
     SidebarContent,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
-    SidebarProvider, SidebarTrigger
+    SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+    SidebarProvider
 } from "@/components/core/sidebar.tsx";
-import Logo from "@/components/shared/Logo.tsx";
 import { Link, linkOptions, LinkProps, useLocation } from "@tanstack/react-router";
-import { PieChartIcon as ChartPie, CircleUser, CreditCard, Home, PoundSterling, Search, WalletCards } from 'lucide-react';
-import {LinkButton} from "@/components/features/link/LinkButton.tsx";
-import {Input} from "@/components/core/input.tsx";
+import { PieChartIcon as ChartPie, Home, PoundSterling, WalletCards } from 'lucide-react';
+import Topbar from "@/components/shared/Topbar.tsx";
 
 type MenuItem = {
     title: string,
@@ -58,20 +56,12 @@ type DualNavbarProps = {
     children?: React.ReactNode;
 }
 
-export default function DualNavbar({children}: DualNavbarProps) {
-    const headerHeight = 'h-16'
+export default function DualBar({children}: DualNavbarProps) {
     const location = useLocation();
-    console.log(location.pathname)
-
 
     return (
         <SidebarProvider>
             <Sidebar className="bg-transparent" variant="sidebar" collapsible="offcanvas">
-                <SidebarHeader className={`${headerHeight} md:flex flex-row items-center justify-center hidden`} >
-                    <div className="flex items-center">
-                        <Logo className="w-7 flex-shrink-0" />
-                    </div>
-                </SidebarHeader>
                 <SidebarContent className={`pb-10`}>
                     <SidebarGroup className="my-auto">
                         <SidebarGroupContent>
@@ -97,27 +87,9 @@ export default function DualNavbar({children}: DualNavbarProps) {
                 </SidebarContent>
             </Sidebar>
             <main className="w-full h-screen flex flex-col overflow-hidden">
-                <header className={`${headerHeight} z-10 gap-4 flex items-center ps-3 pe-6 py-3 flex-shrink-0 justify-between w-full`}>
-                    <SidebarTrigger className="text-primary hover:bg-neutral-700/30 p-4"/>
-                    <LinkButton className="w-auto rounded-full md:ml-20 mr-auto" size="sm">
-                        <CreditCard />
-                        <span className="hidden md:block">Add Accounts</span>
-                    </LinkButton>
-                    <form action="" className="md:mr-10 flex items-center">
-                        <Search />
-                        <Input
-                            placeholder="Start Searching here..."
-                            className="text-sm border-0 placeholder:text-neutral-400 focus-visible:ring-0
-                            placeholder:text-xs placeholder:truncate"
-                        />
-                    </form>
-                    <div className="flex items-center justify-center text-xs">
-                        <CircleUser className="mr-2" />
-                        <span>Chikezie Onuoha</span>
-                    </div>
-                </header>
+                <Topbar />
                 <section
-                    className="flex-grow overflow-auto scrollbar-thin"
+                    className="flex-grow overflow-auto scrollbar-thin pe-4 pb-10"
                 >
                     {children}
                 </section>

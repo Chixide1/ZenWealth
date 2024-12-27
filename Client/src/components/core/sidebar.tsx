@@ -1,14 +1,13 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import {AlignLeft, PanelLeft } from "lucide-react"
+import {AlignLeft} from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/core/button"
 import { Input } from "@/components/core/input"
 import { Separator } from "@/components/core/separator"
-import { Sheet, SheetContent } from "@/components/core/sheet"
 import { Skeleton } from "@/components/core/skeleton"
 import {
   Tooltip,
@@ -17,18 +16,17 @@ import {
   TooltipTrigger,
 } from "@/components/core/tooltip"
 import {
-    Drawer, DrawerClose,
+    Drawer,
     DrawerContent,
-    DrawerDescription, DrawerFooter,
+    DrawerDescription,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger
 } from "@/components/core/drawer.tsx";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "5rem"
-const SIDEBAR_WIDTH_MOBILE = "15rem"
+const SIDEBAR_WIDTH = "4rem"
+// const SIDEBAR_WIDTH_MOBILE = "15rem"
 const SIDEBAR_WIDTH_ICON = "5rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
@@ -270,31 +268,34 @@ const SidebarTrigger = React.forwardRef<
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Button
-      ref={ref}
-      data-sidebar="trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("h-7 w-7", className)}
-      onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
-      }}
-      {...props}
-    >
-      {/*<PanelLeft />*/}
-        <AlignLeft />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+      <Button
+          ref={ref}
+          data-sidebar="trigger"
+          variant="ghost"
+          size="icon"
+          className={cn("h-7 w-7", className)}
+          onClick={(event) => {
+              onClick?.(event)
+              toggleSidebar()
+          }}
+          {...props}
+      >
+          <AlignLeft/>
+          <h5 className="text-primary font-medium montserrat italic">
+              Zen
+              <span className="text-secondary font">W</span>ealth
+          </h5>
+          <span className="sr-only">Toggle Sidebar</span>
+      </Button>
   )
 })
 SidebarTrigger.displayName = "SidebarTrigger"
 
 const SidebarRail = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<"button">
->(({ className, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar()
+    HTMLButtonElement,
+    React.ComponentProps<"button">
+>(({className, ...props}, ref) => {
+    const { toggleSidebar } = useSidebar()
 
   return (
     <button
@@ -521,7 +522,7 @@ const sidebarMenuButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        default: "hover:bg-neutral-700/70 hover:text-sidebar-accent-foreground",
         outline:
           "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
       },
@@ -559,7 +560,7 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const Comp = asChild ? Slot : "button"
-    const { isMobile, state } = useSidebar()
+    const { isMobile } = useSidebar()
 
     const button = (
       <Comp

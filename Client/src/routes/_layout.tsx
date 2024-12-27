@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from "axios";
 import {useEffect, useState } from "react";
 import TransactionsProvider from "@/providers/TransactionsProvider.tsx";
 import Loading from "@/components/shared/Loading.tsx";
-import DualNavbar from "@/components/shared/DualNavbar.tsx";
+import DualBar from "@/components/shared/DualBar.tsx";
 
 export const Route = createFileRoute('/_layout')({
     component: Layout,
@@ -43,9 +43,9 @@ export function Layout() {
 
     return (
         <TransactionsProvider>
-            <DualNavbar>
+            <DualBar>
                 <Outlet />
-            </DualNavbar>
+            </DualBar>
         </TransactionsProvider>
     )
 }
