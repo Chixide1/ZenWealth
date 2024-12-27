@@ -281,9 +281,9 @@ const SidebarTrigger = React.forwardRef<
           {...props}
       >
           <AlignLeft/>
-          <h5 className="text-primary font-medium montserrat italic">
+          <h5 className="text-primary font-medium montserrat italic hidden md:block">
               Zen
-              <span className="text-secondary font">W</span>ealth
+              <span className="text-secondary font ">W</span>ealth
           </h5>
           <span className="sr-only">Toggle Sidebar</span>
       </Button>

@@ -62,15 +62,15 @@ export default function DualBar({children}: DualNavbarProps) {
     return (
         <SidebarProvider>
             <Sidebar className="bg-transparent" variant="sidebar" collapsible="offcanvas">
-                <SidebarContent className={`pb-10`}>
+                <SidebarContent className={`pb-4 md:pb-0`}>
                     <SidebarGroup className="my-auto">
                         <SidebarGroupContent>
-                            <SidebarMenu className="gap-3 flex-row md:flex-col py-4 flex-wrap">
+                            <SidebarMenu className="gap-3 flex-row md:flex-col py-4 flex-wrap justify-center md:justify-start">
                                 {items.map((item) => (
                                     <SidebarMenuItem key={item.title + "-sidebar"} className="flex justify-center">
                                         <SidebarMenuButton
                                             asChild
-                                            className={`bg-primary/[0.07] rounded-full p-[0.6rem] w-auto h-auto transition-colors duration-300
+                                            className={`bg-primary/[0.07] rounded-full py-2 px-4 md:p-2 w-auto h-auto transition-colors duration-300
                                             ${item.url.to === location.pathname && "bg-secondary/90 text-black hover:bg-secondary/90 hover:text-black"}`}
                                             tooltip={item.title}
                                         >
@@ -89,7 +89,7 @@ export default function DualBar({children}: DualNavbarProps) {
             <main className="w-full h-screen flex flex-col overflow-hidden">
                 <Topbar />
                 <section
-                    className="flex-grow overflow-auto scrollbar-thin pe-4 pb-10"
+                    className="flex-grow overflow-auto scrollbar-thin px-4 md:pe-4 pb-10"
                 >
                     {children}
                 </section>
