@@ -31,8 +31,8 @@ export function LinkButton({children, className, ...props}: LinkButtonProps) {
 
     const { open } = usePlaidLink({
         token: linkToken,
-        onSuccess: (publicToken: string) => {
-            axios.post(
+        onSuccess: async (publicToken: string) => {
+            await axios.post(
                 `${backend}/ExchangePublicToken`,
                 {publicToken: publicToken}, 
                 {withCredentials: true}

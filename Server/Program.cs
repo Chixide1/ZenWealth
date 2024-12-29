@@ -9,7 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Ef Core context & identity endpoints
 builder.Services.AddDbContext<ApplicationDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .EnableSensitiveDataLogging());
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();

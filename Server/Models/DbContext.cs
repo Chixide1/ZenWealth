@@ -8,4 +8,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     : IdentityDbContext<IdentityUser>(options)
 {
     public DbSet<Item> Items { get; set; }
+    
+    public DbSet<Account> Accounts { get; set; }
+    
+    public DbSet<Transaction> Transactions { get; set; }
 }

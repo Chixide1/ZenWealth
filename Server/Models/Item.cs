@@ -6,12 +6,26 @@ namespace Server.Models;
 
 public class Item
 {
-    public int Id { get; set; }
+    /// <summary>
+    /// <para>Unique ID for each Item</para>
+    /// </summary>
+    public int Id { get; init; }
     
-    [Column("UserId")]
+    /// <summary>
+    /// <para>The associated User account</para>
+    /// </summary>
+    [Required]
     [ForeignKey(nameof(IdentityUser))]
-    public required IdentityUser User { get; set; }
+    public IdentityUser? User { get; set; }
     
+    /// <summary>
+    /// <para>The token which allows interaction with the user's bank to retrieve transaction information</para>
+    /// </summary>
     [Column(TypeName = "varchar(100)")]
-    public required string AccessToken { get; set; }
+    public required string AccessToken { get; init; }
+    
+    /// <summary>
+    /// <para>Navigation property for Accounts associated with this Item</para>
+    /// </summary>
+    public List<Account>? Accounts { get; set; }
 }
