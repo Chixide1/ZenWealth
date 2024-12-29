@@ -65,7 +65,7 @@ export default function DualBar({children}: DualNavbarProps) {
                 <SidebarContent className={`pb-4 md:pb-0`}>
                     <SidebarGroup className="my-auto">
                         <SidebarGroupContent>
-                            <SidebarMenu className="gap-3 flex-row md:flex-col py-4 flex-wrap justify-center md:justify-start">
+                            <SidebarMenu className="gap-3 flex-row md:flex-col py-4 flex-wrap justify-center md:justify-start items-center">
                                 {items.map((item) => (
                                     <SidebarMenuItem key={item.title + "-sidebar"} className="flex justify-center">
                                         <SidebarMenuButton

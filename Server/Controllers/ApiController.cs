@@ -47,20 +47,17 @@ namespace Server.Controllers
         {
             var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest()
             {
-                User = new LinkTokenCreateRequestUser { ClientUserId = Guid.NewGuid().ToString(), },
+                User = new LinkTokenCreateRequestUser { ClientUserId = Guid.NewGuid().ToString() },
                 ClientName = "ZenWealth",
-                Products = [Products.Auth, Products.Identity, Products.Transactions],
+                Products = [Products.Transactions, Products.Investments],
                 Language = Language.English,
                 CountryCodes = [CountryCode.Gb],
+                // EnableMultiItemLink = true
             });
 
             if (response.Error != null)
             {
-                dynamic error = JsonNode.Parse(JsonSerializer.Serialize(response.Error))!;
-                string msg = (string)error["error_message"];
-
-                logger.LogError("{msg}", msg);
-                return StatusCode(StatusCodes.Status400BadRequest, response);
+                return Error(response.Error);
             }
 
             logger.LogInformation("Successfully obtained link token: {token}", response.LinkToken);
@@ -80,11 +77,7 @@ namespace Server.Controllers
 
             if (response.Error != null)
             {
-                dynamic error = JsonNode.Parse(JsonSerializer.Serialize(response.Error))!;
-                var msg = (string)error["error_message"];
-
-                logger.LogError("{msg}", msg);
-                return StatusCode(StatusCodes.Status400BadRequest, response);
+                return Error(response.Error);
             }
 
             var user = await userManager.GetUserAsync(User);
@@ -135,6 +128,20 @@ namespace Server.Controllers
             });
             
             return Ok(data);
+        }
+        
+        [ApiExplorerSettings(IgnoreApi = true)]
+        private IActionResult Error(PlaidError error)
+        {
+            logger.LogError(
+                "Error Type - {ErrorType}\n" +
+                "Error Code - {ErrorCode}\n" +
+                "Error Message - {ErrorMessage}",
+                error.ErrorType,
+                error.ErrorCode,
+                error.ErrorMessage);
+            
+            return StatusCode(StatusCodes.Status400BadRequest, error);
         }
     }
 }
