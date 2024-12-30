@@ -14,18 +14,16 @@ public class Item
     /// <summary>
     /// <para>The associated User account</para>
     /// </summary>
-    [Required]
-    [ForeignKey(nameof(IdentityUser))]
-    public IdentityUser? User { get; set; }
+    public required IdentityUser User { get; init; }
     
     /// <summary>
     /// <para>The token which allows interaction with the user's bank to retrieve transaction information</para>
     /// </summary>
     [Column(TypeName = "varchar(100)")]
     public required string AccessToken { get; init; }
-    
+
     /// <summary>
     /// <para>Navigation property for Accounts associated with this Item</para>
     /// </summary>
-    public List<Account>? Accounts { get; set; }
+    public List<Account> Accounts { get; } = [];
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Models;
@@ -13,47 +14,62 @@ public class Account
 	/// <para>If an account with a specific <c>account_id</c> disappears instead of changing, the account is likely closed. Closed accounts are not returned by the Plaid API.</para>
 	/// <para>Like all Plaid identifiers, the <c>account_id</c> is case sensitive.</para>
 	/// </summary>
-	public string Id { get; init; }
+	[Column(TypeName = "varchar(100)")]
+	public required string Id { get; init; }
 	
 	/// <summary>
 	/// <para>The associated Item which contains the Access Token that allows retrieval of data from Plaid</para>
 	/// </summary>
 	public int ItemId { get; init; }
 	
-	public Item? Item { get; init; }
+	/// <summary>
+	/// <para>Navigation Property for the parent Item</para>
+	/// </summary>
+	public Item Item { get; init; } = null!;
+	
+	/// <summary>
+	/// <para>The associated user</para>
+	/// </summary>
+	public required IdentityUser User { get; init; }
 
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>
 	/// </summary>
-	public float Balance { get; init; }
+	public double Balance { get; init; }
 
 	/// <summary>
 	/// <para>The last 2-4 alphanumeric characters of an account's official account number. Note that the mask may be non-unique between an Item's accounts, and it may also not match the mask that the bank displays to the user.</para>
 	/// </summary>
+	[Column(TypeName = "varchar(50)")]
 	public string? Mask { get; init; }
 
 	/// <summary>
 	/// <para>The name of the account, either assigned by the user or by the financial institution itself</para>
 	/// </summary>
+	[Column(TypeName = "varchar(255)")]
 	public required string Name { get; init; }
 
 	/// <summary>
 	/// <para>The official name of the account as given by the financial institution</para>
 	/// </summary>
+	[Column(TypeName = "varchar(255)")]
 	public string? OfficialName { get; init; }
 
 	/// <summary>
 	/// <para>See the <a href="https://plaid.com/docs/api/accounts#account-type-schema">Account type schema</a> for a full listing of account types and corresponding subtypes.</para>
 	/// </summary>
+	[Column(TypeName = "varchar(255)")]
 	public required string Type { get; init; }
 
 	/// <summary>
 	/// <para>See the [Account type schema](https://plaid.com/docs/api/accounts/#account-type-schema) for a full listing of account types and corresponding subtypes.</para>
 	/// </summary>
+	[Column(TypeName = "varchar(255)")]
 	public string? Subtype { get; init; }
 
 	/// <summary>
 	/// <para>Navigation property for Transactions associated with this Account</para>
 	/// </summary>
-	public List<Transaction>? Transactions { get; set; }
+	[Column(TypeName = "varchar(255)")]
+	public List<Transaction> Transactions { get; } = [];
 }

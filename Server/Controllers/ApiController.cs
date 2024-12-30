@@ -88,7 +88,7 @@ public class ApiController(
         var item = new Item()
         {
             AccessToken = response.AccessToken,
-            User = user!
+            User = user
         };
             
         context.Items.Add(item);
@@ -144,6 +144,11 @@ public class ApiController(
             .Select(i => i.AccessToken)
             .First();
 
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+        
         var data = await client.TransactionsSyncAsync(new TransactionsSyncRequest()
         {
             AccessToken = accessToken,
@@ -152,18 +157,14 @@ public class ApiController(
 
         foreach (var account in data.Accounts)
         {
-            if (context.Accounts.Any(a => a.Id == account.AccountId))
-            {
-                continue;
-            }
-            
-            context.Accounts.Add(new Account()
+            context.Accounts.Update(new Account()
             {
                 Id = account.AccountId,
                 ItemId = item!.Id,
+                User = user,
                 Name = account.Name,
                 Type = account.Type.ToString(),
-                Balance = (float)account.Balances.Current,
+                Balance = account.Balances.Current == null ? 0.00 : (double)account.Balances.Current,
                 Mask = account.Mask,
                 Subtype = account.Subtype.ToString(),
                 OfficialName = account.OfficialName,
@@ -174,17 +175,13 @@ public class ApiController(
 
         foreach (var transaction in data.Added)
         {
-            if (context.Transactions.Any(t => t.Id == transaction.TransactionId))
-            {
-                continue;
-            }
-
-            context.Transactions.Add(new Transaction()
+            context.Transactions.Update(new Transaction()
             {
                 Id = transaction.TransactionId!,
-                AccountId = transaction.AccountId,
+                AccountId = transaction.AccountId!,
+                User = user,
                 Name = transaction.Name,
-                Amount = (float)transaction.Amount!,
+                Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
                 Date = transaction.Date,
                 Datetime = transaction.Datetime,
                 Website = transaction.Website,
