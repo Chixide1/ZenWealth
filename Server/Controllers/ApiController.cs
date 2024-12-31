@@ -20,7 +20,8 @@ namespace Server.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
+[Produces("application/json")]
 public class ApiController(
     ILogger<ApiController> logger,
     IConfiguration configuration,
@@ -36,23 +37,32 @@ public class ApiController(
         return Problem();
     }
         
-    [HttpGet("[action]")]
+    [HttpGet]
     public IActionResult Auth()
     {
         return Ok();
     }
         
-    [HttpGet("[action]")]
-    [ProducesResponseType(typeof(Responses.GetLinkTokenResponse), StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType(typeof(PlaidError), StatusCodes.Status400BadRequest,"application/json")]
+    [HttpGet]
+    [ProducesResponseType(typeof(Responses.GetLinkTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PlaidError), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetLinkToken()
     {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        
         var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest()
         {
-            User = new LinkTokenCreateRequestUser { ClientUserId = Guid.NewGuid().ToString() },
+            User = new LinkTokenCreateRequestUser
+            {
+                ClientUserId = user.Id,
+            },
             ClientName = "ZenWealth",
             Products = [Products.Transactions],
-            OptionalProducts = [Products.Investments],
             Language = Language.English,
             CountryCodes = [CountryCode.Gb],
             // EnableMultiItemLink = true
@@ -68,11 +78,18 @@ public class ApiController(
     }
 
 
-    [HttpPost("[action]")]
+    [HttpPost]
     [ProducesResponseType( StatusCodes.Status200OK)]
-    [ProducesResponseType<PlaidError>(StatusCodes.Status400BadRequest, "application/json")]
+    [ProducesResponseType<PlaidError>(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ExchangePublicToken([FromBody] Responses.ExchangePublicTokenResponse data)
     {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        
         var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest()
         {
             PublicToken = data.PublicToken
@@ -82,8 +99,6 @@ public class ApiController(
         {
             return Error(response.Error);
         }
-
-        var user = await userManager.GetUserAsync(User);
                 
         var item = new Item()
         {
@@ -97,8 +112,8 @@ public class ApiController(
         return Ok(response);
     }
 
-    [HttpGet("[action]")]
-    [ProducesResponseType(typeof(Responses.IsAccountConnectedResponse),StatusCodes.Status200OK, "application/json")]
+    [HttpGet]
+    [ProducesResponseType(typeof(Responses.IsAccountConnectedResponse),StatusCodes.Status200OK)]
     public async Task<IActionResult> IsAccountConnected()
     {
         var user = await userManager.GetUserAsync(User);
@@ -107,34 +122,27 @@ public class ApiController(
         return Ok(new Responses.IsAccountConnectedResponse(connected));
     }
         
-    [ProducesResponseType(typeof(Ok<TransactionsGetResponse>), StatusCodes.Status200OK, "application/json" )]
-    [HttpGet("[action]")]
-    public async Task<IActionResult> GetTransactions([FromQuery] int skip = 0)
+    [ProducesResponseType(typeof(Ok<TransactionsGetResponse>), StatusCodes.Status200OK )]
+    [HttpGet]
+    public async Task<IActionResult> GetTransactions()
     {
         var user = await userManager.GetUserAsync(User);
-        var startDate = DateTime.UtcNow.AddDays(-1);
-        var accessToken = context.Items
-            .Where(i => i.User == user)
-            .Select(i => i.AccessToken)
-            .First();
-            
-        var data = await client.TransactionsGetAsync(new TransactionsGetRequest()
+
+        if (user == null)
         {
-            AccessToken = accessToken,
-            StartDate = DateOnly.FromDateTime(DateTime.Now.AddYears(-2)),
-            EndDate = DateOnly.FromDateTime(DateTime.Now),
-            Options = new TransactionsGetRequestOptions()
-            {
-                Count = 500,
-                Offset = skip
-            }
-        });
+            return Unauthorized();
+        }
             
-        return Ok(data);
+        var transactions = context.Transactions
+            .Include(t => t.User)
+            .Where(t => t.User == user)
+            .ToList();
+            
+        return Ok(transactions);
     }
         
-    [ProducesResponseType(typeof(Ok<TransactionsGetResponse>), StatusCodes.Status200OK, "application/json" )]
-    [HttpGet("[action]")]
+    [ProducesResponseType(typeof(Ok<TransactionsGetResponse>), StatusCodes.Status200OK )]
+    [HttpGet]
     public async Task<IActionResult> SyncTransactions()
     {
         var user = await userManager.GetUserAsync(User);
@@ -144,7 +152,7 @@ public class ApiController(
             .Select(i => i.AccessToken)
             .First();
 
-        if (user is null)
+        if (user is null || item is null)
         {
             return Unauthorized();
         }
@@ -160,7 +168,7 @@ public class ApiController(
             context.Accounts.Update(new Account()
             {
                 Id = account.AccountId,
-                ItemId = item!.Id,
+                ItemId = item.Id,
                 User = user,
                 Name = account.Name,
                 Type = account.Type.ToString(),
