@@ -3,6 +3,7 @@ using Going.Plaid.Transactions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Server.Models;
+using Server.Utils;
 
 namespace Server.Data.Services;
 
@@ -82,10 +83,27 @@ public class TransactionsService(
         
     }
 
-    public List<Transaction> GetAll(IdentityUser user)
+    public List<StrippedTransaction> GetAll(IdentityUser user)
     {
         var transactions = context.Transactions
             .Where(t => t.User == user)
+            .Select(t => new StrippedTransaction()
+            {
+                Id = t.Id,
+                Name = t.Name,
+                PaymentChannel = t.PaymentChannel,
+                AccountId = t.AccountId,
+                Amount = t.Amount,
+                Date = t.Date,
+                Datetime = t.Datetime,
+                IsoCurrencyCode = t.IsoCurrencyCode,
+                UnofficialCurrencyCode = t.UnofficialCurrencyCode,
+                PersonalFinanceCategory = t.PersonalFinanceCategory,
+                MerchantName = t.MerchantName,
+                LogoUrl = t.LogoUrl,
+                PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+                TransactionCode = t.TransactionCode
+            })
             .ToList();
 
         return transactions;

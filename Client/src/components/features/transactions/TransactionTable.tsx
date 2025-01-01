@@ -64,6 +64,7 @@ export function TransactionTable({columns, data, isLoading, className}: Transact
                 "personal care": true,
                 "travel": true,
                 "government and non profit": true,
+                "other": true,
             }
         },
         {

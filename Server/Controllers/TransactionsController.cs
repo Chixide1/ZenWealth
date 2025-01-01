@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Server.Data.Services;
 using Server.Models;
+using Server.Utils;
 
 namespace Server.Controllers;
 
@@ -17,7 +18,7 @@ public class TransactionsController(
     ITransactionsService transactionsService,
     UserManager<IdentityUser> userManager) : ControllerBase
 {
-    [ProducesResponseType(typeof(Ok<List<Transaction>>), StatusCodes.Status200OK )]
+    [ProducesResponseType(typeof(List<StrippedTransaction>), StatusCodes.Status200OK )]
     [HttpGet]
     public async Task<IActionResult> Get()
     {

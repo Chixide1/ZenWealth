@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Server.Models;
+using Server.Utils;
 
 namespace Server.Data.Services;
 
@@ -7,7 +8,7 @@ public interface ITransactionsService
 {
     Task Sync(IdentityUser user);
     
-    List<Transaction> GetAll(IdentityUser user);
+    List<StrippedTransaction> GetAll(IdentityUser user);
 }
 
 public interface IAccountsService
