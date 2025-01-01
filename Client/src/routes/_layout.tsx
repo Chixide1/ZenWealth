@@ -1,4 +1,4 @@
-﻿import { createFileRoute, redirect } from '@tanstack/react-router'
+﻿import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
 import axios, {AxiosError, AxiosResponse } from "axios";
@@ -14,6 +14,7 @@ export const Route = createFileRoute('/_layout')({
 export function Layout() {
     const [hasItems, setHasItems] = useState<boolean | null>(null)
     const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}`
+    const navigate = useNavigate()
 
     useEffect(() => {
         async function fetchStatus(){
@@ -24,7 +25,7 @@ export function Layout() {
                 })
                 .catch((error: AxiosError) => {
                     if(error.response!.status === 401){
-                        throw redirect({to: "/login"})
+                        navigate({to: "/login"})
                     } else {
                         console.error('Error occurred', error)
                     }
