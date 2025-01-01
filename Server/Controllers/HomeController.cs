@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Server.Common;
 using Server.Data.Services;
 using Server.Utils;
 
@@ -34,6 +35,6 @@ public class HomeController(IItemsService itemsService, UserManager<IdentityUser
         }
         
         var result = itemsService.Check(user);
-        return Ok(new Responses.HasItemsResponse(result));
+        return Ok(new Responses.HasItemsResponse(result, user.UserName!));
     }
 }

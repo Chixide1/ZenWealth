@@ -91,11 +91,11 @@ export default  {
   			},
 			'fade-in-up': {
 				from: {
-					transform: 'scale(0.9)',
-					opacity: '0.3',
+					transform: 'translateY(10%)',
+					opacity: '0.1',
 				},
 				to: {
-					transform: 'scale(1)',
+					transform: 'translateY(0%)',
 					opacity: '1',
 				}
 			}

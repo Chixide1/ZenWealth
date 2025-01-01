@@ -11,17 +11,22 @@ export const Route = createFileRoute('/_layout')({
     component: Layout,
 })
 
+type AuthResponse = {
+    hasItems: boolean | null,
+    userName: string,
+}
+
 export function Layout() {
-    const [hasItems, setHasItems] = useState<boolean | null>(null)
+    const [userDetails, setUserDetails] = useState<AuthResponse>({hasItems: null, userName: ""})
     const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}`
     const navigate = useNavigate()
 
     useEffect(() => {
-        async function fetchStatus(){
+        async function fetchAuth(){
             await axios
                 .get(`${backend}`, { withCredentials: true })
-                .then((response: AxiosResponse<{ hasItems: boolean }>) => {
-                    setHasItems(response.data.hasItems)
+                .then((response: AxiosResponse<AuthResponse>) => {
+                    setUserDetails(response.data);
                 })
                 .catch((error: AxiosError) => {
                     if(error.response!.status === 401){
@@ -31,24 +36,26 @@ export function Layout() {
                     }
                 })
         }
-        fetchStatus()
+        fetchAuth()
     }, []);
 
-    if(hasItems == null){
+    if(userDetails.hasItems === null){
         return <Loading/>
     }
 
-    if(!hasItems){
+    if (userDetails.hasItems === false) {
         return (
             <div className={"w-full h-screen flex items-center justify-center"}>
                 <LinkStart />
             </div>
-        )
+        );
     }
 
+    console.log(userDetails)
+    
     return (
         <TransactionsProvider>
-            <DualBar>
+            <DualBar username={userDetails.userName} >
                 <Outlet />
             </DualBar>
         </TransactionsProvider>

@@ -2,7 +2,7 @@
 import {LinkButton} from "@/components/features/link/LinkButton.tsx";
 import {CircleUser, CopyPlus } from "lucide-react";
 
-export default function Topbar(){
+export default function Topbar({username}: {username?: string}) {
     
     return (
         <header
@@ -19,7 +19,7 @@ export default function Topbar(){
                 </LinkButton>
                 <div className="flex items-center justify-center text-xs ml-auto pe-2 md:pe-0">
                     <CircleUser className="mr-2"/>
-                    <span>Chikezie Onuoha</span>
+                    <span>{username}</span>
                 </div>
             </div>
         </header>

@@ -54,9 +54,10 @@ const items: MenuItem[] = [
 
 type DualNavbarProps = {
     children?: React.ReactNode;
+    username?: string;
 }
 
-export default function DualBar({children}: DualNavbarProps) {
+export default function DualBar({children, username}: DualNavbarProps) {
     const location = useLocation();
 
     return (
@@ -87,7 +88,7 @@ export default function DualBar({children}: DualNavbarProps) {
                 </SidebarContent>
             </Sidebar>
             <main className="w-full h-screen flex flex-col overflow-hidden">
-                <Topbar />
+                <Topbar username={username}/>
                 <section
                     className="flex-grow overflow-auto scrollbar-thin px-4 md:pe-4 pb-10"
                 >

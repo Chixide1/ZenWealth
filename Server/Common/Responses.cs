@@ -1,6 +1,4 @@
-﻿using Going.Plaid.Entity;
-
-namespace Server.Utils;
+﻿namespace Server.Common;
 
 public abstract class Responses
 {
@@ -8,5 +6,5 @@ public abstract class Responses
 
     public record ExchangePublicTokenResponse(string PublicToken);
 
-    public record HasItemsResponse(bool hasItems);
+    public record HasItemsResponse(bool HasItems, string UserName);
 }

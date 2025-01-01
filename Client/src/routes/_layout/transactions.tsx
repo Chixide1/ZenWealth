@@ -11,5 +11,12 @@ export const Route = createFileRoute('/_layout/transactions')({
 function TransactionsPage() {
   const [transactionsData, isLoading] = useContext(TransactionsContext)
 
-  return <TransactionTable columns={transactionColumns} data={transactionsData} isLoading={isLoading} />
+  return (
+      <TransactionTable
+          className="animate-fade-in-up"
+          columns={transactionColumns}
+          data={transactionsData}
+          isLoading={isLoading}
+      />
+  )
 }

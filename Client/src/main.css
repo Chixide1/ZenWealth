@@ -63,10 +63,6 @@
 @layer base {
   :root {
     color-scheme: dark;
-    
-    @supports (scrollbar-width: thin) {
-      scrollbar-width: thin; 
-    }
   }
   
   body {
@@ -78,7 +74,7 @@
   }
 }
 
-/** Fonts */
+/** Utilities */
 @layer utilities {
   .montserrat {
     font-family: "Montserrat", sans-serif;
@@ -88,5 +84,16 @@
   
   .scrollbar-thin {
     scrollbar-width: thin;
+  }
+  
+  .scrollbar-custom {
+    ::-webkit-scrollbar {
+      height: 5px;
+      background-color: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb{
+      background-color: theme(colors.neutral.500);
+    }
   }
 }
