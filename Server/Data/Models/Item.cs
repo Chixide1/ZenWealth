@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using Server.Models;
 
-namespace Server.Models;
+namespace Server.Data.Models;
 
 public class Item
 {
@@ -21,6 +21,17 @@ public class Item
     /// </summary>
     [Column(TypeName = "varchar(100)")]
     public required string AccessToken { get; init; }
+
+    /// <summary>
+    /// <para>Cursor used for fetching any future updates after the latest update provided in this response. The cursor obtained after all pages have been pulled (indicated by <c>has_more</c> being <c>false</c>) will be valid for at least 1 year. This cursor should be persisted for later calls. If transactions are not yet available, this will be an empty string.</para>
+    /// </summary>
+    [Column(TypeName = "varchar(255)")]
+    public string? Cursor { get; set; } = null;
+
+    //<summary>
+    //<para>The time of the most recent sync for this Item</para>
+    //</summary>
+    public DateTimeOffset? LastFetched { get; set; } = null;
 
     /// <summary>
     /// <para>Navigation property for Accounts associated with this Item</para>

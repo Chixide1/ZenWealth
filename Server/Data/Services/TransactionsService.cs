@@ -21,63 +21,88 @@ public class TransactionsService(
 
         foreach (var i in items)
         {
-            var transactions = await client.TransactionsSyncAsync(new TransactionsSyncRequest()
+            if (i.LastFetched != null & DateTime.Now.AddDays(-1) < i.LastFetched)
             {
-                AccessToken = i.AccessToken,
-                Count = 500,
-            });    
-            
-            foreach (var account in transactions.Accounts)
-            {
-                if (context.Accounts.Any(a => a.Id == account.AccountId))
-                {
-                    continue;
-                }
-                
-                context.Accounts.Add(new Account()
-                {
-                    Id = account.AccountId,
-                    ItemId = i.Id,
-                    User = user,
-                    Name = account.Name,
-                    Type = account.Type.ToString(),
-                    Balance = account.Balances.Current == null ? 0.00 : (double)account.Balances.Current,
-                    Mask = account.Mask,
-                    Subtype = account.Subtype.ToString(),
-                    OfficialName = account.OfficialName,
-                });
-            
-                await context.SaveChangesAsync();
+                continue;
             }
             
-            foreach (var transaction in transactions.Added)
-            {
-                if (context.Transactions.Any(t => t.Id == transaction.TransactionId))
-                {
-                    continue;
-                }
-                
-                context.Transactions.Add(new Transaction()
-                {
-                    Id = transaction.TransactionId!,
-                    AccountId = transaction.AccountId!,
-                    User = user,
-                    Name = transaction.Name,
-                    Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
-                    Date = transaction.Date,
-                    Datetime = transaction.Datetime,
-                    Website = transaction.Website,
-                    LogoUrl = transaction.LogoUrl,
-                    MerchantName = transaction.MerchantName,
-                    PaymentChannel = transaction.PaymentChannel.ToString(),
-                    TransactionCode = transaction.TransactionCode == null ? null : transaction.TransactionCode.ToString(),
-                    IsoCurrencyCode = transaction.IsoCurrencyCode,
-                    PersonalFinanceCategory = transaction.PersonalFinanceCategory!.Primary,
-                    UnofficialCurrencyCode = transaction.UnofficialCurrencyCode,
-                    PersonalFinanceCategoryIconUrl = transaction.PersonalFinanceCategoryIconUrl,
-                });
+            var hasMore = true;
             
+            while (hasMore)
+            {
+                var transactions = await client.TransactionsSyncAsync(new TransactionsSyncRequest()
+                {
+                    AccessToken = i.AccessToken,
+                    Count = 500,
+                    Cursor = i.Cursor
+                });
+                
+                // Console.WriteLine($"Current Cursor value is {i.Cursor}");
+
+                foreach (var account in transactions.Accounts)
+                {
+                    if (context.Accounts.Any(a => a.Id == account.AccountId))
+                    {
+                        continue;
+                    }
+
+                    context.Accounts.Add(new Account()
+                    {
+                        Id = account.AccountId,
+                        ItemId = i.Id,
+                        User = user,
+                        Name = account.Name,
+                        Type = account.Type.ToString(),
+                        Balance = account.Balances.Current == null ? 0.00 : (double)account.Balances.Current,
+                        Mask = account.Mask,
+                        Subtype = account.Subtype.ToString(),
+                        OfficialName = account.OfficialName,
+                    });
+
+                    await context.SaveChangesAsync();
+                }
+
+                foreach (var transaction in transactions.Added)
+                {
+                    if (context.Transactions.Any(t => t.Id == transaction.TransactionId))
+                    {
+                        continue;
+                    }
+
+                    context.Transactions.Add(new Transaction()
+                    {
+                        Id = transaction.TransactionId!,
+                        AccountId = transaction.AccountId!,
+                        User = user,
+                        Name = transaction.Name,
+                        Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
+                        Date = transaction.Date,
+                        Datetime = transaction.Datetime,
+                        Website = transaction.Website,
+                        LogoUrl = transaction.LogoUrl,
+                        MerchantName = transaction.MerchantName,
+                        PaymentChannel = transaction.PaymentChannel.ToString(),
+                        TransactionCode = transaction.TransactionCode == null
+                            ? null
+                            : transaction.TransactionCode.ToString(),
+                        IsoCurrencyCode = transaction.IsoCurrencyCode,
+                        PersonalFinanceCategory = transaction.PersonalFinanceCategory!.Primary,
+                        UnofficialCurrencyCode = transaction.UnofficialCurrencyCode,
+                        PersonalFinanceCategoryIconUrl = transaction.PersonalFinanceCategoryIconUrl,
+                    });
+
+                    await context.SaveChangesAsync();
+                }
+
+                i.Cursor = transactions.NextCursor;
+                i.LastFetched = DateTime.Now;
+
                 await context.SaveChangesAsync();
+                
+                if (!transactions.HasMore)
+                {
+                    hasMore = false;
+                }
             }
         }
         

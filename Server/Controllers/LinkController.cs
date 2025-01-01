@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Server.Data;
 using Server.Data.Services;
 using Server.Utils;
-using Item = Server.Models.Item;
+using Item = Server.Data.Models.Item;
 
 namespace Server.Controllers;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Server.Data.Models;
 using Server.Models;
 
 namespace Server.Data.Services;
