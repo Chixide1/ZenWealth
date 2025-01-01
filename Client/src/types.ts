@@ -1,16 +1,14 @@
 ﻿export type Transaction = {
-    transaction_id: string;
-    merchant_name: string;
+    transactionId: string;
+    merchantName: string;
     name: string;
     amount: number;
-    personal_finance_category: {
-        primary: string;
-    }
+    personalFinanceCategory: string,
     category: string;
     date: string;
-    date_time: string;
-    iso_currency_code: string;
-    unofficial_currency_code: string;
-    logo_url: string;
-    personal_finance_category_icon_url: string;
+    datetime: string;
+    isoCurrencyCode: string;
+    unofficialCurrencyCode: string;
+    logoUrl: string;
+    personalFinanceCategoryIconUrl: string;
 }

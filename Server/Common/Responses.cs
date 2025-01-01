@@ -8,5 +8,5 @@ public abstract class Responses
 
     public record ExchangePublicTokenResponse(string PublicToken);
 
-    public record IsAccountConnectedResponse(bool Connected);
+    public record HasItemsResponse(bool hasItems);
 }

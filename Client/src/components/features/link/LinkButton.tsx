@@ -15,12 +15,12 @@ type LinkButtonProps = ButtonProps & {
 
 export function LinkButton({children, className, ...props}: LinkButtonProps) {
     const [linkToken, setLinkToken] = useState<string>("")
-    const backend = import.meta.env.VITE_ASPNETCORE_URLS + "/Api"
+    const backend = import.meta.env.VITE_ASPNETCORE_URLS
 
     useEffect(() => {
         async function GetLinkToken(){
             await axios.get<LinkTokenResponse>(
-                `${backend}/GetLinkToken`,
+                `${backend}/link/get`,
                 {withCredentials: true}
             )
                 .then(response => setLinkToken(response.data.value))
@@ -33,7 +33,7 @@ export function LinkButton({children, className, ...props}: LinkButtonProps) {
         token: linkToken,
         onSuccess: async (publicToken: string) => {
             await axios.post(
-                `${backend}/ExchangePublicToken`,
+                `${backend}/link/exchange`,
                 {publicToken: publicToken}, 
                 {withCredentials: true}
             )

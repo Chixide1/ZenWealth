@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Server.Data;
+using Server.Data.Services;
 using Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Ef Core context & identity endpoints
-builder.Services.AddDbContext<ApplicationDbContext>(
+builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
         .EnableSensitiveDataLogging());
 
@@ -16,7 +18,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<AppDbContext>();
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -30,6 +32,10 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
+
+// Model Services
+builder.Services.AddScoped<ITransactionsService, TransactionsService>();
+builder.Services.AddScoped<IItemsService, ItemsService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

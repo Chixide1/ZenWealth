@@ -19,14 +19,14 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             </div>
         ),
         cell: ({row}) => {
-            const name = row.original.merchant_name || row.original.name
+            const name = row.original.merchantName || row.original.name
             const imageSize = 30
 
             return (
                 <div className="flex gap-2 items-center justify-start">
-                    {row.original.logo_url ?
+                    {row.original.logoUrl ?
                         (<img
-                            src={row.original.logo_url}
+                            src={row.original.logoUrl}
                             alt="an image of the transaction logo"
                             className="rounded min-w-6 h-auto ms-1"
                             width={imageSize}
@@ -40,7 +40,7 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
         enableHiding: false,
         size: 200,
     }),
-    columnHelper.accessor(row => `${row.personal_finance_category.primary.replace(/_/g, " ")}`, {
+    columnHelper.accessor(row => {return row.personalFinanceCategory.replace(/_/g, " ")}, {
         id: 'category',
         header: ({column}) => (
             <div className="flex items-center">
@@ -54,7 +54,7 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             return (
                 <div className="flex gap-2 items-center">
                     <img
-                        src={row.original.personal_finance_category_icon_url}
+                        src={row.original.personalFinanceCategoryIconUrl}
                         alt="an image of the transaction logo"
                         className="rounded min-w-6 h-auto ms-1 w-7"
                     />
@@ -83,7 +83,7 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             const amount = row.getValue<number>("amount")
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
                 style: "currency",
-                currency: row.original.iso_currency_code || row.original.unofficial_currency_code,
+                currency: row.original.isoCurrencyCode || row.original.unofficialCurrencyCode,
                 currencyDisplay: "symbol",
             }).format(amount)
 
@@ -107,7 +107,7 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             </div>
         ),
         cell: ({row}) => {
-            const dateTime = new Date(row.original.date_time || row.original.date)
+            const dateTime = new Date(row.original.datetime || row.original.date)
             const formatted = new Intl.DateTimeFormat('en-GB', {
                 dateStyle: 'medium',
                 timeStyle: 'short',

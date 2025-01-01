@@ -1,7 +1,7 @@
-﻿import { createFileRoute } from '@tanstack/react-router'
+﻿import { createFileRoute, redirect } from '@tanstack/react-router'
 import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
-import axios, { AxiosResponse } from "axios";
+import axios, {AxiosError, AxiosResponse } from "axios";
 import {useEffect, useState } from "react";
 import TransactionsProvider from "@/providers/TransactionsProvider.tsx";
 import Loading from "@/components/shared/Loading.tsx";
@@ -12,28 +12,32 @@ export const Route = createFileRoute('/_layout')({
 })
 
 export function Layout() {
-    const [connected, setConnected] = useState<boolean | null>(null)
-    const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}/api`
+    const [hasItems, setHasItems] = useState<boolean | null>(null)
+    const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}`
 
     useEffect(() => {
         async function fetchStatus(){
             await axios
-                .get(`${backend}/IsAccountConnected`, { withCredentials: true })
-                .then((response: AxiosResponse<{ connected: boolean }>) => {
-                    setConnected(response.data.connected)
+                .get(`${backend}`, { withCredentials: true })
+                .then((response: AxiosResponse<{ hasItems: boolean }>) => {
+                    setHasItems(response.data.hasItems)
                 })
-                .catch((error: AxiosResponse) => {
-                    console.error('Error occurred', error)
+                .catch((error: AxiosError) => {
+                    if(error.response!.status === 401){
+                        throw redirect({to: "/login"})
+                    } else {
+                        console.error('Error occurred', error)
+                    }
                 })
         }
         fetchStatus()
     }, []);
 
-    if(connected == null){
+    if(hasItems == null){
         return <Loading/>
     }
 
-    if(!connected){
+    if(!hasItems){
         return (
             <div className={"w-full h-screen flex items-center justify-center"}>
                 <LinkStart />

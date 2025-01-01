@@ -3,19 +3,14 @@ import { Transaction } from "@/types";
 import axios, { AxiosResponse } from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
-interface TransactionData {
-    transactions: Transaction[]
-    total_transactions: number
-}
-
-export const TransactionsContext = createContext<[TransactionData | undefined, boolean]>([
+export const TransactionsContext = createContext<[Transaction[] | undefined, boolean]>([
     undefined,
     true
 ]);
 
-async function getTransactionsData(): Promise<TransactionData> {
-    const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}/api`;
-    const response: AxiosResponse<TransactionData> = await axios.get(`${backend}/GetTransactions`, { withCredentials: true })
+async function getTransactionsData(): Promise<Transaction[]> {
+    const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}`;
+    const response: AxiosResponse<Transaction[]> = await axios.get(`${backend}/transactions/get`, { withCredentials: true })
         .catch(error => {
             throw new Error(error)
         })
@@ -27,6 +22,8 @@ export default function TransactionsProvider({ children }: { children: ReactNode
         queryKey: ['transactions'],
         queryFn: getTransactionsData,
     });
+    
+    console.log(data)
 
     return (
         <TransactionsContext.Provider

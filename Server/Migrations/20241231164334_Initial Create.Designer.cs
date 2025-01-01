@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Server.Models;
+using Server.Data;
 
 #nullable disable
 
 namespace Server.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241229200716_Initial Create")]
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20241231164334_Initial Create")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -226,34 +226,39 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Models.Account", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(100)");
 
-                    b.Property<float>("Balance")
-                        .HasColumnType("real");
+                    b.Property<double>("Balance")
+                        .HasColumnType("float");
 
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<string>("Mask")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("OfficialName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Subtype")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Accounts");
                 });
@@ -270,13 +275,12 @@ namespace Server.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("IdentityUser")
-                        .IsRequired()
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdentityUser");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Items");
                 });
@@ -284,14 +288,14 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Models.Transaction", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("Id");
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("AccountId")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
 
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
 
                     b.Property<DateOnly?>("Date")
                         .HasColumnType("date");
@@ -300,38 +304,43 @@ namespace Server.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("IsoCurrencyCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("LogoUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("MerchantName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("PaymentChannel")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("PersonalFinanceCategory")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("PersonalFinanceCategoryIconUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("TransactionCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("UnofficialCurrencyCode")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Website")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Transactions");
                 });
@@ -395,16 +404,20 @@ namespace Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Item");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Server.Models.Item", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("IdentityUser")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -413,9 +426,17 @@ namespace Server.Migrations
                 {
                     b.HasOne("Server.Models.Account", "Account")
                         .WithMany("Transactions")
-                        .HasForeignKey("AccountId");
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Account");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Server.Models.Account", b =>

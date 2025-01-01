@@ -162,36 +162,41 @@ namespace Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityUser = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AccessToken = table.Column<string>(type: "varchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Items", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Items_AspNetUsers_IdentityUser",
-                        column: x => x.IdentityUser,
+                        name: "FK_Items_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Accounts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(100)", nullable: false),
                     ItemId = table.Column<int>(type: "int", nullable: false),
-                    Balance = table.Column<float>(type: "real", nullable: false),
-                    Mask = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OfficialName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Subtype = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Balance = table.Column<double>(type: "float", nullable: false),
+                    Mask = table.Column<string>(type: "varchar(50)", nullable: true),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: false),
+                    OfficialName = table.Column<string>(type: "varchar(255)", nullable: true),
+                    Type = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Subtype = table.Column<string>(type: "varchar(255)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Accounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Accounts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Accounts_Items_ItemId",
                         column: x => x.ItemId,
@@ -204,21 +209,22 @@ namespace Server.Migrations
                 name: "Transactions",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AccountId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Amount = table.Column<float>(type: "real", nullable: false),
-                    IsoCurrencyCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UnofficialCurrencyCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Id = table.Column<string>(type: "varchar(100)", nullable: false),
+                    AccountId = table.Column<string>(type: "varchar(100)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    IsoCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
+                    UnofficialCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
                     Date = table.Column<DateOnly>(type: "date", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MerchantName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LogoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: true),
+                    MerchantName = table.Column<string>(type: "varchar(255)", nullable: true),
+                    LogoUrl = table.Column<string>(type: "varchar(255)", nullable: true),
+                    Website = table.Column<string>(type: "varchar(255)", nullable: true),
                     Datetime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    PaymentChannel = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PersonalFinanceCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TransactionCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PersonalFinanceCategoryIconUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PaymentChannel = table.Column<string>(type: "varchar(255)", nullable: true),
+                    PersonalFinanceCategory = table.Column<string>(type: "varchar(255)", nullable: true),
+                    TransactionCode = table.Column<string>(type: "varchar(255)", nullable: true),
+                    PersonalFinanceCategoryIconUrl = table.Column<string>(type: "varchar(255)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -227,6 +233,12 @@ namespace Server.Migrations
                         name: "FK_Transactions_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Transactions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
 
@@ -234,6 +246,11 @@ namespace Server.Migrations
                 name: "IX_Accounts_ItemId",
                 table: "Accounts",
                 column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Accounts_UserId",
+                table: "Accounts",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -275,14 +292,19 @@ namespace Server.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Items_IdentityUser",
+                name: "IX_Items_UserId",
                 table: "Items",
-                column: "IdentityUser");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_AccountId",
                 table: "Transactions",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_UserId",
+                table: "Transactions",
+                column: "UserId");
         }
 
         /// <inheritdoc />
