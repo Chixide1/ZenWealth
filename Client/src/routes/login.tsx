@@ -1,5 +1,5 @@
-﻿import { createFileRoute } from '@tanstack/react-router'
-import { LoginForm } from '@/components/features/login/LoginForm.tsx'
+﻿import { createFileRoute, Link } from '@tanstack/react-router'
+import { LoginForm } from '@/components/features/identity/LoginForm.tsx'
 import Logo from "@/components/shared/Logo.tsx";
 
 export const Route = createFileRoute('/login')({
@@ -25,10 +25,10 @@ function LoginPage() {
         <LoginForm />
       </div>
       <p className="sm:mt-8 text-sm text-primary mt-auto mb-14 sm:mb-0">
-        Don't have an account?{' '}
-        <a href="#" className="text-secondary">
-          Sign up
-        </a>
+        Don't have an account?
+          <Link to={"/register"} className="text-secondary ms-1">
+              Register
+          </Link>
       </p>
     </main>
   )

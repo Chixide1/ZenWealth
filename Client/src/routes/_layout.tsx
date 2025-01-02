@@ -29,7 +29,7 @@ export function Layout() {
                     setUserDetails(response.data);
                 })
                 .catch((error: AxiosError) => {
-                    if(error.response!.status === 401){
+                    if(error.response!.status === 401 || error.response!.status === 500){
                         navigate({to: "/login"})
                     } else {
                         console.error('Error occurred', error)

@@ -7,10 +7,11 @@ import { useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
 import {useToast} from "@/hooks/use-toast.ts";
 import { Label } from "@/components/core/label"
-import {Input} from "@/components/core/input.tsx";
 import {Checkbox} from "@/components/core/checkbox.tsx";
 import {Button} from "@/components/core/button.tsx";
 import {Toaster} from "@/components/core/toaster.tsx";
+import {IdentityInput, IdentityInputConfig} from "@/components/features/identity/IdentityInput.tsx";
+import {camelCaseToSentence} from "@/lib/utils.ts";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -89,7 +90,7 @@ export function LoginForm() {
                 const field = errors[key as keyof typeof errors]
                 
                 toast({
-                    title: "Login Error",
+                    title: camelCaseToSentence(key),
                     description: field?.message,
                     variant: "destructive"
                 })  
@@ -97,45 +98,29 @@ export function LoginForm() {
         }
     }, [errors])
 
+    const inputs: IdentityInputConfig[] = [
+        {
+            id: "loginFormEmail",
+            type: "email",
+            register: {...register("email")},
+            icon: Mail,
+            label: "Email",
+        },
+        {
+            id: "loginFormPassword",
+            type: "password",
+            register: {...register("password")},
+            icon: Lock,
+            label: "Password",
+        },
+    ]
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center px-9 w-full sm:w-9/12 text-sm">
             <div className="overflow-hidden rounded-md w-full text-primary">
-                <div className="relative">
-                    <Label
-                        htmlFor="loginEmail"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 bg-neutral-100/[0.07] rounded-full"
-                    >
-                        <Mail className="h-4 w-4"/>
-                    </Label>
-                    <Label htmlFor="loginEmail" className="absolute left-14 top-2 text-xs text-neutral-500">
-                        Email
-                    </Label>
-                    <Input
-                        className="pl-14 pb-5 bg-neutral-300/[0.07] border-0 placeholder:text-transparent rounded-none border-b-0 pt-9"
-                        placeholder="Email"
-                        type="email"
-                        id="loginEmail"
-                        {...register("email")}
-                    />
-                </div>
-                <div className="relative">
-                    <Label
-                        htmlFor="loginPass"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-9 h-9 bg-neutral-100/[0.07] rounded-full"
-                    >
-                        <Lock className="h-4 w-4"/>
-                    </Label>
-                    <Label htmlFor="loginPass" className="absolute left-14 top-2 text-xs text-neutral-500">
-                        Password
-                    </Label>
-                    <Input
-                        className="pl-14 pb-5 bg-neutral-300/[0.07] placeholder:text-transparent rounded-none pt-9 border-0 border-t border-neutral-700 focus-visible:ring-0"
-                        placeholder="Password"
-                        type="password"
-                        id="loginPass"
-                        {...register("password")}
-                    />
-                </div>
+                {inputs.map((input) => (
+                    <IdentityInput {...input} key={input.id}/>
+                ))}
             </div>
             <div className="flex items-center justify-between w-full mt-6 sm:mt-3">
                 <div className="flex items-center space-x-2">

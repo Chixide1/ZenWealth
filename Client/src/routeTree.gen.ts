@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
@@ -19,6 +20,12 @@ import { Route as LayoutAnalyticsImport } from './routes/_layout/analytics'
 import { Route as LayoutAccountsImport } from './routes/_layout/accounts'
 
 // Create/Update Routes
+
+const RegisterRoute = RegisterImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -71,6 +78,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
     '/_layout/accounts': {
@@ -126,6 +140,7 @@ const LayoutRouteWithChildren =
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/accounts': typeof LayoutAccountsRoute
   '/analytics': typeof LayoutAnalyticsRoute
   '/transactions': typeof LayoutTransactionsRoute
@@ -134,6 +149,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/accounts': typeof LayoutAccountsRoute
   '/analytics': typeof LayoutAnalyticsRoute
   '/transactions': typeof LayoutTransactionsRoute
@@ -144,6 +160,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/_layout/accounts': typeof LayoutAccountsRoute
   '/_layout/analytics': typeof LayoutAnalyticsRoute
   '/_layout/transactions': typeof LayoutTransactionsRoute
@@ -152,13 +169,27 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/accounts' | '/analytics' | '/transactions' | '/'
+  fullPaths:
+    | ''
+    | '/login'
+    | '/register'
+    | '/accounts'
+    | '/analytics'
+    | '/transactions'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/accounts' | '/analytics' | '/transactions' | '/'
+  to:
+    | '/login'
+    | '/register'
+    | '/accounts'
+    | '/analytics'
+    | '/transactions'
+    | '/'
   id:
     | '__root__'
     | '/_layout'
     | '/login'
+    | '/register'
     | '/_layout/accounts'
     | '/_layout/analytics'
     | '/_layout/transactions'
@@ -169,11 +200,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 
 export const routeTree = rootRoute
@@ -187,7 +220,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_layout",
-        "/login"
+        "/login",
+        "/register"
       ]
     },
     "/_layout": {
@@ -201,6 +235,9 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/register": {
+      "filePath": "register.tsx"
     },
     "/_layout/accounts": {
       "filePath": "_layout/accounts.tsx",
