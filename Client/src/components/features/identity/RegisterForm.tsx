@@ -15,7 +15,15 @@ const formSchema = z.object({
     email: z.string().email(),
     password: z.string().min(1, "Password cannot be empty"),
     confirmPassword: z.string().min(1, "Password cannot be empty"),
-})
+}).superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+        ctx.addIssue({
+            code: "custom",
+            message: "The passwords provided did not match!",
+            path: ['confirmPassword']
+        });
+    }
+});
 
 type FormSchemaVals = z.infer<typeof formSchema>
 type RegisterApiResponse = {
@@ -32,7 +40,6 @@ export function RegisterForm(){
     const navigate = useNavigate()
     const {
         register,
-        setError,
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm<FormSchemaVals>({
@@ -46,13 +53,6 @@ export function RegisterForm(){
 
     async function onSubmit(values: FormSchemaVals) {
         const backend = import.meta.env.VITE_ASPNETCORE_URLS
-        
-        if(values.password !== values.confirmPassword){
-            setError("root", {
-                message: "Passwords do not match",
-            });
-            return;
-        }
         
         await axios({
             method: 'post',
