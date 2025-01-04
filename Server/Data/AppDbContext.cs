@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Server.Data.Models;
-using Server.Models;
 
 namespace Server.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options)
-    : IdentityDbContext<IdentityUser>(options)
+    : IdentityDbContext<User>(options)
 {
     public DbSet<Item> Items { get; set; }
     

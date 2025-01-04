@@ -1,10 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Server.Data.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server.Models;
+namespace Server.Data.Models;
 
 public class Account
 
@@ -21,7 +17,7 @@ public class Account
 	/// <summary>
 	/// <para>The associated Item which contains the Access Token that allows retrieval of data from Plaid</para>
 	/// </summary>
-	public int ItemId { get; init; }
+	public int? ItemId { get; init; }
 	
 	/// <summary>
 	/// <para>Navigation Property for the parent Item</para>
@@ -29,9 +25,15 @@ public class Account
 	public Item Item { get; init; } = null!;
 	
 	/// <summary>
-	/// <para>The associated user</para>
+	/// <para>The associated user ID</para>
 	/// </summary>
-	public required IdentityUser User { get; init; }
+	[Column(TypeName = "nvarchar(450)")]
+	public required string UserId { get; init; }
+
+	/// <summary>
+	/// <para>The associated user's Navigation</para>
+	/// </summary>
+	public User User { get; init; } = null!;
 
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>

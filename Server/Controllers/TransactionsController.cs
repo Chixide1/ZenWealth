@@ -1,26 +1,24 @@
-using Going.Plaid.Transactions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Server.Common;
+using Server.Data.Models;
 using Server.Data.Services;
-using Server.Models;
-using Server.Utils;
 
 namespace Server.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]/[action]")]
+[Route("[controller]")]
 [Produces("application/json")]
 public class TransactionsController(
     ILogger<TransactionsController> logger,
     ITransactionsService transactionsService,
-    UserManager<IdentityUser> userManager) : ControllerBase
+    UserManager<User> userManager) : ControllerBase
 {
-    [ProducesResponseType(typeof(List<StrippedTransaction>), StatusCodes.Status200OK )]
     [HttpGet]
-    public async Task<IActionResult> Get()
+    [ProducesResponseType(typeof(List<StrippedTransaction>), StatusCodes.Status200OK )]
+    public async Task<IActionResult> GetAllUserTransactions()
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -29,9 +27,9 @@ public class TransactionsController(
             return Unauthorized();
         }
 
-        await transactionsService.Sync(user);
+        await transactionsService.SyncAsync(user.Id);
         
-        var transactions = transactionsService.GetAll(user);
+        var transactions = await transactionsService.GetAllAsync(user.Id);
             
         return Ok(transactions);
     }

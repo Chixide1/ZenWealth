@@ -6,27 +6,25 @@ using Going.Plaid.Item;
 using Going.Plaid.Link;
 using Microsoft.AspNetCore.Identity;
 using Server.Common;
-using Server.Data;
+using Server.Data.Models;
 using Server.Data.Services;
-using Server.Utils;
-using Item = Server.Data.Models.Item;
 
 namespace Server.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]/[action]")]
+[Route("[controller]")]
 [Produces("application/json")]
 [ProducesResponseType(typeof(PlaidError), StatusCodes.Status400BadRequest)]
 public class LinkController(
     ILogger<LinkController> logger,
     PlaidClient client,
     IItemsService itemsService,
-    UserManager<IdentityUser> userManager) : ControllerBase
+    UserManager<User> userManager) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(Responses.GetLinkTokenResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> GetLinkToken()
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -39,7 +37,7 @@ public class LinkController(
         {
             User = new LinkTokenCreateRequestUser
             {
-                ClientUserId = user.Id,
+                ClientUserId = user.Id.ToString(),
             },
             ClientName = "ZenWealth",
             Products = [Products.Transactions],
@@ -60,7 +58,7 @@ public class LinkController(
 
     [HttpPost]
     [ProducesResponseType( StatusCodes.Status200OK)]
-    public async Task<IActionResult> Exchange([FromBody] Responses.ExchangePublicTokenResponse data)
+    public async Task<IActionResult> ExchangePublicToken([FromBody] Responses.ExchangePublicTokenResponse data)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -79,7 +77,7 @@ public class LinkController(
             return PlaidApiError(response.Error);
         }
                 
-        itemsService.Add(response.AccessToken, user);
+        itemsService.Add(response.AccessToken, user.Id);
             
         return Ok(response);
     }

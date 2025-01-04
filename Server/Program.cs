@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Server.Data;
+using Server.Data.Models;
 using Server.Data.Services;
-using Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -74,6 +74,6 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.MapGroup("/Identity")
-    .MapIdentityApi<IdentityUser>();
+    .MapIdentityApi<User>();
 
 app.Run();

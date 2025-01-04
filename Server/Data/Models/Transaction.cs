@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
 
-namespace Server.Models;
+namespace Server.Data.Models;
 
 public class Transaction
 
@@ -19,16 +18,22 @@ public class Transaction
 	/// </summary>
 	[Column(TypeName = "varchar(100)")]
 	public required string AccountId { get; init; }
-	
+
 	/// <summary>
 	/// <para>Navigation Property</para>
 	/// </summary>
 	public Account Account { get; init; } = null!;
 
 	/// <summary>
-	/// <para>The associated user</para>
+	/// <para>The associated user ID</para>
 	/// </summary>
-	public required IdentityUser User { get; init; }
+	[Column(TypeName = "nvarchar(450)")]
+	public string? UserId { get; init; }
+
+	/// <summary>
+	/// <para>The associated User's Navigation</para>
+	/// </summary>
+	public User User { get; init; } = null!;
 
 	/// <summary>
 	/// <para>The settled value of the transaction, denominated in the transactions's currency, as stated in <c>iso_currency_code</c> or <c>unofficial_currency_code</c>. For all products except Income: Positive values when money moves out of the account; negative values when money moves in. For example, debit card purchases are positive; credit card payments, direct deposits, and refunds are negative. For Income endpoints, values are positive when representing income.</para>

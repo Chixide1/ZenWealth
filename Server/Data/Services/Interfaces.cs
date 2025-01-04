@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Server.Models;
-using Server.Utils;
+﻿using Server.Common;
+using Server.Data.Models;
 
 namespace Server.Data.Services;
 
-public interface ITransactionsService
+public interface IItemsService
 {
-    Task Sync(IdentityUser user);
+    void Add(string accessToken, string userId);
     
-    List<StrippedTransaction> GetAll(IdentityUser user);
+    bool Check(string userId);
 }
 
 public interface IAccountsService
@@ -16,9 +15,10 @@ public interface IAccountsService
 
 }
 
-public interface IItemsService
+public interface ITransactionsService
 {
-    void Add(string accessToken, IdentityUser user);
+    Task SyncAsync(string userId);
     
-    bool Check(IdentityUser user);
+    Task<List<StrippedTransaction>> GetAllAsync(string userId);
 }
+

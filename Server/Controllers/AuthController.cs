@@ -2,30 +2,29 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Server.Common;
+using Server.Data.Models;
 using Server.Data.Services;
-using Server.Utils;
 
 namespace Server.Controllers;
 
 [Route("")]
 [Route("[controller]")]
-[Route("[controller]/[action]")]
 [Produces("application/json")]
-public class HomeController(IItemsService itemsService, UserManager<IdentityUser> userManager) : ControllerBase
+public class AuthController(IItemsService itemsService, UserManager<User> userManager) : ControllerBase
 {
-    [Route("/error")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public IActionResult Error()
-    {
-        return Problem();
-    }
+    // [Route("/error")]
+    // [ApiExplorerSettings(IgnoreApi = true)]
+    // public IActionResult Error()
+    // {
+    //     return Problem();
+    // }
     
     
     [HttpGet]
     [Authorize]
     [ProducesResponseType(type: typeof(Responses.HasItemsResponse), statusCode: 200)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Auth()
+    public async Task<IActionResult> AuthAndItemStatus()
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -34,7 +33,7 @@ public class HomeController(IItemsService itemsService, UserManager<IdentityUser
             return Unauthorized();
         }
         
-        var result = itemsService.Check(user);
+        var result = itemsService.Check(user.Id);
         return Ok(new Responses.HasItemsResponse(result, user.UserName!));
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
-using Server.Models;
 
 namespace Server.Data.Models;
 
@@ -12,9 +11,15 @@ public class Item
     public int Id { get; init; }
     
     /// <summary>
-    /// <para>The associated User account</para>
+    /// <para>The associated User ID</para>
     /// </summary>
-    public required IdentityUser User { get; init; }
+    [Column(TypeName = "nvarchar(450)")]
+    public required string UserId { get; init; }
+
+    /// <summary>
+    /// <para>The associated User's Navigation</para>
+    /// </summary>
+    public User User { get; init; } = null!;
     
     /// <summary>
     /// <para>The token which allows interaction with the user's bank to retrieve transaction information</para>

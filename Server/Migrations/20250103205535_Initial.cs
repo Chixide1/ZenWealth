@@ -162,7 +162,7 @@ namespace Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AccessToken = table.Column<string>(type: "varchar(100)", nullable: false),
                     Cursor = table.Column<string>(type: "varchar(255)", nullable: true),
                     LastFetched = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
@@ -174,7 +174,8 @@ namespace Server.Migrations
                         name: "FK_Items_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -182,8 +183,8 @@ namespace Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "varchar(100)", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ItemId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Balance = table.Column<double>(type: "float", nullable: false),
                     Mask = table.Column<string>(type: "varchar(50)", nullable: true),
                     Name = table.Column<string>(type: "varchar(255)", nullable: false),
@@ -198,13 +199,13 @@ namespace Server.Migrations
                         name: "FK_Accounts_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Accounts_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

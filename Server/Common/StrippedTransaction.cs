@@ -1,4 +1,4 @@
-﻿namespace Server.Utils;
+﻿namespace Server.Common;
 
 public class StrippedTransaction
 

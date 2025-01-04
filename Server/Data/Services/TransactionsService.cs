@@ -2,32 +2,40 @@
 using Going.Plaid.Transactions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Server.Models;
-using Server.Utils;
+using Server.Common;
+using Server.Data.Models;
 
 namespace Server.Data.Services;
 
 public class TransactionsService(
     AppDbContext context,
-    PlaidClient client
-    ) : ITransactionsService
+    PlaidClient client,
+    ILogger<TransactionsService> logger
+) : ITransactionsService
 {
-    public async Task Sync(IdentityUser user)
+    public async Task SyncAsync(string userId)
     {
-        var items = context.Items
-            .Include(i => i.User)
-            .Where(i => i.User == user)
-            .ToList();
+        var user = await context.Users
+            .Include(u => u.Items)
+            .Include(u => u.Accounts)
+            .Include(u => u.Transactions)
+            .SingleAsync(u => u.Id == userId);
+
+        logger.LogInformation("User {UserId} found", userId);
+
+        var items = user.Items.ToList();
 
         foreach (var i in items)
         {
             if (i.LastFetched != null & DateTime.Now.AddDays(-1) < i.LastFetched)
             {
+                logger.LogInformation("Skipping item {ItemId} for user {UserId} as it was recently fetched", i.Id,
+                    userId);
                 continue;
             }
-            
+
             var hasMore = true;
-            
+
             while (hasMore)
             {
                 var transactions = await client.TransactionsSyncAsync(new TransactionsSyncRequest()
@@ -36,21 +44,25 @@ public class TransactionsService(
                     Count = 500,
                     Cursor = i.Cursor
                 });
-                
-                // Console.WriteLine($"Current Cursor value is {i.Cursor}");
+
+                logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
+                    transactions.Added.Count, i.Id, userId);
 
                 foreach (var account in transactions.Accounts)
                 {
                     if (context.Accounts.Any(a => a.Id == account.AccountId))
                     {
+                        logger.LogInformation(
+                            "Skipping account {AccountId} for item {ItemId} and user {UserId} as it already exists",
+                            account.AccountId, i.Id, userId);
                         continue;
                     }
 
-                    context.Accounts.Add(new Account()
+                    await context.Accounts.AddAsync(new Account()
                     {
                         Id = account.AccountId,
                         ItemId = i.Id,
-                        User = user,
+                        UserId = user.Id,
                         Name = account.Name,
                         Type = account.Type.ToString(),
                         Balance = account.Balances.Current == null ? 0.00 : (double)account.Balances.Current,
@@ -59,6 +71,9 @@ public class TransactionsService(
                         OfficialName = account.OfficialName,
                     });
 
+                    logger.LogInformation("Added account {AccountId} for item {ItemId} and user {UserId}",
+                        account.AccountId, i.Id, userId);
+
                     await context.SaveChangesAsync();
                 }
 
@@ -66,14 +81,17 @@ public class TransactionsService(
                 {
                     if (context.Transactions.Any(t => t.Id == transaction.TransactionId))
                     {
+                        logger.LogInformation(
+                            "Skipping transaction {TransactionId} for item {ItemId} and user {UserId} as it already exists",
+                            transaction.TransactionId, i.Id, userId);
                         continue;
                     }
 
-                    context.Transactions.Add(new Transaction()
+                    await context.Transactions.AddAsync(new Transaction()
                     {
                         Id = transaction.TransactionId!,
                         AccountId = transaction.AccountId!,
-                        User = user,
+                        UserId = user.Id,
                         Name = transaction.Name,
                         Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
                         Date = transaction.Date,
@@ -85,33 +103,23 @@ public class TransactionsService(
                         TransactionCode = transaction.TransactionCode == null
                             ? null
                             : transaction.TransactionCode.ToString(),
-                        IsoCurrencyCode = transaction.IsoCurrencyCode,
-                        PersonalFinanceCategory = transaction.PersonalFinanceCategory!.Primary,
-                        UnofficialCurrencyCode = transaction.UnofficialCurrencyCode,
-                        PersonalFinanceCategoryIconUrl = transaction.PersonalFinanceCategoryIconUrl,
                     });
+
+                    logger.LogInformation("Added transaction {TransactionId} for item {ItemId} and user {UserId}",
+                        transaction.TransactionId, i.Id, userId);
 
                     await context.SaveChangesAsync();
                 }
 
-                i.Cursor = transactions.NextCursor;
-                i.LastFetched = DateTime.Now;
-
-                await context.SaveChangesAsync();
-                
-                if (!transactions.HasMore)
-                {
-                    hasMore = false;
-                }
+                hasMore = transactions.HasMore;
             }
         }
-        
     }
 
-    public List<StrippedTransaction> GetAll(IdentityUser user)
+    public async Task<List<StrippedTransaction>> GetAllAsync(string userId)
     {
-        var transactions = context.Transactions
-            .Where(t => t.User == user)
+        var transactions = await context.Transactions
+            .Where(t => t.UserId == userId)
             .Select(t => new StrippedTransaction()
             {
                 Id = t.Id,
@@ -129,7 +137,10 @@ public class TransactionsService(
                 PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
                 TransactionCode = t.TransactionCode
             })
-            .ToList();
+            .ToListAsync();
+
+        logger.LogInformation("Retrieved {TransactionCount} transactions for user {UserId}", transactions.Count,
+            userId);
 
         return transactions;
     }
