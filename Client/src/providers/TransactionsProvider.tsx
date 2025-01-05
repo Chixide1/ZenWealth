@@ -10,7 +10,7 @@ export const TransactionsContext = createContext<[Transaction[] | undefined, boo
 
 async function getTransactionsData(): Promise<Transaction[]> {
     const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}`;
-    const response: AxiosResponse<Transaction[]> = await axios.get(`${backend}/transactions/get`, { withCredentials: true })
+    const response: AxiosResponse<Transaction[]> = await axios.get(`${backend}/transactions`, { withCredentials: true })
         .catch(error => {
             throw new Error(error)
         })

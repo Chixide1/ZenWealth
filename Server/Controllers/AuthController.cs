@@ -12,14 +12,6 @@ namespace Server.Controllers;
 [Produces("application/json")]
 public class AuthController(IItemsService itemsService, UserManager<User> userManager) : ControllerBase
 {
-    // [Route("/error")]
-    // [ApiExplorerSettings(IgnoreApi = true)]
-    // public IActionResult Error()
-    // {
-    //     return Problem();
-    // }
-    
-    
     [HttpGet]
     [Authorize]
     [ProducesResponseType(type: typeof(Responses.HasItemsResponse), statusCode: 200)]

@@ -20,7 +20,7 @@ export function LinkButton({children, className, ...props}: LinkButtonProps) {
     useEffect(() => {
         async function GetLinkToken(){
             await axios.get<LinkTokenResponse>(
-                `${backend}/link/get`,
+                `${backend}/link`,
                 {withCredentials: true}
             )
                 .then(response => setLinkToken(response.data.value))
@@ -33,7 +33,7 @@ export function LinkButton({children, className, ...props}: LinkButtonProps) {
         token: linkToken,
         onSuccess: async (publicToken: string) => {
             await axios.post(
-                `${backend}/link/exchange`,
+                `${backend}/link`,
                 {publicToken: publicToken}, 
                 {withCredentials: true}
             )

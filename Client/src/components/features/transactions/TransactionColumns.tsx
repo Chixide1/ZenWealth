@@ -40,7 +40,12 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
         enableHiding: false,
         size: 200,
     }),
-    columnHelper.accessor(row => {return row.personalFinanceCategory.replace(/_/g, " ")}, {
+    columnHelper.accessor(row => {
+        if(!row.personalFinanceCategory){
+            return "Unknown"
+        }
+        return row.personalFinanceCategory.replace(/_/g, " ")
+    }, {
         id: 'category',
         header: ({column}) => (
             <div className="flex items-center">
@@ -54,7 +59,7 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             return (
                 <div className="flex gap-2 items-center">
                     <img
-                        src={row.original.personalFinanceCategoryIconUrl}
+                        src={row.original.personalFinanceCategoryIconUrl || "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
                         alt="an image of the transaction logo"
                         className="rounded min-w-6 h-auto ms-1 w-7"
                     />

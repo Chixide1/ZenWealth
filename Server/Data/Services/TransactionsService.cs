@@ -1,18 +1,32 @@
 ﻿using Going.Plaid;
 using Going.Plaid.Transactions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Server.Common;
 using Server.Data.Models;
 
 namespace Server.Data.Services;
 
+/// <summary>
+/// The Service where the business logic for transactions is implemented.
+/// </summary>
+/// <remarks>
+/// Also used as the Data Access Layer and Plaid API wrapper.
+/// </remarks>
 public class TransactionsService(
     AppDbContext context,
     PlaidClient client,
     ILogger<TransactionsService> logger
 ) : ITransactionsService
 {
+    /// <summary>
+    /// Asynchronously adds all new transactions for a specified user.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user for whom transactions are to be synchronized.</param>
+    /// <remarks>
+    /// If the user has any items, this method will fetch transactions for each item and add them to the user's account.
+    /// If an item was recently fetched, it will be skipped.
+    /// It fetches updates using a cursor to track which updates have already been seen.
+    /// </remarks>
     public async Task SyncAsync(string userId)
     {
         var user = await context.Users
@@ -116,6 +130,11 @@ public class TransactionsService(
         }
     }
 
+    /// <summary>
+    /// Asynchronously retrieves all transactions for a specified user and returns them as a list of stripped transactions.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
+    /// <returns>A task representing the asynchronous operation, containing a list of stripped transactions for the user.</returns>
     public async Task<List<StrippedTransaction>> GetAllAsync(string userId)
     {
         var transactions = await context.Transactions
@@ -129,9 +148,9 @@ public class TransactionsService(
                 Amount = t.Amount,
                 Date = t.Date,
                 Datetime = t.Datetime,
-                IsoCurrencyCode = t.IsoCurrencyCode,
-                UnofficialCurrencyCode = t.UnofficialCurrencyCode,
-                PersonalFinanceCategory = t.PersonalFinanceCategory,
+                IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
+                UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
+                PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
                 MerchantName = t.MerchantName,
                 LogoUrl = t.LogoUrl,
                 PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,

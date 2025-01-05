@@ -6,9 +6,10 @@
     personalFinanceCategory: string,
     category: string;
     date: string;
-    datetime: string;
+    datetime?: string;
     isoCurrencyCode: string;
     unofficialCurrencyCode: string;
-    logoUrl: string;
-    personalFinanceCategoryIconUrl: string;
+    logoUrl?: string;
+    personalFinanceCategoryIconUrl?: string;
+    website?: string;
 }
