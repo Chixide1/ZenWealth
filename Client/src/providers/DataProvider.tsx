@@ -17,7 +17,7 @@ async function getTransactionsData(): Promise<Transaction[]> {
     return response.data
 }
 
-export default function TransactionsProvider({ children }: { children: ReactNode }) {
+export default function DataProvider({ children }: { children: ReactNode }) {
     const { data, isLoading } = useQuery({
         queryKey: ['transactions'],
         queryFn: getTransactionsData,

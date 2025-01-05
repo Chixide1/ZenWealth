@@ -25,7 +25,7 @@ public class AuthController(IItemsService itemsService, UserManager<User> userMa
             return Unauthorized();
         }
         
-        var result = itemsService.Check(user.Id);
+        var result = await itemsService.CheckItemExistsAsync(user.Id);
         return Ok(new Responses.HasItemsResponse(result, user.UserName!));
     }
 }

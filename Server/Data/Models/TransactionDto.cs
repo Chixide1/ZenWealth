@@ -1,6 +1,6 @@
-﻿namespace Server.Common;
+﻿namespace Server.Data.Models;
 
-public class StrippedTransaction
+public class TransactionDto
 
 {
 	/// <summary>

@@ -3,7 +3,7 @@ import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
 import axios, {AxiosError, AxiosResponse } from "axios";
 import {useEffect, useState } from "react";
-import TransactionsProvider from "@/providers/TransactionsProvider.tsx";
+import DataProvider from "@/providers/DataProvider.tsx";
 import Loading from "@/components/shared/Loading.tsx";
 import DualBar from "@/components/shared/DualBar.tsx";
 
@@ -33,6 +33,7 @@ export function Layout() {
                         navigate({to: "/login"})
                     } else {
                         console.error('Error occurred', error)
+                        navigate({to: "/login"})
                     }
                 })
         }
@@ -54,11 +55,11 @@ export function Layout() {
     console.log(userDetails)
     
     return (
-        <TransactionsProvider>
+        <DataProvider>
             <DualBar username={userDetails.userName} >
                 <Outlet />
             </DualBar>
-        </TransactionsProvider>
+        </DataProvider>
     )
 }
 

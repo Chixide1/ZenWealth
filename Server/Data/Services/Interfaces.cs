@@ -5,20 +5,20 @@ namespace Server.Data.Services;
 
 public interface IItemsService
 {
-    void Add(string accessToken, string userId);
+    Task CreateItemAsync(string accessToken, string userId);
     
-    bool Check(string userId);
+    Task<bool> CheckItemExistsAsync(string userId);
 }
 
 public interface IAccountsService
 {
-
+    Task<List<AccountDto>> GetUserAccountsAsync(string userId);
 }
 
 public interface ITransactionsService
 {
-    Task SyncAsync(string userId);
+    Task FetchLatestTransactionsAsync(string userId);
     
-    Task<List<StrippedTransaction>> GetAllAsync(string userId);
+    Task<List<TransactionDto>> GetUserTransactionsAsync(string userId);
 }
 

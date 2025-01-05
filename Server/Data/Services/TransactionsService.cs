@@ -27,7 +27,7 @@ public class TransactionsService(
     /// If an item was recently fetched, it will be skipped.
     /// It fetches updates using a cursor to track which updates have already been seen.
     /// </remarks>
-    public async Task SyncAsync(string userId)
+    public async Task FetchLatestTransactionsAsync(string userId)
     {
         var user = await context.Users
             .Include(u => u.Items)
@@ -135,11 +135,11 @@ public class TransactionsService(
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
     /// <returns>A task representing the asynchronous operation, containing a list of stripped transactions for the user.</returns>
-    public async Task<List<StrippedTransaction>> GetAllAsync(string userId)
+    public async Task<List<TransactionDto>> GetUserTransactionsAsync(string userId)
     {
         var transactions = await context.Transactions
             .Where(t => t.UserId == userId)
-            .Select(t => new StrippedTransaction()
+            .Select(t => new TransactionDto()
             {
                 Id = t.Id,
                 Name = t.Name,

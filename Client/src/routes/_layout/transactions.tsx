@@ -2,7 +2,7 @@
 import { useContext } from 'react'
 import { transactionColumns } from '@/components/features/transactions/TransactionColumns.tsx'
 import { TransactionTable } from '@/components/features/transactions/TransactionTable.tsx'
-import { TransactionsContext } from '@/providers/TransactionsProvider'
+import { TransactionsContext } from '@/providers/DataProvider.tsx'
 
 export const Route = createFileRoute('/_layout/transactions')({
   component: TransactionsPage,

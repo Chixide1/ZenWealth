@@ -19,10 +19,12 @@ public static class ServiceExtensions
     {
         services.AddCors(options =>
         {
-            options.AddPolicy("Dev",
-                builder => builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
+            options.AddPolicy("Dev", policy =>
+            {
+                policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
         });
     }
 
@@ -75,10 +77,11 @@ public static class ServiceExtensions
     /// <param name="app">The web application to add the development services to.</param>
     public static void AddEnvironmentConfiguration(this WebApplication app)
     {
-        if (!app.Environment.IsDevelopment()) return;
-        
-        app.UseSwagger();
-        app.UseSwaggerUI();
-        app.UseCors("Dev");
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.UseCors("Dev");
+        }
     }
 }

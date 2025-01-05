@@ -77,7 +77,7 @@ public class LinkController(
             return PlaidApiError(response.Error);
         }
                 
-        itemsService.Add(response.AccessToken, user.Id);
+        await itemsService.CreateItemAsync(response.AccessToken, user.Id);
             
         return Ok(response);
     }

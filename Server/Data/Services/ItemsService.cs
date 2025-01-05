@@ -1,4 +1,5 @@
-﻿using Server.Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Data.Models;
 
 namespace Server.Data.Services;
 
@@ -15,15 +16,15 @@ public class ItemsService(
     /// </summary>
     /// <param name="accessToken">The access token for the item.</param>
     /// <param name="userId">The user ID of the user that the item belongs to.</param>
-    public void Add(string accessToken, string userId)
+    public async Task CreateItemAsync(string accessToken, string userId)
     {
-        context.Items.Add(new Item()
+        await context.Items.AddAsync(new Item()
         {
             AccessToken = accessToken,
             UserId = userId
         });
         
-        context.SaveChanges();
+        await context.SaveChangesAsync();
         
         logger.LogInformation("Added item for user {UserId}", userId);
     }
@@ -33,9 +34,9 @@ public class ItemsService(
     /// </summary>
     /// <param name="userId">The ID of the user to check.</param>
     /// <returns>True if the user has an item, false otherwise.</returns>
-    public bool Check(string userId)
+    public async Task<bool> CheckItemExistsAsync(string userId)
     {
-        var result = context.Items.Any(i => i.UserId == userId);
+        var result = await context.Items.AnyAsync(i => i.UserId == userId);
         logger.LogInformation("Checked if user {UserId} has an item", userId);
         
         return result;
