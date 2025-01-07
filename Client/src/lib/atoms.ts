@@ -1,6 +1,6 @@
-﻿import {Account, Transaction} from "@/types.ts";
+﻿import { Account, Transaction } from "@/types.ts";
 import axios, { AxiosResponse } from "axios";
-import { atomWithQuery } from "jotai-tanstack-query";
+import { atomWithQuery } from 'jotai-tanstack-query';
 
 export const accountsAtom = atomWithQuery(() => ({
     queryKey: ['accounts'],
@@ -11,7 +11,7 @@ export const accountsAtom = atomWithQuery(() => ({
                 throw new Error(error)
             })
         return response.data
-    },
+    }
 }));
 
 export const transactionsAtom = atomWithQuery(() => ({
@@ -23,5 +23,5 @@ export const transactionsAtom = atomWithQuery(() => ({
                 throw new Error(error)
             })
         return response.data
-    },
+    }
 }));
