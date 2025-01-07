@@ -2,7 +2,7 @@
 import {LinkButton} from "@/components/features/link/LinkButton.tsx";
 import {CircleUser, CopyPlus } from "lucide-react";
 
-export default function Topbar({username}: {username?: string}) {
+export default function AppTopbar({username}: {username?: string}) {
     
     return (
         <header

@@ -3,9 +3,8 @@ import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
 import axios, {AxiosError, AxiosResponse } from "axios";
 import {useEffect, useState } from "react";
-import DataProvider from "@/providers/DataProvider.tsx";
 import Loading from "@/components/shared/Loading.tsx";
-import DualBar from "@/components/shared/DualBar.tsx";
+import AppWrapper from "@/components/shared/AppWrapper.tsx";
 
 export const Route = createFileRoute('/_layout')({
     component: Layout,
@@ -51,15 +50,11 @@ export function Layout() {
             </div>
         );
     }
-
-    console.log(userDetails)
     
     return (
-        <DataProvider>
-            <DualBar username={userDetails.userName} >
-                <Outlet />
-            </DualBar>
-        </DataProvider>
+        <AppWrapper username={userDetails.userName} >
+            <Outlet />
+        </AppWrapper>
     )
 }
 

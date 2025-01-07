@@ -3,9 +3,7 @@
 import * as React from "react"
 import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
-import {Account} from "@/types.ts";
-import axios, { AxiosResponse } from "axios";
-import { useEffect } from "react";
+import { useAtom } from 'jotai';
 
 import {
     Card,
@@ -21,6 +19,7 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/core/chart"
+import {accountsAtom} from "@/lib/atoms.ts";
 
 const chartData = [
     { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
@@ -60,18 +59,9 @@ export function TotalBalanceCard() {
     const totalVisitors = React.useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
     }, [])
-
-    useEffect(() => {
-        async function getAccountsData(): Promise<Account[]> {
-            const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}`;
-            const response: AxiosResponse<Account[]> = await axios.get(`${backend}/transactions`, { withCredentials: true })
-                .catch(error => {
-                    throw new Error(error)
-                })
-            return response.data
-        }
-        getAccountsData();
-    }, []);
+    
+    const [{data}] = useAtom(accountsAtom)
+    console.log(data)
 
     return (
         <Card className="flex flex-col col-span-8 bg-primary/10 border-neutral-700 text-primary">
