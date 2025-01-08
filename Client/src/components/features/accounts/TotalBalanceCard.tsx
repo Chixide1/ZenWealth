@@ -61,7 +61,7 @@ export function TotalBalanceCard() {
     }, [])
     
     const [{data}] = useAtom(accountsAtom)
-    console.log(data)
+    console.log(data);
 
     return (
         <Card className="flex flex-col col-span-8 bg-primary/10 border-neutral-700 text-primary">

@@ -2,16 +2,16 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 import './main.css'
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import Loading from './components/shared/Loading'
 import { Provider } from 'jotai'
 import { queryClientAtom } from 'jotai-tanstack-query'
 import { useHydrateAtoms } from 'jotai/utils'
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import { persistQueryClient } from '@tanstack/react-query-persist-client'
 
 // Set up a Router instance
-const router = createRouter({
+export const router = createRouter({
     defaultPendingComponent: Loading,
     routeTree,
     defaultPreload: 'intent',
@@ -42,24 +42,24 @@ const persister = createSyncStoragePersister({
     storage: window.localStorage,
 })
 
+persistQueryClient({
+    queryClient,
+    persister,
+    maxAge: 1000 * 60 * 60 * 12, // 2 hours
+})
+
 const HydrateAtoms = ({ children }: any) => {
     useHydrateAtoms([[queryClientAtom, queryClient]] as any)
     return children
 }
 
 root.render(
-    <PersistQueryClientProvider
-        client={queryClient}
-        persistOptions={{
-            persister,
-            maxAge: 1000 * 60 * 60 * 12,
-    }}
-    >
+    <QueryClientProvider client={queryClient}>
         <Provider>
             <HydrateAtoms>
                 <RouterProvider router={router} />
             </HydrateAtoms>
         </Provider>
-    </PersistQueryClientProvider>
+    </QueryClientProvider>
 )
 

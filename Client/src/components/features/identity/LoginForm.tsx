@@ -2,7 +2,6 @@
 import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
 import { Mail, Lock, Loader2 } from 'lucide-react'
-import axios from "axios"
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
 import {useToast} from "@/hooks/use-toast.ts";
@@ -12,6 +11,7 @@ import {Button} from "@/components/core/button.tsx";
 import {Toaster} from "@/components/core/toaster.tsx";
 import {IdentityInput, IdentityInputConfig} from "@/components/features/identity/IdentityInput.tsx";
 import {camelCaseToSentence} from "@/lib/utils.ts";
+import api from "@/lib/api.ts";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -40,39 +40,38 @@ export function LoginForm() {
     })
 
     async function onSubmit(values: FormSchemaVals) {
-        try {
-            const backend = import.meta.env.VITE_ASPNETCORE_URLS
-            if (values.rememberMe) {
-                localStorage.setItem("email", values.email)
-                localStorage.setItem("password", values.password)
-            }
+        if (values.rememberMe) {
+            localStorage.setItem("email", values.email)
+            localStorage.setItem("password", values.password)
+        }
 
-            const response = await axios({
-                method: 'post',
-                url: `${backend}/Identity/login`,
+        await api.post(
+            "/Identity/login",
+            {
+                email: values.email,
+                password: values.password
+            },
+            {
                 params: {
                     useCookies: true,
                     useSessionCookies: false
-                },
-                data: {
-                    email: values.email,
-                    password: values.password
-                },
-                withCredentials: true,
-            })
-
-            if (response.status === 200) {
-                console.debug("%cSuccessfully logged in", "color: #bada55")
-                navigate({ to: "/" })
+                }
             }
-        } catch (error) {
-            console.error("Login error:", error)
-            toast({
-                title: "Login Error",
-                description: "Failed to log in. Please check your credentials and try again.",
-                variant: "destructive"
+        )
+            .then(response => {
+                if (response.status === 200) {
+                    console.debug("%cSuccessfully logged in", "color: #bada55")
+                    navigate({ to: "/" })
+                }
             })
-        }
+            .catch(error => {
+                console.error("Login error:", error)
+                toast({
+                    title: "Login Error",
+                    description: "Failed to log in. Please check your credentials and try again.",
+                    variant: "destructive"
+                })
+            })
     }
 
     useEffect(() => {
@@ -88,12 +87,12 @@ export function LoginForm() {
         if (errors) {
             Object.keys(errors).forEach((key) => {
                 const field = errors[key as keyof typeof errors]
-                
+
                 toast({
                     title: camelCaseToSentence(key),
                     description: field?.message,
                     variant: "destructive"
-                })  
+                })
             })
         }
     }, [errors])

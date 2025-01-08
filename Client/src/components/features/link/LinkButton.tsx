@@ -1,12 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import {PlaidLinkError, PlaidLinkOnExit, PlaidLinkOnExitMetadata, usePlaidLink } from 'react-plaid-link';
-import axios from 'axios'
 import { Button, ButtonProps } from '@/components/core/button';
 import {cn} from "@/lib/utils.ts";
-
-type LinkTokenResponse = {
-    value: string
-}
+import api from "@/lib/api.ts";
 
 type LinkButtonProps = ButtonProps & {
     className?: string
@@ -15,16 +11,12 @@ type LinkButtonProps = ButtonProps & {
 
 export function LinkButton({children, className, ...props}: LinkButtonProps) {
     const [linkToken, setLinkToken] = useState<string>("")
-    const backend = import.meta.env.VITE_ASPNETCORE_URLS
 
     useEffect(() => {
         async function GetLinkToken(){
-            await axios.get<LinkTokenResponse>(
-                `${backend}/link`,
-                {withCredentials: true}
-            )
+            await api("/link")
                 .then(response => setLinkToken(response.data.value))
-                .catch(error => console.log(error))
+                .catch(error => console.error(error))
         }
         GetLinkToken();
     }, []);
@@ -32,17 +24,13 @@ export function LinkButton({children, className, ...props}: LinkButtonProps) {
     const { open } = usePlaidLink({
         token: linkToken,
         onSuccess: async (publicToken: string) => {
-            await axios.post(
-                `${backend}/link`,
-                {publicToken: publicToken}, 
-                {withCredentials: true}
-            )
+            await  api.post("/Link", {publicToken: publicToken})
             location.reload()
         },
         onExit: useCallback<PlaidLinkOnExit>(
             (error: PlaidLinkError | null, metadata: PlaidLinkOnExitMetadata) => {
-                console.log(error)
-                console.log(metadata)
+                console.debug(error)
+                console.debug(metadata)
             },[]
         )
     });

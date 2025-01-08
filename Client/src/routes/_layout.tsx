@@ -1,42 +1,33 @@
-﻿import { createFileRoute, useNavigate } from '@tanstack/react-router'
+﻿import { createFileRoute,} from '@tanstack/react-router'
 import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
-import axios, {AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import {useEffect, useState } from "react";
 import Loading from "@/components/shared/Loading.tsx";
 import AppWrapper from "@/components/shared/AppWrapper.tsx";
+import api from "@/lib/api.ts";
 
 export const Route = createFileRoute('/_layout')({
     component: Layout,
 })
 
-type AuthResponse = {
+type UserDetailsResponse = {
     hasItems: boolean | null,
     userName: string,
 }
 
 export function Layout() {
-    const [userDetails, setUserDetails] = useState<AuthResponse>({hasItems: null, userName: ""})
-    const backend = `${import.meta.env.VITE_ASPNETCORE_URLS}`
-    const navigate = useNavigate()
+    const [userDetails, setUserDetails] = useState<UserDetailsResponse>({hasItems: null, userName: ""})
 
     useEffect(() => {
-        async function fetchAuth(){
-            await axios
-                .get(`${backend}`, { withCredentials: true })
-                .then((response: AxiosResponse<AuthResponse>) => {
+        async function fetchUserDetails(){
+            await api("/")
+                .then((response: AxiosResponse<UserDetailsResponse>) => {
                     setUserDetails(response.data);
                 })
-                .catch((error: AxiosError) => {
-                    if(error.response!.status === 401 || error.response!.status === 500){
-                        navigate({to: "/login"})
-                    } else {
-                        console.error('Error occurred', error)
-                        navigate({to: "/login"})
-                    }
-                })
+                .catch(e => console.error("You need to reauthenticate:" + e))
         }
-        fetchAuth()
+        fetchUserDetails()
     }, []);
 
     if(userDetails.hasItems === null){

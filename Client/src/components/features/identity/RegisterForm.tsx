@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Mail, Lock, Loader2} from 'lucide-react'
-import axios, { AxiosError } from "axios"
+import { AxiosError } from "axios"
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
 import {useToast} from "@/hooks/use-toast.ts";
@@ -10,6 +10,7 @@ import {Button} from "@/components/core/button.tsx";
 import {Toaster} from "@/components/core/toaster.tsx";
 import {IdentityInput, IdentityInputConfig} from "@/components/features/identity/IdentityInput.tsx";
 import {camelCaseToSentence} from "@/lib/utils.ts";
+import api from "@/lib/api.ts";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -52,21 +53,13 @@ export function RegisterForm(){
     })
 
     async function onSubmit(values: FormSchemaVals) {
-        const backend = import.meta.env.VITE_ASPNETCORE_URLS
-        
-        await axios({
-            method: 'post',
-            url: `${backend}/Identity/register`,
-            params: {
-                useCookies: true,
-                useSessionCookies: false
-            },
-            data: {
+        await api.post(
+            "/Identity/register",
+            {
                 email: values.email,
                 password: values.password
-            },
-            withCredentials: true,
-        })
+            }
+        )
             .then(() => {
                 navigate({ to: "/login" })
             })
