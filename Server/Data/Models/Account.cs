@@ -17,7 +17,7 @@ public class Account
 	/// <summary>
 	/// <para>The associated Item which contains the Access Token that allows retrieval of data from Plaid</para>
 	/// </summary>
-	public int? ItemId { get; init; }
+	public required int ItemId { get; init; }
 	
 	/// <summary>
 	/// <para>Navigation Property for the parent Item</para>
@@ -28,7 +28,7 @@ public class Account
 	/// <para>The associated user ID</para>
 	/// </summary>
 	[Column(TypeName = "nvarchar(450)")]
-	public required string UserId { get; init; }
+	public string? UserId { get; init; }
 
 	/// <summary>
 	/// <para>The associated user's Navigation</para>

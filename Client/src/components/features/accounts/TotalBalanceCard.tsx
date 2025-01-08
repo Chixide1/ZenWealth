@@ -1,8 +1,4 @@
-﻿"use client"
-
-import * as React from "react"
-import { TrendingUp } from "lucide-react"
-import { Label, Pie, PieChart } from "recharts"
+﻿import { Label, Pie, PieChart } from "recharts"
 import { useAtom } from 'jotai';
 
 import {
@@ -21,53 +17,47 @@ import {
 } from "@/components/core/chart"
 import {accountsAtom} from "@/lib/atoms.ts";
 
-const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-    { browser: "other", visitors: 190, fill: "var(--color-other)" },
-]
-
 const chartConfig = {
-    visitors: {
-        label: "Visitors",
+    name: {
+        label: "Name",
     },
-    chrome: {
-        label: "Chrome",
-        color: "hsl(var(--chart-1))",
+    balance: {
+        label: "Balance",
     },
-    safari: {
-        label: "Safari",
-        color: "hsl(var(--chart-2))",
+   type: {
+        label: "Type",
     },
-    firefox: {
-        label: "Firefox",
-        color: "hsl(var(--chart-3))",
-    },
-    edge: {
-        label: "Edge",
-        color: "hsl(var(--chart-4))",
-    },
-    other: {
-        label: "Other",
-        color: "hsl(var(--chart-5))",
-    },
+    // loan: {
+    //     label: "Checking",
+    //     color: "hsl(var(--chart-2))",
+    // },
+    // credit: {
+    //     label: "Credit",
+    //     color: "hsl(var(--chart-3))",
+    // },
 } satisfies ChartConfig
 
+const colorMap = new Map([
+    ["depository", "hsl(var(--chart-1))"],
+    ["credit", "hsl(var(--chart-2))"],
+    ["loan", "hsl(var(--chart-3))"],
+    ["investment", "hsl(var(--chart-4))"],
+    ["other", "hsl(var(--chart-5))"],
+])
+
 export function TotalBalanceCard() {
-    const totalVisitors = React.useMemo(() => {
-        return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
-    }, [])
-    
     const [{data}] = useAtom(accountsAtom)
-    console.log(data);
+    const pieData = data?.map((account) => {
+        const fill = colorMap.get(account.type.toLowerCase())
+        return {...account, fill: fill}
+    })
+    console.log(pieData);
 
     return (
         <Card className="flex flex-col col-span-8 bg-primary/10 border-neutral-700 text-primary">
             <CardHeader className="items-center pb-0">
-                <CardTitle>Pie Chart - Donut with Text</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
+                <CardTitle></CardTitle>
+                <CardDescription></CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
                 <ChartContainer
@@ -77,12 +67,24 @@ export function TotalBalanceCard() {
                     <PieChart>
                         <ChartTooltip
                             cursor={false}
-                            content={<ChartTooltipContent hideLabel />}
+                            content={
+                                <ChartTooltipContent
+                                    // formatter={(value) => `£${value.toLocaleString()}`}
+                                    nameKey="balance"
+                                    labelKey="balance"
+                                    indicator="line"
+                                    labelFormatter={(_, payload) => {
+                                        return payload[0].payload.name
+                                    }}
+                                    className="text-black"
+                                />
+                            }
+                            labelClassName="text-black"
                         />
                         <Pie
-                            data={chartData}
-                            dataKey="visitors"
-                            nameKey="browser"
+                            data={pieData}
+                            nameKey="name"
+                            dataKey="balance"
                             innerRadius={60}
                             strokeWidth={5}
                         >
@@ -99,16 +101,16 @@ export function TotalBalanceCard() {
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={viewBox.cy}
-                                                    className="fill-foreground text-3xl font-bold"
+                                                    className="fill-primary text-3xl font-bold"
                                                 >
-                                                    {totalVisitors.toLocaleString()}
+                                                    £{data?.reduce((total, account) => total + account.balance, 0)}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={(viewBox.cy || 0) + 24}
                                                     className="fill-muted-foreground"
                                                 >
-                                                    Visitors
+                                                    Total Balance
                                                 </tspan>
                                             </text>
                                         )
@@ -120,12 +122,6 @@ export function TotalBalanceCard() {
                 </ChartContainer>
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
-                <div className="flex items-center gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-                </div>
-                <div className="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
             </CardFooter>
         </Card>
     )

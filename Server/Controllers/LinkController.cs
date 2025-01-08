@@ -20,6 +20,7 @@ public class LinkController(
     ILogger<LinkController> logger,
     PlaidClient client,
     IItemsService itemsService,
+    ITransactionsService transactionsService,
     UserManager<User> userManager) : ControllerBase
 {
     [HttpGet]

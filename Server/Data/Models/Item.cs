@@ -31,7 +31,7 @@ public class Item
     /// <para>Cursor used for fetching any future updates after the latest update provided in this response. The cursor obtained after all pages have been pulled (indicated by <c>has_more</c> being <c>false</c>) will be valid for at least 1 year. This cursor should be persisted for later calls. If transactions are not yet available, this will be an empty string.</para>
     /// </summary>
     [Column(TypeName = "varchar(255)")]
-    public string? Cursor { get; set; } = null;
+    public string? Cursor { get; set; }
 
     //<summary>
     //<para>The time of the most recent sync for this Item</para>

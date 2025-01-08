@@ -43,8 +43,7 @@ public class TransactionsService(
         {
             if (i.LastFetched != null & DateTime.Now.AddDays(-1) < i.LastFetched)
             {
-                logger.LogInformation("Skipping item {ItemId} for user {UserId} as it was recently fetched", i.Id,
-                    userId);
+                logger.LogInformation("Skipping item {ItemId} for user {UserId} as it was recently fetched", i.Id, userId);
                 continue;
             }
 
@@ -58,6 +57,10 @@ public class TransactionsService(
                     Count = 500,
                     Cursor = i.Cursor
                 });
+
+                i.Cursor = transactions.NextCursor;
+                i.LastFetched = DateTime.Now;
+                await context.SaveChangesAsync();
 
                 logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
                     transactions.Added.Count, i.Id, userId);

@@ -3,6 +3,7 @@ import {PlaidLinkError, PlaidLinkOnExit, PlaidLinkOnExitMetadata, usePlaidLink }
 import { Button, ButtonProps } from '@/components/core/button';
 import {cn} from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
+import { queryClient } from "@/main.tsx"
 
 type LinkButtonProps = ButtonProps & {
     className?: string
@@ -25,10 +26,11 @@ export function LinkButton({children, className, ...props}: LinkButtonProps) {
         token: linkToken,
         onSuccess: async (publicToken: string) => {
             await  api.post("/Link", {publicToken: publicToken})
+            await queryClient.refetchQueries()
             location.reload()
         },
         onExit: useCallback<PlaidLinkOnExit>(
-            (error: PlaidLinkError | null, metadata: PlaidLinkOnExitMetadata) => {
+            async (error: PlaidLinkError | null, metadata: PlaidLinkOnExitMetadata) => {
                 console.debug(error)
                 console.debug(metadata)
             },[]

@@ -8,7 +8,7 @@ import Loading from './components/shared/Loading'
 import { Provider } from 'jotai'
 import { queryClientAtom } from 'jotai-tanstack-query'
 import { useHydrateAtoms } from 'jotai/utils'
-import { persistQueryClient } from '@tanstack/react-query-persist-client'
+import { persistQueryClient} from '@tanstack/react-query-persist-client'
 
 // Set up a Router instance
 export const router = createRouter({
@@ -28,24 +28,24 @@ declare module '@tanstack/react-router' {
 const rootElement = document.getElementById('root')!
 const root = ReactDOM.createRoot(rootElement)
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             staleTime: Infinity,
-            gcTime: 1000 * 60 * 60 * 12, // 12 hours
+            gcTime: Infinity, // 12 hours
         },
         
     },
 })
 
-const persister = createSyncStoragePersister({
-    storage: window.localStorage,
-})
-
 persistQueryClient({
     queryClient,
-    persister,
-    maxAge: 1000 * 60 * 60 * 12, // 2 hours
+    persister: createSyncStoragePersister({
+        storage: window.localStorage,
+        key: "ZenWealth_Cache"
+    }),
+    /* milliseconds * seconds * minutes * hours */
+    maxAge: 1000 * 60 * 60 * 6,
 })
 
 const HydrateAtoms = ({ children }: any) => {
