@@ -68,13 +68,18 @@ export function AppSidebar() {
                 <SidebarGroup className="my-auto">
                     <SidebarGroupContent>
                         <SidebarMenu className="relative gap-3 flex-row md:flex-col py-4 flex-wrap justify-center md:justify-start items-center md:bg-primary/[0.07] rounded-full">
+                            {/*<div className="absolute bg-secondary p-4 rounded-full"/>*/}
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title + "-sidebar"} className="flex justify-center">
                                     <SidebarMenuButton
                                         asChild
                                         onClick={closeMobileMenu}
-                                        className={`rounded-full py-2 px-4 md:p-2 w-auto h-auto transition-colors duration-300
-                                            ${item.url.to === location.pathname && "bg-secondary/90 text-black hover:bg-secondary/90 hover:text-black"}`}
+                                        data-active={item.url.to === location.pathname}
+                                        className={
+                                            `rounded-full py-2 px-4 md:p-2 w-auto h-auto transition-colors duration-300
+                                            data-[active=true]:bg-secondary/90 data-[active=true]:text-black 
+                                            data-[active=true]:hover:bg-secondary/90 data-[active=true]:hover:text-black`
+                                        }
                                         tooltip={item.title}
                                     >
                                         <Link {...item.url}>
