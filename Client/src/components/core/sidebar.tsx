@@ -181,20 +181,20 @@ const Sidebar = React.forwardRef<
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
-    if (collapsible === "none") {
-      return (
-        <div
-          className={cn(
-            "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
-            className
-          )}
-          ref={ref}
-          {...props}
-        >
-          {children}
-        </div>
-      )
-    }
+    // if (collapsible === "none") {
+    //   return (
+    //     <div
+    //       className={cn(
+    //         "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
+    //         className
+    //       )}
+    //       ref={ref}
+    //       {...props}
+    //     >
+    //       {children}
+    //     </div>
+    //   )
+    // }
 
     if (isMobile) {
       return (
@@ -205,10 +205,12 @@ const Sidebar = React.forwardRef<
                   data-mobile="true"
               >
                   <DrawerHeader className="pb-0">
-                      <DrawerTitle>Navigation Menu</DrawerTitle>
-                      <DrawerDescription>Explore ZenWealth</DrawerDescription>
+                      <DrawerTitle className="text-center">Navigation Menu</DrawerTitle>
+                      <DrawerDescription className="text-center">Explore ZenWealth</DrawerDescription>
                   </DrawerHeader>
-                  <nav className="px-4">{children}</nav>
+                  <nav className="px-4">
+                      {children}
+                  </nav>
               </DrawerContent>
           </Drawer>
       )
@@ -280,7 +282,7 @@ const SidebarTrigger = React.forwardRef<
           }}
           {...props}
       >
-          <AlignLeft/>
+          <AlignLeft className="md:hidden"/>
           <h5 className="text-primary font-medium montserrat italic hidden md:block">
               Zen
               <span className="text-secondary font ">W</span>ealth
