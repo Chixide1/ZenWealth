@@ -11,13 +11,16 @@ import {
 } from "@/components/core/card"
 import {
     ChartConfig,
-    ChartContainer,
+    ChartContainer, ChartLegend,
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/core/chart"
 import {accountsAtom} from "@/lib/atoms.ts";
 
 const chartConfig = {
+    id: {
+      label: "ID",  
+    },
     name: {
         label: "Name",
     },
@@ -27,14 +30,15 @@ const chartConfig = {
    type: {
         label: "Type",
     },
-    // loan: {
-    //     label: "Checking",
-    //     color: "hsl(var(--chart-2))",
-    // },
-    // credit: {
-    //     label: "Credit",
-    //     color: "hsl(var(--chart-3))",
-    // },
+    mask: {
+        label: "Mask",
+    },
+    subtype: {
+        label: "Subtype",
+    },
+    officialName: {
+        label: "Official Name",
+    }
 } satisfies ChartConfig
 
 const colorMap = new Map([
@@ -47,10 +51,13 @@ const colorMap = new Map([
 
 export function TotalBalanceCard() {
     const [{data}] = useAtom(accountsAtom)
-    const pieData = data?.map((account) => {
-        const fill = colorMap.get(account.type.toLowerCase())
-        return {...account, fill: fill}
+    const pieData = data?.map((account, index) => {
+        const colors = Array.from(colorMap.values());
+        const colorIndex = index % colors.length;
+
+        return {...account, fill: colors[colorIndex]};
     })
+    const total = data?.reduce((total, account) => total + account.balance, 0)
     console.log(pieData);
 
     return (
@@ -62,11 +69,11 @@ export function TotalBalanceCard() {
             <CardContent className="flex-1 pb-0">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
+                    className="mx-auto aspect-square max-h-[250px] w-full"
                 >
                     <PieChart>
                         <ChartTooltip
-                            cursor={false}
+                            // cursor={false}
                             content={
                                 <ChartTooltipContent
                                     // formatter={(value) => `£${value.toLocaleString()}`}
@@ -76,10 +83,15 @@ export function TotalBalanceCard() {
                                     labelFormatter={(_, payload) => {
                                         return payload[0].payload.name
                                     }}
-                                    className="text-black"
+                                    className=""
                                 />
                             }
                             labelClassName="text-black"
+                        />
+                        <ChartLegend
+                            layout="vertical"
+                            verticalAlign="middle"
+                            align="right"
                         />
                         <Pie
                             data={pieData}
@@ -103,7 +115,7 @@ export function TotalBalanceCard() {
                                                     y={viewBox.cy}
                                                     className="fill-primary text-3xl font-bold"
                                                 >
-                                                    £{data?.reduce((total, account) => total + account.balance, 0)}
+                                                    £{total}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
