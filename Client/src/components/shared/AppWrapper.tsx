@@ -15,7 +15,7 @@ export default function AppWrapper({children, username}: DualNavbarProps) {
             <AppSidebar/>
             <main className="w-full h-screen flex flex-col overflow-hidden">
                 <AppTopbar username={username}/>
-                <section className="flex-grow overflow-auto scrollbar-thin px-4 md:pe-4 pb-10">
+                <section className="flex-grow overflow-auto scrollbar-thin px-4 md:ps-0 pb-10">
                     {children}
                 </section>
             </main>

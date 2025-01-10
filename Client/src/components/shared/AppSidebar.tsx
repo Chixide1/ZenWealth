@@ -66,7 +66,7 @@ export function AppSidebar() {
         <Sidebar className="bg-transparent" variant="sidebar" collapsible="none">
             <SidebarContent className={`pb-4 md:pb-0`}>
                 <SidebarGroup className="my-auto">
-                    <SidebarGroupContent>
+                    <SidebarGroupContent className="md:w-12 mx-auto">
                         <SidebarMenu className="relative gap-3 flex-row md:flex-col py-4 flex-wrap justify-center md:justify-start items-center md:bg-primary/[0.07] rounded-full">
                             {/*<div className="absolute bg-secondary p-4 rounded-full"/>*/}
                             {items.map((item) => (
