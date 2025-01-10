@@ -76,7 +76,7 @@ export function AppSidebar() {
                                         onClick={closeMobileMenu}
                                         data-active={item.url.to === location.pathname}
                                         className={
-                                            `rounded-full py-2 px-4 md:p-2 w-auto h-auto transition-colors duration-300
+                                            `rounded-full py-2 px-4 md:p-2 w-auto h-auto bg-neutral-700/70 md:bg-transparent transition-colors duration-300
                                             data-[active=true]:bg-secondary/90 data-[active=true]:text-black 
                                             data-[active=true]:hover:bg-secondary/90 data-[active=true]:hover:text-black`
                                         }
