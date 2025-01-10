@@ -6,8 +6,8 @@ import { AxiosError } from "axios"
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
 import {useToast} from "@/hooks/use-toast.ts";
-import {Button} from "@/components/core/button.tsx";
-import {Toaster} from "@/components/core/toaster.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Toaster} from "@/components/ui/toaster.tsx";
 import {IdentityInput, IdentityInputConfig} from "@/components/features/identity/IdentityInput.tsx";
 import {camelCaseToSentence} from "@/lib/utils.ts";
 import api from "@/lib/api.ts";

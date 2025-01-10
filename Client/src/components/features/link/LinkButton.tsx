@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {PlaidLinkError, PlaidLinkOnExit, PlaidLinkOnExitMetadata, usePlaidLink } from 'react-plaid-link';
-import { Button, ButtonProps } from '@/components/core/button';
+import { Button, ButtonProps } from '@/components/ui/button';
 import {cn} from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
 import { queryClient } from "@/main.tsx"

@@ -1,6 +1,6 @@
 ﻿import {useState} from 'react';
 import {ChevronDown} from 'lucide-react';
-import {Button} from "../../core/button";
+import {Button} from "@/components/ui/button.tsx";
 import {Column} from "@tanstack/react-table";
 import {Transaction} from "@/types";
 import {
@@ -8,7 +8,7 @@ import {
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from "@/components/core/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 
 
 export default function ColumnVisibilityButton({columns}: { columns: Column<Transaction>[] }) {

@@ -1,4 +1,4 @@
-﻿import {Button} from "@/components/core/button.tsx";
+﻿import {Button} from "@/components/ui/button.tsx";
 import {Column} from "@tanstack/react-table";
 import {Transaction} from "@/types";
 import { ArrowUpDown } from "lucide-react";

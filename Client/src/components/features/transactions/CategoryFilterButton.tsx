@@ -1,7 +1,7 @@
-﻿import {Button} from "@/components/core/button.tsx";
+﻿import {Button} from "@/components/ui/button.tsx";
 import {Transaction} from "@/types";
 import { Column } from "@tanstack/react-table";
-import { Toggle } from "@/components/core/toggle";
+import { Toggle } from "@/components/ui/toggle";
 import FilterButton from "@/components/shared/FilterButton.tsx";
 
 export default function CategoryFilterButton({column}: {column:  Column<Transaction, unknown>}){

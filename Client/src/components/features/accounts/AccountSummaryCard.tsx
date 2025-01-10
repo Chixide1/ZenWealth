@@ -1,6 +1,6 @@
 ﻿import {cn} from "@/lib/utils.ts";
 import { LucideIcon } from "lucide-react";
-import {Button} from "@/components/core/button.tsx";
+import {Button} from "@/components/ui/button.tsx";
 
 type AccountSummaryCardProps = {
     className?: string,

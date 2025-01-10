@@ -1,4 +1,4 @@
-﻿import {SidebarTrigger} from "@/components/core/sidebar.tsx";
+﻿import {SidebarTrigger} from "@/components/ui/sidebar.tsx";
 import {LinkButton} from "@/components/features/link/LinkButton.tsx";
 import {CircleUser, CopyPlus } from "lucide-react";
 

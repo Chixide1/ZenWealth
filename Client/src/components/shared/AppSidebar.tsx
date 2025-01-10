@@ -4,7 +4,7 @@
     SidebarGroup,
     SidebarGroupContent,
     SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
-} from "@/components/core/sidebar.tsx";
+} from "@/components/ui/sidebar.tsx";
 import { Link, linkOptions, LinkProps, useLocation} from "@tanstack/react-router";
 import { PieChartIcon as ChartPie, Home, PoundSterling, WalletCards } from 'lucide-react';
 import { useCallback } from "react";
@@ -63,7 +63,7 @@ export function AppSidebar() {
     },[isMobile])
     
     return (
-        <Sidebar className="bg-transparent" variant="sidebar" collapsible="none">
+        <Sidebar className="bg-sidebar" variant="sidebar" collapsible="none">
             <SidebarContent className={`pb-4 md:pb-0`}>
                 <SidebarGroup className="my-auto">
                     <SidebarGroupContent className="md:w-12 mx-auto">

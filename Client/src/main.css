@@ -5,22 +5,41 @@
 /** Colors */
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /*Custom Colours*/
+    
+    /* Bleu De France */
+    --primary-100: 224 91% 68%;
+    --primary-200: 224 78%, 54%;
+    --primary-300: 224 60% 30%;
+
+    /* Royal Fuchsia */
+    --secondary-100: 339 64% 80%;
+    --secondary-200: 339 62% 51%;
+    --secondary-300: 339 63% 30%;
+
+    /* Jungle Green */
+    --tertiary-100: 176 66% 74%;
+    --tertiary-200: 176 66% 35%;
+    --tertiary-300: 176 58% 22%;
+
+    /* Greyscale */
+    --greyscale-100: 0, 0%, 96%;
+    --greyscale-200: 221 16% 46%;
+    --greyscale-300: 217 17% 21%;
+    --greyscale-400: 222,17%,12%;
+    --greyscale-500: 225 17% 9%;
+    --greyscale-600: 223 19% 7%;
+    
+    /* Default Colours */
+    --primary: var(--primary-200);
+    --secondary: var(--secondary-200);
+    --accent: var(--tertiary-200);
+    --background: var(--greyscale-500);
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-
-    /*Pearl White*/
-    --primary: 230 86% 97%;
-    
-    /*Electric Lime*/
-    --secondary: 68 99% 66%;
-    
-    /*Lavender Pink*/
-    --accent: 291 95% 91%;
-    
     --primary-foreground: 0 0% 98%;
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
@@ -48,7 +67,7 @@
   }
   
   .dark {
-    --sidebar-background: 240 5.9% 10%;
+    --sidebar-background: var(--greyscale-400);
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -72,11 +91,7 @@
   }
   
   body {
-    min-height: 100vh;
-    background: 
-            fixed
-            radial-gradient(circle at 10% 120%, #5A2419 0%, #0C0610 40%, transparent),
-            radial-gradient(circle at 100% -20%, #8e519c 0%, #0B050E 35%);
+    background-color: var(--background);
   }
 }
 

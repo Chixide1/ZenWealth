@@ -19,8 +19,8 @@ import {
 import {
     Table, TableBody, TableCell, TableFooter,
     TableHead, TableHeader, TableRow,
-} from "@/components/core/table"
-import {Button} from "@/components/core/button.tsx";
+} from "@/components/ui/table"
+import {Button} from "@/components/ui/button.tsx";
 import { useState } from "react";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
 import TransactionSearchButton from "@/components/features/transactions/TransactionSearchButton.tsx";
@@ -30,7 +30,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger
-} from "@/components/core/dropdown-menu.tsx";
+} from "@/components/ui/dropdown-menu.tsx";
 import { ChevronDown } from 'lucide-react';
 import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
