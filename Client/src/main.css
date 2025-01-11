@@ -5,7 +5,7 @@
 /** Colors */
 @layer base {
   :root {
-    /*Custom Colours*/
+    /** Color Pallet **/
     
     /* Bleu De France */
     --primary-100: 224 91% 68%;
@@ -30,17 +30,17 @@
     --greyscale-500: 225 17% 9%;
     --greyscale-600: 223 19% 7%;
     
-    /* Default Colours */
+    /** Default Colours **/
     --primary: var(--primary-200);
     --secondary: var(--secondary-200);
     --accent: var(--tertiary-200);
     --background: var(--greyscale-500);
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --foreground: var(--greyscale-100);
+    --card: var(--greyscale-400);
+    --card-foreground: var(--greyscale-200);
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary-foreground: 0 0% 98%;
+    --primary-foreground: var(--primary-300);
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
@@ -62,7 +62,7 @@
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: var(--greyscale-300);
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   
@@ -73,7 +73,7 @@
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-border: var(--greyscale-300);
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     --chart-1: 220 70% 50%;

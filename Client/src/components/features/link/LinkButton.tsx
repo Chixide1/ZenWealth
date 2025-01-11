@@ -40,8 +40,7 @@ export function LinkButton({children, className, ...props}: LinkButtonProps) {
     return(
         <Button
             onClick={() => open()}
-            className={cn("w-full", className)}
-            variant={"secondary"}
+            className={cn("w-full !rounded-sm", className)}
             {...props}
         >
             {children}

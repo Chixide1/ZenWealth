@@ -116,13 +116,13 @@ export function TransactionTable({columns, data, isLoading, className}: Transact
 
 
     return (
-        <div className={cn("border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] overflow-auto rounded-2xl scrollbar-custom", className)}>
-            <Table className="rounded-2xl text-primary text-sm w-full">
+        <div className={cn("bg-card border-neutral-500/[0.3] overflow-auto rounded-2xl scrollbar-custom", className)}>
+            <Table className="rounded-2xl text-foreground text-sm w-full">
                 <TableHeader>
                     <TableRow>
                         <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
-                                <span className="text-2xl font-semibold mr-auto pr-10">Transactions</span>
+                                <span className="text-xl mr-auto pr-10">Transaction History</span>
                                 <TransactionSearchButton column={table.getColumn("name")} />
                                 <ColumnVisibilityButton columns={table.getAllColumns()}/>
                             </div>
@@ -134,7 +134,7 @@ export function TransactionTable({columns, data, isLoading, className}: Transact
                                 return (
                                     <TableHead
                                         key={header.id}
-                                        className="text-primary bg-neutral-600/[0.3] px-6"
+                                        className="text-foreground bg-neutral-600/[0.3] px-6"
                                         style={{width: header.getSize()}}
                                     >
                                         {header.isPlaceholder

@@ -1,6 +1,7 @@
 ﻿import {cn} from "@/lib/utils.ts";
 import { LucideIcon } from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
+import {Card} from "@/components/ui/card.tsx";
 
 type AccountSummaryCardProps = {
     className?: string,
@@ -15,7 +16,7 @@ export function AccountSummaryCard({dataTitle, className, amount = 0, previousMo
     const percentChange = previousMonthChange < 0 ? `${previousMonthChange}%` : `+${previousMonthChange}%`;
     
     return (
-        <div className={cn("bg-primary/10 col-span-4 p-1 rounded-2xl border border-neutral-700", className)}>
+        <Card className={cn(" col-span-4 p-1 rounded-2xl border-0 text-foreground", className)}>
             <div className="float-right flex flex-col justify-between items-end h-full">
                 <div className="bg-primary/10 p-2 rounded-full w-fit">
                     <Icon className="text-primary h-auto w-5"/>
@@ -36,6 +37,6 @@ export function AccountSummaryCard({dataTitle, className, amount = 0, previousMo
                     </span>
                 </p>
             </div>
-        </div>
+        </Card>
     )
 }

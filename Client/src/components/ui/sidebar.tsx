@@ -25,7 +25,7 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "5rem"
+const SIDEBAR_WIDTH = "12rem"
 // const SIDEBAR_WIDTH_MOBILE = "15rem"
 const SIDEBAR_WIDTH_ICON = "5rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
@@ -283,10 +283,6 @@ const SidebarTrigger = React.forwardRef<
           {...props}
       >
           <AlignLeft className="md:hidden"/>
-          <h5 className="text-primary font-medium montserrat italic hidden md:block">
-              Zen
-              <span className="text-secondary font ">W</span>ealth
-          </h5>
           <span className="sr-only">Toggle Sidebar</span>
       </Button>
   )

@@ -61,7 +61,7 @@ export function TotalBalanceCard() {
     console.log(pieData);
 
     return (
-        <Card className="flex flex-col col-span-8 bg-primary/10 border-neutral-700 text-primary">
+        <Card className="flex flex-col col-span-8 border-0">
             <CardHeader className="items-center pb-0">
                 <CardTitle></CardTitle>
                 <CardDescription></CardDescription>
@@ -86,7 +86,7 @@ export function TotalBalanceCard() {
                                     className=""
                                 />
                             }
-                            labelClassName="text-black"
+                            labelClassName=""
                         />
                         <ChartLegend
                             layout="vertical"
@@ -113,14 +113,14 @@ export function TotalBalanceCard() {
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={viewBox.cy}
-                                                    className="fill-primary text-3xl font-bold"
+                                                    className="fill-foreground text-3xl font-bold"
                                                 >
                                                     £{total}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
                                                     y={(viewBox.cy || 0) + 24}
-                                                    className="fill-muted-foreground"
+                                                    className="fill-foreground"
                                                 >
                                                     Total Balance
                                                 </tspan>
