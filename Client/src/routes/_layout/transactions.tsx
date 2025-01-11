@@ -13,7 +13,7 @@ function TransactionsPage() {
 
   return (
       <TransactionTable
-          className="animate-fade-in-up m-4"
+          className="animate-fade-in-up mx-8 my-6"
           columns={transactionColumns}
           data={data}
           isLoading={isLoading}

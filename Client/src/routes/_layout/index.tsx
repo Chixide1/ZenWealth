@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_layout/')({
 function HomePage() {
     
   return (
-      <div className="p-4 grid grid-cols-12 gap-2">
+      <div className="px-10 py-7 grid grid-cols-12 gap-4">
           <AccountSummaryCard dataTitle="Income" Icon={HandCoins} amount={2100} previousMonthChange={20}/>
           <AccountSummaryCard dataTitle="Expenditure" flip={true} Icon={Banknote} amount={1500} previousMonthChange={-20}/>
           <TotalBalanceCard />

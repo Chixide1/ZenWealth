@@ -1,5 +1,7 @@
-﻿import { Label, Pie, PieChart } from "recharts"
-import { useAtom } from 'jotai';
+﻿"use client"
+
+import { TrendingUp } from "lucide-react"
+import { RadialBar, RadialBarChart } from "recharts"
 
 import {
     Card,
@@ -11,130 +13,90 @@ import {
 } from "@/components/ui/card"
 import {
     ChartConfig,
-    ChartContainer, ChartLegend,
+    ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
-import {accountsAtom} from "@/lib/atoms.ts";
+
+const chartData = [
+    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+    { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+    { browser: "other", visitors: 90, fill: "var(--color-other)" },
+]
+
+const total = chartData.reduce((a, b) => {
+    return a + b.visitors
+}, 0)
+
+const data = chartData.map((item) => {
+    return {...item, percentage: (item.visitors / total) * 100}
+})
+
+console.log(total)
 
 const chartConfig = {
-    id: {
-      label: "ID",  
+    visitors: {
+        label: "Visitors",
     },
-    name: {
-        label: "Name",
+    chrome: {
+        label: "Chrome",
+        color: "hsl(var(--chart-1))",
     },
-    balance: {
-        label: "Balance",
+    safari: {
+        label: "Safari",
+        color: "hsl(var(--chart-2))",
     },
-   type: {
-        label: "Type",
+    firefox: {
+        label: "Firefox",
+        color: "hsl(var(--chart-3))",
     },
-    mask: {
-        label: "Mask",
+    edge: {
+        label: "Edge",
+        color: "hsl(var(--chart-4))",
     },
-    subtype: {
-        label: "Subtype",
+    other: {
+        label: "Other",
+        color: "hsl(var(--chart-5))",
     },
-    officialName: {
-        label: "Official Name",
-    }
 } satisfies ChartConfig
 
-const colorMap = new Map([
-    ["depository", "hsl(var(--chart-1))"],
-    ["credit", "hsl(var(--chart-2))"],
-    ["loan", "hsl(var(--chart-3))"],
-    ["investment", "hsl(var(--chart-4))"],
-    ["other", "hsl(var(--chart-5))"],
-])
-
 export function TotalBalanceCard() {
-    const [{data}] = useAtom(accountsAtom)
-    const pieData = data?.map((account, index) => {
-        const colors = Array.from(colorMap.values());
-        const colorIndex = index % colors.length;
-
-        return {...account, fill: colors[colorIndex]};
-    })
-    const total = data?.reduce((total, account) => total + account.balance, 0)
-    console.log(pieData);
-
     return (
-        <Card className="flex flex-col col-span-8 border-0">
-            <CardHeader className="items-center pb-0">
-                <CardTitle></CardTitle>
-                <CardDescription></CardDescription>
+        <Card className="flex flex-col col-span-8 text-foreground">
+            <CardHeader className="pb-0">
+                <CardTitle className="text-xl font-normal">Total Balance</CardTitle>
+                {/*<CardDescription>January - June 2024</CardDescription>*/}
             </CardHeader>
             <CardContent className="flex-1 pb-0">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px] w-full"
+                    className="mx-auto aspect-square max-h-[250px]"
                 >
-                    <PieChart>
+                    <RadialBarChart
+                        data={data}
+                        // dataKey="visitors"
+                        innerRadius={40}
+                        outerRadius={110}
+                        barSize={7}
+                    >
                         <ChartTooltip
-                            // cursor={false}
-                            content={
-                                <ChartTooltipContent
-                                    // formatter={(value) => `£${value.toLocaleString()}`}
-                                    nameKey="balance"
-                                    labelKey="balance"
-                                    indicator="line"
-                                    labelFormatter={(_, payload) => {
-                                        return payload[0].payload.name
-                                    }}
-                                    className=""
-                                />
-                            }
-                            labelClassName=""
+                            cursor={false}
+                            content={<ChartTooltipContent
+                                hideLabel={true}
+                                nameKey="browser" 
+                            />}
                         />
-                        <ChartLegend
-                            layout="vertical"
-                            verticalAlign="middle"
-                            align="right"
+                        <RadialBar
+                            dataKey="percentage"
+                            background={true}
+                            cornerRadius={10}
+                            
                         />
-                        <Pie
-                            data={pieData}
-                            nameKey="name"
-                            dataKey="balance"
-                            innerRadius={60}
-                            strokeWidth={5}
-                        >
-                            <Label
-                                content={({ viewBox }) => {
-                                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                        return (
-                                            <text
-                                                x={viewBox.cx}
-                                                y={viewBox.cy}
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
-                                            >
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={viewBox.cy}
-                                                    className="fill-foreground text-3xl font-bold"
-                                                >
-                                                    £{total}
-                                                </tspan>
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 24}
-                                                    className="fill-foreground"
-                                                >
-                                                    Total Balance
-                                                </tspan>
-                                            </text>
-                                        )
-                                    }
-                                }}
-                            />
-                        </Pie>
-                    </PieChart>
+                    </RadialBarChart>
                 </ChartContainer>
             </CardContent>
-            <CardFooter className="flex-col gap-2 text-sm">
-            </CardFooter>
         </Card>
     )
 }

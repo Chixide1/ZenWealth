@@ -90,7 +90,7 @@ export function AppSidebar({username}: {username: string}) {
             <SidebarHeader className="h-16 flex flex-row items-center border-b border-sidebar-border">
                 <div className="flex items-center ps-2 gap-2">
                     <Logo className="w-5"/>
-                    <span className="font-semibold text-white">ZenWealth</span>
+                    <span className="font-semibold text-primary">ZenWealth</span>
                 </div>
             </SidebarHeader>
             <SidebarContent>
