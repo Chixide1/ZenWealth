@@ -8,13 +8,13 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/core/card"
+} from "@/components/ui/card"
 import {
     ChartConfig,
     ChartContainer, ChartLegend,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/components/core/chart"
+} from "@/components/ui/chart"
 import {accountsAtom} from "@/lib/atoms.ts";
 
 const chartConfig = {

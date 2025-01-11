@@ -5,10 +5,10 @@ import { Mail, Lock, Loader2 } from 'lucide-react'
 import { useNavigate } from "@tanstack/react-router"
 import { useEffect } from "react"
 import {useToast} from "@/hooks/use-toast.ts";
-import { Label } from "@/components/core/label"
-import {Checkbox} from "@/components/core/checkbox.tsx";
-import {Button} from "@/components/core/button.tsx";
-import {Toaster} from "@/components/core/toaster.tsx";
+import { Label } from "@/components/ui/label"
+import {Checkbox} from "@/components/ui/checkbox.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Toaster} from "@/components/ui/toaster.tsx";
 import {IdentityInput, IdentityInputConfig} from "@/components/features/identity/IdentityInput.tsx";
 import {camelCaseToSentence} from "@/lib/utils.ts";
 import api from "@/lib/api.ts";

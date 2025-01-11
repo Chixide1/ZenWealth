@@ -4,7 +4,7 @@
     SidebarGroup,
     SidebarGroupContent,
     SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,
-} from "@/components/core/sidebar.tsx";
+} from "@/components/ui/sidebar.tsx";
 import { Link, linkOptions, LinkProps, useLocation} from "@tanstack/react-router";
 import { PieChartIcon as ChartPie, Home, PoundSterling, WalletCards } from 'lucide-react';
 import { useCallback } from "react";

@@ -1,10 +1,10 @@
 ﻿import { useState } from "react";
 import { Column } from "@tanstack/react-table";
 
-import { Button } from "@/components/core/button";
-import { Input } from "@/components/core/input";
-import { Label } from "@/components/core/label";
-import { DualRangeSlider } from "@/components/core/dual-range-slider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { Transaction } from "@/types";
 import FilterButton from "@/components/shared/FilterButton.tsx";
 

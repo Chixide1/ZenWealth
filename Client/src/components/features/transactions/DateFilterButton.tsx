@@ -4,9 +4,9 @@ import { useState } from "react"
 import { Column } from "@tanstack/react-table"
 import { isValid } from "date-fns"
 
-import { Button } from "@/components/core/button"
-import { Input } from "@/components/core/input"
-import { Label } from "@/components/core/label"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Transaction } from "@/types"
 import FilterButton from "@/components/shared/FilterButton.tsx"
 

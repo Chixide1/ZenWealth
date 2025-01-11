@@ -1,5 +1,5 @@
-﻿import { Label } from "@/components/core/label";
-import { Input } from "@/components/core/input";
+﻿import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { UseFormRegister, FieldValues } from "react-hook-form";
 import { type LucideIcon } from 'lucide-react';
 

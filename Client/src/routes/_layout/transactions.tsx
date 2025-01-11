@@ -12,11 +12,13 @@ function TransactionsPage() {
   const [{data, isLoading}] = useAtom(transactionsAtom);
 
   return (
-      <TransactionTable
-          className="animate-fade-in-up"
-          columns={transactionColumns}
-          data={data}
-          isLoading={isLoading}
-      />
+      <div className="p-4">
+          <TransactionTable
+              className="animate-fade-in-up"
+              columns={transactionColumns}
+              data={data}
+              isLoading={isLoading}
+          />
+      </div>
   )
 }

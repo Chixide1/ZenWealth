@@ -6,6 +6,7 @@ import {useEffect, useState } from "react";
 import Loading from "@/components/shared/Loading.tsx";
 import AppWrapper from "@/components/shared/AppWrapper.tsx";
 import api from "@/lib/api.ts";
+import AppTopbar from "@/components/shared/AppTopbar.tsx";
 
 export const Route = createFileRoute('/_layout')({
     component: Layout,
@@ -43,9 +44,12 @@ export function Layout() {
     }
     
     return (
-        <AppWrapper username={userDetails.userName} >
-            <Outlet />
-        </AppWrapper>
+        <div className="w-full h-screen flex flex-col overflow-hidden">
+            <AppTopbar />
+            <main className="h-full overflow-auto scrollbar-thin">
+                <Outlet />
+            </main>
+        </div>
     )
 }
 

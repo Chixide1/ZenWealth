@@ -1,5 +1,5 @@
 ﻿import { BadgePoundSterling } from "lucide-react";
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/core/card.tsx";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {LinkButton} from "@/components/features/link/LinkButton.tsx";
 
 export function LinkStart() {

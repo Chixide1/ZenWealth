@@ -1,5 +1,5 @@
-﻿import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/core/dropdown-menu.tsx";
-import {Button} from "@/components/core/button.tsx";
+﻿import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger} from "@/components/ui/dropdown-menu.tsx";
+import {Button} from "@/components/ui/button.tsx";
 import { Filter } from "lucide-react";
 import { useState } from "react";
 import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
