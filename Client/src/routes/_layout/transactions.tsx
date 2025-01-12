@@ -14,7 +14,7 @@ function TransactionsPage() {
   return (
       <div className="p-4">
           <TransactionTable
-              className="animate-fade-in-up"
+              className="animate-in slide-in-from-bottom-1/4 duration-300"
               columns={transactionColumns}
               data={data}
               isLoading={isLoading}

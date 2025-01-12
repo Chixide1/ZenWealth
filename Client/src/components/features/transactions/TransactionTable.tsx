@@ -122,7 +122,7 @@ export function TransactionTable({columns, data, isLoading, className}: Transact
                     <TableRow>
                         <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
-                                <span className="text-2xl font-semibold mr-auto pr-10">Transactions</span>
+                                <span className="text-2xl mr-auto pr-10">Transaction History</span>
                                 <TransactionSearchButton column={table.getColumn("name")} />
                                 <ColumnVisibilityButton columns={table.getAllColumns()}/>
                             </div>

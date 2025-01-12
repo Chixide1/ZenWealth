@@ -10,9 +10,9 @@ function LoginPage() {
   return (
     <main className="h-screen w-full flex flex-col items-center justify-center">
         <div className="flex items-center my-auto sm:mt-0 sm:mb-8">
-            <Logo className="mr-1"/>
+            <Logo className=""/>
             <h2 className="text-primary text-3xl font-semibold montserrat italic">
-                Zen
+                en
                 <span className="text-secondary font">W</span>ealth
             </h2>
         </div>

@@ -4,8 +4,6 @@ import {
     CopyPlus,
     LayoutDashboard,
     PoundSterling,
-    WalletCards,
-    ChartPie,
     Wallet,
     BarChart3,
     LucideProps
@@ -61,11 +59,11 @@ export default function AppTopbar({username}: {username?: string}) {
     const initialTab = location.pathname;
     
     return (
-        <header className="h-20 z-10 gap-4 flex items-center px-3 md:pe-8 flex-shrink-0 w-full justify-between text-sm">
-            <div className="flex items-center gap-2">
+        <header className="h-20 z-10 gap-4 flex items-center px-4 flex-shrink-0 w-full justify-between text-sm">
+            <div className="flex items-center">
                 <Logo className="w-auto h-7" />
                 <h2 className="text-primary text-sm">
-                    Zen
+                    en
                     <span className="text-secondary font">W</span>ealth
                 </h2>
             </div>
@@ -76,7 +74,7 @@ export default function AppTopbar({username}: {username?: string}) {
                             <TabsTrigger
                                 key={item.title + "::AppTopbar"}
                                 value={item.url.to || "/"}
-                                className="flex px-4 py-2 bg-primary/10 rounded-full items-center gap-2 text-primary font-medium transition-colors duration-500"
+                                className="flex px-4 py-2 bg-primary/10 rounded-full items-center gap-2 text-primary font-medium transition-colors duration-300"
                             >
                                 <item.Icon className={"h-auto w-4 pt-px"}/>
                                 <span className="text-xs">{item.title}</span>
@@ -86,7 +84,7 @@ export default function AppTopbar({username}: {username?: string}) {
                 </TabsList>
             </Tabs>
             <div className="flex items-center gap-2">
-                <LinkButton className="w-auto rounded-full ml-auto" size="sm">
+                <LinkButton className="w-auto rounded-full p-2 ml-auto" size="sm">
                     <CopyPlus/>
                     {/*<span className="hidden md:block">Add Accounts</span>*/}
                 </LinkButton>

@@ -4,7 +4,6 @@ import { Outlet } from "@tanstack/react-router";
 import { AxiosResponse } from "axios";
 import {useEffect, useState } from "react";
 import Loading from "@/components/shared/Loading.tsx";
-import AppWrapper from "@/components/shared/AppWrapper.tsx";
 import api from "@/lib/api.ts";
 import AppTopbar from "@/components/shared/AppTopbar.tsx";
 

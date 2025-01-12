@@ -4,13 +4,13 @@ import {TotalBalanceCard} from "@/components/features/accounts/TotalBalanceCard.
 import { HandCoins, Banknote } from "lucide-react";
 
 export const Route = createFileRoute('/_layout/')({
-  component: HomePage,
+  component: DashboardPage,
 })
 
-function HomePage() {
+function DashboardPage() {
     
   return (
-      <div className="grid grid-cols-12 gap-2 px-6">
+      <div className="grid grid-cols-12 gap-2 px-4">
           <AccountSummaryCard dataTitle="Income" Icon={HandCoins} amount={2100} previousMonthChange={20}/>
           <AccountSummaryCard dataTitle="Expenditure" flip={true} Icon={Banknote} amount={1500} previousMonthChange={-20}/>
           <TotalBalanceCard />
