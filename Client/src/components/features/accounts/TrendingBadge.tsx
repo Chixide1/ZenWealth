@@ -1,6 +1,6 @@
 ﻿import {Badge} from "@/components/ui/badge.tsx";
 import {CardDescription} from "@/components/ui/card.tsx";
-import { TrendingUp } from "lucide-react";
+import {TrendingDown, TrendingUp } from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 
 type TrendingBadgeProps = {
@@ -10,16 +10,17 @@ type TrendingBadgeProps = {
 }
 
 export function TrendingBadge({percentage, invert = false, className}: TrendingBadgeProps) {
+    const lossOrGain = invert ? percentage > 0 : percentage < 0;
+    
     return(
-        <Badge className={cn("bg-secondary/20 rounded-sm flex gap-px items-center", className)}>
-            <span
-                // className={`text-xs ${flip ?
-                //     previousMonthChange < 0 ? "text-secondary" : "text-red-500" :
-                //     previousMonthChange < 0 ? "text-red-500" : "text-secondary"}`}
-            >
-                &nbsp;{percentage}
+        <Badge className={cn(`${lossOrGain ? "bg-red-500/20" : "bg-secondary/20"} rounded-sm flex gap-px items-center px-2`, className)}>
+            <span className={"text-xs " + (lossOrGain ? " text-red-500" : "text-secondary")}>
+                {percentage}%
             </span>
-            <TrendingUp className="text-secondary h-auto w-4 mx-2 my-1"/>
+            {lossOrGain ?
+                (<TrendingDown className="text-red-500 h-auto ml-1 w-4"/>) :
+                (<TrendingUp className="text-secondary h-auto w-4 mx-2 my-1"/>)
+            }
         </Badge>
     )
 }

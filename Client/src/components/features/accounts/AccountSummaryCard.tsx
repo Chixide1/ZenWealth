@@ -17,7 +17,7 @@ export function AccountSummaryCard({dataTitle, className, amount = 0, previousMo
     
     return (
         <Card className={cn("bg-primary/10 col-span-3 p-5 rounded-2xl border-0", className)}>
-            <TrendingBadge percentage={20} className="float-right"/>
+            <TrendingBadge percentage={-20} className="float-right"/>
             <CardContent className="p-0">
                 <CardTitle className="text-neutral-400/90 text-xs font-semibold w-1/2">Total {dataTitle}</CardTitle>
                 <p className=" mt-1 text-lg">£ {amount.toLocaleString()}</p>
