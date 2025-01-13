@@ -1,6 +1,7 @@
 ﻿import {cn} from "@/lib/utils.ts";
 import { TrendingUp } from "lucide-react";
 import {Card, CardContent, CardDescription, CardFooter, CardTitle} from "@/components/ui/card";
+import {TrendingBadge} from "@/components/features/accounts/TrendingBadge.tsx";
 
 type AccountSummaryCardProps = {
     className?: string,
@@ -13,18 +14,10 @@ type AccountSummaryCardProps = {
 
 export function AccountSummaryCard({dataTitle, className, amount = 0, previousMonth = 0, previousMonthChange = 0,  flip = false}: AccountSummaryCardProps) {
     const percentChange = previousMonthChange < 0 ? `${previousMonthChange}%` : `+${previousMonthChange}%`;
+    
     return (
         <Card className={cn("bg-primary/10 col-span-3 p-5 rounded-2xl border-0", className)}>
-            <CardDescription className="float-right bg-secondary/20 rounded-sm flex gap-px items-center">
-                <span
-                    className={`text-xs ${flip ?
-                        previousMonthChange < 0 ? "text-secondary" : "text-red-500" :
-                        previousMonthChange < 0 ? "text-red-500" : "text-secondary"}`}
-                >
-                    &nbsp;{percentChange}
-                </span>
-                <TrendingUp className="text-secondary h-auto w-4 mx-2 my-1"/>
-            </CardDescription>
+            <TrendingBadge percentage={20} className="float-right"/>
             <CardContent className="p-0">
                 <CardTitle className="text-neutral-400/90 text-xs font-semibold w-1/2">Total {dataTitle}</CardTitle>
                 <p className=" mt-1 text-lg">£ {amount.toLocaleString()}</p>
