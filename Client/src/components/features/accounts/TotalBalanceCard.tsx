@@ -62,8 +62,8 @@ export function TotalBalanceCard() {
 
     return (
         <Card className="flex flex-col col-span-7 bg-primary/10 border-neutral-700 text-primary">
-            <CardHeader className="items-center pb-0">
-                <CardTitle></CardTitle>
+            <CardHeader className=" pb-0">
+                <CardTitle className="text-2xl font-normal">Total Balance</CardTitle>
                 <CardDescription></CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">

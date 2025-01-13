@@ -60,11 +60,7 @@ export default function AppTopbar({username}: {username?: string}) {
     return (
         <header className="h-20 z-10 gap-4 flex items-center px-4 flex-shrink-0 w-full justify-between text-sm">
             <Link className="flex items-center" to="/">
-                <Logo className="w-auto h-7" />
-                <h2 className="text-primary text-sm">
-                    en
-                    <span className="text-secondary font">W</span>ealth
-                </h2>
+                <Logo className="w-auto h-7" textProps={{className: "hidden md:block"}} />
             </Link>
             <Tabs >
                 <TabsList className="gap-1">

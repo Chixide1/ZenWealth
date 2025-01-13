@@ -11,10 +11,6 @@ function RegisterPage() {
         <main className="h-screen w-full flex flex-col items-center justify-center">
             <div className="flex items-center my-auto sm:mt-0 sm:mb-8">
                 <Logo className="mr-1"/>
-                <h1 className="text-primary text-3xl font-semibold montserrat italic">
-                    Zen
-                    <span className="text-secondary font">W</span>ealth
-                </h1>
             </div>
             <div
                 className="text-primary sm:bg-primary/10 rounded-2xl w-full sm:w-[31rem] mb-20 sm:mb-0 sm:py-8 flex flex-col items-center">

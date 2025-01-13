@@ -10,10 +10,10 @@ function DashboardPage() {
     
   return (
       <div className="grid grid-cols-12 gap-2 px-8">
-          <AccountSummaryCard dataTitle="Income" amount={2100} previousMonthChange={20}/>
-          <AccountSummaryCard dataTitle="Expenditure" flip={true} amount={1500} previousMonthChange={-20}/>
-          <AccountSummaryCard dataTitle="Savings" amount={500} previousMonthChange={20}/>
-          <AccountSummaryCard dataTitle="Debt" flip={true} amount={750} previousMonthChange={-20}/>
+          <AccountSummaryCard dataTitle="Income" amount={2100} previousAmount={1950}/>
+          <AccountSummaryCard dataTitle="Expenditure" amount={1500} previousAmount={1900} invert={true}/>
+          <AccountSummaryCard dataTitle="Savings" amount={500} previousAmount={627}/>
+          <AccountSummaryCard dataTitle="Debt" amount={750} previousAmount={543} invert={true}/>
           <TotalBalanceCard />
       </div>
   )
