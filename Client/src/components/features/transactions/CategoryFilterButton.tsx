@@ -39,7 +39,7 @@ export default function CategoryFilterButton({column}: {column:  Column<Transact
                     .sort()
                     .map(category => (
                         <Toggle
-                            className="capitalize data-[state=on]:hover:bg-secondary/[0.2] backdrop-blur-sm data-[state=on]:backdrop-blur-sm data-[state=on]:bg-secondary/[0.3]
+                            className="capitalize data-[state=on]:hover:bg-secondary/20 backdrop-blur-sm data-[state=on]:backdrop-blur-sm data-[state=on]:bg-secondary/[0.3]
                             data-[state=on]:text-secondary data-[state=on]:text-xs text-xs bg-muted/[0.3] text-neutral-300 hover:bg-muted/[0.2] hover:text-neutral-300"
                             key={category + " Toggle"}
                             pressed={isFiltered(category)}

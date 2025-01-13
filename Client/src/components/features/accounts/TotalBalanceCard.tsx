@@ -61,7 +61,7 @@ export function TotalBalanceCard() {
     console.log(pieData);
 
     return (
-        <Card className="flex flex-col col-span-8 bg-primary/10 border-neutral-700 text-primary">
+        <Card className="flex flex-col col-span-7 bg-primary/10 border-neutral-700 text-primary">
             <CardHeader className="items-center pb-0">
                 <CardTitle></CardTitle>
                 <CardDescription></CardDescription>

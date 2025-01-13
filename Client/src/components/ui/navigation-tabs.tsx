@@ -2,6 +2,7 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
+import {router} from "@/main.tsx";
 
 const Tabs = TabsPrimitive.Root;
 
@@ -45,7 +46,7 @@ const TabsList = React.forwardRef<
             observer.disconnect();
         };
     }, [props.children]);
-
+    
     return (
         <div className="relative" ref={tabsListRef}>
             <TabsPrimitive.List
