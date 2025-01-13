@@ -58,7 +58,7 @@ export function TotalBalanceCard() {
         return {...account, fill: colors[colorIndex]};
     })
     const total = data?.reduce((total, account) => total + account.balance, 0)
-    console.log(pieData);
+    // console.log(pieData);
 
     return (
         <Card className="flex flex-col col-span-7 bg-primary/10 border-neutral-700 text-primary">

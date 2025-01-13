@@ -1,5 +1,4 @@
 ﻿import {Badge} from "@/components/ui/badge.tsx";
-import {CardDescription} from "@/components/ui/card.tsx";
 import {TrendingDown, TrendingUp } from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 

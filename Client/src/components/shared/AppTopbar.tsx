@@ -9,9 +9,8 @@ import {
     LucideProps
 } from "lucide-react";
 import {Tabs, TabsList, TabsTrigger} from "@/components/ui/navigation-tabs.tsx";
-import {Link, linkOptions, LinkProps, useLocation } from "@tanstack/react-router";
+import {Link, linkOptions, LinkProps, useLocation, useRouter } from "@tanstack/react-router";
 import Logo from "./Logo";
-import {router} from "@/main.tsx"
 import React from "react";
 
 type MenuItem = {
@@ -57,8 +56,6 @@ const items: MenuItem[] = [
 ]
 
 export default function AppTopbar({username}: {username?: string}) {
-    const location = useLocation();
-    const initialTab = location.pathname;
     
     return (
         <header className="h-20 z-10 gap-4 flex items-center px-4 flex-shrink-0 w-full justify-between text-sm">
@@ -69,19 +66,17 @@ export default function AppTopbar({username}: {username?: string}) {
                     <span className="text-secondary font">W</span>ealth
                 </h2>
             </Link>
-            <Tabs defaultValue={initialTab}>
+            <Tabs >
                 <TabsList className="gap-1">
                     {items.map((item) => (
-                        <Link {...item.url} className="flex">
-                            <TabsTrigger
-                                key={item.title + "::AppTopbar"}
-                                value={item.url.to || "/"}
-                                className="flex px-4 py-2 bg-primary/10 rounded-full items-center gap-2 text-primary font-medium transition-colors duration-300"
-                            >
-                                <item.Icon className={"h-auto w-4 pt-px"}/>
-                                <span className="text-xs">{item.title}</span>
-                            </TabsTrigger>
-                        </Link>
+                        <TabsTrigger
+                            key={item.title + "::AppTopbar"}
+                            value={item.url.to || "/"}
+                            className="flex px-4 py-2 bg-primary/10 rounded-full items-center gap-2 text-primary font-medium transition-colors duration-300"
+                        >
+                            <item.Icon className={"h-auto w-4 pt-px"}/>
+                            <span className="text-xs">{item.title}</span>
+                        </TabsTrigger>
                     ))}
                 </TabsList>
             </Tabs>
