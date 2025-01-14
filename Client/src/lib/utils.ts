@@ -12,3 +12,9 @@ export function camelCaseToSentence(text: string) {
   // Step 2: Capitalize the first letter and trim any leading space
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).trim();
 }
+
+export const currencyParser = new Intl.NumberFormat(["en-US", "en-GB"], {
+  style: "currency",
+  currency: "GBP",
+  currencyDisplay: "symbol",
+})

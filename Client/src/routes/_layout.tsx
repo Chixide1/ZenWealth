@@ -6,6 +6,7 @@ import {useEffect, useState } from "react";
 import Loading from "@/components/shared/Loading.tsx";
 import api from "@/lib/api.ts";
 import AppTopbar from "@/components/shared/AppTopbar.tsx";
+import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area.tsx";
 
 export const Route = createFileRoute('/_layout')({
     component: Layout,
@@ -45,9 +46,10 @@ export function Layout() {
     return (
         <div className="w-full h-screen flex flex-col overflow-hidden">
             <AppTopbar />
-            <main className="h-full overflow-auto scrollbar-thin">
+            <ScrollArea  className="h-full overflow-auto scrollbar-thin">
                 <Outlet />
-            </main>
+                <ScrollBar className="" />
+            </ScrollArea>
         </div>
     )
 }

@@ -19,7 +19,7 @@ export function TrendingBadge({percentage, invert = false, className}: TrendingB
             }
         >
             <span className={"text-xs " + (lossOrGain ? " text-red-500" : "text-secondary")}>
-                {percentage.toFixed(2)}%
+                {percentage > 0 && "+"}{percentage.toFixed(2)}%
             </span>
             {lossOrGain ?
                 (<TrendingDown className="text-red-500 h-auto ml-1 w-4"/>) :
