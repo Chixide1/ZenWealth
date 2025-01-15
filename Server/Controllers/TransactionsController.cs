@@ -13,6 +13,7 @@ namespace Server.Controllers;
 public class TransactionsController(
     ILogger<TransactionsController> logger,
     ITransactionsService transactionsService,
+    IItemsService itemsService,
     UserManager<User> userManager) : ControllerBase
 {
     [HttpGet("[controller]")]
@@ -26,7 +27,7 @@ public class TransactionsController(
             return Unauthorized();
         }
 
-        await transactionsService.FetchLatestTransactionsAsync(user.Id);
+        await itemsService.UpdateItemsAsync(user.Id);
         
         var transactions = await transactionsService.GetUserTransactionsAsync(user.Id);
             
@@ -44,7 +45,7 @@ public class TransactionsController(
             return Unauthorized();
         }
 
-        await transactionsService.FetchLatestTransactionsAsync(user.Id);
+        await itemsService.UpdateItemsAsync(user.Id);
         
         return Ok();
     }

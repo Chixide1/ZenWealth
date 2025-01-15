@@ -7,17 +7,20 @@ public class Transaction
 
 {
 	/// <summary>
+	/// <para>Unique ID for each Transaction</para>
+	/// </summary>
+	public int Id { get; init; }
+	
+	/// <summary>
 	/// <para>The unique ID of the transaction. Like all Plaid identifiers, the <c>transaction_id</c> is case sensitive.</para>
 	/// </summary>
-	[Key]
 	[Column(TypeName = "varchar(100)")]
-	public required string Id { get; init; }
+	public required string TransactionId { get; init; }
 	
 	/// <summary>
 	/// <para>The ID of the account in which this transaction occurred.</para>
 	/// </summary>
-	[Column(TypeName = "varchar(100)")]
-	public required string AccountId { get; init; }
+	public required int AccountId { get; init; }
 
 	/// <summary>
 	/// <para>Navigation Property</para>

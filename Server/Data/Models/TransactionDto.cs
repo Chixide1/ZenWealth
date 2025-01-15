@@ -4,14 +4,14 @@ public class TransactionDto
 
 {
 	/// <summary>
-	/// <para>The unique ID of the transaction. Like all Plaid identifiers, the <c>transaction_id</c> is case sensitive.</para>
+	/// <para>Unique ID for each Transaction</para>
 	/// </summary>
-	public required string Id { get; init; }
+	public int Id { get; init; }
 	
 	/// <summary>
 	/// <para>The ID of the account in which this transaction occurred.</para>
 	/// </summary>
-	public required string AccountId { get; init; }
+	public required int AccountId { get; init; }
 
 	/// <summary>
 	/// <para>The settled value of the transaction, denominated in the transactions's currency, as stated in <c>iso_currency_code</c> or <c>unofficial_currency_code</c>. For all products except Income: Positive values when money moves out of the account; negative values when money moves in. For example, debit card purchases are positive; credit card payments, direct deposits, and refunds are negative. For Income endpoints, values are positive when representing income.</para>

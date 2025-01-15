@@ -6,13 +6,9 @@ public class Account
 
 {
 	/// <summary>
-	/// <para>Plaid’s unique identifier for the account. This value will not change unless Plaid can't reconcile the account with the data returned by the financial institution. This may occur, for example, when the name of the account changes. If this happens a new <c>account_id</c> will be assigned to the account.</para>
-	/// <para>The <c>account_id</c> can also change if the <c>access_token</c> is deleted and the same credentials that were used to generate that <c>access_token</c> are used to generate a new <c>access_token</c> on a later date. In that case, the new <c>account_id</c> will be different from the old <c>account_id</c>.</para>
-	/// <para>If an account with a specific <c>account_id</c> disappears instead of changing, the account is likely closed. Closed accounts are not returned by the Plaid API.</para>
-	/// <para>Like all Plaid identifiers, the <c>account_id</c> is case sensitive.</para>
+	/// <para>Unique ID for each Account</para>
 	/// </summary>
-	[Column(TypeName = "varchar(100)")]
-	public required string Id { get; init; }
+	public int Id { get; init; }
 	
 	/// <summary>
 	/// <para>The associated Item which contains the Access Token that allows retrieval of data from Plaid</para>
@@ -34,11 +30,25 @@ public class Account
 	/// <para>The associated user's Navigation</para>
 	/// </summary>
 	public User User { get; init; } = null!;
+	
+	/// <summary>
+	/// <para>Plaid’s unique identifier for the account. This value will not change unless Plaid can't reconcile the account with the data returned by the financial institution. This may occur, for example, when the name of the account changes. If this happens a new <c>account_id</c> will be assigned to the account.</para>
+	/// <para>The <c>account_id</c> can also change if the <c>access_token</c> is deleted and the same credentials that were used to generate that <c>access_token</c> are used to generate a new <c>access_token</c> on a later date. In that case, the new <c>account_id</c> will be different from the old <c>account_id</c>.</para>
+	/// <para>If an account with a specific <c>account_id</c> disappears instead of changing, the account is likely closed. Closed accounts are not returned by the Plaid API.</para>
+	/// <para>Like all Plaid identifiers, the <c>account_id</c> is case sensitive.</para>
+	/// </summary>
+	[Column(TypeName = "varchar(100)")]
+	public required string AccountId { get; init; }
 
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>
 	/// </summary>
-	public double Balance { get; init; }
+	public double CurrentBalance { get; set; }
+	
+	/// <summary>
+	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>
+	/// </summary>
+	public double AvailableBalance { get; set; }
 
 	/// <summary>
 	/// <para>The last 2-4 alphanumeric characters of an account's official account number. Note that the mask may be non-unique between an Item's accounts, and it may also not match the mask that the bank displays to the user.</para>
@@ -74,5 +84,5 @@ public class Account
 	/// <para>Navigation property for Transactions associated with this Account</para>
 	/// </summary>
 	[Column(TypeName = "varchar(255)")]
-	public List<Transaction> Transactions { get; } = [];
+	public List<Transaction> Transactions { get; init; } = [];
 }

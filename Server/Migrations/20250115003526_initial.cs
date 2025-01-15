@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Server.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -182,10 +182,13 @@ namespace Server.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(100)", nullable: false),
-                    ItemId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Balance = table.Column<double>(type: "float", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AccountId = table.Column<string>(type: "varchar(100)", nullable: false),
+                    CurrentBalance = table.Column<double>(type: "float", nullable: false),
+                    AvailableBalance = table.Column<double>(type: "float", nullable: false),
                     Mask = table.Column<string>(type: "varchar(50)", nullable: true),
                     Name = table.Column<string>(type: "varchar(255)", nullable: false),
                     OfficialName = table.Column<string>(type: "varchar(255)", nullable: true),
@@ -199,21 +202,23 @@ namespace Server.Migrations
                         name: "FK_Accounts_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Accounts_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Transactions",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(100)", nullable: false),
-                    AccountId = table.Column<string>(type: "varchar(100)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionId = table.Column<string>(type: "varchar(100)", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     IsoCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),

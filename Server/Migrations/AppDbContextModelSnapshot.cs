@@ -157,10 +157,20 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Data.Models.Account", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountId")
+                        .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<double>("Balance")
+                    b.Property<double>("AvailableBalance")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CurrentBalance")
                         .HasColumnType("float");
 
                     b.Property<int>("ItemId")
@@ -226,12 +236,14 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Data.Models.Transaction", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(100)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("AccountId")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
@@ -265,6 +277,10 @@ namespace Server.Migrations
 
                     b.Property<string>("TransactionCode")
                         .HasColumnType("varchar(255)");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("UnofficialCurrencyCode")
                         .HasColumnType("varchar(255)");

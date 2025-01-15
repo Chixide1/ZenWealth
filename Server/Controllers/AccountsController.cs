@@ -26,6 +26,8 @@ public class AccountsController(
             return Unauthorized();
         }
 
+        await accountsService.UpdateAccountsAsync(user.Id);
+        
         var accounts = await accountsService.GetUserAccountsAsync(user.Id);
             
         return Ok(accounts);

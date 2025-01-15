@@ -8,17 +8,19 @@ public interface IItemsService
     Task CreateItemAsync(string accessToken, string userId);
     
     Task<bool> CheckItemExistsAsync(string userId);
+    
+    Task UpdateItemsAsync(string userId);
 }
 
 public interface IAccountsService
 {
     Task<List<AccountDto>> GetUserAccountsAsync(string userId);
+    
+    Task UpdateAccountsAsync(string userId);
 }
 
 public interface ITransactionsService
 {
-    Task FetchLatestTransactionsAsync(string userId);
-    
     Task<List<TransactionDto>> GetUserTransactionsAsync(string userId);
 }
 
