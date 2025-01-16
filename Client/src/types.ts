@@ -1,5 +1,5 @@
 ﻿export type Transaction = {
-    transactionId: string,
+    Id: number,
     merchantName: string,
     name: string,
     amount: number,
@@ -15,11 +15,12 @@
 }
 
 export type Account = {
-    id: string,
-    balance: number,
+    id: number,
+    currentBalance: number,
+    availableBalance: number,
     mask: string,
     name: string,
     officialName: string,
-    type: string,
+    type: "Credit" | "Loan" | "Depository" | "Other",
     subtype: string,
 }
