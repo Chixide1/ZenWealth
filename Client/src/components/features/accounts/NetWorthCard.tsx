@@ -148,20 +148,20 @@ export function NetWorthCard() {
                     :
                     <Skeleton className="w-full h-full bg-primary/10" />}
                 </ResponsiveContainer>
-                <ScrollArea className="h-64 w-72">
-                    <ul className="flex flex-col justify-center gap-6 w-fit pr-6">
+                <ScrollArea className="h-64 md:w-72 w-full">
+                    <ul className="flex flex-col justify-center gap-6 w-full md:w-fit pr-6">
                         {allAccounts?.map((account) => (
                             <li
                                 key={account.id + "::NetWorthCard::PieLegend"}
-                                className="flex items-center gap-3"
+                                className="flex items-center gap-2 md:gap-3 w-full"
                                 onMouseEnter={() => setHoveredIndex(account.id)}
                                 onMouseLeave={() => setHoveredIndex(null)}
                             >
-                                <div className="w-1 h-8 rounded-full" style={{backgroundColor: account.fill}}/>
-                                <div className="flex flex-col">
-                                    <span className="text-sm text-zinc-400">{account.name}</span>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm text-zinc-300 text-nowrap">
+                                <div className="w-1 h-1 md:h-8 rounded-full mb-auto mt-2.5 md:my-0" style={{backgroundColor: account.fill}}/>
+                                <div className="flex md:flex-col justify-between md:justify-normal w-full">
+                                    <span className="text-sm text-primary">{account.name}</span>
+                                    <div className="flex items-end md:items-center md:gap-2 flex-col md:flex-row">
+                                        <span className="text-sm text-neutral-300 text-nowrap">
                                             {(account.type === "Credit" ? "-" : "") + currencyParser.format(account.currentBalance)}
                                         </span>
                                         <span className="text-xs text-neutral-400/90">
@@ -188,7 +188,7 @@ const InfoBox = ({amount, description}: { amount: number, description: string })
 
 function CustomTooltip({active, payload}: TooltipProps<number, string>) {
     if (active) {
-        const item = payload?.[0].payload as Account & {fill: string}
+        const item = payload?.[0].payload as Account & { fill: string }
         return (
             <div className="bg-neutral-600/40 rounded-md backdrop-blur-sm flex gap-2 items-center">
                 <div className="backdrop-blur-sm gap-2 flex items-center p-2">
@@ -202,7 +202,7 @@ function CustomTooltip({active, payload}: TooltipProps<number, string>) {
                 </div>
             </div>
         );
-    } else {
-        return null;
     }
+    
+    return null;
 }
