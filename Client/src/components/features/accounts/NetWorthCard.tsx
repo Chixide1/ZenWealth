@@ -62,35 +62,6 @@ const creditColors = [
     "var(--red-chart-5)",
 ]
 
-const InfoCard = ({amount, description}: { amount: number, description: string }) => (
-    <div className="bg-primary/10 backdrop-blur-sm w-full md:w-auto px-3 py-2 md:px-4 md:py-3 rounded-md text-center">
-        <p className="text-primary text-lg w-fit mx-auto">{currencyParser.format(amount)}</p>
-        <p className="text-xs text-neutral-400/90 font-semibold text-nowrap w-fit mx-auto">{description}</p>
-    </div>
-)
-
-function CustomTooltip({active, payload}: TooltipProps<number, string>) {
-    if (active) {
-        const item = payload?.[0].payload as Account & {fill: string}
-        return (
-            <div className="bg-neutral-600/40 rounded-md backdrop-blur-sm flex gap-2 items-center">
-                <div className="backdrop-blur-sm gap-2 flex items-center p-2">
-                    <div className="w-1 h-8 rounded-full" style={{backgroundColor: item.fill}}></div>
-                    <div className="backdrop-blur-sm bg-transparent">
-                        <p className="font-semibold">{payload?.[0].name}</p>
-                        <p className="">
-                            {item.type === "Credit" && "-"}{`${currencyParser.format(payload?.[0].value || 0)}`}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    } else {
-        return null;
-    }
-}
-
-
 export function NetWorthCard() {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const [{data}] = useAtom(accountsAtom);
@@ -131,8 +102,8 @@ export function NetWorthCard() {
             </CardHeader>
             <CardContent className="flex md:flex-row flex-col pb-4 gap-4">
                 <CardDescription className="flex items-center justify-around gap-8 md:gap-0 md:my-6 md:flex-col">
-                    <InfoCard amount={totalBalance - liabilities} description={"Total Equity"}/>
-                    <InfoCard amount={totalBalance} description={"Total Balance"}/>
+                    <InfoBox amount={totalBalance - liabilities} description={"Total Equity"}/>
+                    <InfoBox amount={totalBalance} description={"Total Balance"}/>
                 </CardDescription>
                 <ResponsiveContainer height={280} minWidth={200} minHeight={200} className="w-full order-first md:order-none">
                     {data?.length !== 0 ? <ChartContainer config={chartConfig}>
@@ -208,3 +179,30 @@ export function NetWorthCard() {
     )
 }
 
+const InfoBox = ({amount, description}: { amount: number, description: string }) => (
+    <div className="bg-primary/10 backdrop-blur-sm w-full md:w-auto px-3 py-2 md:px-4 md:py-3 rounded-md text-center">
+        <p className="text-primary text-lg w-fit mx-auto">{currencyParser.format(amount)}</p>
+        <p className="text-xs text-neutral-400/90 font-semibold text-nowrap w-fit mx-auto">{description}</p>
+    </div>
+)
+
+function CustomTooltip({active, payload}: TooltipProps<number, string>) {
+    if (active) {
+        const item = payload?.[0].payload as Account & {fill: string}
+        return (
+            <div className="bg-neutral-600/40 rounded-md backdrop-blur-sm flex gap-2 items-center">
+                <div className="backdrop-blur-sm gap-2 flex items-center p-2">
+                    <div className="w-1 h-8 rounded-full" style={{backgroundColor: item.fill}}></div>
+                    <div className="backdrop-blur-sm bg-transparent">
+                        <p className="font-semibold">{payload?.[0].name}</p>
+                        <p className="">
+                            {item.type === "Credit" && "-"}{`${currencyParser.format(payload?.[0].value || 0)}`}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    } else {
+        return null;
+    }
+}

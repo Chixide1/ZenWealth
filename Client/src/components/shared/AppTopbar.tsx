@@ -71,7 +71,7 @@ export default function AppTopbar({username}: {username?: string}) {
                             className="flex px-4 py-2 bg-primary/10 rounded-full items-center gap-2 text-primary font-medium transition-colors duration-300"
                         >
                             <item.Icon className={"h-auto w-4 pt-px"}/>
-                            <span className="text-xs">{item.title}</span>
+                            <span className="text-xs hidden md:inline">{item.title}</span>
                         </TabsTrigger>
                     ))}
                 </TabsList>
