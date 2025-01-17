@@ -6,12 +6,12 @@ import { AxiosError } from "axios";
 export const accountsAtom = atomWithQuery(() => ({
     queryKey: ['accounts'],
     queryFn: async () => {
-        const response =await api<Account[]>("/accounts")
+        const response = await api<Account[]>("/accounts")
             .catch((e: AxiosError<Account[]>) => console.error(e))
         console.log(response)
         
         return response ? response.data : [];
-    }
+    },
 }));
 
 export const transactionsAtom = atomWithQuery(() => ({

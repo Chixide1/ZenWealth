@@ -63,9 +63,9 @@ const creditColors = [
 ]
 
 const InfoCard = ({amount, description}: { amount: number, description: string }) => (
-    <div className="bg-primary/10 backdrop-blur-sm px-4 py-2 rounded-md text-center w-full">
-        <p className="text-primary text-lg">{currencyParser.format(amount)}</p>
-        <p className="text-xs text-neutral-400/90 font-semibold text-nowrap">{description}</p>
+    <div className="bg-primary/10 backdrop-blur-sm w-full md:w-auto px-3 py-2 md:px-4 md:py-3 rounded-md text-center">
+        <p className="text-primary text-lg w-fit mx-auto">{currencyParser.format(amount)}</p>
+        <p className="text-xs text-neutral-400/90 font-semibold text-nowrap w-fit mx-auto">{description}</p>
     </div>
 )
 
@@ -93,14 +93,7 @@ function CustomTooltip({active, payload}: TooltipProps<number, string>) {
 
 export function NetWorthCard() {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-    // const [hoveredSection, setHoveredSection] = useState<{assets: boolean, credit: boolean}>({assets: false, credit: false})
-    const [{data}] = useAtom(accountsAtom)
-
-    if(!data){
-        return (
-            <Skeleton className="col-span-7 bg-primary/10 text-primary h-64"></Skeleton>
-        )
-    }
+    const [{data}] = useAtom(accountsAtom);
 
     const assetAccounts = data?.filter(account => {
         return account.type !== "Loan" && account.type !== "Credit";
@@ -118,7 +111,7 @@ export function NetWorthCard() {
             return {...account, fill: creditColors[colorIndex]};
         })
 
-    const allAccounts = [...assetAccounts, ...creditAccounts]
+    const allAccounts = [...(assetAccounts ?? []), ...(creditAccounts ?? [])]
     const totalBalance = assetAccounts?.reduce((total, account) => total + account.currentBalance, 0) ?? 0
     const liabilities = data?.reduce((liabilities, account) => {
         if (account.type === "Credit") {
@@ -128,22 +121,21 @@ export function NetWorthCard() {
         return liabilities + 0;
     }, 0) ?? 0
 
-    console.log(hoveredIndex)
     return (
-        <Card className="col-span-7 bg-primary/10 text-primary">
+        <Card className="col-span-full md:col-span-7 bg-primary/10 text-primary">
             <CardHeader className="pb-4 flex-row justify-between items-center">
                 <CardTitle className="text-2xl font-normal w-fit">Net Worth</CardTitle>
                 <Link to="/accounts" className="w-fit bg-primary/10 hover:bg-neutral-700/40 transition-colors duration-300 p-2 rounded-lg !mt-0">
                     <MoveUpRight className="h-auto w-4 -rotate-12"/>
                 </Link>
             </CardHeader>
-            <CardContent className="flex flex-1 pb-4 gap-4">
-                <CardDescription className="flex items-center justify-around my-6 flex-col">
+            <CardContent className="flex md:flex-row flex-col pb-4 gap-4">
+                <CardDescription className="flex items-center justify-around gap-8 md:gap-0 md:my-6 md:flex-col">
                     <InfoCard amount={totalBalance - liabilities} description={"Total Equity"}/>
                     <InfoCard amount={totalBalance} description={"Total Balance"}/>
                 </CardDescription>
-                <ResponsiveContainer height={250} className="w-full">
-                    <ChartContainer config={chartConfig}>
+                <ResponsiveContainer height={280} minWidth={200} minHeight={200} className="w-full order-first md:order-none">
+                    {data?.length !== 0 ? <ChartContainer config={chartConfig}>
                         <PieChart>
                             <ChartTooltip
                                 content={<CustomTooltip/>}
@@ -168,6 +160,7 @@ export function NetWorthCard() {
                                 nameKey="name"
                                 dataKey="currentBalance"
                                 outerRadius={50}
+                                innerRadius={20}
                                 strokeWidth={5}
                                 paddingAngle={5}
                                 opacity={hoveredIndex === null ? 1 : 0.4}
@@ -181,8 +174,10 @@ export function NetWorthCard() {
                             </Pie>
                         </PieChart>
                     </ChartContainer>
+                    :
+                    <Skeleton className="w-full h-full bg-primary/10" />}
                 </ResponsiveContainer>
-                <ScrollArea className="h-64 w-64">
+                <ScrollArea className="h-64 w-72">
                     <ul className="flex flex-col justify-center gap-6 w-fit pr-6">
                         {allAccounts?.map((account) => (
                             <li
@@ -195,12 +190,12 @@ export function NetWorthCard() {
                                 <div className="flex flex-col">
                                     <span className="text-sm text-zinc-400">{account.name}</span>
                                     <div className="flex items-center gap-2">
-                                    <span className="text-sm text-zinc-300">
-                                        {currencyParser.format(account.currentBalance)}
-                                    </span>
+                                        <span className="text-sm text-zinc-300 text-nowrap">
+                                            {(account.type === "Credit" ? "-" : "") + currencyParser.format(account.currentBalance)}
+                                        </span>
                                         <span className="text-xs text-neutral-400/90">
-                                        {account.type === "Credit" && "-"}{(( account.currentBalance / totalBalance) * 100).toFixed(2)}%
-                                    </span>
+                                            {account.type === "Credit" && "-"}{(( account.currentBalance / totalBalance) * 100).toFixed(2)}%
+                                        </span>
                                     </div>
                                 </div>
                             </li>

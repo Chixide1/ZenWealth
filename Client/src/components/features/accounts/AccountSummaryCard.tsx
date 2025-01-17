@@ -6,16 +6,16 @@ import {currencyParser} from "@/lib/utils.ts";
 type AccountSummaryCardProps = {
     className?: string,
     dataTitle: string,
-    amount: number,
-    previousAmount: number,
+    amount?: number,
+    previousAmount?: number,
     invert?: boolean
 }
 
-export function AccountSummaryCard({dataTitle, className, amount, previousAmount, invert = false}: AccountSummaryCardProps) {
-    const percentage = ((amount - previousAmount) / previousAmount) * 100;
+export function AccountSummaryCard({dataTitle, className, amount = 0, previousAmount = 0, invert = false}: AccountSummaryCardProps) {
+    const percentage = amount && previousAmount ? ((amount - previousAmount) / previousAmount) * 100 : 0;
     
     return (
-        <Card className={cn("bg-primary/10 col-span-3 p-5 rounded-2xl border-0", className)}>
+        <Card className={cn("bg-primary/10 col-span-6 md:col-span-3 p-5 rounded-2xl border-0", className)}>
             <TrendingBadge percentage={percentage} className="float-right" invert={invert}/>
             <CardContent className="p-0">
                 <CardTitle className="text-neutral-400/90 text-xs font-semibold w-1/2">Total {dataTitle}</CardTitle>

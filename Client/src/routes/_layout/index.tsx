@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_layout/')({
 function DashboardPage() {
     
   return (
-      <div className="grid grid-cols-12 gap-4 px-8 pb-8">
+      <div className="grid grid-cols-12 gap-4 px-4 pb-8">
           <AccountSummaryCard dataTitle="Income" amount={2100} previousAmount={1950}/>
           <AccountSummaryCard dataTitle="Expenditure" amount={1500} previousAmount={1900} invert={true}/>
           <AccountSummaryCard dataTitle="Savings" amount={500} previousAmount={627}/>
