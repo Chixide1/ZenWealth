@@ -1,7 +1,6 @@
 ﻿"use client"
 
 import {ColumnDef, createColumnHelper } from "@tanstack/react-table"
-import { ReceiptText } from 'lucide-react';
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
@@ -24,15 +23,14 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
 
             return (
                 <div className="flex gap-2 items-center justify-start">
-                    {row.original.logoUrl ?
-                        (<img
-                            src={row.original.logoUrl}
+                        <img
+                            src={row.original.logoUrl ??
+                                row.original.personalFinanceCategoryIconUrl ??
+                                "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
                             alt="an image of the transaction logo"
                             className="rounded min-w-6 h-auto ms-1"
                             width={imageSize}
-                        />):
-                        <ReceiptText width={imageSize} height={imageSize} className="text-primary min-w-9"/>
-                    }
+                        />
                     <span>{name}</span>
                 </div>
             )

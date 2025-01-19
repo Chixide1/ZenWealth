@@ -8,8 +8,8 @@ import {
     BarChart3,
     LucideProps
 } from "lucide-react";
-import {Tabs, TabsList, TabsTrigger} from "@/components/ui/navigation-tabs.tsx";
-import {Link, linkOptions, LinkProps, useLocation, useRouter } from "@tanstack/react-router";
+import {Tabs, TabsList, TabsTrigger} from "@/components/shared/NavigationTabs.tsx";
+import {Link, linkOptions, LinkProps } from "@tanstack/react-router";
 import Logo from "./Logo";
 import React from "react";
 
@@ -58,7 +58,7 @@ const items: MenuItem[] = [
 export default function AppTopbar({username}: {username?: string}) {
     
     return (
-        <header className="h-20 z-10 gap-4 flex items-center px-4 flex-shrink-0 w-full justify-between text-sm">
+        <header className="z-10 gap-4 flex items-center py-2 px-4 flex-shrink-0 w-full justify-between text-sm">
             <Link className="flex items-center" to="/">
                 <Logo className="w-auto h-7" textProps={{className: "hidden md:block"}} />
             </Link>

@@ -42,7 +42,7 @@ interface TransactionTableProps {
     className?: string,
 }
 
-export function TransactionTable({columns, data, isLoading, className}: TransactionTableProps) {
+export function TransactionsHistoryTable({columns, data, isLoading, className}: TransactionTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -113,16 +113,15 @@ export function TransactionTable({columns, data, isLoading, className}: Transact
     })
 
     const pageSizeOptions = [10, 20, 30, 40, 50]
-
-
+    
     return (
-        <div className={cn("relative w-full overflow-auto border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom", className)}>
-            <Table className="rounded-2xl text-primary text-sm w-full">
+        <div className={cn("relative overflow-auto border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom", className)}>
+            <Table className="rounded-2xl text-primary text-sm">
                 <TableHeader>
                     <TableRow>
                         <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
-                                <span className="text-2xl mr-auto pr-10">Transaction History</span>
+                                <span className="text-xl font-semibold mr-auto md:pr-10">Transaction History</span>
                                 <TransactionSearchButton column={table.getColumn("name")} />
                                 <ColumnVisibilityButton columns={table.getAllColumns()}/>
                             </div>

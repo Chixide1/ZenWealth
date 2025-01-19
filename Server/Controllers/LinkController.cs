@@ -79,6 +79,7 @@ public class LinkController(
         }
                 
         await itemsService.CreateItemAsync(response.AccessToken, user.Id);
+        await itemsService.UpdateItemsAsync(user.Id);
             
         return Ok(response);
     }

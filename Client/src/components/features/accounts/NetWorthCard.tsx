@@ -8,59 +8,17 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import {
-    ChartConfig,
     ChartContainer,
     ChartTooltip,
 } from "@/components/ui/chart"
 import {accountsAtom} from "@/lib/atoms.ts";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {useState} from "react";
-import {currencyParser} from "@/lib/utils.ts";
-import { Link } from "@tanstack/react-router";
-import { MoveUpRight } from 'lucide-react';
+import {assetColors, chartConfig, creditColors, currencyParser} from "@/lib/utils.ts";
 import { TooltipProps } from 'recharts';
 import {Account} from "@/types.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
-
-const chartConfig = {
-    id: {
-        label: "ID",
-    },
-    name: {
-        label: "Name",
-    },
-    currentBalance: {
-        label: "Balance",
-    },
-    type: {
-        label: "Type",
-    },
-    mask: {
-        label: "Mask",
-    },
-    subtype: {
-        label: "Subtype",
-    },
-    officialName: {
-        label: "Official Name",
-    }
-} satisfies ChartConfig
-
-const assetColors = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
-]
-
-const creditColors = [
-    "var(--red-chart-1)",
-    "var(--red-chart-2)",
-    "var(--red-chart-3)",
-    "var(--red-chart-4)",
-    "var(--red-chart-5)",
-]
+import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 
 export function NetWorthCard() {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
@@ -93,12 +51,10 @@ export function NetWorthCard() {
     }, 0) ?? 0
 
     return (
-        <Card className="col-span-full md:col-span-7 bg-primary/10 text-primary">
+        <Card className="col-span-full md:col-span-7 bg-primary/10 text-primary backdrop-blur-sm">
             <CardHeader className="pb-4 flex-row justify-between items-center">
-                <CardTitle className="text-2xl font-normal w-fit">Net Worth</CardTitle>
-                <Link to="/accounts" className="w-fit bg-primary/10 hover:bg-neutral-700/40 transition-colors duration-300 p-2 rounded-lg !mt-0">
-                    <MoveUpRight className="h-auto w-4 -rotate-12"/>
-                </Link>
+                <CardTitle className="text-xl w-fit">Net Worth</CardTitle>
+                <ArrowLink to="/accounts" />
             </CardHeader>
             <CardContent className="flex md:flex-row flex-col pb-4 gap-4">
                 <CardDescription className="flex items-center justify-around gap-8 md:gap-0 md:my-6 md:flex-col">
@@ -148,7 +104,7 @@ export function NetWorthCard() {
                     :
                     <Skeleton className="w-full h-full bg-primary/10" />}
                 </ResponsiveContainer>
-                <ScrollArea className="h-64 md:w-72 w-full">
+                <ScrollArea className="h-64 md:w-72 w-full pt-5 md:pt-0">
                     <ul className="flex flex-col justify-center gap-6 w-full md:w-fit pr-6">
                         {allAccounts?.map((account) => (
                             <li

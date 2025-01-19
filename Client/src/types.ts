@@ -1,5 +1,5 @@
 ﻿export type Transaction = {
-    Id: number,
+    id: number,
     merchantName: string,
     name: string,
     amount: number,

@@ -1,5 +1,6 @@
 import {type ClassValue, clsx} from "clsx"
 import {twMerge} from "tailwind-merge"
+import {ChartConfig} from "@/components/ui/chart.tsx";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -18,3 +19,43 @@ export const currencyParser = new Intl.NumberFormat(["en-US", "en-GB"], {
   currency: "GBP",
   currencyDisplay: "symbol",
 })
+
+export const chartConfig = {
+  id: {
+    label: "ID",
+  },
+  name: {
+    label: "Name",
+  },
+  currentBalance: {
+    label: "Balance",
+  },
+  type: {
+    label: "Type",
+  },
+  mask: {
+    label: "Mask",
+  },
+  subtype: {
+    label: "Subtype",
+  },
+  officialName: {
+    label: "Official Name",
+  }
+} satisfies ChartConfig
+
+export const assetColors = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+]
+
+export const creditColors = [
+  "var(--red-chart-1)",
+  "var(--red-chart-2)",
+  "var(--red-chart-3)",
+  "var(--red-chart-4)",
+  "var(--red-chart-5)",
+]
