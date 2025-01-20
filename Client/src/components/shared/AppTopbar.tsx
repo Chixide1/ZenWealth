@@ -1,5 +1,5 @@
 ﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx"
-import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie } from "lucide-react"
+import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus } from "lucide-react"
 import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx"
 import { Link, linkOptions } from "@tanstack/react-router"
 import Logo from "./Logo"
@@ -47,17 +47,15 @@ export default function AppTopbar({ username }: { username?: string }) {
                 <Logo className="w-auto h-7" textProps={{ className: "hidden" }} />
             </Link>
             <NavigationTabs tabs={items} />
-            <div className="flex items-center gap-4 ml-auto border border-neutral-700 rounded-full p-1">
-                <LinkButton className="text-xl rounded-full p-0 w-8 h-8 flex items-center justify-center" size="sm">
-                    +
+            <div className="flex items-center gap-2 ml-auto bg-primary/10 rounded-full p-1">
+                <LinkButton className="text-xl rounded-full w-8 h-8" size="sm">
+                    <Plus />
                 </LinkButton>
-                <div className="flex items-center justify-center text-xs ml-auto pe-2 md:pe-0">
-                    <Avatar className="w-8 h-8">
-                        <AvatarFallback className="text-black text-lg flex items-center justify-center">
-                            {username?.[0]}
-                        </AvatarFallback>
-                    </Avatar>
-                </div>
+                <Avatar className="w-8 h-8">
+                    <AvatarFallback className="text-black text-lg">
+                        {username?.[0].toUpperCase()}
+                    </AvatarFallback>
+                </Avatar>
             </div>
         </header>
     )
