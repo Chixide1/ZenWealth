@@ -2,7 +2,7 @@
 import {Button} from "@/components/ui/button.tsx";
 import { Filter } from "lucide-react";
 import { useState } from "react";
-import {Transaction} from "@/components/features/transactions/TransactionColumns.tsx";
+import { Transaction } from "@/types.ts";
 import { Column } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 
