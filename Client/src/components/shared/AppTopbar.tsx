@@ -59,7 +59,7 @@ export default function AppTopbar({ username }: { username: string }) {
                 </Avatar>
                 <span className="flex items-center gap-1 text-sm">
                     {username?.slice(0,1).toUpperCase() + username?.slice(1)}
-                    <ChevronDown className={`mt-1 w-[1em] h-auto transition-transform duration-300`}/>
+                    <ChevronDown className={`mt-1 w-[1em] h-auto transition-transform duration-300 me-2`}/>
                 </span>
             </div>
         </header>
