@@ -12,7 +12,7 @@ const BasicLinkComponent = React.forwardRef<HTMLAnchorElement, BasicLinkProps>(
         return (
             <a 
                 ref={ref} {...props}
-                className={cn("w-fit bg-primary/10 hover:bg-neutral-600/40 transition-colors duration-300 p-2 rounded-lg !mt-0", props.className)}
+                className={cn("w-fit text-black bg-secondary hover:bg-secondary/80 transition-colors duration-500 p-2 rounded-lg !mt-0", props.className)}
             >
                 <MoveUpRight className="h-auto w-4 -rotate-12"/>
             </a>

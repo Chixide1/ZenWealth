@@ -51,7 +51,7 @@ export function BudgetLimitCard() {
         <Card className="col-span-full md:col-span-7 bg-primary/10 backdrop-blur-sm border-neutral-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">Budget spending</CardTitle>
-                <ArrowLink to="/" className="text-neutral-400 hover:text-neutral-200" />
+                <ArrowLink to="/" />
             </CardHeader>
             <CardContent className="flex items-center justify-center space-y-4 h-40">
                 <ResponsiveContainer height="100%" width="100%" className="relative">

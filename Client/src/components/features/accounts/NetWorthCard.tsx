@@ -105,7 +105,7 @@ export function NetWorthCard() {
                     <Skeleton className="w-full h-full bg-primary/10" />}
                 </ResponsiveContainer>
                 <ScrollArea className="h-64 md:w-72 w-full pt-5 md:pt-0">
-                    <ul className="flex flex-col justify-center gap-6 w-full md:w-fit pr-6">
+                    <ul className="flex flex-col justify-center gap-2 md:gap-6 w-full md:w-fit pr-6">
                         {allAccounts?.map((account) => (
                             <li
                                 key={account.id + "::NetWorthCard::PieLegend"}
@@ -136,7 +136,7 @@ export function NetWorthCard() {
 }
 
 const InfoBox = ({amount, description}: { amount: number, description: string }) => (
-    <div className="bg-primary/10 backdrop-blur-sm w-full md:w-auto px-3 py-2 md:px-4 md:py-3 rounded-md text-center">
+    <div className="bg-primary/10 w-full md:w-auto px-3 py-2 md:px-4 md:py-3 rounded-md text-center border border-neutral-700">
         <p className="text-primary text-lg w-fit mx-auto">{currencyParser.format(amount)}</p>
         <p className="text-xs text-neutral-400/90 font-semibold text-nowrap w-fit mx-auto">{description}</p>
     </div>

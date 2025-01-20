@@ -1,33 +1,18 @@
-﻿import {LinkButton} from "@/components/features/link/LinkButton.tsx";
-import {
-    CircleUser,
-    CopyPlus,
-    LayoutDashboard,
-    PoundSterling,
-    Wallet,
-    BarChart3,
-    LucideProps
-} from "lucide-react";
-import {Tabs, TabsList, TabsTrigger} from "@/components/shared/NavigationTabs.tsx";
-import {Link, linkOptions, LinkProps } from "@tanstack/react-router";
-import Logo from "./Logo";
-import React from "react";
+﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx"
+import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie } from "lucide-react"
+import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx"
+import { Link, linkOptions } from "@tanstack/react-router"
+import Logo from "./Logo"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx"
 
-type MenuItem = {
-    title: string,
-    url: LinkProps,
-    Icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>,
-}
-
-// Menu items.
-const items: MenuItem[] = [
+const items: NavItem[] = [
     {
         title: "Dashboard",
         url: linkOptions({
             to: "/",
             label: "Dashboard",
         }),
-        Icon: LayoutDashboard,
+        icon: LayoutDashboard,
     },
     {
         title: "Accounts",
@@ -35,7 +20,7 @@ const items: MenuItem[] = [
             to: "/accounts",
             label: "Accounts",
         }),
-        Icon: Wallet,
+        icon: Wallet,
     },
     {
         title: "Transactions",
@@ -43,7 +28,7 @@ const items: MenuItem[] = [
             to: "/transactions",
             label: "Transactions",
         }),
-        Icon: PoundSterling,
+        icon: PoundSterling,
     },
     {
         title: "Analytics",
@@ -51,41 +36,30 @@ const items: MenuItem[] = [
             to: "/analytics",
             label: "Analytics",
         }),
-        Icon: BarChart3,
+        icon: ChartPie,
     },
 ]
 
-export default function AppTopbar({username}: {username?: string}) {
-    
+export default function AppTopbar({ username }: { username?: string }) {
     return (
-        <header className="z-10 gap-4 flex items-center py-2 px-4 flex-shrink-0 w-full justify-between text-sm">
-            <Link className="flex items-center" to="/">
-                <Logo className="w-auto h-7" textProps={{className: "hidden md:block"}} />
+        <header className="z-10 flex items-center justify-between py-4 px-4 w-full text-sm">
+            <Link className="flex items-center mr-16" to="/">
+                <Logo className="w-auto h-7" textProps={{ className: "hidden" }} />
             </Link>
-            <Tabs >
-                <TabsList className="gap-1">
-                    {items.map((item) => (
-                        <TabsTrigger
-                            key={item.title + "::AppTopbar"}
-                            value={item.url.to || "/"}
-                            className="flex px-4 py-2 bg-primary/10 rounded-full items-center gap-2 text-primary font-medium transition-colors duration-300"
-                        >
-                            <item.Icon className={"h-auto w-4 pt-px"}/>
-                            <span className="text-xs hidden md:inline">{item.title}</span>
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
-            </Tabs>
-            <div className="flex items-center gap-2">
-                <LinkButton className="w-auto rounded-full p-2 ml-auto" size="sm">
-                    <CopyPlus/>
-                    {/*<span className="hidden md:block">Add Accounts</span>*/}
+            <NavigationTabs tabs={items} />
+            <div className="flex items-center gap-4 ml-auto border border-neutral-700 rounded-full p-1">
+                <LinkButton className="text-xl rounded-full p-0 w-8 h-8 flex items-center justify-center" size="sm">
+                    +
                 </LinkButton>
                 <div className="flex items-center justify-center text-xs ml-auto pe-2 md:pe-0">
-                    <CircleUser className="mr-2"/>
-                    {/*<span>{username}</span>*/}
+                    <Avatar className="w-8 h-8">
+                        <AvatarFallback className="text-black text-lg flex items-center justify-center">
+                            {username?.[0]}
+                        </AvatarFallback>
+                    </Avatar>
                 </div>
             </div>
         </header>
     )
 }
+

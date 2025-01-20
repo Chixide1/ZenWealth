@@ -45,7 +45,7 @@ export function Layout() {
     
     return (
         <div className="w-full h-screen flex flex-col overflow-hidden">
-            <AppTopbar />
+            <AppTopbar username={userDetails.userName} />
             <ScrollArea>
                 <Outlet />
             </ScrollArea>

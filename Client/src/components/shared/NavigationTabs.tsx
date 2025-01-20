@@ -2,7 +2,7 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import {LinkProps, useLocation, useNavigate } from "@tanstack/react-router";
 
 const Tabs = TabsPrimitive.Root;
 
@@ -52,13 +52,13 @@ const TabsList = React.forwardRef<
             <TabsPrimitive.List
                 ref={ref}
                 className={cn(
-                    "inline-flex h-10 bg-transparent items-center justify-center rounded-md p-1 relative",
+                    "inline-flex h-10 items-center justify-center p-1 relative bg-primary/10 rounded-full border border-neutral-700/90",
                     className
                 )}
                 {...props}
             />
             <div
-                className="absolute p-0 top-1 h-8 bg-secondary rounded-full transition-all duration-300 ease-in-out shadow-sm"
+                className="absolute top-1 h-8 bg-secondary rounded-full transition-all duration-300 ease-in-out shadow-sm"
                 style={indicatorStyle}
             />
         </div>
@@ -83,7 +83,7 @@ const TabsTrigger = React.forwardRef<
                 })
             }}
             className={cn(
-                "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground z-10",
+                "justify-center whitespace-nowrap text-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground z-10 flex px-3 py-1 rounded-full items-center gap-2 text-primary font-medium duration-300",
                 className
             )}
             {...props}
@@ -107,4 +107,26 @@ const TabsContent = React.forwardRef<
 ));
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 
-export { Tabs, TabsContent, TabsList, TabsTrigger };
+export type NavItem = {
+    title: string,
+    url: LinkProps,
+    icon: React.ComponentType<React.ComponentProps<"svg">>,
+}
+
+export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
+    return (
+        <Tabs >
+            <TabsList>
+                {tabs.map((item) => (
+                    <TabsTrigger
+                        key={item.title + "::NavigationTabs"}
+                        value={item.url.to || "/"}
+                    >
+                        <item.icon className={"h-auto w-4 pt-px"}/>
+                        <span className="text-xs hidden md:inline">{item.title}</span>
+                    </TabsTrigger>
+                ))}
+            </TabsList>
+        </Tabs>
+    )
+}
