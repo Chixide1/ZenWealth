@@ -1,4 +1,4 @@
-﻿import logo from "@/assets/ZenWealth.png";
+﻿import logo from "@/assets/images/ZenWealth.png";
 import {cn} from "@/lib/utils.ts";
 
 type LogoProps = {

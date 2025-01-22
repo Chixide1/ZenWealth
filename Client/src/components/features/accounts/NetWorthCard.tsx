@@ -51,7 +51,7 @@ export function NetWorthCard() {
     }, 0) ?? 0
 
     return (
-        <Card className="col-span-full md:col-span-7 bg-primary/10 text-primary backdrop-blur-sm">
+        <Card className="col-span-full md:col-span-7 bg-primary/[0.125] text-primary backdrop-blur-sm">
             <CardHeader className="pb-4 flex-row justify-between items-center">
                 <CardTitle className="text-xl w-fit">Net Worth</CardTitle>
                 <ArrowLink to="/accounts" />
@@ -102,7 +102,7 @@ export function NetWorthCard() {
                         </PieChart>
                     </ChartContainer>
                     :
-                    <Skeleton className="w-full h-full bg-primary/10" />}
+                    <Skeleton className="w-full h-full bg-primary/[0.125]" />}
                 </ResponsiveContainer>
                 <ScrollArea className="h-64 md:w-72 w-full pt-5 md:pt-0">
                     <ul className="flex flex-col justify-center gap-2 md:gap-6 w-full md:w-fit pr-6">
@@ -136,7 +136,7 @@ export function NetWorthCard() {
 }
 
 const InfoBox = ({amount, description}: { amount: number, description: string }) => (
-    <div className="bg-primary/10 w-full md:w-auto px-3 py-2 md:px-4 md:py-3 rounded-md text-center border border-neutral-700">
+    <div className="bg-primary/[0.125] w-full md:w-auto px-3 py-2 md:px-4 md:py-3 rounded-md text-center border border-neutral-700">
         <p className="text-primary text-lg w-fit mx-auto">{currencyParser.format(amount)}</p>
         <p className="text-xs text-neutral-400/90 font-semibold text-nowrap w-fit mx-auto">{description}</p>
     </div>

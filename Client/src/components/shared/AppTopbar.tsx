@@ -51,7 +51,7 @@ export default function AppTopbar({ username }: { username: string }) {
                 <Plus />
                 <span className="">Add Account</span>
             </LinkButton>
-            <div className="flex items-center gap-2 bg-primary/10 rounded-full ms-2 py-1 px-1 border border-primary/10">
+            <div className="flex items-center gap-2 bg-primary/[0.125] rounded-full ms-2 py-1 px-1 border border-primary/10">
                 <Avatar className="w-8 h-8">
                     <AvatarFallback className="text-black text-lg">
                         {username?.[0].toUpperCase()}

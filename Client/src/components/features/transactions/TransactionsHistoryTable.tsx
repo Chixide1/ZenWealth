@@ -115,7 +115,7 @@ export function TransactionsHistoryTable({columns, data, isLoading, className}: 
     const pageSizeOptions = [10, 20, 30, 40, 50]
     
     return (
-        <div className={cn("relative overflow-auto border bg-primary/10 backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom", className)}>
+        <div className={cn("relative overflow-auto border bg-primary/[0.125] backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom", className)}>
             <Table className="rounded-2xl text-primary text-sm">
                 <TableHeader>
                     <TableRow>

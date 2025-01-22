@@ -15,7 +15,7 @@ export function AccountSummaryCard({dataTitle, className, amount = 0, previousAm
     const percentage = amount && previousAmount ? ((amount - previousAmount) / previousAmount) * 100 : 0;
     
     return (
-        <Card className={cn("bg-primary/10 min-w-60 md:min-w-36 md:w-full p-5 rounded-md border-0 backdrop-blur-sm", className)}>
+        <Card className={cn("bg-primary/[0.125] min-w-60 md:min-w-36 md:w-full p-5 rounded-md border-0 backdrop-blur-sm", className)}>
             <TrendingBadge percentage={percentage} className="float-right" invert={invert}/>
             <CardContent className="p-0">
                 <CardTitle className="text-neutral-400/90 text-xs font-semibold w-1/2">Total {dataTitle}</CardTitle>

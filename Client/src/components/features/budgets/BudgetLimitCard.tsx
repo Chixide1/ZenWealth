@@ -35,7 +35,7 @@ function Needle({ rotation, className }: { rotation: number, className?: string 
 
     return (
         <div
-            className={cn("absolute w-[3px] h-[60px]", className)}
+            className={cn("absolute inset-x-0 bottom-0 right-0 w-[3px] h-[60px]", className)}
             style={{
                 transform: `translateX(-50%) rotate(${degrees}deg)`,
             }}
@@ -48,13 +48,13 @@ function Needle({ rotation, className }: { rotation: number, className?: string 
 
 export function BudgetLimitCard() {
     return (
-        <Card className="col-span-full md:col-span-7 bg-primary/10 backdrop-blur-sm border-neutral-800">
+        <Card className="col-span-full md:col-span-7 bg-primary/[0.125] backdrop-blur-sm border-neutral-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">Budget spending</CardTitle>
                 <ArrowLink to="/" />
             </CardHeader>
-            <CardContent className="flex items-center justify-center space-y-4 h-40">
-                <ResponsiveContainer height="100%" width="100%" className="relative">
+            <CardContent className="flex  space-y-4">
+                <ResponsiveContainer height={300} width={300} className="relative">
                     <ChartContainer config={chartConfig}>
                         <RadialBarChart
                             innerRadius="65%"
@@ -62,7 +62,7 @@ export function BudgetLimitCard() {
                             data={chartData}
                             startAngle={180}
                             endAngle={0}
-                            className="relative"
+                            cy="65%"
                         >
                             <PolarAngleAxis
                                 type="number"
@@ -75,11 +75,12 @@ export function BudgetLimitCard() {
                                 cornerRadius={30}
                                 fill={chartConfig.progress.color}
                                 background={{fill: "hsl(216, 70%, 40%)"}}
+                                className="relative"
                             />
                         </RadialBarChart>
                     </ChartContainer>
                 </ResponsiveContainer>
-                <Needle rotation={percentage} className="left-[43%]"/>
+                <Needle rotation={percentage} className=""/>
                 <CardDescription className="flex flex-col items-center justify-center">
                     <div className="text-2xl font-bold text-blue-400">{percentage}%</div>
                     <div className="text-xs text-neutral-400 mt-2">
