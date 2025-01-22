@@ -21,7 +21,7 @@ export function AccountSummaryCard({dataTitle, className, amount = 0, previousAm
                 <CardTitle className="text-neutral-400/90 text-xs font-semibold w-1/2">Total {dataTitle}</CardTitle>
                 <p className=" mt-1 text-lg">{currencyParser.format(amount)}</p>
             </CardContent>
-            <hr className="border-neutral-600/80 my-3 border-t-[1.5px]"/>
+            <hr className="border-neutral-500 my-3 border-t-[1.5px]"/>
             <CardFooter className="p-0 flex items-center">
                 <h6 className="text-neutral-400/90 text-xs font-semibold mr-2">Last Month:</h6>
                 <p className="text-xs">{currencyParser.format(previousAmount)}</p>

@@ -1,5 +1,5 @@
 ﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx"
-import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus, ArrowUpDown, ChevronDown } from "lucide-react"
+import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus, ChevronDown } from "lucide-react"
 import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx"
 import { Link, linkOptions } from "@tanstack/react-router"
 import Logo from "./Logo"

@@ -20,7 +20,7 @@ function DashboardPage() {
           </AccountSummarySection>
           <NetWorthCard />
           <RecentTransactionsCard />
-          <BudgetLimitCard />
+          <BudgetLimitCard value={5200} max={7000} segments={40}/>
       </div>
     )
 }

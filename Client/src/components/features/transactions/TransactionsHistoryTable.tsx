@@ -121,7 +121,7 @@ export function TransactionsHistoryTable({columns, data, isLoading, className}: 
                     <TableRow>
                         <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
-                                <span className="text-xl font-semibold mr-auto md:pr-10">Transaction History</span>
+                                <span className="text-xl font-medium mr-auto md:pr-10">Transaction History</span>
                                 <TransactionSearchButton column={table.getColumn("name")} />
                                 <ColumnVisibilityButton columns={table.getAllColumns()}/>
                             </div>
@@ -133,7 +133,7 @@ export function TransactionsHistoryTable({columns, data, isLoading, className}: 
                                 return (
                                     <TableHead
                                         key={header.id}
-                                        className="text-primary bg-neutral-600/[0.3] px-6"
+                                        className="text-primary bg-neutral-300/10 px-6"
                                         style={{width: header.getSize()}}
                                     >
                                         {header.isPlaceholder

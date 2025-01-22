@@ -29,40 +29,23 @@ const chartData = [
     },
 ]
 
-function Needle({ rotation, className }: { rotation: number, className?: string }) {
-    // Convert percentage to degrees (180 degrees = 100%)
-    const degrees = 180 - (rotation / 100) * 180
-
-    return (
-        <div
-            className={cn("absolute inset-x-0 bottom-0 right-0 w-[3px] h-[60px]", className)}
-            style={{
-                transform: `translateX(-50%) rotate(${degrees}deg)`,
-            }}
-        >
-            <div className="w-full h-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-full shadow-lg" />
-            <div className="absolute -bottom-[6px] left-1/2 w-3 h-3 bg-blue-400 rounded-full transform -translate-x-1/2 shadow-lg" />
-        </div>
-    )
-}
-
 export function BudgetLimitCard() {
     return (
         <Card className="col-span-full md:col-span-7 bg-primary/[0.125] backdrop-blur-sm border-neutral-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">Budget spending</CardTitle>
+                <CardTitle className="text-xl">Monthly Budget spending</CardTitle>
                 <ArrowLink to="/" />
             </CardHeader>
-            <CardContent className="flex  space-y-4">
-                <ResponsiveContainer height={300} width={300} className="relative">
+            <CardContent className="flex space-y-4 overflow-hidden max-h-44">
+                <ResponsiveContainer height={300} className="relative w-auto">
                     <ChartContainer config={chartConfig}>
                         <RadialBarChart
-                            innerRadius="65%"
-                            outerRadius="85%"
+                            innerRadius="60%"
+                            outerRadius="90%"
                             data={chartData}
                             startAngle={180}
                             endAngle={0}
-                            cy="65%"
+                            cy={"45%"}
                         >
                             <PolarAngleAxis
                                 type="number"
@@ -75,15 +58,13 @@ export function BudgetLimitCard() {
                                 cornerRadius={30}
                                 fill={chartConfig.progress.color}
                                 background={{fill: "hsl(216, 70%, 40%)"}}
-                                className="relative"
                             />
                         </RadialBarChart>
                     </ChartContainer>
                 </ResponsiveContainer>
-                <Needle rotation={percentage} className=""/>
-                <CardDescription className="flex flex-col items-center justify-center">
+                <CardDescription className="w-5/12 flex flex-col items-center justify-center">
                     <div className="text-2xl font-bold text-blue-400">{percentage}%</div>
-                    <div className="text-xs text-neutral-400 mt-2">
+                    <div className="text-lg text-neutral-400 mt-2">
                         You have spent ${spent.toLocaleString()} of ${total.toLocaleString()}
                     </div>
                 </CardDescription>

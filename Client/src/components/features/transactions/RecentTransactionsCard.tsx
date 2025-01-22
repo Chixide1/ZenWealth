@@ -19,7 +19,7 @@ export function RecentTransactionsCard() {
     
     return (
         <Card className="col-span-full md:col-span-5 row-span-2 backdrop-blur-sm">
-            <CardHeader className="flex items-center justify-between flex-row p-4  rounded-t-[inherit] ">
+            <CardHeader className="flex items-center justify-between flex-row p-4 rounded-t-[inherit] pb-6">
                 <CardTitle className="text-xl">Recent Transactions</CardTitle>
                 <ArrowLink to="/transactions"></ArrowLink>
             </CardHeader>
