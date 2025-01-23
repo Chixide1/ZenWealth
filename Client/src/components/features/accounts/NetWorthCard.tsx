@@ -1,5 +1,4 @@
 ﻿import {Cell, Pie, PieChart, ResponsiveContainer} from "recharts"
-import {useAtom} from 'jotai';
 import {
     Card,
     CardContent,
@@ -11,20 +10,24 @@ import {
     ChartContainer,
     ChartTooltip,
 } from "@/components/ui/chart"
-import {accountsAtom} from "@/lib/atoms.ts";
+
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {useState} from "react";
-import {assetColors, chartConfig, creditColors, currencyParser} from "@/lib/utils.ts";
+import {assetColors, chartConfig, cn, creditColors, currencyParser} from "@/lib/utils.ts";
 import { TooltipProps } from 'recharts';
 import {Account} from "@/types.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 
-export function NetWorthCard() {
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-    const [{data}] = useAtom(accountsAtom);
+type NetWorthCardProps = {
+    accounts: Account[]
+    className?: string
+}
 
-    const assetAccounts = data?.filter(account => {
+export function NetWorthCard({accounts, className}: NetWorthCardProps) {
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
+    const assetAccounts = accounts?.filter(account => {
         return account.type !== "Loan" && account.type !== "Credit";
     })
         .map((account, index) => {
@@ -32,7 +35,7 @@ export function NetWorthCard() {
             return {...account, fill: assetColors[colorIndex]};
         })
 
-    const creditAccounts = data?.filter(account => {
+    const creditAccounts = accounts?.filter(account => {
         return account.type === "Credit";
     })
         .map((account, index) => {
@@ -42,16 +45,16 @@ export function NetWorthCard() {
 
     const allAccounts = [...(assetAccounts ?? []), ...(creditAccounts ?? [])]
     const totalBalance = assetAccounts?.reduce((total, account) => total + account.currentBalance, 0) ?? 0
-    const liabilities = data?.reduce((liabilities, account) => {
+    const liabilities = accounts?.reduce((liabilities, account) => {
         if (account.type === "Credit") {
             return liabilities + account.currentBalance;
         }
 
-        return liabilities + 0;
+        return liabilities;
     }, 0) ?? 0
 
     return (
-        <Card className="col-span-full md:col-span-7 bg-primary/[0.125] text-primary backdrop-blur-sm">
+        <Card className={cn("bg-primary/[0.125] text-primary backdrop-blur-sm", className)}>
             <CardHeader className="pb-4 flex-row justify-between items-center">
                 <CardTitle className="text-xl w-fit">Net Worth</CardTitle>
                 <ArrowLink to="/accounts" />
@@ -62,7 +65,7 @@ export function NetWorthCard() {
                     <InfoBox amount={totalBalance} description={"Total Balance"}/>
                 </CardDescription>
                 <ResponsiveContainer height={280} minWidth={200} minHeight={200} className="w-full order-first md:order-none">
-                    {data?.length !== 0 ? <ChartContainer config={chartConfig}>
+                    {accounts?.length !== 0 ? <ChartContainer config={chartConfig}>
                         <PieChart>
                             <ChartTooltip
                                 content={<CustomTooltip/>}

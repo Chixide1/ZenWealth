@@ -1,7 +1,7 @@
 ﻿import * as React from 'react'
 import { createLink, LinkComponent } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
-import {ArrowUpRight, MoveUpRight } from 'lucide-react'
+import {ArrowUpRight } from 'lucide-react'
 
 type BasicLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     // Add any additional props you want to pass to the anchor element

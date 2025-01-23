@@ -1,74 +1,113 @@
-﻿"use client"
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLink } from "@/components/shared/ArrowLink"
-import { PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts"
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
-import {cn} from "@/lib/utils.ts";
+import {Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
+import {cn, currencyParser} from "@/lib/utils.ts";
 
-const chartConfig = {
-    progress: {
-        label: "Progress",
-        color: "hsl(216, 100%, 60%)",
-    },
-    background: {
-        label: "Background",
-        color: "hsl(216, 70%, 40%)",
-    },
-} satisfies ChartConfig
+const RADIAN = Math.PI / 180;
 
-const spent = 5200
-const total = 7000
-const percentage = Math.round((spent / total) * 100)
+type NeedleProps = {
+    cx: number,
+    cy: number,
+    innerRadius: number,
+    outerRadius: number,
+    value: number,
+    color: string,
+    total: number,
+    classname?: string,
+}
 
-const chartData = [
-    {
-        name: "Progress",
-        progress: percentage,
-        background: 100,
-    },
-]
+const needleData: NeedleProps = {
+    cx: 135,
+    cy: 145,
+    innerRadius: 90,
+    outerRadius: 130,
+    value: 0,
+    total: 0,
+    color: "hsl(var(--secondary))",
+}
 
-export function BudgetLimitCard() {
+type GaugeProps = {
+    spent: number,
+    limit: number,
+    segments?: number,
+    className?: string
+}
+export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, className }: GaugeProps) {
+    const safeMax = limit > 0 ? limit : 1 // Prevent division by zero
+    const safeValue = Math.max(0, Math.min(spent, safeMax)) // Ensure value is between 0 and max
+    const percentage = (safeValue / safeMax) * 100
+
+    const data = Array.from({ length: segments }, (_, index) => ({
+        value: 100 / segments,
+        isActive: (index / segments) * 100 <= percentage,
+    }))
+    
     return (
-        <Card className="col-span-full md:col-span-7 bg-primary/[0.125] backdrop-blur-sm border-neutral-800">
+        <Card className={cn("bg-primary/[0.125] backdrop-blur-sm border-neutral-800", className)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">Monthly Budget spending</CardTitle>
                 <ArrowLink to="/" />
             </CardHeader>
-            <CardContent className="flex space-y-4 overflow-hidden max-h-44">
-                <ResponsiveContainer height={300} className="relative w-auto">
-                    <ChartContainer config={chartConfig}>
-                        <RadialBarChart
-                            innerRadius="60%"
-                            outerRadius="90%"
-                            data={chartData}
-                            startAngle={180}
-                            endAngle={0}
-                            cy={"45%"}
-                        >
-                            <PolarAngleAxis
-                                type="number"
-                                domain={[0, 100]}
-                                angleAxisId={0}
-                                tick={false}
-                            />
-                            <RadialBar
-                                dataKey="progress"
-                                cornerRadius={30}
-                                fill={chartConfig.progress.color}
-                                background={{fill: "hsl(216, 70%, 40%)"}}
-                            />
-                        </RadialBarChart>
-                    </ChartContainer>
-                </ResponsiveContainer>
-                <CardDescription className="w-5/12 flex flex-col items-center justify-center">
-                    <div className="text-2xl font-bold text-blue-400">{percentage}%</div>
-                    <div className="text-lg text-neutral-400 mt-2">
-                        You have spent ${spent.toLocaleString()} of ${total.toLocaleString()}
-                    </div>
+            <CardContent className="flex space-y-4 overflow-hidden relative">
+                <div className="flex w-fit relative min-w-72">
+                    <ResponsiveContainer height={160} minWidth={220} className="w-fit">
+                        <PieChart>
+                            <Pie
+                                data={data}
+                                dataKey="value"
+                                startAngle={180}
+                                endAngle={0}
+                                paddingAngle={2}
+                                {...needleData}
+                            >
+                                {data.map((entry, index) => (
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={entry.isActive ? "hsl(var(--secondary))" : "hsl(var(--secondary)/0.05)"}
+                                        className="stroke-0"
+                                    />
+                                ))}
+                            </Pie>
+                        </PieChart>
+                    </ResponsiveContainer>
+                    <Needle
+                        {...needleData}
+                        value={percentage}
+                        total={100}
+                        classname="absolute h-full w-full pl-1"
+                    />
+                </div>
+                <CardDescription className="w-full flex flex-col items-center justify-center">
+                    <p className="text-2xl font-bold text-secondary">{percentage.toFixed(2)}%</p>
+                    <p className="text-lg text-neutral-400 mt-auto">You have spent</p>
+                    <p className="text-neutral-400 text-lg">
+                        <span className="text-primary">{currencyParser.format(spent)} </span>
+                        out of {currencyParser.format(limit)}</p>
                 </CardDescription>
             </CardContent>
         </Card>
+    )
+}
+
+function Needle({cx, cy, innerRadius, outerRadius, value, color, total, classname}: NeedleProps){
+    const ang = 180.0 * (1 - value / total);
+    const length = (innerRadius + 2 * outerRadius) / 5;
+    const sin = Math.sin(-RADIAN * ang);
+    const cos = Math.cos(-RADIAN * ang);
+    const r = 5;
+    const x0 = cx + 5;
+    const y0 = cy + 5;
+    const xba = x0 + r * sin;
+    const yba = y0 - r * cos;
+    const xbb = x0 - r * sin;
+    const ybb = y0 + r * cos;
+    const xp = x0 + length * cos;
+    const yp = y0 + length * sin;
+
+    return (
+        <svg className={cn("",classname)}>
+            <circle cx={x0} cy={y0} r={r} fill={color} stroke="none" />,
+            <path d={`M${xba} ${yba}L${xbb} ${ybb} L${xp} ${yp} L${xba} ${yba}`} stroke="#none" fill={color} />,
+        </svg>
     )
 }
