@@ -16,6 +16,7 @@ import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutTransactionsImport } from './routes/_layout/transactions'
+import { Route as LayoutBudgetsImport } from './routes/_layout/budgets'
 import { Route as LayoutAnalyticsImport } from './routes/_layout/analytics'
 import { Route as LayoutAccountsImport } from './routes/_layout/accounts'
 
@@ -47,6 +48,12 @@ const LayoutIndexRoute = LayoutIndexImport.update({
 const LayoutTransactionsRoute = LayoutTransactionsImport.update({
   id: '/transactions',
   path: '/transactions',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutBudgetsRoute = LayoutBudgetsImport.update({
+  id: '/budgets',
+  path: '/budgets',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -101,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAnalyticsImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/budgets': {
+      id: '/_layout/budgets'
+      path: '/budgets'
+      fullPath: '/budgets'
+      preLoaderRoute: typeof LayoutBudgetsImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/transactions': {
       id: '/_layout/transactions'
       path: '/transactions'
@@ -123,6 +137,7 @@ declare module '@tanstack/react-router' {
 interface LayoutRouteChildren {
   LayoutAccountsRoute: typeof LayoutAccountsRoute
   LayoutAnalyticsRoute: typeof LayoutAnalyticsRoute
+  LayoutBudgetsRoute: typeof LayoutBudgetsRoute
   LayoutTransactionsRoute: typeof LayoutTransactionsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
@@ -130,6 +145,7 @@ interface LayoutRouteChildren {
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAccountsRoute: LayoutAccountsRoute,
   LayoutAnalyticsRoute: LayoutAnalyticsRoute,
+  LayoutBudgetsRoute: LayoutBudgetsRoute,
   LayoutTransactionsRoute: LayoutTransactionsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
@@ -143,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/accounts': typeof LayoutAccountsRoute
   '/analytics': typeof LayoutAnalyticsRoute
+  '/budgets': typeof LayoutBudgetsRoute
   '/transactions': typeof LayoutTransactionsRoute
   '/': typeof LayoutIndexRoute
 }
@@ -152,6 +169,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/accounts': typeof LayoutAccountsRoute
   '/analytics': typeof LayoutAnalyticsRoute
+  '/budgets': typeof LayoutBudgetsRoute
   '/transactions': typeof LayoutTransactionsRoute
   '/': typeof LayoutIndexRoute
 }
@@ -163,6 +181,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/_layout/accounts': typeof LayoutAccountsRoute
   '/_layout/analytics': typeof LayoutAnalyticsRoute
+  '/_layout/budgets': typeof LayoutBudgetsRoute
   '/_layout/transactions': typeof LayoutTransactionsRoute
   '/_layout/': typeof LayoutIndexRoute
 }
@@ -175,6 +194,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/accounts'
     | '/analytics'
+    | '/budgets'
     | '/transactions'
     | '/'
   fileRoutesByTo: FileRoutesByTo
@@ -183,6 +203,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/accounts'
     | '/analytics'
+    | '/budgets'
     | '/transactions'
     | '/'
   id:
@@ -192,6 +213,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/_layout/accounts'
     | '/_layout/analytics'
+    | '/_layout/budgets'
     | '/_layout/transactions'
     | '/_layout/'
   fileRoutesById: FileRoutesById
@@ -229,6 +251,7 @@ export const routeTree = rootRoute
       "children": [
         "/_layout/accounts",
         "/_layout/analytics",
+        "/_layout/budgets",
         "/_layout/transactions",
         "/_layout/"
       ]
@@ -245,6 +268,10 @@ export const routeTree = rootRoute
     },
     "/_layout/analytics": {
       "filePath": "_layout/analytics.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/budgets": {
+      "filePath": "_layout/budgets.tsx",
       "parent": "/_layout"
     },
     "/_layout/transactions": {

@@ -2,9 +2,9 @@
 import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {transactionsAtom} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
-import {currencyParser} from "@/lib/utils.ts";
+import {cn, currencyParser} from "@/lib/utils.ts";
 
-export function RecentTransactionsCard() {
+export function RecentTransactionsCard({className}: { className?: string }) {
     const [{data}] = useAtom(transactionsAtom);
     const transactions = data?.slice(0, 11) ?? [];
 
@@ -18,7 +18,7 @@ export function RecentTransactionsCard() {
     })
     
     return (
-        <Card className="col-span-full md:col-span-5 row-span-2 backdrop-blur-sm">
+        <Card className={cn("test", className)}>
             <CardHeader className="flex items-center justify-between flex-row p-4 rounded-t-[inherit] pb-6">
                 <CardTitle className="text-xl">Recent Transactions</CardTitle>
                 <ArrowLink to="/transactions"></ArrowLink>

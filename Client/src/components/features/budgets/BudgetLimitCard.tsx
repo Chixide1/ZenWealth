@@ -16,16 +16,6 @@ type NeedleProps = {
     classname?: string,
 }
 
-const needleData: NeedleProps = {
-    cx: 135,
-    cy: 145,
-    innerRadius: 90,
-    outerRadius: 130,
-    value: 0,
-    total: 0,
-    color: "hsl(var(--secondary))",
-}
-
 type GaugeProps = {
     spent: number,
     limit: number,
@@ -41,6 +31,16 @@ export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, classNa
         value: 100 / segments,
         isActive: (index / segments) * 100 <= percentage,
     }))
+
+    const needleData: NeedleProps = {
+        cx: 135,
+        cy: 145,
+        innerRadius: 90,
+        outerRadius: 130,
+        value: 0,
+        total: 0,
+        color: "hsl(var(--secondary))",
+    }
     
     return (
         <Card className={cn("bg-primary/[0.125] backdrop-blur-sm border-neutral-800", className)}>
@@ -48,8 +48,8 @@ export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, classNa
                 <CardTitle className="text-xl">Monthly Budget spending</CardTitle>
                 <ArrowLink to="/" />
             </CardHeader>
-            <CardContent className="flex space-y-4 overflow-hidden relative">
-                <div className="flex w-fit relative min-w-72">
+            <CardContent className="flex flex-col md:flex-row space-y-4 overflow-hidden relative">
+                <div className="flex w-fit relative min-w-72 mx-auto">
                     <ResponsiveContainer height={160} minWidth={220} className="w-fit">
                         <PieChart>
                             <Pie
@@ -79,7 +79,7 @@ export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, classNa
                 </div>
                 <CardDescription className="w-full flex flex-col items-center justify-center">
                     <p className="text-2xl font-bold text-secondary">{percentage.toFixed(2)}%</p>
-                    <p className="text-lg text-neutral-400 mt-auto">You have spent</p>
+                    <p className="text-lg text-neutral-400 mt-5 md:mt-auto">You have spent</p>
                     <p className="text-neutral-400 text-lg">
                         <span className="text-primary">{currencyParser.format(spent)} </span>
                         out of {currencyParser.format(limit)}</p>
