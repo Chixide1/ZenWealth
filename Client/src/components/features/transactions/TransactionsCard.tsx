@@ -1,31 +1,39 @@
 ﻿import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {transactionsAtom} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
-import {currencyParser} from "@/lib/utils.ts";
+import {cn, currencyParser} from "@/lib/utils.ts";
 
-export function TransactionsHistoryCard() {
+type TransactionsCardProps = {
+    className?: string,
+    title: string,
+    allFeatures?: boolean,
+}
+
+export function TransactionsCard({className, title, allFeatures = false}: TransactionsCardProps) {
     const [{data}] = useAtom(transactionsAtom);
-    const transactions = data ?? [];
+    const transactions = data?.slice(0, 11) ?? [];
 
     const dateParser = new Intl.DateTimeFormat('en-GB', {
         dateStyle: 'medium',
     })
-
+    
     const timeParser = new Intl.DateTimeFormat('en-GB', {
         timeStyle: 'short',
         hour12: true
     })
-
+    
     return (
-        <Card className="w-full">
-            <CardHeader className="flex items-center justify-between flex-row p-4  rounded-t-[inherit] ">
-                <CardTitle className="text-xl font-semibold">Transactions History</CardTitle>
+        <Card className={cn("test", className)}>
+            <CardHeader className="flex items-center justify-between flex-row p-3 md:p-4 rounded-t-[inherit] pb-6">
+                <CardTitle className="text-xl">{title}</CardTitle>
+                {!allFeatures && <ArrowLink to="/transactions"></ArrowLink>}
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3">
                 <ul>
                     {transactions.map((transaction) => (
-                        <li
-                            key={transaction.id + "::RecentTransactionsCard"}
+                        <li 
+                            key={transaction.id + "::TransactionsCard"}
                             className="mb-2 flex gap-2 items-center text-sm"
                         >
                             <img

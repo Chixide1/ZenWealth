@@ -117,11 +117,11 @@ export function RegisterForm(){
     
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center px-9 w-full sm:w-9/12 text-sm">
-            <div className="overflow-hidden rounded-md w-full text-primary">
+            <fieldset className="overflow-hidden rounded-md w-full text-primary">
                 {inputs.map((input) => (
                     <IdentityInput {...input} key={input.id}/>
                 ))}
-            </div>
+            </fieldset>
             <Button
                 type="submit"
                 variant="secondary"

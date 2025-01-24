@@ -42,7 +42,7 @@ interface TransactionTableProps {
     className?: string,
 }
 
-export function TransactionsHistoryTable({columns, data, isLoading, className}: TransactionTableProps) {
+export function TransactionsTable({columns, data, isLoading, className}: TransactionTableProps) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {

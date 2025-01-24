@@ -1,7 +1,7 @@
 ﻿import { createFileRoute } from '@tanstack/react-router'
 import {AccountSummaryCard} from "@/components/features/accounts/AccountSummaryCard.tsx";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area.tsx";
-import {RecentTransactionsCard} from "@/components/features/transactions/RecentTransactionsCard.tsx";
+import {TransactionsCard} from "@/components/features/transactions/TransactionsCard.tsx";
 import {BudgetLimitCard} from "@/components/features/budgets/BudgetLimitCard.tsx";
 import {cn} from "@/lib/utils.ts";
 
@@ -19,7 +19,7 @@ function DashboardPage() {
               <AccountSummaryCard dataTitle="Liabilities" amount={750} previousAmount={543} invert={true}/>
           </AccountSummarySection>
           <BudgetLimitCard spent={2000} limit={7000} className="col-span-full md:col-span-7"/>
-          <RecentTransactionsCard className="col-span-full md:col-span-5 row-span-2" />
+          <TransactionsCard title="Recent Transactions" className="col-span-full md:col-span-5 row-span-2" />
       </div>
     )
 }

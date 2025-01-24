@@ -49,15 +49,15 @@ export default function AppTopbar({ username }: { username: string }) {
             <NavigationTabs tabs={items} />
             <LinkButton className="rounded-full gap-1 ml-auto" size="sm">
                 <Plus />
-                <span className="">Add Account</span>
+                <span className="hidden md:inline">Add Account</span>
             </LinkButton>
-            <div className="flex items-center gap-2 bg-primary/[0.125] rounded-full ms-2 py-1 px-1 border border-primary/10">
+            <div className="inline-flex items-center gap-2 bg-primary/[0.125] rounded-full ms-2 py-1 px-1 border border-primary/10">
                 <Avatar className="w-8 h-8">
                     <AvatarFallback className="text-black text-lg">
                         {username?.[0].toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
-                <span className="flex items-center gap-1 text-sm">
+                <span className="md:inline-flex items-center gap-1 text-sm hidden">
                     {username?.slice(0,1).toUpperCase() + username?.slice(1)}
                     <ChevronDown className={`mt-1 w-[1em] h-auto transition-transform duration-300 me-2`}/>
                 </span>

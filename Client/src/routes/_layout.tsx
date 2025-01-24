@@ -44,12 +44,12 @@ export function Layout() {
     }
     
     return (
-        <div className="w-full h-screen flex flex-col overflow-hidden">
+        <main className="w-full h-screen flex flex-col overflow-hidden">
             <AppTopbar username={userDetails.userName} />
-            <ScrollArea className="w-full max-w-screen-[1700px] mx-auto">
+            <ScrollArea className="w-full h-full max-w-screen-[1700px] mx-auto">
                 <Outlet />
             </ScrollArea>
-        </div>
+        </main>
     )
 }
 
