@@ -4,12 +4,16 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area.tsx";
 import {TransactionsCard} from "@/components/features/transactions/TransactionsCard.tsx";
 import {BudgetLimitCard} from "@/components/features/budgets/BudgetLimitCard.tsx";
 import {cn} from "@/lib/utils.ts";
+import {transactionsAtom} from "@/lib/atoms.ts";
+import {useAtom} from "jotai";
 
 export const Route = createFileRoute('/_layout/')({
   component: DashboardPage,
 })
 
 function DashboardPage() {
+    const [{data: transactions}] = useAtom(transactionsAtom);
+    
     return (
       <div className="grid grid-cols-12 auto-rows-auto gap-4 px-6 md:px-4 pb-8">
           <AccountSummarySection className="col-span-full">
@@ -19,19 +23,23 @@ function DashboardPage() {
               <AccountSummaryCard dataTitle="Liabilities" amount={750} previousAmount={543} invert={true}/>
           </AccountSummarySection>
           <BudgetLimitCard spent={2000} limit={7000} className="col-span-full md:col-span-7"/>
-          <TransactionsCard title="Recent Transactions" className="col-span-full md:col-span-5 row-span-2" />
+          <TransactionsCard
+              transactions={transactions?.slice(0,10) ?? []}
+              title="Recent Transactions"
+              className="col-span-full md:col-span-5 row-span-2" 
+          />
       </div>
     )
 }
 
 function AccountSummarySection({children, className}: {children: React.ReactNode, className?: string}) {
-        return (
-            <ScrollArea className={cn("",className)}>
-                <div className="w-full  gap-6 flex">
-                    {children}
-                </div>
-                <ScrollBar orientation="horizontal"></ScrollBar>
-            </ScrollArea>
-        )
+    return (
+        <ScrollArea className={cn("",className)}>
+            <div className="w-full  gap-6 flex">
+                {children}
+            </div>
+            <ScrollBar orientation="horizontal"></ScrollBar>
+        </ScrollArea>
+    )
     
 }

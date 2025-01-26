@@ -17,14 +17,20 @@ function TransactionsPage() {
   return (
       <div className="w-dvw px-3 md:px-4 pt-2 pb-6">
           {isMobile ?
-              <TransactionsCard className="" title="Transactions History" allFeatures={true}/>
+              <TransactionsCard
+                  transactions={data ?? []}
+                  className=""
+                  title="Transactions History"
+                  allFeatures={true}
+              />
               :
               <TransactionsTable
-              className="animate-in slide-in-from-bottom-1/4 duration-300"
-              columns={transactionColumns}
-              data={data}
-              isLoading={isLoading}
-          />}
+                className="animate-in slide-in-from-bottom-1/4 duration-300"
+                columns={transactionColumns}
+                data={data}
+                isLoading={isLoading}
+              />
+          }
       </div>
   )
 }
