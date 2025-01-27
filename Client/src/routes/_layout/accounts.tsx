@@ -12,8 +12,8 @@ function AccountsPage() {
     const accounts = data ?? [];
     
     return (
-        <div className="grid grid-cols-12 auto-rows-auto gap-4 px-6 md:px-4 pb-8">
-            <NetWorthCard accounts={accounts} className="col-span-full"/>
+        <div className="">
+            <NetWorthCard accounts={accounts} className="w-8/12"/>
         </div>
     )
 }

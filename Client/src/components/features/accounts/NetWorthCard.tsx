@@ -17,7 +17,6 @@ import {assetColors, chartConfig, cn, creditColors, currencyParser} from "@/lib/
 import { TooltipProps } from 'recharts';
 import {Account} from "@/types.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
-import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 
 type NetWorthCardProps = {
     accounts: Account[]
@@ -54,10 +53,9 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
     }, 0) ?? 0
 
     return (
-        <Card className={cn("bg-primary/[0.125] text-primary backdrop-blur-sm", className)}>
+        <Card className={cn("bg-transparent text-primary", className)}>
             <CardHeader className="pb-4 flex-row justify-between items-center">
                 <CardTitle className="text-xl w-fit">Net Worth</CardTitle>
-                <ArrowLink to="/accounts" />
             </CardHeader>
             <CardContent className="flex md:flex-row flex-col pb-4 gap-4">
                 <CardDescription className="flex items-center justify-around gap-8 md:gap-0 md:my-6 md:flex-col">

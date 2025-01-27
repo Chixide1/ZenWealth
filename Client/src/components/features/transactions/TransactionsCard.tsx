@@ -23,7 +23,7 @@ export function TransactionsCard({className, title, transactions, allFeatures = 
     })
     
     return (
-        <Card className={cn("test", className)}>
+        <Card className={cn("", className)}>
             <CardHeader className="flex items-center justify-between flex-row px-3 md:px-4 pb-2 rounded-t-[inherit]">
                 <CardTitle className="text-xl">{title}</CardTitle>
                 {!allFeatures && <ArrowLink to="/transactions"></ArrowLink>}
