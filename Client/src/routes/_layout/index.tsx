@@ -7,6 +7,7 @@ import {cn} from "@/lib/utils.ts";
 import {transactionsAtom} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
 import {MonthlyComparisonLineGraph} from "@/components/features/accounts/MonthlyComparisonLineGraph.tsx";
+import TopExpenseCategoriesCard, { GaugeProps } from "@/components/features/transactions/TopExpenseCategoriesCard.tsx";
 
 export const Route = createFileRoute('/_layout/')({
   component: DashboardPage,
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/_layout/')({
 
 function DashboardPage() {
     const [{data: transactions}] = useAtom(transactionsAtom);
+    
     const MonthlySummaryData = [
         { month: "Jan", income: 4200, expenses: 2800 },
         { month: "Feb", income: 3500, expenses: 2500 },
@@ -27,6 +29,27 @@ function DashboardPage() {
         { month: "Oct", income: 4500, expenses: 3500 },
         { month: "Nov", income: 4200, expenses: 3200 },
         { month: "Dec", income: 4800, expenses: 4000 },
+    ];
+
+    const gaugeData: GaugeProps[] = [
+        {
+            categoryName: 'Bank Fees',
+            categoryIconUrl: "https://plaid-category-icons.plaid.com/PFC_BANK_FEES.png",
+            categoryAmount: 12000,
+            totalAmount: 20000,
+        },
+        {
+            categoryName: 'General Services',
+            categoryIconUrl: "https://plaid-category-icons.plaid.com/PFC_GENERAL_SERVICES.png",
+            categoryAmount: 8500,
+            totalAmount: 10000,
+        },
+        {
+            categoryName: 'Entertainment',
+            categoryIconUrl: "https://plaid-category-icons.plaid.com/PFC_ENTERTAINMENT.png",
+            categoryAmount: 350,
+            totalAmount: 500,
+        },
     ];
     
     return (
@@ -44,6 +67,7 @@ function DashboardPage() {
               className="col-span-full md:col-span-5 row-span-2" 
           />
           <BudgetLimitCard spent={2000} limit={7000} className="col-span-full md:col-span-7"/>
+          <TopExpenseCategoriesCard gaugeData={gaugeData} className="col-span-full md:col-span-7" />
       </div>
     )
 }

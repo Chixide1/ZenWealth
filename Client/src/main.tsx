@@ -38,15 +38,15 @@ export const queryClient = new QueryClient({
     },
 })
 
-persistQueryClient({
-    queryClient,
-    persister: createSyncStoragePersister({
-        storage: window.localStorage,
-        key: "ZenWealth_Cache"
-    }),
-    /* milliseconds * seconds * minutes * hours */
-    maxAge: 1000 * 60 * 60 * 6,
-})
+// persistQueryClient({
+//     queryClient,
+//     persister: createSyncStoragePersister({
+//         storage: window.localStorage,
+//         key: "ZenWealth_Cache"
+//     }),
+//     /* milliseconds * seconds * minutes * hours */
+//     maxAge: 1000 * 60 * 60 * 6,
+// })
 
 const HydrateAtoms = ({ children }: any) => {
     useHydrateAtoms([[queryClientAtom, queryClient]] as any)

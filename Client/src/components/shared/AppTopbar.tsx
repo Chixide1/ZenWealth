@@ -1,5 +1,5 @@
 ﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx"
-import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus, ChevronDown } from "lucide-react"
+import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus, ChevronDown, HandCoins } from "lucide-react"
 import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx"
 import { Link, linkOptions } from "@tanstack/react-router"
 import Logo from "./Logo"
@@ -38,6 +38,14 @@ const items: NavItem[] = [
         }),
         icon: ChartPie,
     },
+    {
+        title: "Budgets",
+        url: linkOptions({
+            to: "/budgets",
+            label: "Budgets",
+        }),
+        icon: HandCoins,
+    },
 ]
 
 export default function AppTopbar({ username }: { username: string }) {
@@ -52,7 +60,7 @@ export default function AppTopbar({ username }: { username: string }) {
                 <span className="hidden md:inline">Add Account</span>
             </LinkButton>
             <div className="inline-flex items-center gap-2 bg-primary/[0.125] rounded-full ms-2 py-1 px-1 border border-primary/10">
-                <Avatar className="w-8 h-8">
+                <Avatar className="w-6 h-6">
                     <AvatarFallback className="text-black text-lg">
                         {username?.[0].toUpperCase()}
                     </AvatarFallback>

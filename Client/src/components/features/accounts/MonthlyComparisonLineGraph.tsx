@@ -90,8 +90,8 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
             <CardFooter className="bg-[#232323] mx-3 mb-3 rounded-2xl p-2 block">
                 <div className="inline-flex gap-4 justify-between items-center w-full border-b border-neutral-700 p-2">
                     <div className="inline-flex flex-col md:flex-row md:gap-2 items-center">
-                        <span>{currencyParser.format(yearlyExpenditure)}</span>
-                        <span className="text-neutral-500 text-sm">Yearly expenditure</span>
+                        <span>{currencyParser.format(yearlyExpenditure / data.length)}</span>
+                        <span className="text-neutral-500 text-sm">Average Expenditure</span>
                     </div>
                     <Separator orientation="vertical" className="h-10 md:h-5 bg-neutral-700" />
                     <div className="inline-flex flex-col md:flex-row items-center md:gap-6 text-neutral-500 text-sm">

@@ -60,14 +60,14 @@ export function TransactionsCard({className, title, transactions, allFeatures = 
                                     </div>
                                 </li>
                             )) : Array.from({ length: 10 })
-                                .map(() => (
-                                    <div className="flex items-center space-x-4">
+                                .map((_, i) => (
+                                    <li className="flex items-center space-x-4" key={i + "::TransactionsCardSkeleton"}>
                                         <Skeleton className="h-12 w-12 rounded-full" />
                                         <div className="space-y-2 w-10/12">
                                             <Skeleton className="h-4" />
                                             <Skeleton className="h-4" />
                                         </div>
-                                    </div>
+                                    </li>
                                 ))}
                         </ul>
                     </TabsContent>

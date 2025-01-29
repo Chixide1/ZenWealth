@@ -52,6 +52,8 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
         return liabilities;
     }, 0) ?? 0
 
+    
+    console.log("re-rendered")
     return (
         <Card className={cn("bg-transparent text-primary", className)}>
             <CardHeader className="pb-4 flex-row justify-between items-center">
