@@ -52,11 +52,11 @@ export function TransactionsCard({className, title, transactions, allFeatures = 
                                     />
                                     <div className="max-w-[50%]">
                                         <p className="truncate">{transaction.name}</p>
-                                        <p className="text-neutral-400/90">{dateParser.format(new Date(transaction.datetime ?? transaction.date))}</p>
+                                        <p className="text-neutral-400">{dateParser.format(new Date(transaction.datetime ?? transaction.date))}</p>
                                     </div>
                                     <div className="ml-auto text-end max-w-[30%]">
                                         <p className="">{currencyParser.format(transaction.amount)}</p>
-                                        <p className="text-neutral-400/90 text-nowrap">{timeParser.format(new Date(transaction.datetime ?? transaction.date))}</p>
+                                        <p className="text-neutral-400 text-nowrap">{timeParser.format(new Date(transaction.datetime ?? transaction.date))}</p>
                                     </div>
                                 </li>
                             )) : Array.from({ length: 10 })

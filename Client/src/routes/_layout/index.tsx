@@ -8,6 +8,7 @@ import {transactionsAtom} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
 import {MonthlyComparisonLineGraph} from "@/components/features/accounts/MonthlyComparisonLineGraph.tsx";
 import TopExpenseCategoriesCard, { GaugeProps } from "@/components/features/transactions/TopExpenseCategoriesCard.tsx";
+import TotalBalanceCard from "@/components/features/accounts/TotalBalanceCard.tsx";
 
 export const Route = createFileRoute('/_layout/')({
   component: DashboardPage,
@@ -67,7 +68,8 @@ function DashboardPage() {
               className="col-span-full md:col-span-5 row-span-2" 
           />
           <BudgetLimitCard spent={2000} limit={7000} className="col-span-full md:col-span-7"/>
-          <TopExpenseCategoriesCard gaugeData={gaugeData} className="col-span-full md:col-span-7" />
+          <TopExpenseCategoriesCard gaugeData={gaugeData} className="col-span-full md:col-span-5" />
+          <TotalBalanceCard className="col-span-full md:col-span-7"/>
       </div>
     )
 }

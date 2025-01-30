@@ -16,7 +16,7 @@ export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCateg
                     <CardTitle className="">Top Expense Categories</CardTitle>
                     <ArrowLink to="/transactions" />
             </CardHeader>
-            <CardContent className="space-y-6 pt-4 pb-10">
+            <CardContent className="space-y-6 pt-4 pb-10 text-sm">
                 {gaugeData.map((gauge, index) => (
                     <Gauge key={index + "::TopExpenseCategoriesCardGauge"} {...gauge} />
                 ))}
@@ -56,7 +56,7 @@ function Gauge({ categoryName, categoryIconUrl, categoryAmount = 0, totalAmount 
                     />
                     <span>{categoryName}</span>
                 </div>
-                <p className="ml-auto w-fit text-neutral-500">
+                <p className="ml-auto w-fit text-neutral-400">
                     <span className="text-primary">
                         {currencyParser.format(categoryAmount)}
                     </span>
@@ -64,7 +64,7 @@ function Gauge({ categoryName, categoryIconUrl, categoryAmount = 0, totalAmount 
                 </p>
             </div>
             <Progress
-                className="h-4"
+                className="h-6 rounded-sm"
                 value={progress}
                 max={100}
             />

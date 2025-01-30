@@ -90,22 +90,22 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
             <CardFooter className="bg-[#232323] mx-3 mb-3 rounded-2xl p-2 block">
                 <div className="inline-flex gap-4 justify-between items-center w-full border-b border-neutral-700 p-2">
                     <div className="inline-flex flex-col md:flex-row md:gap-2 items-center">
-                        <span>{currencyParser.format(yearlyExpenditure / data.length)}</span>
-                        <span className="text-neutral-500 text-sm">Average Expenditure</span>
+                        <span className="text-primary">{currencyParser.format(yearlyExpenditure / data.length)}</span>
+                        <span className="text-sm text-neutral-400">Average Expenditure</span>
                     </div>
                     <Separator orientation="vertical" className="h-10 md:h-5 bg-neutral-700" />
                     <div className="inline-flex flex-col md:flex-row items-center md:gap-6 text-neutral-500 text-sm">
-                        <div className="inline-flex gap-1 items-center me-auto">
+                        <div className="inline-flex gap-1 items-center me-auto text-neutral-400">
                             <div className="w-2 h-2 rounded-full bg-secondary" />
                             <span>Income</span>
                         </div>
-                        <div className="inline-flex gap-1 items-center me-auto">
+                        <div className="inline-flex gap-1 items-center me-auto text-neutral-400">
                             <div className="w-2 h-2 rounded-full bg-tertiary" />
                             <span>Expenses</span>
                         </div>
                     </div>
                 </div>
-                <CardDescription className="rounded-md w-full p-2">
+                <CardDescription className="rounded-md w-full p-2 text-neutral-400">
                     This chart depicts the monthly financial performance, highlighting income earned and expenses incurred throughout the year, allowing for a better understanding of overall financial health
                 </CardDescription>
             </CardFooter>
