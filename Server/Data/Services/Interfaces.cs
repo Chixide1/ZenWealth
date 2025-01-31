@@ -21,6 +21,6 @@ public interface IAccountsService
 
 public interface ITransactionsService
 {
-    Task<List<TransactionDto>> GetUserTransactionsAsync(string userId);
+    Task<List<TransactionDto>> GetUserTransactionsAsync(string userId, int cursor = 1, int pageSize = 10);
 }
 

@@ -1,11 +1,8 @@
-﻿"use client"
-
-import {
+﻿import {
     ColumnDef,
     flexRender,
     ColumnFiltersState,
     getCoreRowModel,
-    getPaginationRowModel,
     SortingState,
     getSortedRowModel,
     useReactTable,
@@ -15,7 +12,7 @@ import {
     getFacetedMinMaxValues,
     VisibilityState,
 } from "@tanstack/react-table"
-
+import { useAtom } from 'jotai';
 import {
     Table, TableBody, TableCell, TableFooter,
     TableHead, TableHeader, TableRow,
@@ -34,6 +31,7 @@ import {
 import { ChevronDown } from 'lucide-react';
 import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
+import {transactionsAtom, transactionsPaginationAtom} from "@/lib/atoms.ts";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction>[]
@@ -43,6 +41,7 @@ interface TransactionTableProps {
 }
 
 export function TransactionsTable({columns, data, isLoading, className}: TransactionTableProps) {
+    const [{fetchNextPage, fetchPreviousPage}] = useAtom(transactionsAtom)
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -82,10 +81,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
         amount: true,
         date: true,
     });
-    const [pagination, setPagination] = useState({
-        pageIndex: 0,
-        pageSize: 10,
-    });
+    const [pagination, setPagination] = useAtom(transactionsPaginationAtom)
     const [columnOrder] = useState<string[]>(['name', 'amount', 'date', 'category']);
     const [pageSizeOpen, setPageSizeOpen] = useState(false)
 
@@ -94,7 +90,6 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
         columns,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedMinMaxValues: getFacetedMinMaxValues(),
@@ -110,6 +105,8 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
             columnVisibility,
             columnOrder,
         },
+        manualPagination: true,
+        rowCount: -1
     })
 
     const pageSizeOptions = [10, 20, 30, 40, 50]
@@ -217,7 +214,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                         className="me-2"
                                         variant="accent"
                                         size="sm"
-                                        onClick={() => table.previousPage()}
+                                        onClick={() => fetchPreviousPage()}
                                         disabled={!table.getCanPreviousPage()}
                                     >
                                         Previous
@@ -226,8 +223,15 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                         className=""
                                         variant="accent"
                                         size="sm"
-                                        onClick={() => table.nextPage()}
-                                        disabled={!table.getCanNextPage()}
+                                        onClick={() => {
+                                            fetchNextPage()
+                                            setPagination((old) => {
+                                                old.pageIndex++
+                                                return old
+                                            })
+                                            console.log(pagination.pageIndex)
+                                        }}
+                                        // disabled={!table.getCanNextPage()}
                                     >
                                         Next
                                     </Button></div>

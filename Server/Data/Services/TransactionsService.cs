@@ -21,11 +21,13 @@ public class TransactionsService(
     /// Asynchronously retrieves all transactions for a specified user and returns them as a list of stripped transactions.
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
+    /// <param name="cursor">Used for pagination</param>
+    /// <param name="pageSize">The amount of results returned</param>
     /// <returns>A task representing the asynchronous operation, containing a list of stripped transactions for the user.</returns>
-    public async Task<List<TransactionDto>> GetUserTransactionsAsync(string userId)
+    public async Task<List<TransactionDto>> GetUserTransactionsAsync(string userId, int cursor = 1, int pageSize = 10)
     {
         var transactions = await context.Transactions
-            .Where(t => t.UserId == userId)
+            .Where(t => t.UserId == userId && t.Id >= cursor)
             .Select(t => new TransactionDto()
             {
                 Id = t.Id,
@@ -43,6 +45,7 @@ public class TransactionsService(
                 PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
                 TransactionCode = t.TransactionCode
             })
+            .Take(pageSize)
             .ToListAsync();
 
         logger.LogInformation("Retrieved {TransactionCount} transactions for user {UserId}", transactions.Count,

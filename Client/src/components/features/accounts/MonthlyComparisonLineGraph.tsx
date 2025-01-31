@@ -1,9 +1,10 @@
-﻿import { Line, LineChart, TooltipProps, XAxis } from "recharts"
+﻿import { Line, LineChart, ResponsiveContainer, TooltipProps, XAxis } from "recharts"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import {cn, currencyParser} from "@/lib/utils"
 import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
+import {useIsMobile} from "@/hooks/use-mobile.tsx";
 
 type MonthlySummaryData = {
     month: string,
@@ -18,6 +19,7 @@ type IncomeOutcomeLineGraphProps = {
 
 export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineGraphProps) {
     const yearlyExpenditure = data.reduce((acc, value) => acc + value.expenses, 0)
+    const isMobile = useIsMobile();
 
     return (
         <Card className={cn("bg-[hsl(0,0%,10%)] border-neutral-800", className)}>
@@ -28,25 +30,16 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
                 </div>
             </CardHeader>
             <CardContent className="px-4 pb-0">
-                <ChartContainer
-                    config={{
-                        income: {
-                            label: "Income",
-                            color: "hsl(var(--secondary))",
-                        },
-                        expenses: {
-                            label: "Expenses",
-                            color: "hsl(var(--tertiary-1))",
-                        },
-                    }}
-                    className="h-[200px] w-full"
+                <ResponsiveContainer
+                    height={200}
+                    className="text-xs md:text-sm w-full"
                 >
                     <LineChart
                         data={data}
                         margin={{
-                            right: 20,
+                            right: isMobile ? 10 : 20,
                             bottom: 5,
-                            left: 20,
+                            left: isMobile ? 10 : 20,
                         }}
                     >
                         <XAxis dataKey="month"/>
@@ -85,7 +78,7 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
                             dot={false}
                         />
                     </LineChart>
-                </ChartContainer>
+                </ResponsiveContainer>
             </CardContent>
             <CardFooter className="bg-[#232323] mx-3 mb-3 rounded-2xl p-2 block">
                 <div className="inline-flex gap-4 justify-between items-center w-full border-b border-neutral-700 p-2">
@@ -94,7 +87,7 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
                         <span className="text-sm text-neutral-400">Average Expenditure</span>
                     </div>
                     <Separator orientation="vertical" className="h-10 md:h-5 bg-neutral-700" />
-                    <div className="inline-flex flex-col md:flex-row items-center md:gap-6 text-neutral-500 text-sm">
+                    <div className="inline-flex flex-col md:flex-row items-center me-10 md:me-0 md:gap-6 text-neutral-500 text-sm">
                         <div className="inline-flex gap-1 items-center me-auto text-neutral-400">
                             <div className="w-2 h-2 rounded-full bg-secondary" />
                             <span>Income</span>
