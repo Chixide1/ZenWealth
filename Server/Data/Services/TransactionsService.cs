@@ -60,30 +60,33 @@ public class TransactionsService(
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
     /// <returns>A task representing the asynchronous operation, containing a list of monthly expenditure data.</returns>
-    public async Task<List<MonthlyExpenditure>> MonthlyIncomeAndOutcome(string userId)
+    public async Task<List<MonthlySummary>> MonthlyIncomeAndOutcome(string userId)
     {
-        var results = await context.Database.SqlQuery<MonthlyExpenditure>(
+        var results = await context.Database.SqlQuery<MonthlySummary>(
             $"""
-                 SELECT MonthName, Total
-                 FROM (
-                      SELECT DATENAME(MONTH, [Date]) AS MonthName, SUM([Amount]) AS Total
-                      FROM [Transactions]
-                      WHERE UserId={userId} and Date > DATEADD(Year, -1, GETDATE()) and Amount < 0
-                      GROUP BY DATENAME(MONTH, Date)
-                 ) as data
-                 ORDER BY CASE
-                     WHEN MonthName = 'January' THEN 1
-                     WHEN MonthName = 'February' THEN 2
-                     WHEN MonthName = 'March' THEN 3
-                     WHEN MonthName = 'April' THEN 4
-                     WHEN MonthName = 'May' THEN 5
-                     WHEN MonthName = 'June' THEN 6
-                     WHEN MonthName = 'July' THEN 7
-                     WHEN MonthName = 'August' THEN 8
-                     WHEN MonthName = 'September' THEN 9
-                     WHEN MonthName = 'October' THEN 10
-                     WHEN MonthName = 'November' THEN 11
-                     WHEN MonthName = 'December' THEN 12
+             SELECT MonthName, Income, Expenditure
+             FROM (
+                 SELECT 
+                     DATENAME(MONTH, Date) AS MonthName,
+                     SUM(IIF(Amount < 0, Amount, 0)) AS Income,
+                     SUM(IIF(Amount > 0, Amount, 0) ) AS Expenditure
+                 FROM Transactions
+                 WHERE  UserId = '4f927d76-82d7-4c01-97bd-03600c99818f' AND Date > DATEADD(Year, -1, GETDATE())
+                 GROUP BY DATENAME(MONTH, Date)
+                  ) as data
+             ORDER BY CASE
+                 WHEN MonthName = 'January' THEN 1
+                 WHEN MonthName = 'February' THEN 2
+                 WHEN MonthName = 'March' THEN 3
+                 WHEN MonthName = 'April' THEN 4
+                 WHEN MonthName = 'May' THEN 5
+                 WHEN MonthName = 'June' THEN 6
+                 WHEN MonthName = 'July' THEN 7
+                 WHEN MonthName = 'August' THEN 8
+                 WHEN MonthName = 'September' THEN 9
+                 WHEN MonthName = 'October' THEN 10
+                 WHEN MonthName = 'November' THEN 11
+                 WHEN MonthName = 'December' THEN 12
                  END;
              """
         ).ToListAsync();

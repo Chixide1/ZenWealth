@@ -9,6 +9,10 @@ import {useAtom} from "jotai";
 import {MonthlyComparisonLineGraph} from "@/components/features/accounts/MonthlyComparisonLineGraph.tsx";
 import TopExpenseCategoriesCard, { GaugeProps } from "@/components/features/transactions/TopExpenseCategoriesCard.tsx";
 import TotalBalanceCard from "@/components/features/accounts/TotalBalanceCard.tsx";
+import api from "@/lib/api.ts";
+import {MonthlySummary} from "@/types.ts";
+import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 export const Route = createFileRoute('/_layout/')({
   component: DashboardPage,
@@ -17,24 +21,18 @@ export const Route = createFileRoute('/_layout/')({
 function DashboardPage() {
     const [{data: transactionsData}] = useAtom(transactionsAtom);
     const [{data: accounts}] = useAtom(accountsAtom);
+    const {data: monthlySummaryData}  = useQuery({
+        queryKey: ['monthlySummary'],
+        queryFn: async () => {
+            const response = await api<MonthlySummary[]>("Charts/MonthlySummary")
+                .catch((e: AxiosError<MonthlySummary[]>) => console.error(e));
+
+            return response ? response.data : [];
+        }
+    })
     const [pagination] = useAtom(transactionsPaginationAtom)
     
     const transactions = transactionsData?.pages[pagination.pageIndex];
-    
-    const MonthlySummaryData = [
-        { month: "Jan", income: 4200, expenses: 2800 },
-        { month: "Feb", income: 3500, expenses: 2500 },
-        { month: "Mar", income: 3800, expenses: 3200 },
-        { month: "Apr", income: 4000, expenses: 3000 },
-        { month: "May", income: 4800, expenses: 5800 },
-        { month: "Jun", income: 5000, expenses: 4500 },
-        { month: "Jul", income: 5600, expenses: 4200 },
-        { month: "Aug", income: 5200, expenses: 4000 },
-        { month: "Sep", income: 4800, expenses: 6600 },
-        { month: "Oct", income: 4500, expenses: 3500 },
-        { month: "Nov", income: 4200, expenses: 3200 },
-        { month: "Dec", income: 4800, expenses: 4000 },
-    ];
 
     const gaugeData: GaugeProps[] = [
         {
@@ -56,16 +54,26 @@ function DashboardPage() {
             totalAmount: 500,
         },
     ];
+    console.log(monthlySummaryData)
     
     return (
       <div className="grid grid-cols-12 auto-rows-auto gap-4 px-3 md:px-4 pb-8">
           <AccountSummarySection className="col-span-full">
-              <AccountSummaryCard dataTitle="Income" amount={2100} previousAmount={1950}/>
-              <AccountSummaryCard dataTitle="Expenditure" amount={1500} previousAmount={1900} invert={true}/>
+              <AccountSummaryCard
+                  dataTitle="Income"
+                  amount={monthlySummaryData ? monthlySummaryData[0].income : 0}
+                  previousAmount={monthlySummaryData ? monthlySummaryData[2].income : 0}
+              />
+              <AccountSummaryCard
+                  dataTitle="Expenditure"
+                  amount={monthlySummaryData ? monthlySummaryData[0].expenditure : 0}
+                  previousAmount={monthlySummaryData ? monthlySummaryData[1].expenditure : 0}
+                  invert={true}
+              />
               <AccountSummaryCard dataTitle="Savings" amount={500} previousAmount={627}/>
               <AccountSummaryCard dataTitle="Liabilities" amount={750} previousAmount={543} invert={true}/>
           </AccountSummarySection>
-          <MonthlyComparisonLineGraph data={MonthlySummaryData} className="col-span-full md:col-span-7"/>
+          <MonthlyComparisonLineGraph data={monthlySummaryData ?? []} className="col-span-full md:col-span-7"/>
           <TransactionsCard
               transactionsData={transactions}
               title="Recent Transactions"

@@ -17,7 +17,6 @@ function TransactionsPage() {
   // console.log(data)
   
   const transactions = data?.pages[pagination.pageIndex];
-  
   return (
       <div className="w-dvw px-3 md:px-4 pt-2 pb-6">
           {isMobile ?

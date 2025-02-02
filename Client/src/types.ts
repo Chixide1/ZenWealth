@@ -30,3 +30,9 @@ export type Account = {
     type: "Credit" | "Loan" | "Depository" | "Other",
     subtype: string,
 }
+
+export type MonthlySummary = {
+    monthName: string,
+    income: number,
+    expenditure: number,
+}

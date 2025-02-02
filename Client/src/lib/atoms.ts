@@ -31,7 +31,6 @@ export const transactionsAtom = atomWithInfiniteQuery(() => ({
         return response ? response.data : {
             transactions: [],
             nextCursor: null,
-            previousCursor: null,
             count: 0 
         };
     },

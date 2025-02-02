@@ -23,6 +23,6 @@ public interface ITransactionsService
 {
     Task<List<TransactionDto>> GetUserTransactionsAsync(string userId, int cursor = 1, int pageSize = 10);
     
-    Task<List<MonthlyExpenditure>> MonthlyIncomeAndOutcome(string userId);
+    Task<List<MonthlySummary>> MonthlyIncomeAndOutcome(string userId);
 }
 

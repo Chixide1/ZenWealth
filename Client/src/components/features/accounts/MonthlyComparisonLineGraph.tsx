@@ -1,25 +1,24 @@
-﻿import { Line, LineChart, ResponsiveContainer, TooltipProps, XAxis } from "recharts"
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
+﻿import { Line, LineChart, ResponsiveContainer, type TooltipProps, XAxis } from "recharts"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartTooltip } from "@/components/ui/chart"
-import {cn, currencyParser} from "@/lib/utils"
-import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
-import {Separator} from "@/components/ui/separator.tsx";
-import {useIsMobile} from "@/hooks/use-mobile.tsx";
-
-type MonthlySummaryData = {
-    month: string,
-    income: number,
-    expenses: number,
-}
+import { cn, currencyParser } from "@/lib/utils"
+import { ArrowLink } from "@/components/shared/ArrowLink.tsx"
+import { Separator } from "@/components/ui/separator.tsx"
+import { useIsMobile } from "@/hooks/use-mobile.tsx"
+import type { MonthlySummary } from "@/types"
 
 type IncomeOutcomeLineGraphProps = {
-    className?: string,
-    data: MonthlySummaryData[]
+    className?: string
+    data: MonthlySummary[]
 }
 
-export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineGraphProps) {
-    const yearlyExpenditure = data.reduce((acc, value) => acc + value.expenses, 0)
-    const isMobile = useIsMobile();
+export function MonthlyComparisonLineGraph({ className, data }: IncomeOutcomeLineGraphProps) {
+    const yearlyExpenditure = data.reduce((acc, value) => acc + value.expenditure, 0)
+    const chartData = data.map((sum) => {
+        sum.monthName = sum.monthName.slice(0, 3)
+        return sum
+    })
+    const isMobile = useIsMobile()
 
     return (
         <Card className={cn("bg-[hsl(0,0%,10%)] border-neutral-800", className)}>
@@ -30,53 +29,50 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
                 </div>
             </CardHeader>
             <CardContent className="px-4 pb-0">
-                <ResponsiveContainer
-                    height={200}
-                    className="text-xs md:text-sm w-full"
-                >
+                <ResponsiveContainer height={200} className="text-xs md:text-sm w-full">
                     <LineChart
-                        data={data}
+                        data={chartData}
                         margin={{
                             right: isMobile ? 10 : 20,
                             bottom: 5,
                             left: isMobile ? 10 : 20,
                         }}
                     >
-                        <XAxis dataKey="month"/>
+                        <XAxis dataKey="monthName" interval={0} />
                         <ChartTooltip
-                            content={({active, payload}: TooltipProps<number, string>) => {
-                                if(active) {
+                            content={({ active, payload }: TooltipProps<number, string>) => {
+                                if (active && payload && payload.length > 0) {
                                     return (
                                         <div className="bg-transparent space-y-2">
                                             <p className="w-fit bg-neutral-700/10 border backdrop-blur-sm border-neutral-700 rounded-full px-2 py-1 inline-flex items-center gap-1">
                                                 <span className="h-1 w-1 rounded-full bg-secondary" />
-                                                {currencyParser.format(payload?.[0].value ?? 0)}
+                                                {payload[0] && typeof payload[0].value === "number"
+                                                    ? currencyParser.format(payload[0].value)
+                                                    : "N/A"}
                                             </p>
-                                            <p className="bg-tertiary rounded-full px-2 w-fit py-1">{currencyParser.format(payload?.[1].value ?? 0)}</p>
+                                            <p className="bg-tertiary rounded-full px-2 w-fit py-1">
+                                                {payload[1] && typeof payload[1].value === "number"
+                                                    ? currencyParser.format(payload[1].value)
+                                                    : "N/A"}
+                                            </p>
                                         </div>
                                     )
                                 }
-                                return null;
+                                return null
                             }}
                             cursor={{
-                                opacity: 0.1
+                                opacity: 0.1,
                             }}
                         />
                         <Line
                             type="monotone"
-                            dataKey="expenses"
+                            dataKey="expenditure"
                             stroke="hsl(var(--secondary))"
                             strokeWidth={2}
                             strokeDasharray="5 5"
                             dot={false}
                         />
-                        <Line
-                            type="monotone"
-                            dataKey="income"
-                            stroke="hsl(var(--tertiary-1))"
-                            strokeWidth={2}
-                            dot={false}
-                        />
+                        <Line type="monotone" dataKey="income" stroke="hsl(var(--tertiary-1))" strokeWidth={2} dot={false} />
                     </LineChart>
                 </ResponsiveContainer>
             </CardContent>
@@ -84,7 +80,7 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
                 <div className="inline-flex gap-4 justify-between items-center w-full border-b border-neutral-700 p-2">
                     <div className="inline-flex flex-col md:flex-row md:gap-2 items-center">
                         <span className="text-primary">{currencyParser.format(yearlyExpenditure / data.length)}</span>
-                        <span className="text-sm text-neutral-400">Average Expenditure</span>
+                        <span className="text-sm text-neutral-400">Average Monthly Expenditure</span>
                     </div>
                     <Separator orientation="vertical" className="h-10 md:h-5 bg-neutral-700" />
                     <div className="inline-flex flex-col md:flex-row items-center me-10 md:me-0 md:gap-6 text-neutral-500 text-sm">
@@ -99,7 +95,8 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
                     </div>
                 </div>
                 <CardDescription className="rounded-md w-full p-2 text-neutral-400">
-                    This chart depicts the monthly financial performance, highlighting income earned and expenses incurred throughout the year, allowing for a better understanding of overall financial health
+                    This chart depicts the monthly financial performance, highlighting income earned and expenses incurred
+                    throughout the year, allowing for a better understanding of overall financial health
                 </CardDescription>
             </CardFooter>
         </Card>
