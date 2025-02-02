@@ -25,7 +25,7 @@ public class TransactionsService(
     /// <param name="cursor">Used for pagination</param>
     /// <param name="pageSize">The amount of results returned</param>
     /// <returns>A task representing the asynchronous operation, containing a list of stripped transactions for the user.</returns>
-    public async Task<List<TransactionDto>> GetUserTransactionsAsync(string userId, int cursor = 1, int pageSize = 10)
+    public async Task<List<TransactionDto>> GetTransactionsAsync(string userId, int cursor = 1, int pageSize = 10)
     {
         var transactions = await context.Transactions
             .Where(t => t.UserId == userId && t.Id >= cursor)
@@ -60,7 +60,7 @@ public class TransactionsService(
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
     /// <returns>A task representing the asynchronous operation, containing a list of monthly expenditure data.</returns>
-    public async Task<List<MonthlySummary>> MonthlyIncomeAndOutcome(string userId)
+    public async Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId)
     {
         var results = await context.Database.SqlQuery<MonthlySummary>(
             $"""
@@ -88,6 +88,112 @@ public class TransactionsService(
                  WHEN MonthName = 'November' THEN 11
                  WHEN MonthName = 'December' THEN 12
                  END;
+             """
+        ).ToListAsync();
+
+        return results;
+    }
+
+    public async Task<RecentTransactions> GetRecentTransactions(string userId, int count = 11)
+    {
+        var all = await context.Transactions.FromSql(
+            $"""
+             select *
+             from Transactions
+             order by Date desc
+             offset 0 rows fetch next {count} rows only
+             """
+        ).Select(t => new TransactionDto()
+        {
+            Id = t.Id,
+            Name = t.Name,
+            PaymentChannel = t.PaymentChannel,
+            AccountId = t.AccountId,
+            Amount = t.Amount,
+            Date = t.Date,
+            Datetime = t.Datetime,
+            IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
+            UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
+            PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+            MerchantName = t.MerchantName,
+            LogoUrl = t.LogoUrl,
+            PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+            TransactionCode = t.TransactionCode
+        }).ToListAsync();
+
+        var income = await context.Transactions.FromSql(
+            $"""
+             select *
+             from Transactions
+             where Amount < 0
+             order by Date desc
+             offset 0 rows fetch next {count} rows only
+             """
+        ).Select(t => new TransactionDto()
+        {
+            Id = t.Id,
+            Name = t.Name,
+            PaymentChannel = t.PaymentChannel,
+            AccountId = t.AccountId,
+            Amount = t.Amount,
+            Date = t.Date,
+            Datetime = t.Datetime,
+            IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
+            UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
+            PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+            MerchantName = t.MerchantName,
+            LogoUrl = t.LogoUrl,
+            PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+            TransactionCode = t.TransactionCode
+        }).ToListAsync();
+
+        var expenditure = await context.Transactions.FromSql(
+            $"""
+             select *
+             from Transactions
+             where Amount > 0
+             order by Date desc
+             offset 0 rows fetch next {count} rows only
+             """
+        ).Select(t => new TransactionDto()
+        {
+            Id = t.Id,
+            Name = t.Name,
+            PaymentChannel = t.PaymentChannel,
+            AccountId = t.AccountId,
+            Amount = t.Amount,
+            Date = t.Date,
+            Datetime = t.Datetime,
+            IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
+            UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
+            PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+            MerchantName = t.MerchantName,
+            LogoUrl = t.LogoUrl,
+            PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+            TransactionCode = t.TransactionCode
+        }).ToListAsync();
+        
+        return new RecentTransactions()
+        {
+            All = all,
+            Income = income,
+            Expenditure = expenditure
+        };
+    }
+
+    public async Task<List<TopExpenseCategory>> GetTopExpenseCategories(string userId)
+    {
+        var results = await context.Database.SqlQuery<TopExpenseCategory>(
+            $"""
+             select top 3 
+                 PersonalFinanceCategory as Category,
+                 PersonalFinanceCategoryIconUrl as IconUrl,
+                 Sum(Amount) as Expenditure,
+                 (select SUM(Amount) from Transactions where Date > DATEADD(month, -1, GETDATE())) as Total
+             from Transactions
+             where UserId = {userId} and Date > DATEADD(month, -1, GETDATE())
+             group by PersonalFinanceCategory, PersonalFinanceCategoryIconUrl
+             order by Expenditure desc
              """
         ).ToListAsync();
 

@@ -14,10 +14,6 @@ type IncomeOutcomeLineGraphProps = {
 
 export function MonthlyComparisonLineGraph({ className, data }: IncomeOutcomeLineGraphProps) {
     const yearlyExpenditure = data.reduce((acc, value) => acc + value.expenditure, 0)
-    const chartData = data.map((sum) => {
-        sum.monthName = sum.monthName.slice(0, 3)
-        return sum
-    })
     const isMobile = useIsMobile()
 
     return (
@@ -29,16 +25,19 @@ export function MonthlyComparisonLineGraph({ className, data }: IncomeOutcomeLin
                 </div>
             </CardHeader>
             <CardContent className="px-4 pb-0">
-                <ResponsiveContainer height={200} className="text-xs md:text-sm w-full">
+                <ResponsiveContainer height={200} width="100%" className="text-xs md:text-sm">
                     <LineChart
-                        data={chartData}
+                        data={data}
                         margin={{
                             right: isMobile ? 10 : 20,
                             bottom: 5,
                             left: isMobile ? 10 : 20,
                         }}
                     >
-                        <XAxis dataKey="monthName" interval={0} />
+                        <XAxis
+                            dataKey="monthName"
+                            interval={0}
+                        />
                         <ChartTooltip
                             content={({ active, payload }: TooltipProps<number, string>) => {
                                 if (active && payload && payload.length > 0) {
@@ -80,7 +79,7 @@ export function MonthlyComparisonLineGraph({ className, data }: IncomeOutcomeLin
                 <div className="inline-flex gap-4 justify-between items-center w-full border-b border-neutral-700 p-2">
                     <div className="inline-flex flex-col md:flex-row md:gap-2 items-center">
                         <span className="text-primary">{currencyParser.format(yearlyExpenditure / data.length)}</span>
-                        <span className="text-sm text-neutral-400">Average Monthly Expenditure</span>
+                        <span className="text-sm text-center text-neutral-400">Average Monthly Expenditure</span>
                     </div>
                     <Separator orientation="vertical" className="h-10 md:h-5 bg-neutral-700" />
                     <div className="inline-flex flex-col md:flex-row items-center me-10 md:me-0 md:gap-6 text-neutral-500 text-sm">

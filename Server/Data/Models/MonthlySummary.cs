@@ -4,7 +4,7 @@ public record MonthlySummary
 {
     public required string MonthName { get; set; }
     
-    public Double Income { get; set; }
+    public double Income { get; set; }
     
-    public Double Expenditure { get; set; }
+    public double Expenditure { get; set; }
 }

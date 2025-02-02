@@ -21,8 +21,12 @@ public interface IAccountsService
 
 public interface ITransactionsService
 {
-    Task<List<TransactionDto>> GetUserTransactionsAsync(string userId, int cursor = 1, int pageSize = 10);
+    Task<List<TransactionDto>> GetTransactionsAsync(string userId, int cursor = 1, int pageSize = 10);
     
-    Task<List<MonthlySummary>> MonthlyIncomeAndOutcome(string userId);
+    Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId);
+
+    Task<RecentTransactions> GetRecentTransactions(string userId, int count = 11);
+    
+    Task<List<TopExpenseCategory>> GetTopExpenseCategories(string userId);
 }
 

@@ -34,7 +34,7 @@ public class TransactionsController(
         
         await itemsService.UpdateItemsAsync(user.Id);
         
-        var transactions = await transactionsService.GetUserTransactionsAsync(user.Id, cursor, pageSize);
+        var transactions = await transactionsService.GetTransactionsAsync(user.Id, cursor, pageSize);
 
         return Ok(new Responses.GetAllUserTransactionsResponse
         (

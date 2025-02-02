@@ -41,7 +41,7 @@ export function TransactionsCard({className, title, transactionsData, allFeature
                         <ul className="flex flex-col gap-2">
                             {transactions.length > 0 ? transactions.map((transaction) => (
                                 <li
-                                    key={transaction.id + "::TransactionsCard"}
+                                    key={transaction.id + "::RecentTransactionsCard"}
                                     className="flex gap-2 items-center text-sm"
                                 >
                                     <img

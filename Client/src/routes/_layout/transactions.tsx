@@ -12,11 +12,10 @@ export const Route = createFileRoute('/_layout/transactions')({
 
 function TransactionsPage() {
   const [{data, isLoading}] = useAtom(transactionsAtom);
-  const [pagination] = useAtom(transactionsPaginationAtom)
+  const [{pageIndex}] = useAtom(transactionsPaginationAtom)
   const isMobile = useIsMobile();
-  // console.log(data)
+  const transactions = data?.pages[pageIndex];
   
-  const transactions = data?.pages[pagination.pageIndex];
   return (
       <div className="w-dvw px-3 md:px-4 pt-2 pb-6">
           {isMobile ?

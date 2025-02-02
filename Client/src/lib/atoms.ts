@@ -14,7 +14,6 @@ export const accountsAtom = atomWithQuery(() => ({
     queryFn: async () => {
         const response = await api<Account[]>("/accounts")
             .catch((e: AxiosError<Account[]>) => console.error(e))
-        console.log(response)
         
         return response ? response.data : [];
     },

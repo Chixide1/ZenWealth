@@ -3,10 +3,11 @@ import {cn, currencyParser} from "@/lib/utils.ts";
 import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {Progress} from "@/components/ui/progress.tsx";
 import {useEffect, useState } from "react";
+import {TopExpenseCategory} from "@/types.ts";
 
 type TopExpenseCategoriesCardProps = {
     className?: string,
-    gaugeData: GaugeProps[],
+    gaugeData: TopExpenseCategory[],
 }
 
 export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCategoriesCardProps) {
@@ -25,20 +26,13 @@ export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCateg
     )
 }
 
-export type GaugeProps = {
-    categoryName: string,
-    categoryIconUrl: string,
-    categoryAmount: number,
-    totalAmount: number,
-}
-
-function Gauge({ categoryName, categoryIconUrl, categoryAmount = 0, totalAmount = 0 }: GaugeProps){
+function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCategory){
     const [progress, setProgress] = useState(0)
 
     useEffect(() => {
         // Simulate a delay before setting the progress
         const timer = setTimeout(() => {
-            setProgress((categoryAmount / totalAmount * 100))
+            setProgress((expenditure / total * 100))
         }, 500)
 
         return () => clearTimeout(timer)
@@ -52,15 +46,15 @@ function Gauge({ categoryName, categoryIconUrl, categoryAmount = 0, totalAmount 
                         width={30}
                         height="100%"
                         alt="an image of the category"
-                        src={categoryIconUrl ?? "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
+                        src={iconUrl ?? "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
                     />
-                    <span>{categoryName}</span>
+                    <span>{category}</span>
                 </div>
                 <p className="ml-auto w-fit text-neutral-400">
                     <span className="text-primary">
-                        {currencyParser.format(categoryAmount)}
+                        {currencyParser.format(expenditure)}
                     </span>
-                    &nbsp;of {currencyParser.format(totalAmount)}
+                    &nbsp;of {currencyParser.format(total)}
                 </p>
             </div>
             <Progress

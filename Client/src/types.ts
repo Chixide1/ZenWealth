@@ -36,3 +36,16 @@ export type MonthlySummary = {
     income: number,
     expenditure: number,
 }
+
+export type RecentTransactions = {
+    all: Transaction[],
+    income: Transaction[]
+    expenditure: Transaction[]
+}
+
+export type TopExpenseCategory = {
+    category: string,
+    expenditure: number,
+    total: number,
+    iconUrl: string,
+}
