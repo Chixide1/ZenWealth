@@ -21,7 +21,7 @@ import {Button} from "@/components/ui/button.tsx";
 import { useState } from "react";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
 import TransactionSearchButton from "@/components/features/transactions/TransactionSearchButton.tsx";
-import {Transaction} from "@/types";
+import {Transaction, TransactionData} from "@/types";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -35,13 +35,13 @@ import {transactionsAtom, transactionsPaginationAtom} from "@/lib/atoms.ts";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction>[]
-    data: Transaction[] | undefined,
+    data: TransactionData | undefined,
     isLoading?: boolean,
     className?: string,
 }
 
 export function TransactionsTable({columns, data, isLoading, className}: TransactionTableProps) {
-    const [{fetchNextPage, fetchPreviousPage}] = useAtom(transactionsAtom)
+    const [{fetchNextPage, hasNextPage}] = useAtom(transactionsAtom)
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
@@ -86,7 +86,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
     const [pageSizeOpen, setPageSizeOpen] = useState(false)
 
     const table = useReactTable<Transaction>({
-        data: data ?? [],
+        data: data?.transactions ?? [],
         columns,
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
@@ -214,7 +214,9 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                         className="me-2"
                                         variant="accent"
                                         size="sm"
-                                        onClick={() => fetchPreviousPage()}
+                                        onClick={async () => {
+                                            table.previousPage()
+                                        }}
                                         disabled={!table.getCanPreviousPage()}
                                     >
                                         Previous
@@ -223,15 +225,11 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                         className=""
                                         variant="accent"
                                         size="sm"
-                                        onClick={() => {
-                                            fetchNextPage()
-                                            setPagination((old) => {
-                                                old.pageIndex++
-                                                return old
-                                            })
-                                            console.log(pagination.pageIndex)
+                                        onClick={async () => {
+                                            await fetchNextPage()
+                                            table.nextPage()
                                         }}
-                                        // disabled={!table.getCanNextPage()}
+                                        disabled={!hasNextPage}
                                     >
                                         Next
                                     </Button></div>

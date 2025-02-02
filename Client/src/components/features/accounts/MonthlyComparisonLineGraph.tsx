@@ -1,6 +1,6 @@
 ﻿import { Line, LineChart, ResponsiveContainer, TooltipProps, XAxis } from "recharts"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
+import { ChartTooltip } from "@/components/ui/chart"
 import {cn, currencyParser} from "@/lib/utils"
 import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
@@ -49,7 +49,7 @@ export function MonthlyComparisonLineGraph({className, data}: IncomeOutcomeLineG
                                     return (
                                         <div className="bg-transparent space-y-2">
                                             <p className="w-fit bg-neutral-700/10 border backdrop-blur-sm border-neutral-700 rounded-full px-2 py-1 inline-flex items-center gap-1">
-                                                <div className="h-1 w-1 rounded-full bg-secondary" />
+                                                <span className="h-1 w-1 rounded-full bg-secondary" />
                                                 {currencyParser.format(payload?.[0].value ?? 0)}
                                             </p>
                                             <p className="bg-tertiary rounded-full px-2 w-fit py-1">{currencyParser.format(payload?.[1].value ?? 0)}</p>

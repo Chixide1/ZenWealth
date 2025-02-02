@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
-import { type PlaidLinkError, type PlaidLinkOnExit, type PlaidLinkOnExitMetadata, usePlaidLink } from "react-plaid-link"
+import { type PlaidLinkError, type PlaidLinkOnExit, usePlaidLink } from "react-plaid-link"
 import { Button, type ButtonProps } from "@/components/ui/button"
 import { cn } from "@/lib/utils.ts"
 import api from "@/lib/api.ts"
@@ -24,14 +24,13 @@ export function LinkButton({ children, className, ...props }: LinkButtonProps) {
 
     const { open } = usePlaidLink({
         token: linkToken,
-        onSuccess: async (publicToken: string) => {
-            await api.post("/Link", { publicToken: publicToken })
+        onSuccess: async (publicToken: string, metadata) => {
+            await api.post("/Link", { publicToken: publicToken, institutionName: metadata.institution?.name })
             await queryClient.refetchQueries()
             location.reload()
         },
-        onExit: useCallback<PlaidLinkOnExit>(async (error: PlaidLinkError | null, metadata: PlaidLinkOnExitMetadata) => {
+        onExit: useCallback<PlaidLinkOnExit>(async (error: PlaidLinkError | null) => {
             console.debug(error)
-            console.debug(metadata)
         }, []),
     })
 

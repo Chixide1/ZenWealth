@@ -58,7 +58,7 @@ public class LinkController(
 
 
     [HttpPost]
-    [ProducesResponseType( StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> ExchangePublicToken([FromBody] Responses.ExchangePublicTokenResponse data)
     {
         var user = await userManager.GetUserAsync(User);
@@ -77,8 +77,8 @@ public class LinkController(
         {
             return PlaidApiError(response.Error);
         }
-                
-        await itemsService.CreateItemAsync(response.AccessToken, user.Id);
+        
+        await itemsService.CreateItemAsync(response.AccessToken, user.Id, data.InstitutionName);
         await itemsService.UpdateItemsAsync(user.Id);
             
         return Ok(response);

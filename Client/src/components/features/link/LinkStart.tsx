@@ -1,10 +1,10 @@
-﻿import { BadgePoundSterling, Plus } from "lucide-react";
+﻿import { Plus } from "lucide-react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {LinkButton} from "@/components/features/link/LinkButton.tsx";
 
 export function LinkStart() {
     return (
-        <Card className={"w-[26rem] border bg-primary/[0.125] rounded-2xl text-primary flex flex-col items-center justify-center"}>
+        <Card className={"w-[26rem] border border-neutral-700 bg-primary/[0.125] rounded-2xl text-primary flex flex-col items-center justify-center"}>
             <CardHeader className={"text-center"}>
                 <CardTitle className={"text-2xl"}>Connect Your Bank Account</CardTitle>
                 <CardDescription className={"text-neutral-400 text-lg"}>Securely link your accounts to get started with our financial services.</CardDescription>

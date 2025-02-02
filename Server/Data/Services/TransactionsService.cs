@@ -1,6 +1,7 @@
 ﻿using Going.Plaid;
 using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Server.Common;
 using Server.Data.Models;
 
 namespace Server.Data.Services;
@@ -45,12 +46,48 @@ public class TransactionsService(
                 PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
                 TransactionCode = t.TransactionCode
             })
-            .Take(pageSize)
+            .Take(pageSize + 1)
             .ToListAsync();
 
         logger.LogInformation("Retrieved {TransactionCount} transactions for user {UserId}", transactions.Count,
             userId);
 
         return transactions;
+    }
+
+    /// <summary>
+    /// Asynchronously retrieves the total income and outcome for a specified user in each of the last 12 months.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
+    /// <returns>A task representing the asynchronous operation, containing a list of monthly expenditure data.</returns>
+    public async Task<List<MonthlyExpenditure>> MonthlyIncomeAndOutcome(string userId)
+    {
+        var results = await context.Database.SqlQuery<MonthlyExpenditure>(
+            $"""
+                 SELECT MonthName, Total
+                 FROM (
+                      SELECT DATENAME(MONTH, [Date]) AS MonthName, SUM([Amount]) AS Total
+                      FROM [Transactions]
+                      WHERE UserId={userId} and Date > DATEADD(Year, -1, GETDATE()) and Amount < 0
+                      GROUP BY DATENAME(MONTH, Date)
+                 ) as data
+                 ORDER BY CASE
+                     WHEN MonthName = 'January' THEN 1
+                     WHEN MonthName = 'February' THEN 2
+                     WHEN MonthName = 'March' THEN 3
+                     WHEN MonthName = 'April' THEN 4
+                     WHEN MonthName = 'May' THEN 5
+                     WHEN MonthName = 'June' THEN 6
+                     WHEN MonthName = 'July' THEN 7
+                     WHEN MonthName = 'August' THEN 8
+                     WHEN MonthName = 'September' THEN 9
+                     WHEN MonthName = 'October' THEN 10
+                     WHEN MonthName = 'November' THEN 11
+                     WHEN MonthName = 'December' THEN 12
+                 END;
+             """
+        ).ToListAsync();
+
+        return results;
     }
 }

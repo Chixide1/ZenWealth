@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250115003526_initial")]
+    [Migration("20250201154315_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -223,8 +223,15 @@ namespace Server.Migrations
                     b.Property<string>("Cursor")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("InstitutionName")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<DateTimeOffset?>("LastFetched")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("TransactionCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()

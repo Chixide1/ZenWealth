@@ -165,7 +165,9 @@ namespace Server.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AccessToken = table.Column<string>(type: "varchar(100)", nullable: false),
                     Cursor = table.Column<string>(type: "varchar(255)", nullable: true),
-                    LastFetched = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                    LastFetched = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    InstitutionName = table.Column<string>(type: "varchar(255)", nullable: false),
+                    TransactionCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

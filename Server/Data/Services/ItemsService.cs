@@ -20,12 +20,14 @@ public class ItemsService(
     /// </summary>
     /// <param name="accessToken">The access token for the item.</param>
     /// <param name="userId">The user ID of the user that the item belongs to.</param>
-    public async Task CreateItemAsync(string accessToken, string userId)
+    /// <param name="institutionName">The institution name</param>
+    public async Task CreateItemAsync(string accessToken, string userId, string institutionName)
     {
         await context.Items.AddAsync(new Item()
         {
             AccessToken = accessToken,
-            UserId = userId
+            UserId = userId,
+            InstitutionName = institutionName
         });
         
         await context.SaveChangesAsync();
@@ -83,11 +85,14 @@ public class ItemsService(
                 {
                     AccessToken = item.AccessToken,
                     Count = 500,
-                    Cursor = item.Cursor
+                    Cursor = item.Cursor == null ? "" : item.Cursor
                 });
 
-                item.Cursor = transactions.NextCursor;
-                item.LastFetched = DateTime.Now;
+                Console.WriteLine(item);
+                
+                item.Cursor = transactions.NextCursor == "" ? null : transactions.NextCursor;
+                item.LastFetched =  item.Cursor == null ? null : DateTime.Now;
+                item.TransactionCount += transactions.Added.Count; 
                 await context.SaveChangesAsync();
 
                 logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",

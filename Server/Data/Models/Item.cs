@@ -36,8 +36,19 @@ public class Item
     //<summary>
     //<para>The time of the most recent sync for this Item</para>
     //</summary>
-    public DateTimeOffset? LastFetched { get; set; } = null;
-
+    public DateTimeOffset? LastFetched { get; set; }
+    
+    /// <summary>
+    /// <para>The Institution Name</para>
+    /// </summary>
+    [Column(TypeName = "varchar(255)")]
+    public required string InstitutionName { get; init; }
+    
+    /// <summary>
+    /// <para>The Institution Name</para>
+    /// </summary>
+    public int TransactionCount { get; set; }
+    
     /// <summary>
     /// <para>Navigation property for Accounts associated with this Item</para>
     /// </summary>

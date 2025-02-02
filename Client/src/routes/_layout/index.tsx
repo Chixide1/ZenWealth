@@ -4,7 +4,7 @@ import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area.tsx";
 import {TransactionsCard} from "@/components/features/transactions/TransactionsCard.tsx";
 import {BudgetLimitCard} from "@/components/features/budgets/BudgetLimitCard.tsx";
 import {cn} from "@/lib/utils.ts";
-import {accountsAtom, transactionsAtom} from "@/lib/atoms.ts";
+import {accountsAtom, transactionsAtom, transactionsPaginationAtom} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
 import {MonthlyComparisonLineGraph} from "@/components/features/accounts/MonthlyComparisonLineGraph.tsx";
 import TopExpenseCategoriesCard, { GaugeProps } from "@/components/features/transactions/TopExpenseCategoriesCard.tsx";
@@ -15,8 +15,11 @@ export const Route = createFileRoute('/_layout/')({
 })
 
 function DashboardPage() {
-    const [{data: transactions}] = useAtom(transactionsAtom);
+    const [{data: transactionsData}] = useAtom(transactionsAtom);
     const [{data: accounts}] = useAtom(accountsAtom);
+    const [pagination] = useAtom(transactionsPaginationAtom)
+    
+    const transactions = transactionsData?.pages[pagination.pageIndex];
     
     const MonthlySummaryData = [
         { month: "Jan", income: 4200, expenses: 2800 },
@@ -64,7 +67,7 @@ function DashboardPage() {
           </AccountSummarySection>
           <MonthlyComparisonLineGraph data={MonthlySummaryData} className="col-span-full md:col-span-7"/>
           <TransactionsCard
-              transactions={transactions?.slice(0,11) ?? []}
+              transactionsData={transactions}
               title="Recent Transactions"
               className="col-span-full md:col-span-5 row-span-2" 
           />

@@ -3,16 +3,16 @@ import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {cn, currencyParser} from "@/lib/utils.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.tsx";
-import {Transaction} from "@/types.ts";
+import {TransactionData} from "@/types.ts";
 
 type TransactionsCardProps = {
     className?: string,
     title: string,
     allFeatures?: boolean,
-    transactions: Transaction[]
+    transactionsData: TransactionData | undefined
 }
 
-export function TransactionsCard({className, title, transactions, allFeatures = false}: TransactionsCardProps) {
+export function TransactionsCard({className, title, transactionsData, allFeatures = false}: TransactionsCardProps) {
     const dateParser = new Intl.DateTimeFormat('en-GB', {
         dateStyle: 'medium',
     })
@@ -21,6 +21,8 @@ export function TransactionsCard({className, title, transactions, allFeatures = 
         timeStyle: 'short',
         hour12: true
     })
+    
+    const transactions = transactionsData?.transactions ?? [];
     
     return (
         <Card className={cn("", className)}>

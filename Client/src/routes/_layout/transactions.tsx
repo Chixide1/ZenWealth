@@ -14,13 +14,15 @@ function TransactionsPage() {
   const [{data, isLoading}] = useAtom(transactionsAtom);
   const [pagination] = useAtom(transactionsPaginationAtom)
   const isMobile = useIsMobile();
-  console.log(data)
-
+  // console.log(data)
+  
+  const transactions = data?.pages[pagination.pageIndex];
+  
   return (
       <div className="w-dvw px-3 md:px-4 pt-2 pb-6">
           {isMobile ?
               <TransactionsCard
-                  transactions={data?.pages[pagination.pageIndex] ?? []}
+                  transactionsData={transactions}
                   className=""
                   title="Transactions History"
                   allFeatures={true}
@@ -29,7 +31,7 @@ function TransactionsPage() {
               <TransactionsTable
                 className="animate-in slide-in-from-bottom-1/4 duration-300"
                 columns={transactionColumns}
-                data={data?.pages[pagination.pageIndex] ?? []}
+                data={transactions}
                 isLoading={isLoading}
               />
           }

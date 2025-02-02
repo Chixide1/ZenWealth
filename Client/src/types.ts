@@ -14,6 +14,12 @@
     website?: string,
 }
 
+export type TransactionData = {
+    transactions: Transaction[],
+    nextCursor: number | null,
+    count: number
+}
+
 export type Account = {
     id: number,
     currentBalance: number,

@@ -5,7 +5,7 @@ namespace Server.Data.Services;
 
 public interface IItemsService
 {
-    Task CreateItemAsync(string accessToken, string userId);
+    Task CreateItemAsync(string accessToken, string userId, string institutionName);
     
     Task<bool> CheckItemExistsAsync(string userId);
     
@@ -22,5 +22,7 @@ public interface IAccountsService
 public interface ITransactionsService
 {
     Task<List<TransactionDto>> GetUserTransactionsAsync(string userId, int cursor = 1, int pageSize = 10);
+    
+    Task<List<MonthlyExpenditure>> MonthlyIncomeAndOutcome(string userId);
 }
 

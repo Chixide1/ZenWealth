@@ -1,4 +1,4 @@
-﻿import { Account, Transaction } from "@/types.ts";
+﻿import {Account, TransactionData} from "@/types.ts";
 import { atomWithQuery, atomWithInfiniteQuery } from 'jotai-tanstack-query';
 import api from "@/lib/api.ts";
 import { AxiosError } from "axios";
@@ -23,15 +23,20 @@ export const accountsAtom = atomWithQuery(() => ({
 export const transactionsAtom = atomWithInfiniteQuery(() => ({
     queryKey: ['transactions'],
     queryFn: async ({pageParam}) => {
-        const response = await api<Transaction[]>("/transactions", { 
-            params: { cursor: pageParam } 
+        const response = await api<TransactionData>("/transactions", { 
+            params: { cursor: pageParam as number } 
         })
-            .catch((e: AxiosError<Transaction[]>) => console.error(e));
+            .catch((e: AxiosError<TransactionData>) => console.error(e));
         
-        return response ? response.data : [];
+        return response ? response.data : {
+            transactions: [],
+            nextCursor: null,
+            previousCursor: null,
+            count: 0 
+        };
     },
-    getNextPageParam: (lastPage: Transaction[]) => {
-        return lastPage.slice(-1)[0].id;
+    getNextPageParam: (lastPage: TransactionData) => {
+        return lastPage.nextCursor;
     },
     initialPageParam: 1,
     placeholderData: (previousData) => previousData,
