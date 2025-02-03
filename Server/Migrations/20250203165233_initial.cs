@@ -219,13 +219,13 @@ namespace Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
                     TransactionId = table.Column<string>(type: "varchar(100)", nullable: false),
                     AccountId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     IsoCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
                     UnofficialCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
-                    Date = table.Column<DateOnly>(type: "date", nullable: true),
                     Name = table.Column<string>(type: "varchar(255)", nullable: true),
                     MerchantName = table.Column<string>(type: "varchar(255)", nullable: true),
                     LogoUrl = table.Column<string>(type: "varchar(255)", nullable: true),
@@ -238,7 +238,8 @@ namespace Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.PrimaryKey("PK_Transactions", x => new { x.Date, x.Id })
+                        .Annotation("SqlServer:Clustered", false);
                     table.ForeignKey(
                         name: "FK_Transactions_Accounts_AccountId",
                         column: x => x.AccountId,
@@ -310,6 +311,13 @@ namespace Server.Migrations
                 name: "IX_Transactions_AccountId",
                 table: "Transactions",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_Date_Id",
+                table: "Transactions",
+                columns: new[] { "Date", "Id" },
+                descending: new[] { true, false })
+                .Annotation("SqlServer:Clustered", true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_UserId",

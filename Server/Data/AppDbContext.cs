@@ -8,6 +8,20 @@ namespace Server.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options)
     : IdentityDbContext<User>(options)
 {
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Transaction>()
+            .HasKey(t => new { t.Date, t.Id })
+            .IsClustered(false);
+        
+        modelBuilder.Entity<Transaction>()
+            .HasIndex(t => new {t.Date, t.Id})
+            .IsDescending([true, false])
+            .IsClustered();
+        
+        base.OnModelCreating(modelBuilder);
+    }
+    
     public DbSet<Item> Items { get; set; }
     
     public DbSet<Account> Accounts { get; set; }

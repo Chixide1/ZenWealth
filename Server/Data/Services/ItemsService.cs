@@ -65,7 +65,7 @@ public class ItemsService(
             .Include(u => u.Transactions)
             .SingleAsync(u => u.Id == userId);
 
-        logger.LogInformation("User {UserId} found", userId);
+        logger.LogInformation("User {UserId} found for Item updating", userId);
 
         var items = user.Items.ToList();
 
@@ -87,8 +87,6 @@ public class ItemsService(
                     Count = 500,
                     Cursor = item.Cursor == null ? "" : item.Cursor
                 });
-
-                Console.WriteLine(item);
                 
                 item.Cursor = transactions.NextCursor == "" ? null : transactions.NextCursor;
                 item.LastFetched =  item.Cursor == null ? null : DateTime.Now;
@@ -129,7 +127,9 @@ public class ItemsService(
                     await context.SaveChangesAsync();
                 }
 
-                foreach (var transaction in transactions.Added)
+                var sortedTransactions = transactions.Added.OrderBy(t => t.Date);
+
+                foreach (var transaction in sortedTransactions)
                 {
                     if (context.Transactions.Any(t => t.TransactionId == transaction.TransactionId))
                     {

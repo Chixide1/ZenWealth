@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250201154315_initial")]
+    [Migration("20250203165233_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -246,6 +246,9 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Data.Models.Transaction", b =>
                 {
+                    b.Property<DateOnly?>("Date")
+                        .HasColumnType("date");
+
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
@@ -257,9 +260,6 @@ namespace Server.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
-
-                    b.Property<DateOnly?>("Date")
-                        .HasColumnType("date");
 
                     b.Property<DateTimeOffset?>("Datetime")
                         .HasColumnType("datetimeoffset");
@@ -301,11 +301,18 @@ namespace Server.Migrations
                     b.Property<string>("Website")
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Date", "Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Date", "Id"), false);
 
                     b.HasIndex("AccountId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("Date", "Id")
+                        .IsDescending(true, false);
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Date", "Id"));
 
                     b.ToTable("Transactions");
                 });

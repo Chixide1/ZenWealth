@@ -243,6 +243,9 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Data.Models.Transaction", b =>
                 {
+                    b.Property<DateOnly?>("Date")
+                        .HasColumnType("date");
+
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
@@ -254,9 +257,6 @@ namespace Server.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
-
-                    b.Property<DateOnly?>("Date")
-                        .HasColumnType("date");
 
                     b.Property<DateTimeOffset?>("Datetime")
                         .HasColumnType("datetimeoffset");
@@ -298,13 +298,18 @@ namespace Server.Migrations
                     b.Property<string>("Website")
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Date", "Id");
+
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Date", "Id"), false);
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("Date");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("Date", "Id")
+                        .IsDescending(true, false);
+
+                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Date", "Id"));
 
                     b.ToTable("Transactions");
                 });
