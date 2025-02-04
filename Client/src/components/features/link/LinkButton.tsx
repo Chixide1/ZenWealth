@@ -4,6 +4,7 @@ import { Button, type ButtonProps } from "@/components/ui/button"
 import { cn } from "@/lib/utils.ts"
 import api from "@/lib/api.ts"
 import { queryClient } from "@/main.tsx"
+import Loading from "@/components/shared/Loading.tsx";
 
 type LinkButtonProps = ButtonProps & {
     className?: string
@@ -40,9 +41,12 @@ export function LinkButton({ children, className, ...props }: LinkButtonProps) {
             onClick={() => open()}
             className={cn("rounded-full flex items-center justify-center", className)}
             variant={"secondary"}
+            disabled={!linkToken}
             {...props}
         >
-            {children}
+            {!linkToken ?
+                <Loading className="text-black" /> :
+                children}
         </Button>
     )
 }

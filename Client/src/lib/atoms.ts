@@ -23,19 +23,19 @@ export const transactionsAtom = atomWithInfiniteQuery(() => ({
     queryKey: ['transactions'],
     queryFn: async ({pageParam}) => {
         const response = await api<TransactionData>("/transactions", { 
-            params: { cursor: pageParam as number } 
+            params: { id: pageParam.id, date: pageParam.date } 
         })
             .catch((e: AxiosError<TransactionData>) => console.error(e));
         
         return response ? response.data : {
             transactions: [],
             nextCursor: null,
-            count: 0 
+            nextDate: new Date(),
         };
     },
     getNextPageParam: (lastPage: TransactionData) => {
-        return lastPage.nextCursor;
+        return {id: lastPage.nextCursor, date: lastPage.nextDate};
     },
-    initialPageParam: 1,
+    initialPageParam: {id: 0, date: null},
     placeholderData: (previousData) => previousData,
 }));

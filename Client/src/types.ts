@@ -17,7 +17,7 @@
 export type TransactionData = {
     transactions: Transaction[],
     nextCursor: number | null,
-    count: number
+    nextDate: Date | null
 }
 
 export type Account = {

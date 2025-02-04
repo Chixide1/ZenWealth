@@ -11,7 +11,7 @@ export function LinkStart() {
             </CardHeader>
             <CardContent className={"rounded mb-4"}>
                 <LinkButton className="rounded-full gap-1 ml-auto" size="lg">
-                    <Plus />
+                    {<Plus/>}
                     <span className="">Add Account</span>
                 </LinkButton>
             </CardContent>

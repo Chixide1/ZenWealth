@@ -27,9 +27,9 @@ public class TransactionsService(
     /// <param name="pageSize">The amount of results returned</param>
     /// <param name="id"></param>
     /// <returns>A task representing the asynchronous operation, containing a list of stripped transactions for the user.</returns>
-    public async Task<List<TransactionDto>> GetTransactionsAsync(string userId, int id, DateOnly date = new DateOnly(), int pageSize = 10)
+    public async Task<List<TransactionDto>> GetTransactionsAsync(string userId, int id, DateOnly date, int pageSize)
     {
-        if (id == 0 || pageSize < 1)
+        if (id == 0)
         {
             var startTransactions = await context.Transactions
                 .FromSql(
