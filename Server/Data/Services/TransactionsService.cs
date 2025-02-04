@@ -104,30 +104,27 @@ public class TransactionsService(
     {
         var results = await context.Database.SqlQuery<MonthlySummary>(
             $"""
-             SELECT MonthName, Income, Expenditure
+             SELECT
+                 MonthName,
+                 Income,
+                 Expenditure
              FROM (
-                 SELECT 
-                     DATENAME(MONTH, Date) AS MonthName,
-                     SUM(IIF(Amount < 0, Amount, 0)) AS Income,
-                     SUM(IIF(Amount > 0, Amount, 0) ) AS Expenditure
-                 FROM Transactions
-                 WHERE  UserId = {userId} AND Date > DATEADD(Year, -1, GETDATE())
-                 GROUP BY DATENAME(MONTH, Date)
-                  ) as data
-             ORDER BY CASE
-                 WHEN MonthName = 'January' THEN 1
-                 WHEN MonthName = 'February' THEN 2
-                 WHEN MonthName = 'March' THEN 3
-                 WHEN MonthName = 'April' THEN 4
-                 WHEN MonthName = 'May' THEN 5
-                 WHEN MonthName = 'June' THEN 6
-                 WHEN MonthName = 'July' THEN 7
-                 WHEN MonthName = 'August' THEN 8
-                 WHEN MonthName = 'September' THEN 9
-                 WHEN MonthName = 'October' THEN 10
-                 WHEN MonthName = 'November' THEN 11
-                 WHEN MonthName = 'December' THEN 12
-                 END;
+                      SELECT
+                          DATENAME(MONTH, Date) AS MonthName,
+                          YEAR(Date) AS Year,  -- Include the year for proper ordering
+                          MONTH(Date) AS MonthNumber,  -- Include the month number for proper ordering
+                          SUM(IIF(Amount < 0, Amount, 0)) AS Income,
+                          SUM(IIF(Amount > 0, Amount, 0)) AS Expenditure
+                      FROM Transactions
+                      WHERE Date > DATEADD(Year, -1, GETDATE())  -- Filter for the last 12 months
+                      GROUP BY
+                          DATENAME(MONTH, Date),
+                          YEAR(Date),
+                          MONTH(Date)  -- Group by year and month number as well
+                  ) AS data
+             ORDER BY
+                 Year,  -- Order by year (most recent first)
+                 MonthNumber; 
              """
         ).ToListAsync();
 
