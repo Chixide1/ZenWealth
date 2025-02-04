@@ -307,7 +307,7 @@ namespace Server.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex("Date", "Id")
-                        .IsDescending(true, false);
+                        .IsDescending();
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Date", "Id"));
 

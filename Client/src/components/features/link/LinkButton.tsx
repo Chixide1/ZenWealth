@@ -25,9 +25,10 @@ export function LinkButton({ children, className, ...props }: LinkButtonProps) {
     const { open } = usePlaidLink({
         token: linkToken,
         onSuccess: async (publicToken: string, metadata) => {
-            await api.post("/Link", { publicToken: publicToken, institutionName: metadata.institution?.name })
-            await queryClient.refetchQueries()
-            location.reload()
+            await api.post("/Link", { publicToken: publicToken, institutionName: metadata.institution?.name });
+            await api.get("/Transactions/Sync")
+            await queryClient.refetchQueries();
+            location.reload();
         },
         onExit: useCallback<PlaidLinkOnExit>(async (error: PlaidLinkError | null) => {
             console.debug(error)

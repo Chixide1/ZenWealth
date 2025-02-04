@@ -158,7 +158,7 @@ public class ItemsService(
                         UserId = user.Id,
                         Name = transaction.Name,
                         Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
-                        Date = transaction.Date,
+                        Date = transaction.Date ?? new DateOnly(),
                         Datetime = transaction.Datetime,
                         Website = transaction.Website,
                         PersonalFinanceCategory = transaction.PersonalFinanceCategory?.Primary,

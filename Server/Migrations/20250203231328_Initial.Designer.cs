@@ -12,8 +12,8 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250203165233_initial")]
-    partial class initial
+    [Migration("20250203231328_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -310,7 +310,7 @@ namespace Server.Migrations
                     b.HasIndex("UserId");
 
                     b.HasIndex("Date", "Id")
-                        .IsDescending(true, false);
+                        .IsDescending();
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Date", "Id"));
 

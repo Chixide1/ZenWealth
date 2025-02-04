@@ -53,13 +53,13 @@ function DashboardPage() {
           <AccountSummarySection className="col-span-full">
               <AccountSummaryCard
                   dataTitle="Income"
-                  amount={monthlySummaryData ? monthlySummaryData[0].income : 0}
-                  previousAmount={monthlySummaryData ? monthlySummaryData[2].income : 0}
+                  amount={monthlySummaryData?.[0]?.income ?? 0}
+                  previousAmount={monthlySummaryData?.[2]?.income ?? 0}
               />
               <AccountSummaryCard
                   dataTitle="Expenditure"
-                  amount={monthlySummaryData ? monthlySummaryData[0].expenditure : 0}
-                  previousAmount={monthlySummaryData ? monthlySummaryData[1].expenditure : 0}
+                  amount={monthlySummaryData?.[0]?.expenditure ?? 0}
+                  previousAmount={ monthlySummaryData?.[1]?.expenditure ?? 0}
                   invert={true}
               />
               <AccountSummaryCard dataTitle="Savings" amount={500} previousAmount={627}/>

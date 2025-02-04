@@ -32,7 +32,7 @@ public class TransactionDto
 	/// <summary>
 	/// <para>For pending transactions, the date that the transaction occurred; for posted transactions, the date that the transaction posted. Both dates are returned in an <a href="https://wikipedia.org/wiki/ISO_8601">ISO 8601</a> format ( <c>YYYY-MM-DD</c> ). To receive information about the date that a posted transaction was initiated, see the <c>authorized_date</c> field.</para>
 	/// </summary>
-	public DateOnly? Date { get; init; }
+	public DateOnly Date { get; init; }
 
 	/// <summary>
 	/// <para>The merchant name or transaction description. </para>

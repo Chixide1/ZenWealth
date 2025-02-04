@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Server.Data.Models;
 
 public class Transaction
-
 {
 	/// <summary>
 	/// <para>Unique ID for each Transaction</para>
@@ -16,7 +15,7 @@ public class Transaction
 	/// <summary>
 	/// <para>For pending transactions, the date that the transaction occurred; for posted transactions, the date that the transaction posted. Both dates are returned in an <a href="https://wikipedia.org/wiki/ISO_8601">ISO 8601</a> format ( <c>YYYY-MM-DD</c> ). To receive information about the date that a posted transaction was initiated, see the <c>authorized_date</c> field.</para>
 	/// </summary>
-	public required DateOnly? Date { get; init; }
+	public required DateOnly Date { get; init; }
 	
 	/// <summary>
 	/// <para>The unique ID of the transaction. Like all Plaid identifiers, the <c>transaction_id</c> is case sensitive.</para>

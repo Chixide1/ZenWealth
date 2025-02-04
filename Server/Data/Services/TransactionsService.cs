@@ -22,13 +22,57 @@ public class TransactionsService(
     /// Asynchronously retrieves all transactions for a specified user and returns them as a list of stripped transactions.
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
-    /// <param name="cursor">Used for pagination</param>
+    /// <param name="id">Used for pagination</param>
+    /// <param name="date"></param>
     /// <param name="pageSize">The amount of results returned</param>
+    /// <param name="id"></param>
     /// <returns>A task representing the asynchronous operation, containing a list of stripped transactions for the user.</returns>
-    public async Task<List<TransactionDto>> GetTransactionsAsync(string userId, int cursor = 1, int pageSize = 10)
+    public async Task<List<TransactionDto>> GetTransactionsAsync(string userId, int id, DateOnly date = new DateOnly(), int pageSize = 10)
     {
+        if (id == 0 || pageSize < 1)
+        {
+            var startTransactions = await context.Transactions
+                .FromSql(
+                    $"""
+                     select *
+                     from Transactions
+                     where UserId = {userId}
+                     order by Date desc
+                     offset 0 rows fetch next {11} rows only
+                     """
+                )
+                .Select(t => new TransactionDto()
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    PaymentChannel = t.PaymentChannel,
+                    AccountId = t.AccountId,
+                    Amount = t.Amount,
+                    Date = t.Date,
+                    Datetime = t.Datetime,
+                    IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
+                    UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
+                    PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+                    MerchantName = t.MerchantName,
+                    LogoUrl = t.LogoUrl,
+                    PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+                    TransactionCode = t.TransactionCode
+                })
+                .ToListAsync();
+
+            return startTransactions;
+        }
+        
         var transactions = await context.Transactions
-            .Where(t => t.UserId == userId && t.Id >= cursor)
+            .FromSql(
+                $"""
+                 select *
+                 from Transactions
+                 where Date <= {date} and id <= {id} and UserId = {userId}
+                 order by Date desc
+                 offset 0 rows fetch next {pageSize + 1} rows only
+                 """
+                )
             .Select(t => new TransactionDto()
             {
                 Id = t.Id,
@@ -46,11 +90,7 @@ public class TransactionsService(
                 PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
                 TransactionCode = t.TransactionCode
             })
-            .Take(pageSize + 1)
             .ToListAsync();
-
-        logger.LogInformation("Retrieved {TransactionCount} transactions for user {UserId}", transactions.Count,
-            userId);
 
         return transactions;
     }
@@ -71,7 +111,7 @@ public class TransactionsService(
                      SUM(IIF(Amount < 0, Amount, 0)) AS Income,
                      SUM(IIF(Amount > 0, Amount, 0) ) AS Expenditure
                  FROM Transactions
-                 WHERE  UserId = '4f927d76-82d7-4c01-97bd-03600c99818f' AND Date > DATEADD(Year, -1, GETDATE())
+                 WHERE  UserId = {userId} AND Date > DATEADD(Year, -1, GETDATE())
                  GROUP BY DATENAME(MONTH, Date)
                   ) as data
              ORDER BY CASE

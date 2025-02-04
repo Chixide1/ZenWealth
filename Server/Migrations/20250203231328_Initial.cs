@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Server.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -316,7 +316,7 @@ namespace Server.Migrations
                 name: "IX_Transactions_Date_Id",
                 table: "Transactions",
                 columns: new[] { "Date", "Id" },
-                descending: new[] { true, false })
+                descending: [true, true])
                 .Annotation("SqlServer:Clustered", true);
 
             migrationBuilder.CreateIndex(
