@@ -9,6 +9,7 @@ import { Provider } from 'jotai'
 import { queryClientAtom } from 'jotai-tanstack-query'
 import { useHydrateAtoms } from 'jotai/utils'
 import { persistQueryClient} from '@tanstack/react-query-persist-client'
+import { StrictMode } from 'react';
 
 // Set up a Router instance
 export const router = createRouter({
@@ -54,12 +55,14 @@ const HydrateAtoms = ({ children }: any) => {
 }
 
 root.render(
-    <QueryClientProvider client={queryClient}>
-        <Provider>
-            <HydrateAtoms>
-                <RouterProvider router={router} />
-            </HydrateAtoms>
-        </Provider>
-    </QueryClientProvider>
+    <StrictMode>
+        <QueryClientProvider client={queryClient}>
+            <Provider>
+                <HydrateAtoms>
+                    <RouterProvider router={router} />
+                </HydrateAtoms>
+            </Provider>
+        </QueryClientProvider>
+    </StrictMode>
 )
 
