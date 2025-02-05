@@ -12,7 +12,7 @@ type IncomeOutcomeLineGraphProps = {
     data: MonthlySummary[]
 }
 
-export function MonthlyComparisonLineGraph({ className, data }: IncomeOutcomeLineGraphProps) {
+export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGraphProps) {
     const yearlyExpenditure = data.reduce((acc, value) => acc + value.expenditure, 0)
     const isMobile = useIsMobile()
 
