@@ -19,11 +19,16 @@ export const accountsAtom = atomWithQuery(() => ({
     },
 }));
 
+type TransactionRequest = {
+    cursor: number | null,
+    date: Date | null,
+}
+
 export const transactionsAtom = atomWithInfiniteQuery(() => ({
     queryKey: ['transactions'],
     queryFn: async ({pageParam}) => {
         const response = await api<TransactionData>("/transactions", { 
-            params: { id: pageParam.id, date: pageParam.date } 
+            params: { cursor: pageParam.cursor, date: pageParam.date } 
         })
             .catch((e: AxiosError<TransactionData>) => console.error(e));
         
@@ -33,9 +38,9 @@ export const transactionsAtom = atomWithInfiniteQuery(() => ({
             nextDate: new Date(),
         };
     },
-    getNextPageParam: (lastPage: TransactionData) => {
-        return {id: lastPage.nextCursor, date: lastPage.nextDate};
+    getNextPageParam: (lastPage: TransactionData): TransactionRequest => {
+        return {cursor: lastPage.nextCursor, date: lastPage.nextDate};
     },
-    initialPageParam: {id: 0, date: null},
+    initialPageParam: {cursor: null, date: null},
     placeholderData: (previousData) => previousData,
 }));

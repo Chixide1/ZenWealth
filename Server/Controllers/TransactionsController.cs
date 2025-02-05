@@ -18,7 +18,7 @@ public class TransactionsController(
 {
     [HttpGet("[controller]")]
     [ProducesResponseType(typeof(Responses.GetAllUserTransactionsResponse), StatusCodes.Status200OK )]
-    public async Task<IActionResult> GetAllUserTransactions(int id = 0, DateOnly date = new DateOnly(), int pageSize = 10)
+    public async Task<IActionResult> GetAllUserTransactions(int cursor = 0, DateOnly date = new DateOnly(), int pageSize = 10)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -36,7 +36,7 @@ public class TransactionsController(
 
         var transactions = await transactionsService.GetTransactionsAsync(
             user.Id,
-            id,
+            cursor,
             date,
             pageSize
         );
@@ -60,8 +60,8 @@ public class TransactionsController(
             return Unauthorized();
         }
 
-        await itemsService.UpdateItemsAsync(user.Id);
+        var updatedCount = await itemsService.UpdateItemsAsync(user.Id);
         
-        return Ok();
+        return Ok(new { Message = $"{updatedCount} transactions added" });
     }
 }

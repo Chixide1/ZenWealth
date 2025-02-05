@@ -32,7 +32,7 @@ export type Account = {
 }
 
 export type MonthlySummary = {
-    monthName: string,
+    month: string,
     income: number,
     expenditure: number,
 }

@@ -5,11 +5,11 @@ namespace Server.Data.Services;
 
 public interface IItemsService
 {
-    Task CreateItemAsync(string accessToken, string userId, string institutionName);
+    void CreateItemAsync(string accessToken, string userId, string institutionName);
     
     Task<bool> CheckItemExistsAsync(string userId);
     
-    Task UpdateItemsAsync(string userId);
+    Task<int> UpdateItemsAsync(string userId);
 }
 
 public interface IAccountsService

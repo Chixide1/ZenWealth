@@ -35,7 +35,7 @@ export function MonthlyComparisonLineGraph({ className, data }: IncomeOutcomeLin
                         }}
                     >
                         <XAxis
-                            dataKey="monthName"
+                            dataKey="month"
                             interval={0}
                         />
                         <ChartTooltip

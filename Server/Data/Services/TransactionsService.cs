@@ -105,26 +105,13 @@ public class TransactionsService(
         var results = await context.Database.SqlQuery<MonthlySummary>(
             $"""
              SELECT
-                 MonthName,
-                 Income,
-                 Expenditure
-             FROM (
-                      SELECT
-                          DATENAME(MONTH, Date) AS MonthName,
-                          YEAR(Date) AS Year,  -- Include the year for proper ordering
-                          MONTH(Date) AS MonthNumber,  -- Include the month number for proper ordering
-                          SUM(IIF(Amount < 0, Amount, 0)) AS Income,
-                          SUM(IIF(Amount > 0, Amount, 0)) AS Expenditure
-                      FROM Transactions
-                      WHERE Date > DATEADD(Year, -1, GETDATE())  -- Filter for the last 12 months
-                      GROUP BY
-                          DATENAME(MONTH, Date),
-                          YEAR(Date),
-                          MONTH(Date)  -- Group by year and month number as well
-                  ) AS data
-             ORDER BY
-                 Year,  -- Order by year (most recent first)
-                 MonthNumber; 
+                 DATENAME(Month, Date) as Month,
+                 SUM(IIF(Amount < 0, Amount, 0)) AS Income,
+                 SUM(IIF(Amount > 0, Amount, 0) ) AS Expenditure
+             FROM Transactions
+             WHERE UserId = {userId} and Date > DATEADD(Year, -1, GETDATE())
+             GROUP BY Year(Date), MONTH(Date), DATENAME(Month, Date)
+             order by YEAR(Date), MONTH(Date)
              """
         ).ToListAsync();
 

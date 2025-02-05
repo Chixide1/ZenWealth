@@ -78,9 +78,10 @@ public class LinkController(
             return PlaidApiError(response.Error);
         }
         
-        await itemsService.CreateItemAsync(response.AccessToken, user.Id, data.InstitutionName);
+        itemsService.CreateItemAsync(response.AccessToken, user.Id, data.InstitutionName);
+        var addedTransactions = await itemsService.UpdateItemsAsync(user.Id);
             
-        return Ok(response);
+        return Ok(new { AddedTransactions = addedTransactions });
     }
     
     [ApiExplorerSettings(IgnoreApi = true)]

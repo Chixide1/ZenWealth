@@ -11,7 +11,6 @@ type RecentTransactionsCardProps = {
 }
 
 export function RecentTransactionsCard({className, recentTransactions}: RecentTransactionsCardProps) {
-    console.log(recentTransactions);
     return (
         <Card className={cn("", className)}>
             <CardHeader className="flex items-center justify-between flex-row px-3 md:px-4 pb-2 rounded-t-[inherit]">

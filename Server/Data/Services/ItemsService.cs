@@ -21,16 +21,16 @@ public class ItemsService(
     /// <param name="accessToken">The access token for the item.</param>
     /// <param name="userId">The user ID of the user that the item belongs to.</param>
     /// <param name="institutionName">The institution name</param>
-    public async Task CreateItemAsync(string accessToken, string userId, string institutionName)
+    public void CreateItemAsync(string accessToken, string userId, string institutionName)
     {
-        await context.Items.AddAsync(new Item()
+        context.Items.Add(new Item()
         {
             AccessToken = accessToken,
             UserId = userId,
             InstitutionName = institutionName
         });
         
-        await context.SaveChangesAsync();
+        context.SaveChanges();
         
         logger.LogInformation("Added item for user {UserId}", userId);
     }
@@ -57,13 +57,14 @@ public class ItemsService(
     /// If an item was recently fetched, it will be skipped.
     /// It fetches updates using a cursor to track which updates have already been seen.
     /// </remarks>
-    public async Task UpdateItemsAsync(string userId)
+    public async Task<int> UpdateItemsAsync(string userId)
     {
-        var user = await context.Users
+        var updatedCount = 0;
+        var user = context.Users
             .Include(u => u.Items)
             .Include(u => u.Accounts)
             .Include(u => u.Transactions)
-            .SingleAsync(u => u.Id == userId);
+            .Single(u => u.Id == userId);
 
         logger.LogInformation("User {UserId} found for Item updating", userId);
 
@@ -96,6 +97,8 @@ public class ItemsService(
                 logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
                     transactions.Added.Count, item.Id, userId
                 );
+                
+                updatedCount += transactions.Added.Count;
 
                 foreach (var account in transactions.Accounts)
                 {
@@ -181,5 +184,7 @@ public class ItemsService(
                 hasMore = transactions.HasMore;
             }
         }
+
+        return updatedCount;
     }
 }

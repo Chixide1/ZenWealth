@@ -34,7 +34,7 @@ public class ChartsController(
         
         foreach (var monthlySummary in results)
         {
-            monthlySummary.MonthName = monthlySummary.MonthName.Substring(0, 3);
+            monthlySummary.Month = monthlySummary.Month[..3];
             monthlySummary.Income = Math.Round(Math.Abs(monthlySummary.Income), 2);
             monthlySummary.Expenditure = Math.Round(monthlySummary.Expenditure, 2);
         }

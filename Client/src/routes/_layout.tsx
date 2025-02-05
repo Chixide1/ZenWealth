@@ -26,7 +26,7 @@ export function Layout() {
                 .then((response: AxiosResponse<UserDetailsResponse>) => {
                     setUserDetails(response.data);
                 })
-                .catch(e => console.error("You need to reauthenticate:" + e))
+                .catch(e => console.error("You need to reauthenticate: " + e))
         }
         fetchUserDetails()
     }, []);
