@@ -78,7 +78,10 @@ public class LinkController(
             return PlaidApiError(response.Error);
         }
         
-        itemsService.CreateItemAsync(response.AccessToken, user.Id, data.InstitutionName);
+        itemsService.CreateItem(response.AccessToken, user.Id, data.InstitutionName);
+
+        Task.Delay(1000).Wait();
+        
         var addedTransactions = await itemsService.UpdateItemsAsync(user.Id);
             
         return Ok(new { AddedTransactions = addedTransactions });

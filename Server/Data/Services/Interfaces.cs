@@ -5,7 +5,7 @@ namespace Server.Data.Services;
 
 public interface IItemsService
 {
-    void CreateItemAsync(string accessToken, string userId, string institutionName);
+    void CreateItem(string accessToken, string userId, string institutionName);
     
     Task<bool> CheckItemExistsAsync(string userId);
     

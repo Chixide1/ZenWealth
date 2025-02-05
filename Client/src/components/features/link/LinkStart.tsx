@@ -10,7 +10,7 @@ export function LinkStart() {
                 <CardDescription className={"text-neutral-400 text-lg"}>Securely link your accounts to get started with our financial services.</CardDescription>
             </CardHeader>
             <CardContent className={"rounded mb-4"}>
-                <LinkButton className="rounded-full gap-1 ml-auto" size="lg">
+                <LinkButton className="rounded-full gap-1 ml-auto" size="lg" reload={true}>
                     {<Plus/>}
                     <span className="">Add Account</span>
                 </LinkButton>

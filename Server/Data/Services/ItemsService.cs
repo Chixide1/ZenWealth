@@ -1,4 +1,5 @@
-﻿using Going.Plaid;
+﻿using Azure.Core;
+using Going.Plaid;
 using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Server.Data.Models;
@@ -21,7 +22,7 @@ public class ItemsService(
     /// <param name="accessToken">The access token for the item.</param>
     /// <param name="userId">The user ID of the user that the item belongs to.</param>
     /// <param name="institutionName">The institution name</param>
-    public void CreateItemAsync(string accessToken, string userId, string institutionName)
+    public void CreateItem(string accessToken, string userId, string institutionName)
     {
         context.Items.Add(new Item()
         {
@@ -60,18 +61,12 @@ public class ItemsService(
     public async Task<int> UpdateItemsAsync(string userId)
     {
         var updatedCount = 0;
-        var user = context.Users
-            .Include(u => u.Items)
-            .Include(u => u.Accounts)
-            .Include(u => u.Transactions)
-            .Single(u => u.Id == userId);
-
-        logger.LogInformation("User {UserId} found for Item updating", userId);
-
-        var items = user.Items.ToList();
+        var items = context.Items.Where(i => i.UserId == userId).ToList();
 
         foreach (var item in items)
         {
+            logger.LogInformation("updating item {item} for institution {institution} and user {user}", item.Id, item.InstitutionName, userId);
+            
             if (item.LastFetched != null && DateTime.Now.AddDays(-1) < item.LastFetched)
             {
                 logger.LogInformation("Skipping item {ItemId} for user {UserId} as it was recently fetched", item.Id, userId);
@@ -82,17 +77,19 @@ public class ItemsService(
 
             while (hasMore)
             {
-                var transactions = await client.TransactionsSyncAsync(new TransactionsSyncRequest()
+                var request = new TransactionsSyncRequest()
                 {
                     AccessToken = item.AccessToken,
-                    Count = 500,
-                    Cursor = item.Cursor == null ? "" : item.Cursor
-                });
+                    Cursor = item.Cursor
+                };
                 
-                item.Cursor = transactions.NextCursor == "" ? null : transactions.NextCursor;
-                item.LastFetched =  item.Cursor == null ? null : DateTime.Now;
-                item.TransactionCount += transactions.Added.Count; 
-                await context.SaveChangesAsync();
+                var transactions = await client.TransactionsSyncAsync(request);
+                
+                item.Cursor = transactions.NextCursor;
+                item.LastFetched =  string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
+                item.TransactionCount += transactions.Added.Count;
+                hasMore = transactions.HasMore;
+                context.SaveChanges();
 
                 logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
                     transactions.Added.Count, item.Id, userId
@@ -106,7 +103,8 @@ public class ItemsService(
                     {
                         logger.LogInformation(
                             "Skipping account {AccountId} for item {ItemId} and user {UserId} as it already exists",
-                            account.AccountId, item.Id, userId);
+                            account.AccountId, item.Id, userId
+                        );
                         continue;
                     }
 
@@ -114,7 +112,7 @@ public class ItemsService(
                     {
                         AccountId = account.AccountId,
                         ItemId = item.Id,
-                        UserId = user.Id,
+                        UserId = userId,
                         Name = account.Name,
                         Type = account.Type.ToString(),
                         CurrentBalance = (double?)account.Balances.Current ?? 0.00,
@@ -129,7 +127,7 @@ public class ItemsService(
 
                     await context.SaveChangesAsync();
                 }
-
+                
                 var sortedTransactions = transactions.Added.OrderBy(t => t.Date);
 
                 foreach (var transaction in sortedTransactions)
@@ -138,7 +136,8 @@ public class ItemsService(
                     {
                         logger.LogInformation(
                             "Skipping transaction {TransactionId} for item {ItemId} and user {UserId} as it already exists",
-                            transaction.TransactionId, item.Id, userId);
+                            transaction.TransactionId, item.Id, userId
+                        );
                         continue;
                     }
 
@@ -158,7 +157,7 @@ public class ItemsService(
                     {
                         TransactionId = transaction.TransactionId!,
                         AccountId = account.Id,
-                        UserId = user.Id,
+                        UserId = userId,
                         Name = transaction.Name,
                         Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
                         Date = transaction.Date ?? new DateOnly(),
@@ -175,13 +174,13 @@ public class ItemsService(
                             : transaction.TransactionCode.ToString(),
                     });
 
-                    logger.LogInformation("Added transaction {TransactionId} for item {ItemId} and user {UserId}",
-                        transaction.TransactionId, item.Id, userId);
+                    logger.LogInformation(
+                        "Added transaction {TransactionId} for item {ItemId} and user {UserId}",
+                        transaction.TransactionId, item.Id, userId
+                    );
 
                     await context.SaveChangesAsync();
                 }
-
-                hasMore = transactions.HasMore;
             }
         }
 
