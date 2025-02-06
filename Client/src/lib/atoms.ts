@@ -1,4 +1,4 @@
-﻿import {Account, TransactionData} from "@/types.ts";
+﻿import {Account, MonthlySummary, RecentTransactions, TopExpenseCategory, TransactionData} from "@/types.ts";
 import { atomWithQuery, atomWithInfiniteQuery } from 'jotai-tanstack-query';
 import api from "@/lib/api.ts";
 import { AxiosError } from "axios";
@@ -43,4 +43,34 @@ export const transactionsAtom = atomWithInfiniteQuery(() => ({
     },
     initialPageParam: {cursor: null, date: null},
     placeholderData: (previousData) => previousData,
+}));
+
+export const monthlySummaryDataAtom  = atomWithQuery(() => ({
+    queryKey: ['monthlySummary'],
+    queryFn: async () => {
+        const response = await api<MonthlySummary[]>("Charts/MonthlySummary")
+            .catch((e: AxiosError<MonthlySummary[]>) => console.error(e));
+
+        return response ? response.data : [];
+    }
+}));
+
+export const recentTransactionsAtom  = atomWithQuery(() => ({
+    queryKey: ['recentTransactions'],
+    queryFn: async () => {
+        const response = await api<RecentTransactions>("Charts/RecentTransactions")
+            .catch((e: AxiosError<RecentTransactions>) => console.error(e));
+
+        return response ? response.data : {all: [], income: [], expenditure: []};
+    }
+}))
+
+export const topExpenseCategoriesAtom  = atomWithQuery(() => ({
+    queryKey: ['topExpenseCategories'],
+    queryFn: async () => {
+        const response = await api<TopExpenseCategory[]>("Charts/TopExpenseCategories")
+            .catch((e: AxiosError<TopExpenseCategory>) => console.error(e));
+
+        return response ? response.data : [];
+    }
 }));

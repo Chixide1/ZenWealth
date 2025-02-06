@@ -28,11 +28,12 @@ export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCateg
 
 function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCategory){
     const [progress, setProgress] = useState(0)
+    const percentage = expenditure / total * 100
 
     useEffect(() => {
         // Simulate a delay before setting the progress
         const timer = setTimeout(() => {
-            setProgress((expenditure / total * 100))
+            setProgress(percentage)
         }, 500)
 
         return () => clearTimeout(timer)
@@ -49,6 +50,7 @@ function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCateg
                         src={iconUrl ?? "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
                     />
                     <span>{category}</span>
+                    <span className="text-neutral-400">{percentage.toFixed(2)}%</span>
                 </div>
                 <p className="ml-auto w-fit text-neutral-400">
                     <span className="text-primary">

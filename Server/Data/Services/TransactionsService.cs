@@ -209,13 +209,13 @@ public class TransactionsService(
     {
         var results = await context.Database.SqlQuery<TopExpenseCategory>(
             $"""
-             select top 3 
+             select top 3
                  PersonalFinanceCategory as Category,
                  PersonalFinanceCategoryIconUrl as IconUrl,
                  Sum(Amount) as Expenditure,
-                 (select SUM(Amount) from Transactions where Date > DATEADD(month, -1, GETDATE())) as Total
+                 (select SUM(Amount) from Transactions where Date > DATEADD(month, -1, GETDATE()) and Amount > 0) as Total
              from Transactions
-             where UserId = {userId} and Date > DATEADD(month, -1, GETDATE())
+             where UserId={userId} and Date > DATEADD(month, -1, GETDATE()) and Amount > 0
              group by PersonalFinanceCategory, PersonalFinanceCategoryIconUrl
              order by Expenditure desc
              """

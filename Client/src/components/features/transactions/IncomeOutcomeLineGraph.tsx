@@ -17,7 +17,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
     const isMobile = useIsMobile()
 
     return (
-        <Card className={cn("bg-[hsl(0,0%,10%)] border-neutral-800", className)}>
+        <Card className={cn("bg-[hsl(0,0%,10%)] border border-neutral-800", className)}>
             <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-xl">Income vs Expenses</CardTitle>
