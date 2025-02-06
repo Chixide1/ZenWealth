@@ -32,6 +32,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                             right: isMobile ? 10 : 20,
                             bottom: 5,
                             left: isMobile ? 10 : 20,
+                            top: 5
                         }}
                     >
                         <XAxis
@@ -61,6 +62,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                             }}
                             cursor={{
                                 opacity: 0.1,
+                                // stroke: "red"
                             }}
                         />
                         <Line
@@ -70,8 +72,16 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                             strokeWidth={2}
                             strokeDasharray="5 5"
                             dot={false}
+                            activeDot={{stroke: "none"}}
                         />
-                        <Line type="monotone" dataKey="income" stroke="hsl(var(--tertiary-1))" strokeWidth={2} dot={false} />
+                        <Line
+                            type="monotone"
+                            dataKey="income"
+                            stroke="hsl(var(--tertiary-1))"
+                            strokeWidth={2}
+                            dot={false}
+                            activeDot={{stroke: "none"}}
+                        />
                     </LineChart>
                 </ResponsiveContainer>
             </CardContent>

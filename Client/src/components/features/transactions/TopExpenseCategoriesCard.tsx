@@ -42,21 +42,25 @@ function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCateg
     return (
         <div>
             <div className="flex items-center mb-2">
-                <div className="inline-flex items-center gap-2 w-fit" >
+                <div className="inline-flex items-center gap-2 w-fit max-w-[50%]" >
                     <img
                         width={30}
                         height="100%"
                         alt="an image of the category"
                         src={iconUrl ?? "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
                     />
-                    <span>{category}</span>
-                    <span className="text-neutral-400">{percentage.toFixed(2)}%</span>
+                    <div className="inline-flex flex-col md:flex-row md:gap-2 w-fit" >
+                        <span className="truncate md:whitespace-normal">{category}</span>
+                        <span className="text-neutral-400">{percentage.toFixed(2)}%</span>
+                    </div>
                 </div>
-                <p className="ml-auto w-fit text-neutral-400">
+                <p className="ml-auto w-fit text-end text-neutral-400 max-w-[50%]">
                     <span className="text-primary">
                         {currencyParser.format(expenditure)}
                     </span>
-                    &nbsp;of {currencyParser.format(total)}
+                    <span className="block md:inline">
+                        &nbsp;of {currencyParser.format(total)}
+                    </span>
                 </p>
             </div>
             <Progress

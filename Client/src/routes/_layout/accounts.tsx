@@ -13,7 +13,7 @@ function AccountsPage() {
     
     return (
         <div className="">
-            <NetWorthCard accounts={accounts} className="w-8/12"/>
+            <NetWorthCard accounts={accounts} className="w-full"/>
         </div>
     )
 }
