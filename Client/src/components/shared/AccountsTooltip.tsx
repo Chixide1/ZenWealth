@@ -2,7 +2,12 @@
 import {cn, currencyParser} from "@/lib/utils.ts";
 import { TooltipProps } from "recharts";
 
-export function CustomTooltip({className, active, payload}: TooltipProps<number, string> & {className?: string}) {
+type AccountsTooltipProps = {
+    className?: string,
+    showNegatives?: boolean,
+}
+
+export function AccountsTooltip({className, active, payload, showNegatives = true}: TooltipProps<number, string> & AccountsTooltipProps) {
     if (active) {
         const item = payload?.[0].payload as Account & { fill: string }
         return (
@@ -12,7 +17,7 @@ export function CustomTooltip({className, active, payload}: TooltipProps<number,
                     <div className="backdrop-blur-sm bg-transparent">
                         <p className="font-semibold">{payload?.[0].name}</p>
                         <p className="">
-                            {item.type === "Credit" && "-"}{`${currencyParser.format(payload?.[0].value || 0)}`}
+                            {showNegatives && item.type === "Credit" && "-"}{`${currencyParser.format(payload?.[0].value || 0)}`}
                         </p>
                     </div>
                 </div>

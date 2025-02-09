@@ -17,7 +17,7 @@ export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCateg
                     <CardTitle className="">Top Expense Categories</CardTitle>
                     <ArrowLink to="/transactions" />
             </CardHeader>
-            <CardContent className="space-y-6 pt-4 pb-10 text-sm">
+            <CardContent className="space-y-8 pt-4 pb-10 text-sm">
                 {gaugeData.map((gauge, index) => (
                     <Gauge key={index + "::TopExpenseCategoriesCardGauge"} {...gauge} />
                 ))}
@@ -40,7 +40,7 @@ function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCateg
     }, [])
 
     return (
-        <div>
+        <div className="">
             <div className="flex items-center mb-2">
                 <div className="inline-flex items-center gap-2 w-fit max-w-[50%]" >
                     <img

@@ -4,10 +4,37 @@ import api from "@/lib/api.ts";
 import { AxiosError } from "axios";
 import { atom } from "jotai";
 
+type TransactionRequest = {
+    cursor: number | null,
+    date: Date | null,
+}
+
+type TransactionFilters = {
+    name: string | null,
+    sort: string | null,
+    minAmount: number | null,
+    maxAmount: number | null,
+    beginDate: Date | null,
+    endDate: Date | null,
+    category: string | null,
+}
+
+type TransactionParams = TransactionRequest & TransactionFilters
+
 export const transactionsPaginationAtom = atom({
     pageIndex: 0,
     pageSize: 10,
 });
+
+export const transactionsParamsAtom = atom<TransactionFilters>({
+    name: null,
+    sort: null,
+    minAmount: null,
+    maxAmount: null,
+    beginDate: null,
+    endDate: null,
+    category: null,
+})
 
 export const accountsAtom = atomWithQuery(() => ({
     queryKey: ['accounts'],
@@ -19,16 +46,16 @@ export const accountsAtom = atomWithQuery(() => ({
     },
 }));
 
-type TransactionRequest = {
-    cursor: number | null,
-    date: Date | null,
-}
-
-export const transactionsAtom = atomWithInfiniteQuery(() => ({
-    queryKey: ['transactions'],
+export const transactionsAtom = atomWithInfiniteQuery((get) => ({
+    queryKey: ['transactions', get(transactionsParamsAtom)],
     queryFn: async ({pageParam}) => {
+        const params: TransactionParams = {
+            ...pageParam as TransactionRequest,
+            ...get(transactionsParamsAtom),
+        };
+
         const response = await api<TransactionData>("/transactions", { 
-            params: { cursor: pageParam.cursor, date: pageParam.date } 
+            params: { ...params }
         })
             .catch((e: AxiosError<TransactionData>) => console.error(e));
         
@@ -41,7 +68,7 @@ export const transactionsAtom = atomWithInfiniteQuery(() => ({
     getNextPageParam: (lastPage: TransactionData): TransactionRequest => {
         return {cursor: lastPage.nextCursor, date: lastPage.nextDate};
     },
-    initialPageParam: {cursor: null, date: null},
+    initialPageParam: {cursor: null, date: null,},
     placeholderData: (previousData) => previousData,
 }));
 

@@ -1,6 +1,7 @@
 ﻿using Going.Plaid;
 using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Server.Common;
 using Server.Data.Models;
 
@@ -18,61 +19,76 @@ public class TransactionsService(
     ILogger<TransactionsService> logger
 ) : ITransactionsService
 {
-    /// <summary>
-    /// Asynchronously retrieves all transactions for a specified user and returns them as a list of stripped transactions.
-    /// </summary>
-    /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
-    /// <param name="id">Used for pagination</param>
-    /// <param name="date"></param>
-    /// <param name="pageSize">The amount of results returned</param>
-    /// <param name="id"></param>
-    /// <returns>A task representing the asynchronous operation, containing a list of stripped transactions for the user.</returns>
-    public async Task<List<TransactionDto>> GetTransactionsAsync(string userId, int id, DateOnly date, int pageSize)
+    public async Task<List<TransactionDto>> GetTransactionsAsync(
+        string userId,
+        int id,
+        DateOnly date,
+        int pageSize,
+        string? name = null,
+        int? minAmount = null,
+        int? maxAmount = null,
+        DateOnly? beginDate = null,
+        DateOnly? endDate = null,
+        string? sort = null
+    )
     {
+        var transactions = context.Transactions.AsQueryable();
+        
+        // Initial Query
         if (id == 0)
         {
-            var startTransactions = await context.Transactions
-                .FromSql(
-                    $"""
-                     select *
-                     from Transactions
-                     where UserId = {userId}
-                     order by Date desc
-                     offset 0 rows fetch next {11} rows only
-                     """
-                )
-                .Select(t => new TransactionDto()
-                {
-                    Id = t.Id,
-                    Name = t.Name,
-                    PaymentChannel = t.PaymentChannel,
-                    AccountId = t.AccountId,
-                    Amount = t.Amount,
-                    Date = t.Date,
-                    Datetime = t.Datetime,
-                    IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
-                    UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
-                    PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
-                    MerchantName = t.MerchantName,
-                    LogoUrl = t.LogoUrl,
-                    PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
-                    TransactionCode = t.TransactionCode
-                })
-                .ToListAsync();
+            transactions = transactions
+                .Where(t => t.UserId == userId);
+        }
+        else
+        {
+            if (sort?.ToLower() == "dateasc")
+            {
+                transactions = context.Transactions
+                    .Where(t => t.Date >= date && t.Id >= id && t.UserId == userId);
+            }
+            else
+            {
+                transactions = context.Transactions
+                    .Where(t => t.Date <= date && t.Id <= id && t.UserId == userId);
+            }
+        }
 
-            return startTransactions;
+        // Filters
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            transactions = transactions.Where(t => t.Name.Contains(name));
         }
         
-        var transactions = await context.Transactions
-            .FromSql(
-                $"""
-                 select *
-                 from Transactions
-                 where Date <= {date} and id <= {id} and UserId = {userId}
-                 order by Date desc
-                 offset 0 rows fetch next {pageSize + 1} rows only
-                 """
-                )
+        if (minAmount is not null)
+        {
+            transactions = transactions.Where(t => t.Amount >= minAmount);
+        }
+        
+        if (maxAmount is not null)
+        {
+            transactions = transactions.Where(t => t.Amount <= maxAmount);
+        }
+
+        if (beginDate is not null)
+        {
+            transactions = transactions.Where(t => t.Date >= beginDate);
+        }
+
+        if (endDate is not null)
+        {
+            transactions = transactions.Where(t => t.Date <= endDate);
+        }
+
+        transactions = sort?.ToLower() switch
+        {
+            "dateasc" => transactions.OrderBy(t => t.Date),
+            "amountasc" => transactions.OrderBy(t => t.Amount),
+            "amountdesc" => transactions.OrderByDescending(t => t.Amount),
+            _ => transactions.OrderByDescending(t => t.Date)
+        };
+
+        var query = transactions
             .Select(t => new TransactionDto()
             {
                 Id = t.Id,
@@ -90,9 +106,13 @@ public class TransactionsService(
                 PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
                 TransactionCode = t.TransactionCode
             })
-            .ToListAsync();
-
-        return transactions;
+            .Take(pageSize + 1);
+        
+        logger.LogInformation("Generated SQL is {query}", query.ToQueryString());
+        
+        var results = await query.ToListAsync();
+        
+        return results;
     }
 
     /// <summary>

@@ -1,11 +1,11 @@
-﻿"use client"
-
-import {ColumnDef, createColumnHelper } from "@tanstack/react-table"
+﻿import {ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
 import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
 import DateFilterButton from "@/components/features/transactions/DateFilterButton.tsx";
 import { Transaction } from "@/types";
+import {useAtom } from "jotai"
+import {transactionsParamsAtom} from "@/lib/atoms.ts";
 
 const columnHelper = createColumnHelper<Transaction>()
 
@@ -14,7 +14,6 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
         header: ({column}) => (
             <div className="flex items-center">
                 <span className="capitalize">{column.id}</span>
-                <ColumnSortingButton column={column}/>
             </div>
         ),
         cell: ({row}) => {
@@ -48,7 +47,6 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
         header: ({column}) => (
             <div className="flex items-center">
                 <CategoryFilterButton column={column} />
-                <ColumnSortingButton column={column}/>
             </div>
         ),
         cell: ({row}) => {
@@ -79,7 +77,7 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
         header: ({column}) => (
             <div className="flex items-center">
                 <AmountFilterButton column={column} />
-                <ColumnSortingButton column={column} />
+                <ColumnSortingButton />
             </div>
         ),
         cell: ({row}) => {
@@ -103,12 +101,19 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
     }),
     columnHelper.accessor("date", {
         sortingFn: 'datetime',
-        header: ({column}) => (
-            <div className="flex items-center">
-                <DateFilterButton column={column}/>
-                <ColumnSortingButton column={column}/>
-            </div>
-        ),
+        header: ({column}) => {
+            const [params, setParams] = useAtom(transactionsParamsAtom)
+            return (
+                <div className="flex items-center">
+                    <DateFilterButton column={column}/>
+                    <ColumnSortingButton
+                        onClick={() => {
+                            setParams(params.sort === "DateAsc" ? {...params, sort: null} : {...params, sort: "DateAsc"})
+                        }}
+                    />
+                </div>
+            )
+        },
         cell: ({row}) => {
             const dateTime = new Date(row.original.datetime || row.original.date)
             const formatted = new Intl.DateTimeFormat('en-GB', {

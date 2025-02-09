@@ -2,7 +2,11 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
-import {LinkProps, useLocation, useNavigate } from "@tanstack/react-router";
+import {Link, LinkProps, useLocation, useNavigate } from "@tanstack/react-router";
+import {useIsMobile} from "@/hooks/use-mobile.tsx";
+import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet.tsx";
+import { AlignLeft } from "lucide-react";
+import Logo from "@/components/shared/Logo.tsx";
 
 const Tabs = TabsPrimitive.Root;
 
@@ -114,6 +118,39 @@ export type NavItem = {
 }
 
 export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
+    const isMobile = useIsMobile();
+    const location = useLocation();
+    const [open, setOpen] = React.useState(false);
+    
+    if(isMobile) {
+        return (
+            <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger className="order-first h-full w-auto mr-3">
+                    <AlignLeft className="h-auto w-8"/>
+                </SheetTrigger>
+                <SheetContent side={"left"} className="bg-sidebar border-neutral-800 w-60">
+                    <SheetHeader className="mb-6 pb-4">
+                        <SheetTitle className="">
+                            <Logo />
+                        </SheetTitle>
+                    </SheetHeader>
+                    <nav className="flex flex-col items-center w-full bg-charcoal rounded-2xl divide-neutral-700 divide-dashed divide-y">
+                        {tabs.map(item => (
+                            <Link {...item.url} 
+                                  className="inline-flex items-center ps-5 gap-2 mx-auto py-5 data-[state=active]:text-secondary w-40"
+                                  data-state={`${item.url.to === location.pathname ? "active" : "inactive"}`}
+                                  onClick={() => setOpen(false)}
+                            >
+                                <item.icon />
+                                <span>{item.title}</span>
+                            </Link>
+                        ))}
+                    </nav>
+                </SheetContent>
+            </Sheet>
+        )
+    }
+    
     return (
         <Tabs >
             <TabsList>

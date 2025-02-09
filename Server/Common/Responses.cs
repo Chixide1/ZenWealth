@@ -13,7 +13,6 @@ public abstract class Responses
     public record GetAllUserTransactionsResponse(
         List<TransactionDto> Transactions,
         int? NextCursor,
-        DateOnly NextDate
-        // int Count
+        DateOnly? NextDate
     );
 }

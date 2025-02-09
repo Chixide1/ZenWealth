@@ -17,7 +17,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
     const isMobile = useIsMobile()
 
     return (
-        <Card className={cn("bg-[hsl(0,0%,10%)] border border-neutral-800", className)}>
+        <Card className={cn("bg-offblack border border-neutral-800", className)}>
             <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-xl">Income vs Expenses</CardTitle>
@@ -77,7 +77,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                         <Line
                             type="monotone"
                             dataKey="income"
-                            stroke="hsl(var(--tertiary-1))"
+                            stroke="hsl(var(--tertiary))"
                             strokeWidth={2}
                             dot={false}
                             activeDot={{stroke: "none"}}
@@ -85,7 +85,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                     </LineChart>
                 </ResponsiveContainer>
             </CardContent>
-            <CardFooter className="bg-[#232323] mx-3 mb-3 rounded-2xl p-2 block">
+            <CardFooter className="bg-charcoal mx-3 mb-3 rounded-2xl p-2 block">
                 <div className="inline-flex gap-4 justify-between items-center w-full border-b border-neutral-700 p-2">
                     <div className="inline-flex flex-col md:flex-row md:gap-2 items-center">
                         <span className="text-primary">{currencyParser.format(yearlyExpenditure / data.length)}</span>

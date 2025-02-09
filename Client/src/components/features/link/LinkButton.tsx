@@ -55,7 +55,7 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
             {!linkToken ?
                 <Fragment>
                     <Loading className="text-black" />
-                    <span className="mr-0.5">Fetching</span>
+                    <span className="hidden md:inline mr-0.5">Fetching</span>
                 </Fragment> :
                 children}
         </Button>

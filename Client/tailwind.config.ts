@@ -19,7 +19,7 @@ export default  {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
-  			background: 'hsl(var(--background))',
+  			background: 'hsl(var(--background) / 0.125)',
   			foreground: 'hsl(var(--foreground))',
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
@@ -67,7 +67,13 @@ export default  {
   				ring: 'hsl(var(--sidebar-ring))'
   			},
 			tertiary: {
-				DEFAULT: 'hsl(var(--tertiary-1))',
+				DEFAULT: 'hsl(var(--tertiary))',
+			},
+			offblack : {
+				  DEFAULT: 'hsl(var(--offblack))',
+			},
+			charcoal : {
+				DEFAULT: 'hsl(var(--charcoal))',
 			}
   		},
   		borderRadius: {

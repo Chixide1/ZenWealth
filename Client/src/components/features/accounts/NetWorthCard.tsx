@@ -16,7 +16,7 @@ import {useState} from "react";
 import {assetColors, chartConfig, cn, creditColors, currencyParser} from "@/lib/utils.ts";
 import {Account} from "@/types.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
-import {CustomTooltip} from "@/components/shared/CustomTooltip.tsx";
+import {AccountsTooltip} from "@/components/shared/AccountsTooltip.tsx";
 
 type NetWorthCardProps = {
     accounts: Account[]
@@ -68,7 +68,7 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
                     {accounts?.length !== 0 ? <ChartContainer config={chartConfig}>
                         <PieChart>
                             <ChartTooltip
-                                content={<CustomTooltip/>}
+                                content={<AccountsTooltip/>}
                             />
                             <Pie
                                 data={assetAccounts}
@@ -105,7 +105,7 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
                         </PieChart>
                     </ChartContainer>
                     :
-                    <Skeleton className="w-full h-full bg-primary/[0.125]" />}
+                    <Skeleton className="w-full h-full bg-background" />}
                 </ResponsiveContainer>
                 <ScrollArea className="h-64 md:w-72 w-full pt-5 md:pt-0">
                     <ul className="flex flex-col justify-center gap-2 md:gap-6 w-full md:w-fit pr-6">

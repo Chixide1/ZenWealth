@@ -1,9 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Going.Plaid.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Data.Models;
 
+[Index(nameof(Name))]
+[Index(nameof(Amount))]
+[Index(nameof(MerchantName))]
+[Index(nameof(PersonalFinanceCategory))]
 public class Transaction
 {
 	/// <summary>
@@ -68,7 +73,7 @@ public class Transaction
 	/// <para>If the <c>transactions</c> object was returned by a Transactions endpoint such as <c>/transactions/sync</c> or <c>/transactions/get</c>, this field will always appear. If the <c>transactions</c> object was returned by an Assets endpoint such as <c>/asset_report/get/</c> or <c>/asset_report/pdf/get</c>, this field will only appear in an Asset Report with Insights.</para>
 	/// </summary>
 	[Column(TypeName = "varchar(255)")]
-	public required string? Name { get; init; }
+	public required string Name { get; init; }
 
 	/// <summary>
 	/// <para>The merchant name, as enriched by Plaid from the <c>name</c> field. This is typically a more human-readable version of the merchant counterparty in the transaction. For some bank transactions (such as checks or account transfers) where there is no meaningful merchant name, this value will be <c>null</c>.</para>
