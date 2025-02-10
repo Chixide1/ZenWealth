@@ -1,7 +1,7 @@
-﻿import * as React from 'react'
-import { createLink, LinkComponent } from '@tanstack/react-router'
-import { cn } from '@/lib/utils'
-import {ArrowUpRight } from 'lucide-react'
+﻿import * as React from "react";
+import { createLink, LinkComponent } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+import {ArrowUpRight } from "lucide-react";
 
 type BasicLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     // Add any additional props you want to pass to the anchor element
@@ -16,12 +16,12 @@ const BasicLinkComponent = React.forwardRef<HTMLAnchorElement, BasicLinkProps>(
             >
                 <ArrowUpRight className="h-auto w-4"/>
             </a>
-        )
+        );
     },
-)
+);
 
-const BasicLink = createLink(BasicLinkComponent)
+const BasicLink = createLink(BasicLinkComponent);
 
 export const ArrowLink: LinkComponent<typeof BasicLinkComponent> = (props) => {
-    return <BasicLink preload={'intent'} {...props} />
-}
+    return <BasicLink preload={"intent"} {...props} />;
+};

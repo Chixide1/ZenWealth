@@ -1,4 +1,4 @@
-﻿import { createFileRoute,} from '@tanstack/react-router'
+﻿import { createFileRoute,} from "@tanstack/react-router";
 import {LinkStart} from "@/components/features/link/LinkStart.tsx";
 import { Outlet } from "@tanstack/react-router";
 import { AxiosResponse } from "axios";
@@ -8,9 +8,9 @@ import api from "@/lib/api.ts";
 import AppTopbar from "@/components/shared/AppTopbar.tsx";
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
-export const Route = createFileRoute('/_layout')({
+export const Route = createFileRoute("/_layout")({
     component: Layout,
-})
+});
 
 type UserDetailsResponse = {
     hasItems: boolean | null,
@@ -18,7 +18,7 @@ type UserDetailsResponse = {
 }
 
 export function Layout() {
-    const [userDetails, setUserDetails] = useState<UserDetailsResponse>({hasItems: null, userName: ""})
+    const [userDetails, setUserDetails] = useState<UserDetailsResponse>({hasItems: null, userName: ""});
 
     useEffect(() => {
         async function fetchUserDetails(){
@@ -26,13 +26,13 @@ export function Layout() {
                 .then((response: AxiosResponse<UserDetailsResponse>) => {
                     setUserDetails(response.data);
                 })
-                .catch(e => console.error("You need to reauthenticate: " + e))
+                .catch(e => console.error("You need to reauthenticate: " + e));
         }
-        fetchUserDetails()
+        fetchUserDetails();
     }, []);
 
     if(userDetails.hasItems === null){
-        return <Loading/>
+        return <Loading/>;
     }
 
     if (userDetails.hasItems === false) {
@@ -50,6 +50,6 @@ export function Layout() {
                 <Outlet />
             </ScrollArea>
         </main>
-    )
+    );
 }
 

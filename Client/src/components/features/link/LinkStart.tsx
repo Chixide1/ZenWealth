@@ -16,5 +16,5 @@ export function LinkStart() {
                 </LinkButton>
             </CardContent>
         </Card>
-    )
+    );
 }

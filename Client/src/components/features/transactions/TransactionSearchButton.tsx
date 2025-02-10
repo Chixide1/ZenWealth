@@ -27,5 +27,5 @@ export default function TransactionSearchButton({className, column}: Transaction
                 className="pl-10 border-0 ring-0 shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-none bg-primary/[0.09] h-[2.085rem]"
             />
         </div>
-    )
+    );
 }

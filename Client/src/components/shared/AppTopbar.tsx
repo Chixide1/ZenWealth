@@ -1,9 +1,9 @@
-﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx"
-import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus, ChevronDown, HandCoins } from "lucide-react"
-import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx"
-import { Link, linkOptions } from "@tanstack/react-router"
-import Logo from "./Logo"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx"
+﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx";
+import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus, ChevronDown, HandCoins } from "lucide-react";
+import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx";
+import { Link, linkOptions } from "@tanstack/react-router";
+import Logo from "./Logo";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx";
 
 const items: NavItem[] = [
     {
@@ -46,7 +46,7 @@ const items: NavItem[] = [
         }),
         icon: HandCoins,
     },
-]
+];
 
 export default function AppTopbar({ username }: { username: string }) {
     return (
@@ -67,10 +67,10 @@ export default function AppTopbar({ username }: { username: string }) {
                 </Avatar>
                 <span className="md:inline-flex items-center gap-1 text-sm hidden">
                     {username?.slice(0,1).toUpperCase() + username?.slice(1)}
-                    <ChevronDown className={`w-[1em] h-auto transition-transform duration-300 me-2`}/>
+                    <ChevronDown className={"w-[1em] h-auto transition-transform duration-300 me-2"}/>
                 </span>
             </div>
         </header>
-    )
+    );
 }
 

@@ -1,5 +1,5 @@
 ﻿import {Account, MonthlySummary, RecentTransactions, TopExpenseCategory, TransactionData} from "@/types.ts";
-import { atomWithQuery, atomWithInfiniteQuery } from 'jotai-tanstack-query';
+import { atomWithQuery, atomWithInfiniteQuery } from "jotai-tanstack-query";
 import api from "@/lib/api.ts";
 import { AxiosError } from "axios";
 import { atom } from "jotai";
@@ -42,20 +42,20 @@ export const transactionsParamsAtom = atom<TransactionFilters>({
     beginDate: null,
     endDate: null,
     category: null,
-})
+});
 
 export const accountsAtom = atomWithQuery(() => ({
-    queryKey: ['accounts'],
+    queryKey: ["accounts"],
     queryFn: async () => {
         const response = await api<Account[]>("/accounts")
-            .catch((e: AxiosError<Account[]>) => console.error(e))
+            .catch((e: AxiosError<Account[]>) => console.error(e));
         
         return response ? response.data : [];
     },
 }));
 
 export const transactionsAtom = atomWithInfiniteQuery((get) => ({
-    queryKey: ['transactions', get(transactionsParamsAtom), get(transactionsPaginationAtom).pageSize],
+    queryKey: ["transactions", get(transactionsParamsAtom), get(transactionsPaginationAtom).pageSize],
     queryFn: async ({pageParam}) => {
         const params: TransactionParams = {
             ...pageParam as TransactionRequest,
@@ -82,7 +82,7 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
 }));
 
 export const monthlySummaryDataAtom  = atomWithQuery(() => ({
-    queryKey: ['monthlySummary'],
+    queryKey: ["monthlySummary"],
     queryFn: async () => {
         const response = await api<MonthlySummary[]>("Charts/MonthlySummary")
             .catch((e: AxiosError<MonthlySummary[]>) => console.error(e));
@@ -92,17 +92,17 @@ export const monthlySummaryDataAtom  = atomWithQuery(() => ({
 }));
 
 export const recentTransactionsAtom  = atomWithQuery(() => ({
-    queryKey: ['recentTransactions'],
+    queryKey: ["recentTransactions"],
     queryFn: async () => {
         const response = await api<RecentTransactions>("Charts/RecentTransactions")
             .catch((e: AxiosError<RecentTransactions>) => console.error(e));
 
         return response ? response.data : {all: [], income: [], expenditure: []};
     }
-}))
+}));
 
 export const topExpenseCategoriesAtom  = atomWithQuery(() => ({
-    queryKey: ['topExpenseCategories'],
+    queryKey: ["topExpenseCategories"],
     queryFn: async () => {
         const response = await api<TopExpenseCategory[]>("Charts/TopExpenseCategories")
             .catch((e: AxiosError<TopExpenseCategory>) => console.error(e));

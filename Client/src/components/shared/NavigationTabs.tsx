@@ -21,7 +21,7 @@ const TabsList = React.forwardRef<
         const updateIndicator = () => {
             if (tabsListRef.current) {
                 const activeTab = tabsListRef.current.querySelector<HTMLElement>(
-                    '[data-state="active"]'
+                    "[data-state=\"active\"]"
                 );
 
                 if (activeTab) {
@@ -84,7 +84,7 @@ const TabsTrigger = React.forwardRef<
             onClick={() => {
                 navigate({
                     to: `${props.value}`
-                })
+                });
             }}
             className={cn(
                 "justify-center whitespace-nowrap text-sm ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:text-foreground z-10 flex px-3 py-1 rounded-full items-center gap-2 text-primary font-medium duration-300",
@@ -92,7 +92,7 @@ const TabsTrigger = React.forwardRef<
             )}
             {...props}
         />
-    )
+    );
 });
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
@@ -150,7 +150,7 @@ export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
                     </nav>
                 </SheetContent>
             </Sheet>
-        )
+        );
     }
     
     return (
@@ -167,5 +167,5 @@ export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
                 ))}
             </TabsList>
         </Tabs>
-    )
+    );
 }

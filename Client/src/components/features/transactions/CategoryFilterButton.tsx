@@ -8,7 +8,7 @@ export default function CategoryFilterButton({column}: {column:  Column<Transact
     const curFilter = column.getFilterValue() as Record<string, boolean>;
     
     function isFiltered(category: string){
-        return curFilter[category]
+        return curFilter[category];
     }
     
     return (
@@ -22,12 +22,12 @@ export default function CategoryFilterButton({column}: {column:  Column<Transact
                     onClick={() => {
                         if (Object.values(curFilter).every(value => value)) {
                             const resetCategories = Object.fromEntries(Object.keys(curFilter)
-                                .map((key) => [key, false]))
-                            column.setFilterValue(resetCategories)
+                                .map((key) => [key, false]));
+                            column.setFilterValue(resetCategories);
                         } else {
                             const resetCategories = Object.fromEntries(Object.keys(curFilter)
-                                .map((key) => [key, true]))
-                            column.setFilterValue(resetCategories)
+                                .map((key) => [key, true]));
+                            column.setFilterValue(resetCategories);
                         }
                     }}
                 >
@@ -43,10 +43,11 @@ export default function CategoryFilterButton({column}: {column:  Column<Transact
                             data-[state=on]:text-secondary data-[state=on]:text-xs text-xs bg-muted/[0.3] text-neutral-300 hover:bg-muted/[0.2] hover:text-neutral-300"
                             key={category + " Toggle"}
                             pressed={isFiltered(category)}
-                            onPressedChange={() => {
-                                const updated = curFilter
-                                updated[category] = !updated[category];
-                                column.setFilterValue(updated)
+                            onPressedChange={(value) => {
+                                column.setFilterValue({
+                                    ...curFilter,
+                                    [category]: value
+                                });
                             }}
                         >
                             {category}
@@ -54,5 +55,5 @@ export default function CategoryFilterButton({column}: {column:  Column<Transact
                     ))}
             </div>
         </FilterButton>
-    )
+    );
 }

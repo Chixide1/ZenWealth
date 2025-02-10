@@ -1,11 +1,11 @@
-﻿import { Line, LineChart, ResponsiveContainer, type TooltipProps, XAxis } from "recharts"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartTooltip } from "@/components/ui/chart"
-import { cn, currencyParser } from "@/lib/utils"
-import { ArrowLink } from "@/components/shared/ArrowLink.tsx"
-import { Separator } from "@/components/ui/separator.tsx"
-import { useIsMobile } from "@/hooks/use-mobile.tsx"
-import type { MonthlySummary } from "@/types"
+﻿import { Line, LineChart, ResponsiveContainer, type TooltipProps, XAxis } from "recharts";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartTooltip } from "@/components/ui/chart";
+import { cn, currencyParser } from "@/lib/utils";
+import { ArrowLink } from "@/components/shared/ArrowLink.tsx";
+import { Separator } from "@/components/ui/separator.tsx";
+import { useIsMobile } from "@/hooks/use-mobile.tsx";
+import type { MonthlySummary } from "@/types";
 
 type IncomeOutcomeLineGraphProps = {
     className?: string
@@ -13,8 +13,8 @@ type IncomeOutcomeLineGraphProps = {
 }
 
 export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGraphProps) {
-    const yearlyExpenditure = data.reduce((acc, value) => acc + value.expenditure, 0)
-    const isMobile = useIsMobile()
+    const yearlyExpenditure = data.reduce((acc, value) => acc + value.expenditure, 0);
+    const isMobile = useIsMobile();
 
     return (
         <Card className={cn("bg-offblack border border-neutral-800", className)}>
@@ -56,9 +56,9 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                                                     : "N/A"}
                                             </p>
                                         </div>
-                                    )
+                                    );
                                 }
-                                return null
+                                return null;
                             }}
                             cursor={{
                                 opacity: 0.1,
@@ -109,6 +109,6 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                 </CardDescription>
             </CardFooter>
         </Card>
-    )
+    );
 }
 

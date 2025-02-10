@@ -1,11 +1,11 @@
-﻿import { createFileRoute } from '@tanstack/react-router'
+﻿import { createFileRoute } from "@tanstack/react-router";
 import {NetWorthCard} from "@/components/features/accounts/NetWorthCard.tsx";
 import {accountsAtom} from "@/lib/atoms.ts";
-import {useAtom} from 'jotai';
+import {useAtom} from "jotai";
 
-export const Route = createFileRoute('/_layout/accounts')({
+export const Route = createFileRoute("/_layout/accounts")({
     component: AccountsPage,
-})
+});
 
 function AccountsPage() {
     const [{data}] = useAtom(accountsAtom);
@@ -15,5 +15,5 @@ function AccountsPage() {
         <div className="">
             <NetWorthCard accounts={accounts} className="w-full"/>
         </div>
-    )
+    );
 }

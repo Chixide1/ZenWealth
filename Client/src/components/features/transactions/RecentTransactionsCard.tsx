@@ -30,17 +30,17 @@ export function RecentTransactionsCard({className, recentTransactions}: RecentTr
                 </Tabs>
             </CardContent>
         </Card>
-    )
+    );
 }
 
-const dateParser = new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'medium',
-})
+const dateParser = new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+});
 
-const timeParser = new Intl.DateTimeFormat('en-GB', {
-    timeStyle: 'short',
+const timeParser = new Intl.DateTimeFormat("en-GB", {
+    timeStyle: "short",
     hour12: true
-})
+});
 
 function TransactionsTab({value, transactions}: {value: string, transactions: Transaction[]}) {
     return (
@@ -80,5 +80,5 @@ function TransactionsTab({value, transactions}: {value: string, transactions: Tr
                     ))}
             </ul>
         </TabsContent>
-    )
+    );
 }

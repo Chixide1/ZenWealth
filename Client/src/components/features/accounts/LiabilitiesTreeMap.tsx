@@ -1,7 +1,7 @@
-﻿import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
-import {cn, creditColors, currencyParser} from "@/lib/utils"
-import type { Account } from "@/types"
-import { Treemap, ResponsiveContainer, Tooltip } from "recharts"
+﻿import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {cn, creditColors, currencyParser} from "@/lib/utils";
+import type { Account } from "@/types";
+import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import {AccountsTooltip} from "@/components/shared/AccountsTooltip.tsx";
 import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
@@ -16,10 +16,10 @@ export function LiabilitiesTreeMap({ className, accounts }: TotalBalanceCardProp
         .map((account, index) => {
             const colorIndex = index % creditColors.length;
             return {...account, fill: creditColors[colorIndex]};
-        })
+        });
     
-    const totalLiabilities = accounts.reduce((total, acc) => total + acc.currentBalance, 0)
-    const totalCreditLimit = accounts.reduce((total, acc) => total + acc.availableBalance, 0)
+    const totalLiabilities = accounts.reduce((total, acc) => total + acc.currentBalance, 0);
+    const totalCreditLimit = accounts.reduce((total, acc) => total + acc.availableBalance, 0);
     
     return (
         <Card className={cn("bg-offblack border border-neutral-800", className)}>
@@ -64,8 +64,8 @@ export function LiabilitiesTreeMap({ className, accounts }: TotalBalanceCardProp
                 </CardDescription>
             </CardFooter>
         </Card>
-    )
+    );
 }
 
-export default LiabilitiesTreeMap
+export default LiabilitiesTreeMap;
 

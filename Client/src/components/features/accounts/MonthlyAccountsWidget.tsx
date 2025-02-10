@@ -32,7 +32,7 @@ export function MonthlyAccountsWidget({className, title, amount}: MonthlyAccount
                 </svg>
             </CardFooter>
         </Card>
-    )
+    );
 }
 
 {/*<div className="mr-auto w-full h-4 bg-primary/[0.125] rounded-full overflow-hidden">*/

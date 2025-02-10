@@ -9,7 +9,7 @@ type AccountsTooltipProps = {
 
 export function AccountsTooltip({className, active, payload, showNegatives = true}: TooltipProps<number, string> & AccountsTooltipProps) {
     if (active) {
-        const item = payload?.[0].payload as Account & { fill: string }
+        const item = payload?.[0].payload as Account & { fill: string };
         return (
             <div className={cn("bg-neutral-600/40 rounded-md backdrop-blur-sm flex gap-2 items-center h-12 max-h-20", className)}>
                 <div className="backdrop-blur-sm gap-2 h-full flex items-center p-2">

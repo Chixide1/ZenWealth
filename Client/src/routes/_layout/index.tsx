@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from '@tanstack/react-router'
+﻿import { createFileRoute } from "@tanstack/react-router";
 import {MonthlyTransactionsWidget} from "@/components/features/transactions/MonthlyTransactionsWidget.tsx";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area.tsx";
 import {RecentTransactionsCard} from "@/components/features/transactions/RecentTransactionsCard.tsx";
@@ -11,9 +11,9 @@ import TopExpenseCategoriesCard from "@/components/features/transactions/TopExpe
 import LiabilitiesTreeMap from "@/components/features/accounts/LiabilitiesTreeMap.tsx";
 import {MonthlyAccountsWidget} from "@/components/features/accounts/MonthlyAccountsWidget.tsx";
 
-export const Route = createFileRoute('/_layout/')({
+export const Route = createFileRoute("/_layout/")({
   component: DashboardPage,
-})
+});
 
 function DashboardPage() {
     const [{data: accounts}] = useAtom(accountsAtom);
@@ -48,7 +48,7 @@ function DashboardPage() {
           <TopExpenseCategoriesCard gaugeData={topExpenseCategories ?? []} className="col-span-full md:col-span-5" />
           <LiabilitiesTreeMap accounts={accounts?.filter((account) => account.type === "Credit") ?? []} className="col-span-full md:col-span-7"/>
       </div>
-    )
+    );
 }
 
 function AccountSummarySection({children, className}: {children: React.ReactNode, className?: string}) {
@@ -59,6 +59,6 @@ function AccountSummarySection({children, className}: {children: React.ReactNode
             </div>
             <ScrollBar orientation="horizontal"></ScrollBar>
         </ScrollArea>
-    )
+    );
     
 }

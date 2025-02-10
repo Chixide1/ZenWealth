@@ -23,21 +23,21 @@ export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCateg
                 ))}
             </CardContent>
         </Card>
-    )
+    );
 }
 
 function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCategory){
-    const [progress, setProgress] = useState(0)
-    const percentage = expenditure / total * 100
+    const [progress, setProgress] = useState(0);
+    const percentage = expenditure / total * 100;
 
     useEffect(() => {
         // Simulate a delay before setting the progress
         const timer = setTimeout(() => {
-            setProgress(percentage)
-        }, 500)
+            setProgress(percentage);
+        }, 500);
 
-        return () => clearTimeout(timer)
-    }, [])
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <div className="">
@@ -69,7 +69,7 @@ function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCateg
                 max={100}
             />
         </div>
-    )
+    );
 }
 
 export default TopExpenseCategoriesCard;

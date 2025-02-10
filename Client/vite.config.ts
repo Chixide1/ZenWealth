@@ -1,10 +1,10 @@
-import path from "path"
-import { defineConfig } from "vite"
-import viteReact from '@vitejs/plugin-react'
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
+import path from "path";
+import { defineConfig } from "vite";
+import viteReact from "@vitejs/plugin-react";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
 const ReactCompilerConfig = {
-    target: '18'
+    target: "18"
 };
 
 export default defineConfig({
@@ -25,5 +25,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+});
 

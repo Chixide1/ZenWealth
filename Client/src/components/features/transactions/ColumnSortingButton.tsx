@@ -17,5 +17,5 @@ export default function ColumnSortingButton({className, name, ...props}: ColumnS
             <ArrowUpDown className="h-auto w-4 group-hover:text-secondary duration-500 transition-colors"/>
             <span className="">{name}</span>
         </Button>
-    )
+    );
 }

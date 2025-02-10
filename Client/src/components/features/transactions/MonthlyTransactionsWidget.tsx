@@ -27,5 +27,5 @@ export function MonthlyTransactionsWidget({title, className, amount = 0, previou
                 <p className="text-xs">{currencyParser.format(previousAmount)}</p>
             </CardFooter>
         </Card>
-    )
+    );
 }

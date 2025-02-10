@@ -1,10 +1,10 @@
-﻿import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Mail, Lock, Loader2} from 'lucide-react'
-import { AxiosError } from "axios"
-import { useNavigate } from "@tanstack/react-router"
-import { useEffect } from "react"
+﻿import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Mail, Lock, Loader2} from "lucide-react";
+import { AxiosError } from "axios";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import {useToast} from "@/hooks/use-toast.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {Toaster} from "@/components/ui/toaster.tsx";
@@ -21,7 +21,7 @@ const formSchema = z.object({
         ctx.addIssue({
             code: "custom",
             message: "The passwords provided did not match!",
-            path: ['confirmPassword']
+            path: ["confirmPassword"]
         });
     }
 });
@@ -37,8 +37,8 @@ type RegisterApiResponse = {
 }
 
 export function RegisterForm(){
-    const { toast } = useToast()
-    const navigate = useNavigate()
+    const { toast } = useToast();
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -50,7 +50,7 @@ export function RegisterForm(){
             password: "",
             confirmPassword: "",
         }
-    })
+    });
 
     async function onSubmit(values: FormSchemaVals) {
         await api.post(
@@ -61,35 +61,35 @@ export function RegisterForm(){
             }
         )
             .then(() => {
-                navigate({ to: "/login" })
+                navigate({ to: "/login" });
             })
             .catch((error: AxiosError<RegisterApiResponse>) => {
                 if(error.status === 400 && error.response){
-                    const apiErrors = error.response.data.errors
+                    const apiErrors = error.response.data.errors;
                     
                     Object.entries(apiErrors).forEach((key) => {
                             toast({
                                 title: key[0],
                                 description: key[1][0],
                                 variant: "destructive",
-                            })
-                    })
+                            });
+                    });
                 }
-            })
+            });
     }
 
     useEffect(() => {
         if (errors) {
             Object.keys(errors).forEach((key) => {
-                const field = errors[key as keyof typeof errors]
+                const field = errors[key as keyof typeof errors];
                 toast({
                     title: camelCaseToSentence(key),
                     description: field?.message,
                     variant: "destructive"
-                })
-            })
+                });
+            });
         }
-    }, [errors])
+    }, [errors]);
 
     const inputs: IdentityInputConfig[] = [
         {
@@ -113,7 +113,7 @@ export function RegisterForm(){
             icon: Lock,
             label: "Confirm Password",
         }
-    ]
+    ];
     
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center px-9 w-full sm:w-9/12 text-sm">
@@ -139,5 +139,5 @@ export function RegisterForm(){
             </Button>
             <Toaster/>
         </form>
-    )
+    );
 }

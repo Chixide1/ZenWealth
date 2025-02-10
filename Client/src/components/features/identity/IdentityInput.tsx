@@ -1,7 +1,7 @@
 ﻿import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { UseFormRegister, FieldValues } from "react-hook-form";
-import { type LucideIcon } from 'lucide-react';
+import { type LucideIcon } from "lucide-react";
 
 export type IdentityInputConfig = {
     id: string;
@@ -32,6 +32,6 @@ export function IdentityInput({id, label, type = "text", placeholder, register, 
                 {...register}
             />
         </div>
-    )
+    );
 }
 

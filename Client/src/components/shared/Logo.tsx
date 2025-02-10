@@ -24,5 +24,5 @@ export default function Logo({ className, iconProps, textProps }: LogoProps) {
                 <span className="text-secondary">W</span>ealth
             </h2>
         </div>
-    )
+    );
 }

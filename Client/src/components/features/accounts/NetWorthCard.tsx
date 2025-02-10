@@ -1,15 +1,15 @@
-﻿import {Cell, Pie, PieChart, ResponsiveContainer} from "recharts"
+﻿import {Cell, Pie, PieChart, ResponsiveContainer} from "recharts";
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
     ChartContainer,
     ChartTooltip,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {useState} from "react";
@@ -24,7 +24,7 @@ type NetWorthCardProps = {
 }
 
 export function NetWorthCard({accounts, className}: NetWorthCardProps) {
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     const assetAccounts = accounts?.filter(account => {
         return account.type !== "Loan" && account.type !== "Credit";
@@ -32,7 +32,7 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
         .map((account, index) => {
             const colorIndex = index % assetColors.length;
             return {...account, fill: assetColors[colorIndex]};
-        })
+        });
 
     const creditAccounts = accounts?.filter(account => {
         return account.type === "Credit";
@@ -40,17 +40,17 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
         .map((account, index) => {
             const colorIndex = index % creditColors.length;
             return {...account, fill: creditColors[colorIndex]};
-        })
+        });
 
-    const allAccounts = [...(assetAccounts ?? []), ...(creditAccounts ?? [])]
-    const totalBalance = assetAccounts?.reduce((total, account) => total + account.currentBalance, 0) ?? 0
+    const allAccounts = [...(assetAccounts ?? []), ...(creditAccounts ?? [])];
+    const totalBalance = assetAccounts?.reduce((total, account) => total + account.currentBalance, 0) ?? 0;
     const liabilities = accounts?.reduce((liabilities, account) => {
         if (account.type === "Credit") {
             return liabilities + account.currentBalance;
         }
 
         return liabilities;
-    }, 0) ?? 0
+    }, 0) ?? 0;
     
     return (
         <Card className={cn("bg-transparent text-primary", className)}>
@@ -133,7 +133,7 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
                 </ScrollArea>
             </CardContent>
         </Card>
-    )
+    );
 }
 
 const InfoBox = ({amount, description}: { amount: number, description: string }) => (
@@ -141,4 +141,4 @@ const InfoBox = ({amount, description}: { amount: number, description: string })
         <p className="text-primary text-lg w-fit mx-auto">{currencyParser.format(amount)}</p>
         <p className="text-xs text-neutral-400/90 font-semibold text-nowrap w-fit mx-auto">{description}</p>
     </div>
-)
+);

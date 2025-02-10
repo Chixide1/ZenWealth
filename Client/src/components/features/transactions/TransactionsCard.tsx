@@ -13,14 +13,14 @@ type TransactionsCardProps = {
 }
 
 export function TransactionsCard({className, title, transactionsData, allFeatures = false}: TransactionsCardProps) {
-    const dateParser = new Intl.DateTimeFormat('en-GB', {
-        dateStyle: 'medium',
-    })
+    const dateParser = new Intl.DateTimeFormat("en-GB", {
+        dateStyle: "medium",
+    });
     
-    const timeParser = new Intl.DateTimeFormat('en-GB', {
-        timeStyle: 'short',
+    const timeParser = new Intl.DateTimeFormat("en-GB", {
+        timeStyle: "short",
         hour12: true
-    })
+    });
     
     const transactions = transactionsData?.transactions ?? [];
     
@@ -76,5 +76,5 @@ export function TransactionsCard({className, title, transactionsData, allFeature
                 </Tabs>
             </CardContent>
         </Card>
-    )
+    );
 }

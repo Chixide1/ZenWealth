@@ -1,33 +1,33 @@
-import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { routeTree } from './routeTree.gen'
-import './main.css'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import Loading from './components/shared/Loading'
-import { Provider } from 'jotai'
-import { queryClientAtom } from 'jotai-tanstack-query'
-import { useHydrateAtoms } from 'jotai/utils'
-import { persistQueryClient} from '@tanstack/react-query-persist-client'
-import { StrictMode } from 'react';
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
+import "./main.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import Loading from "./components/shared/Loading";
+import { Provider } from "jotai";
+import { queryClientAtom } from "jotai-tanstack-query";
+import { useHydrateAtoms } from "jotai/utils";
+import { persistQueryClient} from "@tanstack/react-query-persist-client";
+import { StrictMode } from "react";
 
 // Set up a Router instance
 export const router = createRouter({
     defaultPendingComponent: Loading,
     routeTree,
-    defaultPreload: 'intent',
+    defaultPreload: "intent",
     defaultStaleTime: 5000,
-})
+});
 
 // Register things for typesafety
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
     interface Register {
         router: typeof router
     }
 }
 
-const rootElement = document.getElementById('root')!
-const root = ReactDOM.createRoot(rootElement)
+const rootElement = document.getElementById("root")!;
+const root = ReactDOM.createRoot(rootElement);
 
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -37,7 +37,7 @@ export const queryClient = new QueryClient({
         },
         
     },
-})
+});
 
 // persistQueryClient({
 //     queryClient,
@@ -50,9 +50,9 @@ export const queryClient = new QueryClient({
 // })
 
 const HydrateAtoms = ({ children }: any) => {
-    useHydrateAtoms([[queryClientAtom, queryClient]] as any)
-    return children
-}
+    useHydrateAtoms([[queryClientAtom, queryClient]] as any);
+    return children;
+};
 
 root.render(
     <StrictMode>
@@ -64,5 +64,5 @@ root.render(
             </Provider>
         </QueryClientProvider>
     </StrictMode>
-)
+);
 

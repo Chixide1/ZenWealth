@@ -1,11 +1,11 @@
-﻿import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
-import { z } from "zod"
-import { Mail, Lock, Loader2 } from 'lucide-react'
-import { useNavigate } from "@tanstack/react-router"
-import { useEffect } from "react"
+﻿import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { Mail, Lock, Loader2 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import {useToast} from "@/hooks/use-toast.ts";
-import { Label } from "@/components/ui/label"
+import { Label } from "@/components/ui/label";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Toaster} from "@/components/ui/toaster.tsx";
@@ -17,13 +17,13 @@ const formSchema = z.object({
     email: z.string().email(),
     password: z.string().min(1, "Password cannot be empty"),
     rememberMe: z.boolean().default(false)
-})
+});
 
 type FormSchemaVals = z.infer<typeof formSchema>
 
 export function LoginForm() {
-    const { toast } = useToast()
-    const navigate = useNavigate()
+    const { toast } = useToast();
+    const navigate = useNavigate();
     const {
         control,
         register,
@@ -37,12 +37,12 @@ export function LoginForm() {
             password: "",
             rememberMe: false
         }
-    })
+    });
 
     async function onSubmit(values: FormSchemaVals) {
         if (values.rememberMe) {
-            localStorage.setItem("email", values.email)
-            localStorage.setItem("password", values.password)
+            localStorage.setItem("email", values.email);
+            localStorage.setItem("password", values.password);
         }
 
         await api.post(
@@ -60,42 +60,42 @@ export function LoginForm() {
         )
             .then(response => {
                 if (response.status === 200) {
-                    console.debug("%cSuccessfully logged in", "color: #bada55")
-                    navigate({ to: "/" })
+                    console.debug("%cSuccessfully logged in", "color: #bada55");
+                    navigate({ to: "/" });
                 }
             })
             .catch(error => {
-                console.error("Login error:", error)
+                console.error("Login error:", error);
                 toast({
                     title: "Login Error",
                     description: "Failed to log in. Please check your credentials and try again.",
                     variant: "destructive"
-                })
-            })
+                });
+            });
     }
 
     useEffect(() => {
-        const storedEmail = localStorage.getItem("email") || ""
-        const storedPass = localStorage.getItem("password") || ""
+        const storedEmail = localStorage.getItem("email") || "";
+        const storedPass = localStorage.getItem("password") || "";
 
-        setValue("email", storedEmail)
-        setValue("password", storedPass)
-        setValue("rememberMe", !!storedEmail && !!storedPass)
-    }, [setValue])
+        setValue("email", storedEmail);
+        setValue("password", storedPass);
+        setValue("rememberMe", !!storedEmail && !!storedPass);
+    }, [setValue]);
 
     useEffect(() => {
         if (errors) {
             Object.keys(errors).forEach((key) => {
-                const field = errors[key as keyof typeof errors]
+                const field = errors[key as keyof typeof errors];
 
                 toast({
                     title: camelCaseToSentence(key),
                     description: field?.message,
                     variant: "destructive"
-                })
-            })
+                });
+            });
         }
-    }, [errors])
+    }, [errors]);
 
     const inputs: IdentityInputConfig[] = [
         {
@@ -112,7 +112,7 @@ export function LoginForm() {
             icon: Lock,
             label: "Password",
         },
-    ]
+    ];
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center px-9 w-full sm:w-9/12 text-sm">
@@ -161,5 +161,5 @@ export function LoginForm() {
             </Button>
             <Toaster />
         </form>
-    )
+    );
 }

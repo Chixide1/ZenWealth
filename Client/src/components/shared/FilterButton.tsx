@@ -30,7 +30,7 @@ export default function FilterButton({children, column, className, dropdownAlign
     return (
         <DropdownMenu open={open} onOpenChange={setOpen} modal={modal}>
             <DropdownMenuTrigger asChild>
-                <Button className={`capitalize px-0.5 focus-visible:ring-0`} variant="ghost">
+                <Button className={"capitalize px-0.5 focus-visible:ring-0"} variant="ghost">
                     <Filter className={`mt-0.5 transition-colors duration-200 ${open && "text-secondary"}`}/>
                     {column.id}
                 </Button>
@@ -39,5 +39,5 @@ export default function FilterButton({children, column, className, dropdownAlign
                 {children}
             </DropdownMenuContent>
         </DropdownMenu>
-    )
+    );
 }

@@ -26,5 +26,5 @@ export function TrendingBadge({percentage, invert = false, className}: TrendingB
                 (<TrendingUp className="text-secondary h-auto ml-1 w-4"/>)
             }
         </Badge>
-    )
+    );
 }

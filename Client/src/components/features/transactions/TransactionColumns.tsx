@@ -1,12 +1,12 @@
-﻿import {ColumnDef, createColumnHelper } from "@tanstack/react-table"
+﻿import {ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import { Transaction } from "@/types";
-import {useAtom } from "jotai"
+import {useAtom } from "jotai";
 import {transactionsPaginationAtom, transactionsParamsAtom} from "@/lib/atoms.ts";
 
-const columnHelper = createColumnHelper<Transaction>()
+const columnHelper = createColumnHelper<Transaction>();
 
-export const transactionColumns: ColumnDef<Transaction, any>[] = [
+export const transactionColumns: ColumnDef<Transaction, never>[] = [
     columnHelper.accessor("name", {
         header: ({column}) => (
             <div className="flex items-center">
@@ -14,8 +14,8 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             </div>
         ),
         cell: ({row}) => {
-            const name = row.original.merchantName || row.original.name
-            const imageSize = 30
+            const name = row.original.merchantName || row.original.name;
+            const imageSize = 30;
 
             return (
                 <div className="flex gap-2 items-center justify-start">
@@ -29,25 +29,25 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
                         />
                     <span>{name}</span>
                 </div>
-            )
+            );
         },
         enableHiding: false,
         size: 200,
     }),
     columnHelper.accessor(row => {
         if(!row.personalFinanceCategory){
-            return "Unknown"
+            return "Unknown";
         }
-        return row.personalFinanceCategory.replace(/_/g, " ")
+        return row.personalFinanceCategory.replace(/_/g, " ");
     }, {
-        id: 'category',
+        id: "category",
         header: ({column}) => (
             <div className="flex items-center">
                 <span className="capitalize">{column.id}</span>
             </div>
         ),
         cell: ({row}) => {
-            const category: string = row.getValue("category")
+            const category: string = row.getValue("category");
 
             return (
                 <div className="flex gap-2 items-center">
@@ -58,15 +58,15 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
                     />
                     {category}
                 </div>
-            )
+            );
         },
         filterFn: (row, columnId, filterValue: Record<string, boolean>) => {
             if(!filterValue){
-                return true
+                return true;
             }
             
-            let colVal = row.getValue<string>(columnId)
-            return filterValue[colVal.toLowerCase()]
+            const colVal = row.getValue<string>(columnId);
+            return filterValue[colVal.toLowerCase()];
         },
         size: 200,
     }),
@@ -78,34 +78,34 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             return (
                 <ColumnSortingButton
                     onClick={() => {
-                        setParams(params.sort === "AmountAsc" ? {...params, sort: "AmountDesc"} : {...params, sort: "AmountAsc"})
-                        setPagination({...pagination, pageIndex: 0})
+                        setParams(params.sort === "AmountAsc" ? {...params, sort: "AmountDesc"} : {...params, sort: "AmountAsc"});
+                        setPagination({...pagination, pageIndex: 0});
                     }}
                     name={column.id}
                 />
-            )
+            );
         },
         cell: ({row}) => {
-            const amount = row.getValue<number>("amount")
+            const amount = row.getValue<number>("amount");
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
                 style: "currency",
                 currency: row.original.isoCurrencyCode || row.original.unofficialCurrencyCode,
                 currencyDisplay: "symbol",
-            }).format(amount)
+            }).format(amount);
 
-            return <div className="">{formatted}</div>
+            return <div className="">{formatted}</div>;
         },
         filterFn: (row, columnId, filterValue: {min: number, max: number}) => {
             if(!filterValue){
-                return true
+                return true;
             }
             
-            let colVal = row.getValue<number>(columnId)
-            return colVal >= filterValue.min && colVal <= filterValue.max
+            const colVal = row.getValue<number>(columnId);
+            return colVal >= filterValue.min && colVal <= filterValue.max;
         },
     }),
     columnHelper.accessor("date", {
-        sortingFn: 'datetime',
+        sortingFn: "datetime",
         header: ({column}) => {
             const [params, setParams] = useAtom(transactionsParamsAtom);
             const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
@@ -113,30 +113,30 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
             return (
                 <ColumnSortingButton
                     onClick={() => {
-                        setParams(params.sort === "DateAsc" ? {...params, sort: null} : {...params, sort: "DateAsc"})
-                        setPagination({...pagination, pageIndex: 0})
+                        setParams(params.sort === "DateAsc" ? {...params, sort: null} : {...params, sort: "DateAsc"});
+                        setPagination({...pagination, pageIndex: 0});
                     }}
                     name={column.id}
                 />
-            )
+            );
         },
         cell: ({row}) => {
-            const dateTime = new Date(row.original.datetime || row.original.date)
-            const formatted = new Intl.DateTimeFormat('en-GB', {
-                dateStyle: 'medium',
-                timeStyle: 'short',
-            }).format(dateTime)
+            const dateTime = new Date(row.original.datetime || row.original.date);
+            const formatted = new Intl.DateTimeFormat("en-GB", {
+                dateStyle: "medium",
+                timeStyle: "short",
+            }).format(dateTime);
 
-            return <div className="">{formatted}</div>
+            return <div className="">{formatted}</div>;
         },
         filterFn: (row, columnId, filterValue: {from: Date, to: Date}) => {
             if(!filterValue){
-                return true
+                return true;
             }
             
-            let colVal = new Date(row.getValue<string>(columnId))
-            return colVal >= filterValue.from && colVal <= filterValue.to
+            const colVal = new Date(row.getValue<string>(columnId));
+            return colVal >= filterValue.from && colVal <= filterValue.to;
         },
     }),
-]
+];
 

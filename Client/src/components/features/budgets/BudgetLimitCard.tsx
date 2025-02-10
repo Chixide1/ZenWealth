@@ -1,6 +1,6 @@
-﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLink } from "@/components/shared/ArrowLink"
-import {Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
+﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLink } from "@/components/shared/ArrowLink";
+import {Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import {cn, currencyParser} from "@/lib/utils.ts";
 
 const RADIAN = Math.PI / 180;
@@ -23,14 +23,14 @@ type GaugeProps = {
     className?: string
 }
 export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, className }: GaugeProps) {
-    const safeMax = limit > 0 ? limit : 1 // Prevent division by zero
-    const safeValue = Math.max(0, Math.min(spent, safeMax)) // Ensure value is between 0 and max
-    const percentage = (safeValue / safeMax) * 100
+    const safeMax = limit > 0 ? limit : 1; // Prevent division by zero
+    const safeValue = Math.max(0, Math.min(spent, safeMax)); // Ensure value is between 0 and max
+    const percentage = (safeValue / safeMax) * 100;
 
     const data = Array.from({ length: segments }, (_, index) => ({
         value: 100 / segments,
         isActive: (index / segments) * 100 <= percentage,
-    }))
+    }));
 
     const needleData: NeedleProps = {
         cx: 135,
@@ -40,7 +40,7 @@ export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, classNa
         value: 0,
         total: 0,
         color: "hsl(var(--secondary))",
-    }
+    };
     
     return (
         <Card className={cn("bg-primary/[0.125] backdrop-blur-sm border-neutral-800", className)}>
@@ -86,7 +86,7 @@ export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, classNa
                 </CardDescription>
             </CardContent>
         </Card>
-    )
+    );
 }
 
 function Needle({cx, cy, innerRadius, outerRadius, value, color, total, classname}: NeedleProps){
@@ -109,5 +109,5 @@ function Needle({cx, cy, innerRadius, outerRadius, value, color, total, classnam
             <circle cx={x0} cy={y0} r={r} fill={color} stroke="none" />,
             <path d={`M${xba} ${yba}L${xbb} ${ybb} L${xp} ${yp} L${xba} ${yba}`} stroke="#none" fill={color} />,
         </svg>
-    )
+    );
 }

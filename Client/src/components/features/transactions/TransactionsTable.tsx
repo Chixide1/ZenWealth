@@ -11,12 +11,12 @@
     getFacetedUniqueValues,
     getFacetedMinMaxValues,
     VisibilityState,
-} from "@tanstack/react-table"
-import { useAtom } from 'jotai';
+} from "@tanstack/react-table";
+import { useAtom } from "jotai";
 import {
     Table, TableBody, TableCell, TableFooter,
     TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {Button} from "@/components/ui/button.tsx";
 import { useState } from "react";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
@@ -28,21 +28,23 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from "lucide-react";
 import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
 import {transactionsAtom, transactionsPaginationAtom} from "@/lib/atoms.ts";
 
 interface TransactionTableProps {
-    columns: ColumnDef<Transaction>[]
+    columns: ColumnDef<Transaction, never>[]
     data: TransactionData | undefined,
     isLoading?: boolean,
     className?: string,
 }
 
 export function TransactionsTable({columns, data, isLoading, className}: TransactionTableProps) {
-    const [{fetchNextPage, hasNextPage}] = useAtom(transactionsAtom)
-    const [sorting, setSorting] = useState<SortingState>([])
+    "use no memo";
+    
+    const [{fetchNextPage, hasNextPage}] = useAtom(transactionsAtom);
+    const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         {
             id: "category",
@@ -74,16 +76,16 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                 max: Number.MAX_SAFE_INTEGER,
             }
         },
-    ])
+    ]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         category: true,
         amount: true,
         date: true,
     });
-    const [pagination, setPagination] = useAtom(transactionsPaginationAtom)
-    const [columnOrder] = useState<string[]>(['name', 'amount', 'date', 'category']);
-    const [pageSizeOpen, setPageSizeOpen] = useState(false)
+    const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
+    const [columnOrder] = useState<string[]>(["name", "amount", "date", "category"]);
+    const [pageSizeOpen, setPageSizeOpen] = useState(false);
 
     const table = useReactTable<Transaction>({
         data: data?.transactions ?? [],
@@ -107,9 +109,9 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
         },
         manualPagination: true,
         rowCount: -1
-    })
+    });
 
-    const pageSizeOptions = [10, 20, 30, 40, 50]
+    const pageSizeOptions = [10, 20, 30, 40, 50];
     
     return (
         <div className={cn("relative overflow-auto border bg-primary/[0.125] backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom", className)}>
@@ -140,13 +142,13 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                                 header.getContext()
                                             )}
                                     </TableHead>
-                                )
+                                );
                             })}
                         </TableRow>
                     ))}
                 </TableHeader>
                 <TableBody className="border-0">
-                    {isLoading || !data ? (
+                    {isLoading ? (
                         <TableRow>
                             <TableCell colSpan={columns.length} className="h-24 text-center">
                                 <Loading fullScreen={false}/>
@@ -178,11 +180,11 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                     <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between">
-                                <span className="pl-2 font-semibold">
-                                    Total Transactions:&nbsp;
-                                    <span className="text-secondary font-medium">
+                                <span className="pl-2">
+                                    <span className="font-bold">
                                         {table.getFilteredRowModel().rows.length}
                                     </span>
+                                    &nbsp;Total Transactions
                                 </span>
                                 <div>
                                     <span className="mr-2">Per Page:</span>
@@ -190,7 +192,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                         <DropdownMenuTrigger asChild>
                                             <Button variant="accent" className="gap-0.5 p-2 font-medium" size="sm">
                                                 {pagination.pageSize}
-                                                <ChevronDown className={"h-4 w-4 transition-all duration-300" + (pageSizeOpen && ' ' + 'rotate-180')} />
+                                                <ChevronDown className={"h-4 w-4 transition-all duration-300" + (pageSizeOpen && " " + "rotate-180")} />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" className="w-fit min-w-0 bg-accent">
@@ -215,7 +217,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                         variant="accent"
                                         size="sm"
                                         onClick={async () => {
-                                            table.previousPage()
+                                            table.previousPage();
                                         }}
                                         disabled={!table.getCanPreviousPage()}
                                     >
@@ -226,8 +228,8 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                         variant="accent"
                                         size="sm"
                                         onClick={async () => {
-                                            await fetchNextPage()
-                                            table.nextPage()
+                                            await fetchNextPage();
+                                            table.nextPage();
                                         }}
                                         disabled={!hasNextPage}
                                     >
@@ -239,6 +241,6 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                 </TableFooter>
             </Table>
         </div>
-    )
+    );
 }
 

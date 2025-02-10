@@ -16,7 +16,7 @@ const TabsList = React.forwardRef<
         const updateIndicator = () => {
             if (tabsListRef.current) {
                 const activeTab = tabsListRef.current.querySelector<HTMLElement>(
-                    '[data-state="active"]'
+                    "[data-state=\"active\"]"
                 );
 
                 if (activeTab) {
