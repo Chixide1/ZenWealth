@@ -136,10 +136,12 @@ export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
                     </SheetHeader>
                     <nav className="flex flex-col items-center w-full bg-charcoal rounded-2xl divide-neutral-700 divide-dashed divide-y">
                         {tabs.map(item => (
-                            <Link {...item.url} 
-                                  className="inline-flex items-center ps-5 gap-2 mx-auto py-5 data-[state=active]:text-secondary w-40"
-                                  data-state={`${item.url.to === location.pathname ? "active" : "inactive"}`}
-                                  onClick={() => setOpen(false)}
+                            <Link
+                                key={item.title + "::NavigationTabsMobile"}
+                                {...item.url}
+                                className="inline-flex items-center ps-5 gap-2 mx-auto py-5 data-[state=active]:text-secondary w-40"
+                                data-state={`${item.url.to === location.pathname ? "active" : "inactive"}`}
+                                onClick={() => setOpen(false)}
                             >
                                 <item.icon />
                                 <span>{item.title}</span>
@@ -156,7 +158,7 @@ export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
             <TabsList>
                 {tabs.map((item) => (
                     <TabsTrigger
-                        key={item.title + "::NavigationTabs"}
+                        key={item.title + "::NavigationTabsDesktop"}
                         value={item.url.to || "/"}
                     >
                         <item.icon className={"h-auto w-4 pt-px"}/>

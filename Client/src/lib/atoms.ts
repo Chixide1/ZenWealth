@@ -3,6 +3,7 @@ import { atomWithQuery, atomWithInfiniteQuery } from 'jotai-tanstack-query';
 import api from "@/lib/api.ts";
 import { AxiosError } from "axios";
 import { atom } from "jotai";
+import { VisibilityState } from "@tanstack/react-table";
 
 type TransactionRequest = {
     cursor: number | null,
@@ -19,7 +20,14 @@ type TransactionFilters = {
     category: string | null,
 }
 
-type TransactionParams = TransactionRequest & TransactionFilters
+type TransactionParams = TransactionRequest & TransactionFilters & {pageSize: number | null};
+
+export const columnVisibilityAtom = atom<VisibilityState>({
+    name: true,
+    category: true,
+    amount: true,
+    date: true,
+});
 
 export const transactionsPaginationAtom = atom({
     pageIndex: 0,
@@ -47,11 +55,12 @@ export const accountsAtom = atomWithQuery(() => ({
 }));
 
 export const transactionsAtom = atomWithInfiniteQuery((get) => ({
-    queryKey: ['transactions', get(transactionsParamsAtom)],
+    queryKey: ['transactions', get(transactionsParamsAtom), get(transactionsPaginationAtom).pageSize],
     queryFn: async ({pageParam}) => {
         const params: TransactionParams = {
             ...pageParam as TransactionRequest,
             ...get(transactionsParamsAtom),
+            pageSize: get(transactionsPaginationAtom).pageSize,
         };
 
         const response = await api<TransactionData>("/transactions", { 

@@ -55,7 +55,7 @@ export default function AppTopbar({ username }: { username: string }) {
                 <Logo className="w-auto h-7" iconProps={{className: "h-7 md:h-8"}} textProps={{ className: "hidden" }} />
             </Link>
             <NavigationTabs tabs={items} />
-            <LinkButton className="rounded-full md:gap-1 ml-auto w-10 h-10 md:h-auto md:w-auto" size="sm">
+            <LinkButton className="rounded-full md:gap-1 ml-auto w-10 h-10 md:h-8 md:w-auto" size="sm">
                 <Plus className="w-auto h-2"/>
                 <span className="hidden md:inline">Add Account</span>
             </LinkButton>

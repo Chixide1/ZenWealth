@@ -31,11 +31,13 @@ export default function ColumnVisibilityButton({columns}: { columns: Column<Tran
                     .filter((column) => column.getCanHide())
                     .map(column => (
                             <DropdownMenuCheckboxItem
-                                key={column.id} className="text-sm capitalize bg-secondary focus:bg-black/10 transition-colors duration-200"
+                                key={column.id + "::ColumnVisibilityButtonCheckBox"}
+                                className="text-sm capitalize bg-secondary focus:bg-black/10 transition-colors duration-200"
                                 checked={column.getIsVisible()}
-                                onCheckedChange={(value) =>
-                                    column.toggleVisibility(!!value)
+                                onCheckedChange={(value) => {
+                                    column.toggleVisibility(value);
                                 }
+                            }
                             >
                                 {column.id}
                             </DropdownMenuCheckboxItem>

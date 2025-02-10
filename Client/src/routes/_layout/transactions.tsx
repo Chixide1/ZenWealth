@@ -19,7 +19,7 @@ function TransactionsPage() {
   // console.log(data);
   
   return (
-      <div className="w-dvw px-3 md:px-4 pt-2 pb-6">
+      <div className="w-vw px-3 md:px-4 pt-2 pb-6">
           {isMobile ?
               <TransactionsCard
                   transactionsData={transactions}

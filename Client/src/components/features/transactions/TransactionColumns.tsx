@@ -1,11 +1,8 @@
 ﻿import {ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
-import CategoryFilterButton from "@/components/features/transactions/CategoryFilterButton.tsx";
-import AmountFilterButton from "@/components/features/transactions/AmountFilterButton.tsx";
-import DateFilterButton from "@/components/features/transactions/DateFilterButton.tsx";
 import { Transaction } from "@/types";
 import {useAtom } from "jotai"
-import {transactionsParamsAtom} from "@/lib/atoms.ts";
+import {transactionsPaginationAtom, transactionsParamsAtom} from "@/lib/atoms.ts";
 
 const columnHelper = createColumnHelper<Transaction>()
 
@@ -46,7 +43,7 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
         id: 'category',
         header: ({column}) => (
             <div className="flex items-center">
-                <CategoryFilterButton column={column} />
+                <span className="capitalize">{column.id}</span>
             </div>
         ),
         cell: ({row}) => {
@@ -74,12 +71,20 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
         size: 200,
     }),
     columnHelper.accessor("amount", {
-        header: ({column}) => (
-            <div className="flex items-center">
-                <AmountFilterButton column={column} />
-                <ColumnSortingButton />
-            </div>
-        ),
+        header: ({column}) => {
+            const [params, setParams] = useAtom(transactionsParamsAtom);
+            const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
+            
+            return (
+                <ColumnSortingButton
+                    onClick={() => {
+                        setParams(params.sort === "AmountAsc" ? {...params, sort: "AmountDesc"} : {...params, sort: "AmountAsc"})
+                        setPagination({...pagination, pageIndex: 0})
+                    }}
+                    name={column.id}
+                />
+            )
+        },
         cell: ({row}) => {
             const amount = row.getValue<number>("amount")
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
@@ -102,16 +107,17 @@ export const transactionColumns: ColumnDef<Transaction, any>[] = [
     columnHelper.accessor("date", {
         sortingFn: 'datetime',
         header: ({column}) => {
-            const [params, setParams] = useAtom(transactionsParamsAtom)
+            const [params, setParams] = useAtom(transactionsParamsAtom);
+            const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
+            
             return (
-                <div className="flex items-center">
-                    <DateFilterButton column={column}/>
-                    <ColumnSortingButton
-                        onClick={() => {
-                            setParams(params.sort === "DateAsc" ? {...params, sort: null} : {...params, sort: "DateAsc"})
-                        }}
-                    />
-                </div>
+                <ColumnSortingButton
+                    onClick={() => {
+                        setParams(params.sort === "DateAsc" ? {...params, sort: null} : {...params, sort: "DateAsc"})
+                        setPagination({...pagination, pageIndex: 0})
+                    }}
+                    name={column.id}
+                />
             )
         },
         cell: ({row}) => {
