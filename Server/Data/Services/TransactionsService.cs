@@ -34,25 +34,9 @@ public class TransactionsService(
     {
         var transactions = context.Transactions.AsQueryable();
         
-        // Initial Query
-        if (id == 0)
-        {
-            transactions = transactions
-                .Where(t => t.UserId == userId);
-        }
-        else
-        {
-            if (sort?.ToLower() == "dateasc")
-            {
-                transactions = context.Transactions
-                    .Where(t => t.Date >= date && t.Id >= id && t.UserId == userId);
-            }
-            else
-            {
-                transactions = context.Transactions
-                    .Where(t => t.Date <= date && t.Id <= id && t.UserId == userId);
-            }
-        }
+        // Always get only user transactions
+        transactions = transactions
+            .Where(t => t.UserId == userId);
 
         // Filters
         if (!string.IsNullOrWhiteSpace(name))
@@ -80,15 +64,32 @@ public class TransactionsService(
             transactions = transactions.Where(t => t.Date <= endDate);
         }
 
+        // Sorting
         transactions = sort?.ToLower() switch
         {
-            "dateasc" => transactions.OrderBy(t => t.Date),
             "amountasc" => transactions.OrderBy(t => t.Amount),
             "amountdesc" => transactions.OrderByDescending(t => t.Amount),
+            "dateasc"  => transactions.OrderBy(t => t.Date),
             _ => transactions.OrderByDescending(t => t.Date)
         };
 
+        if (id != 0)
+        {
+            transactions = sort?.ToLower() switch
+            {
+                // "amountasc" => transactions.OrderBy(t => t.Amount),
+                //
+                // "amountdesc" => transactions.Where(t => t.Amount),
+        
+                "dateasc"  => transactions.Where(t => t.Date >= date && t.Id >= id && t.UserId == userId),
+        
+                _ => transactions.Where(t => t.Date <= date && t.Id <= id)
+            };
+        }
+
+        // Final Query
         var query = transactions
+            .Where(t => t.UserId == userId)
             .Select(t => new TransactionDto()
             {
                 Id = t.Id,

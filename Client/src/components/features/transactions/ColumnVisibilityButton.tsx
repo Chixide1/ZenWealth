@@ -1,5 +1,5 @@
 ﻿import {useState} from "react";
-import {ChevronDown} from "lucide-react";
+import { Eye} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {Column} from "@tanstack/react-table";
 import {Transaction} from "@/types";
@@ -12,7 +12,8 @@ import {
 
 
 export default function ColumnVisibilityButton({columns}: { columns: Column<Transaction>[] }) {
-    "use no memo";
+    "use no memo"; // eslint-disable-line
+    
     const [open, setOpen] = useState(false);
 
     return (
@@ -20,11 +21,10 @@ export default function ColumnVisibilityButton({columns}: { columns: Column<Tran
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="accent"
-                    className="flex items-center justify-center gap-0.5 h-8"
+                    className="flex items-center text-sm justify-center px-2"
                     size="sm"
                 >
-                    <ChevronDown className={`transition-transform duration-300 ${open && "rotate-180"}`}/>
-                    Columns
+                    <Eye className="!h-auto !w-4" strokeWidth={1.5} />    
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-accent border-0" align="end">

@@ -2,7 +2,7 @@
 import {Transaction} from "@/types";
 import { Column } from "@tanstack/react-table";
 import { Toggle } from "@/components/ui/toggle";
-import FilterButton from "@/components/shared/FilterButton.tsx";
+import ColumnFilterButton from "@/components/shared/ColumnFilterButton.tsx";
 
 export default function CategoryFilterButton({column}: {column:  Column<Transaction, unknown>}){
     const curFilter = column.getFilterValue() as Record<string, boolean>;
@@ -12,13 +12,13 @@ export default function CategoryFilterButton({column}: {column:  Column<Transact
     }
     
     return (
-        <FilterButton column={column}>
+        <ColumnFilterButton>
             <div className="text-primary flex items-center justify-between pb-4">
                 <h4 className="font-medium leading-none">Filter by Category</h4>
                 <Button
                     className="text-secondary text-xs"
                     size="sm"
-                    variant="ghost"
+                    variant="accent"
                     onClick={() => {
                         if (Object.values(curFilter).every(value => value)) {
                             const resetCategories = Object.fromEntries(Object.keys(curFilter)
@@ -54,6 +54,6 @@ export default function CategoryFilterButton({column}: {column:  Column<Transact
                         </Toggle>
                     ))}
             </div>
-        </FilterButton>
+        </ColumnFilterButton>
     );
 }

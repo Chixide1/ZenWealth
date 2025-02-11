@@ -8,9 +8,6 @@ export default tseslint.config(
     eslint.configs.recommended,
     tseslint.configs.recommended,
     {
-        globals: {
-            "use no memo": "readonly",
-        },
         plugins: {
             "react-compiler": reactCompiler,
         },

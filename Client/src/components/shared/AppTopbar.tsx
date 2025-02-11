@@ -1,9 +1,11 @@
 ﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx";
-import { LayoutDashboard, PoundSterling, Wallet, PieChartIcon as ChartPie, Plus, ChevronDown, HandCoins } from "lucide-react";
+import { LayoutDashboard, Plus, ChevronDown } from "lucide-react";
 import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx";
 import { Link, linkOptions } from "@tanstack/react-router";
 import Logo from "./Logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar.tsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faChartPie, faCreditCard, faPiggyBank, faWallet } from "@fortawesome/free-solid-svg-icons";
 
 const items: NavItem[] = [
     {
@@ -20,7 +22,7 @@ const items: NavItem[] = [
             to: "/accounts",
             label: "Accounts",
         }),
-        icon: Wallet,
+        icon: () => <FontAwesomeIcon icon={faWallet} />,
     },
     {
         title: "Transactions",
@@ -28,7 +30,7 @@ const items: NavItem[] = [
             to: "/transactions",
             label: "Transactions",
         }),
-        icon: PoundSterling,
+        icon: () => <FontAwesomeIcon icon={faCreditCard} />,
     },
     {
         title: "Analytics",
@@ -36,7 +38,7 @@ const items: NavItem[] = [
             to: "/analytics",
             label: "Analytics",
         }),
-        icon: ChartPie,
+        icon: () => <FontAwesomeIcon icon={faChartPie} />,
     },
     {
         title: "Budgets",
@@ -44,7 +46,7 @@ const items: NavItem[] = [
             to: "/budgets",
             label: "Budgets",
         }),
-        icon: HandCoins,
+        icon: () => <FontAwesomeIcon icon={faPiggyBank} />,
     },
 ];
 
@@ -65,7 +67,7 @@ export default function AppTopbar({ username }: { username: string }) {
                         {username?.[0].toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
-                <span className="md:inline-flex items-center gap-1 text-sm hidden">
+                <span className="md:inline-flex items-center text-sm hidden">
                     {username?.slice(0,1).toUpperCase() + username?.slice(1)}
                     <ChevronDown className={"w-[1em] h-auto transition-transform duration-300 me-2"}/>
                 </span>
@@ -73,4 +75,3 @@ export default function AppTopbar({ username }: { username: string }) {
         </header>
     );
 }
-

@@ -32,6 +32,7 @@ import { ChevronDown } from "lucide-react";
 import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
 import {transactionsAtom, transactionsPaginationAtom} from "@/lib/atoms.ts";
+import { ColumnFilterButton } from "@/components/features/transactions/ColumnFilterButton.tsx";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction, never>[]
@@ -41,7 +42,7 @@ interface TransactionTableProps {
 }
 
 export function TransactionsTable({columns, data, isLoading, className}: TransactionTableProps) {
-    "use no memo";
+    "use no memo"; // eslint-disable-line
     
     const [{fetchNextPage, hasNextPage}] = useAtom(transactionsAtom);
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -121,7 +122,8 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                         <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
                                 <span className="text-xl font-medium mr-auto md:pr-10">Transaction History</span>
-                                <TransactionSearchButton column={table.getColumn("name")} />
+                                <TransactionSearchButton />
+                                <ColumnFilterButton />
                                 <ColumnVisibilityButton columns={table.getAllColumns()}/>
                             </div>
                         </TableCell>
@@ -181,10 +183,10 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between">
                                 <span className="pl-2">
-                                    <span className="font-bold">
+                                    <span className="font-bold text-secondary">
                                         {table.getFilteredRowModel().rows.length}
                                     </span>
-                                    &nbsp;Total Transactions
+                                    &nbsp;Total Transaction{table.getFilteredRowModel().rows.length > 1 && "s"}
                                 </span>
                                 <div>
                                     <span className="mr-2">Per Page:</span>

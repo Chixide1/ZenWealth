@@ -160,8 +160,9 @@ export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
                     <TabsTrigger
                         key={item.title + "::NavigationTabsDesktop"}
                         value={item.url.to || "/"}
+                        className="gap-1.5"
                     >
-                        <item.icon className={"h-auto w-4 pt-px"}/>
+                        <item.icon className="h-auto w-4"/>
                         <span className="text-xs hidden md:inline">{item.title}</span>
                     </TabsTrigger>
                 ))}
