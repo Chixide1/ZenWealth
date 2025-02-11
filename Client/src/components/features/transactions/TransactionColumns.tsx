@@ -78,7 +78,7 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
             return (
                 <ColumnSortingButton
                     onClick={() => {
-                        setParams(params.sort === "AmountAsc" ? {...params, sort: "AmountDesc"} : {...params, sort: "AmountAsc"});
+                        setParams(params.sort === "Amount-Asc" ? {...params, sort: "Amount-Desc"} : {...params, sort: "Amount-Asc"});
                         setPagination({...pagination, pageIndex: 0});
                     }}
                     name={column.id}
@@ -113,7 +113,7 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
             return (
                 <ColumnSortingButton
                     onClick={() => {
-                        setParams(params.sort === "DateAsc" ? {...params, sort: null} : {...params, sort: "DateAsc"});
+                        setParams(params.sort === "Date-Asc" ? {...params, sort: null} : {...params, sort: "Date-Asc"});
                         setPagination({...pagination, pageIndex: 0});
                     }}
                     name={column.id}

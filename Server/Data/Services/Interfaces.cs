@@ -21,17 +21,18 @@ public interface IAccountsService
 
 public interface ITransactionsService
 {
-    Task<List<TransactionDto>> GetTransactionsAsync(
-        string userId,
-        int id,
-        DateOnly date,
-        int pageSize,
+    Task<List<TransactionDto>> GetTransactionsAsync(string userId,
+        int id = 0,
+        DateOnly date = new DateOnly(),
+        int pageSize = 10,
         string? name = null,
         int? minAmount = null,
         int? maxAmount = null,
         DateOnly? beginDate = null,
         DateOnly? endDate = null,
-        string? sort = null
+        string? sort = null,
+        int[]? excludeId = null,
+        int? nextAmount = null
     );
     
     Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId);

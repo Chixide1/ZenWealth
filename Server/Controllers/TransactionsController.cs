@@ -20,7 +20,8 @@ public class TransactionsController(
     [ProducesResponseType(typeof(Responses.GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllUserTransactions(
         int cursor = 0, DateOnly date = new DateOnly(), int pageSize = 10,
-        string? name = null, string? sort = null
+        string? name = null, string? sort = null, [FromQuery(Name = "excludeId")] int[]? excludeId = null,
+        int? nextAmount = null
     )
     {
         var user = await userManager.GetUserAsync(User);
@@ -38,18 +39,20 @@ public class TransactionsController(
         await itemsService.UpdateItemsAsync(user.Id);
 
         var transactions = await transactionsService.GetTransactionsAsync(
-            user.Id,
+            userId: user.Id,
             id: cursor,
-            date,
-            pageSize,
-            name, 
-            sort: sort
+            date: date,
+            pageSize: pageSize,
+            name: name, 
+            sort: sort,
+            excludeId: excludeId,
+            nextAmount: nextAmount
         );
 
         return Ok(new Responses.GetAllUserTransactionsResponse
         (
             Transactions: transactions.Count >= pageSize ? transactions[..pageSize] : transactions,
-            NextCursor: transactions.Count > pageSize ? transactions.Last().Id : null,
+            NextCursor: transactions.Count >= pageSize ? transactions.Last().Id : null,
             NextDate: transactions.Count >= pageSize ? transactions.Last().Date : null
         ));
     }

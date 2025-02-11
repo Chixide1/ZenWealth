@@ -89,7 +89,7 @@ public class ItemsService(
                 item.LastFetched =  string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
                 item.TransactionCount += transactions.Added.Count;
                 hasMore = transactions.HasMore;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
                 logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
                     transactions.Added.Count, item.Id, userId
@@ -158,7 +158,7 @@ public class ItemsService(
                         TransactionId = transaction.TransactionId!,
                         AccountId = account.Id,
                         UserId = userId,
-                        Name = transaction.Name,
+                        Name = transaction.Name ?? "",
                         Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
                         Date = transaction.Date ?? new DateOnly(),
                         Datetime = transaction.Datetime,

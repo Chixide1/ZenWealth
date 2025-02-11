@@ -21,22 +21,21 @@ public class TransactionsService(
 {
     public async Task<List<TransactionDto>> GetTransactionsAsync(
         string userId,
-        int id,
-        DateOnly date,
-        int pageSize,
+        int id = 0,
+        DateOnly date = new DateOnly(),
+        int pageSize = 10,
         string? name = null,
         int? minAmount = null,
         int? maxAmount = null,
         DateOnly? beginDate = null,
         DateOnly? endDate = null,
-        string? sort = null
+        string? sort = null,
+        int[]? excludeId = null,
+        int? nextAmount = null
     )
     {
-        var transactions = context.Transactions.AsQueryable();
-        
-        // Always get only user transactions
-        transactions = transactions
-            .Where(t => t.UserId == userId);
+        // Always get only the user's transactions
+        var transactions = context.Transactions.Where(t => t.UserId == userId);
 
         // Filters
         if (!string.IsNullOrWhiteSpace(name))
@@ -67,29 +66,35 @@ public class TransactionsService(
         // Sorting
         transactions = sort?.ToLower() switch
         {
-            "amountasc" => transactions.OrderBy(t => t.Amount),
-            "amountdesc" => transactions.OrderByDescending(t => t.Amount),
-            "dateasc"  => transactions.OrderBy(t => t.Date),
+            "amount-asc" => transactions.OrderBy(t => t.Amount),
+            "amount-desc" => transactions.OrderByDescending(t => t.Amount),
+            "date-asc"  => transactions.OrderBy(t => t.Date),
             _ => transactions.OrderByDescending(t => t.Date)
         };
 
-        if (id != 0)
+        // Pagination
+        if (id != 0 || (sort is not null && sort.ToLower().Contains("amount")))
         {
-            transactions = sort?.ToLower() switch
+            if (sort?.ToLower() == "amount-asc" && excludeId is not null)
             {
-                // "amountasc" => transactions.OrderBy(t => t.Amount),
-                //
-                // "amountdesc" => transactions.Where(t => t.Amount),
-        
-                "dateasc"  => transactions.Where(t => t.Date >= date && t.Id >= id && t.UserId == userId),
-        
-                _ => transactions.Where(t => t.Date <= date && t.Id <= id)
-            };
+                transactions = transactions.Where(t => t.Amount >= nextAmount && excludeId.Contains(t.Id) == false);
+            }
+            else if (sort?.ToLower() == "amount-desc" && excludeId is not null)
+            {
+                transactions = transactions.Where(t => t.Amount <= nextAmount && excludeId.Contains(t.Id) == false);
+            }
+            else if (sort?.ToLower() == "date-asc")
+            {
+                transactions = transactions.Where(t => t.Date >= date && t.Id >= id && t.UserId == userId);
+            }
+            else
+            {
+                transactions = transactions.Where(t => t.Date <= date && t.Id <= id);
+            }
         }
 
         // Final Query
         var query = transactions
-            .Where(t => t.UserId == userId)
             .Select(t => new TransactionDto()
             {
                 Id = t.Id,

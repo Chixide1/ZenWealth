@@ -74,7 +74,7 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
             nextDate: new Date(),
         };
     },
-    getNextPageParam: (lastPage, allPages): TransactionRequest | null => {
+    getNextPageParam: (lastPage): TransactionRequest | null => {
         if(lastPage.nextCursor === null && lastPage.nextDate === null) {
             return null;
         }
