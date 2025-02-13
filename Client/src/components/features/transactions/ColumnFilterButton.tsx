@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 type FilterButtonProps = {
     /** The className that will be used for the DropdownMenuContent within the DropdownMenu */
     className?: string;
-    
 }
 
 /** This returns a filter button with the column name and a dropdown which can be provided as a child */
@@ -17,7 +16,7 @@ export function ColumnFilterButton({className}: FilterButtonProps) {
     return (
         <DropdownMenu open={open} onOpenChange={setOpen} modal={false} >
             <DropdownMenuTrigger asChild>
-                <Button className="capitalize text-sm gap-1 text-black" variant="accent" size="sm">
+                <Button className="capitalize text-xs gap-1 text-black" variant="accent" size="sm">
                     <Filter className="transition-colors duration-200" strokeWidth={1.5} />
                     Filters
                 </Button>

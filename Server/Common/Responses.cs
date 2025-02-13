@@ -15,4 +15,10 @@ public abstract class Responses
         int? NextCursor,
         DateOnly? NextDate
     );
+    
+    public record GetAllUserTransactionsResponseAmount(
+        List<TransactionDto> Transactions,
+        int? NextCursor,
+        double? NextAmount
+    );
 }

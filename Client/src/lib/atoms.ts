@@ -8,6 +8,7 @@ import { VisibilityState } from "@tanstack/react-table";
 type TransactionRequest = {
     cursor: number | null,
     date: Date | null,
+    amount: number | null,
 }
 
 type TransactionFilters = {
@@ -60,11 +61,14 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
         const params: TransactionParams = {
             ...pageParam as TransactionRequest,
             ...get(transactionsParamsAtom),
+            name: get(transactionsParamsAtom).name === "" ? null : get(transactionsParamsAtom).name,
             pageSize: get(transactionsPaginationAtom).pageSize,
         };
 
+        console.log(params);
+        
         const response = await api<TransactionData>("/transactions", { 
-            params: { ...params }
+            params: { ...params },
         })
             .catch((e: AxiosError<TransactionData>) => console.error(e));
         
@@ -72,14 +76,19 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
             transactions: [],
             nextCursor: null,
             nextDate: new Date(),
+            nextAmount: null,
         };
     },
     getNextPageParam: (lastPage): TransactionRequest | null => {
-        if(lastPage.nextCursor === null && lastPage.nextDate === null) {
+        if(lastPage.nextAmount){
+            return {cursor: lastPage.nextCursor, date: null, amount: lastPage.nextAmount};
+        }
+        
+        if(lastPage.nextCursor === null && lastPage.nextDate === null || lastPage.nextAmount === null && lastPage.nextCursor === null) {
             return null;
         }
         
-        return {cursor: lastPage.nextCursor, date: lastPage.nextDate};
+        return {cursor: lastPage.nextCursor, date: lastPage.nextDate, amount: null};
     },
     initialPageParam: {cursor: null, date: null},
     placeholderData: (previousData) => previousData,

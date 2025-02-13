@@ -52,7 +52,7 @@ const items: NavItem[] = [
 
 export default function AppTopbar({ username }: { username: string }) {
     return (
-        <header className="z-10 flex items-center justify-between py-4 px-4 w-full text-sm">
+        <header className="z-10 flex items-center justify-between gap-3 py-4 px-4 w-full text-sm">
             <Link className="flex items-center mr-16" to="/">
                 <Logo className="w-auto h-7" iconProps={{className: "h-7 md:h-8"}} textProps={{ className: "hidden" }} />
             </Link>
@@ -61,7 +61,7 @@ export default function AppTopbar({ username }: { username: string }) {
                 <Plus className="w-auto h-2"/>
                 <span className="hidden md:inline">Add Account</span>
             </LinkButton>
-            <div className="inline-flex items-center gap-2 bg-background rounded-full ms-2 md:p-1 md:border border-background">
+            <div className="inline-flex items-center gap-2 bg-background rounded-full md:p-1 md:border border-background">
                 <Avatar className="w-10 h-10 md:w-6 md:h-6">
                     <AvatarFallback className="text-black text-lg">
                         {username?.[0].toUpperCase()}

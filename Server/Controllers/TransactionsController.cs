@@ -21,7 +21,7 @@ public class TransactionsController(
     public async Task<IActionResult> GetAllUserTransactions(
         int cursor = 0, DateOnly date = new DateOnly(), int pageSize = 10,
         string? name = null, string? sort = null, [FromQuery(Name = "excludeId")] int[]? excludeId = null,
-        int? nextAmount = null
+        double? amount = null
     )
     {
         var user = await userManager.GetUserAsync(User);
@@ -46,9 +46,19 @@ public class TransactionsController(
             name: name, 
             sort: sort,
             excludeId: excludeId,
-            nextAmount: nextAmount
+            amount: amount
         );
 
+        if (sort is not null && sort.ToLower().Contains("amount"))
+        {
+            return Ok(new Responses.GetAllUserTransactionsResponseAmount
+            (
+                Transactions: transactions.Count >= pageSize ? transactions[..pageSize] : transactions,
+                NextCursor: transactions.Count >= pageSize ? transactions[..pageSize].Last().Id : null,
+                NextAmount: transactions.Count > pageSize ? transactions[..pageSize].Last().Amount : null
+            ));
+        }
+        
         return Ok(new Responses.GetAllUserTransactionsResponse
         (
             Transactions: transactions.Count >= pageSize ? transactions[..pageSize] : transactions,

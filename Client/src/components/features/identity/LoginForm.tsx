@@ -104,6 +104,7 @@ export function LoginForm() {
             register: {...register("email")},
             icon: Mail,
             label: "Email",
+            autocomplete: "username"
         },
         {
             id: "loginFormPassword",
@@ -111,6 +112,7 @@ export function LoginForm() {
             register: {...register("password")},
             icon: Lock,
             label: "Password",
+            autocomplete: "current-password"
         },
     ];
 

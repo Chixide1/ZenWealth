@@ -219,6 +219,7 @@ namespace Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "varchar(255)", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     TransactionId = table.Column<string>(type: "varchar(100)", nullable: false),
                     AccountId = table.Column<int>(type: "int", nullable: false),
@@ -226,19 +227,18 @@ namespace Server.Migrations
                     Amount = table.Column<double>(type: "float", nullable: false),
                     IsoCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
                     UnofficialCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
-                    Name = table.Column<string>(type: "varchar(255)", nullable: true),
                     MerchantName = table.Column<string>(type: "varchar(255)", nullable: true),
                     LogoUrl = table.Column<string>(type: "varchar(255)", nullable: true),
                     Website = table.Column<string>(type: "varchar(255)", nullable: true),
                     Datetime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     PaymentChannel = table.Column<string>(type: "varchar(255)", nullable: true),
-                    PersonalFinanceCategory = table.Column<string>(type: "varchar(255)", nullable: true),
+                    Category = table.Column<string>(type: "varchar(255)", nullable: true),
                     TransactionCode = table.Column<string>(type: "varchar(255)", nullable: true),
-                    PersonalFinanceCategoryIconUrl = table.Column<string>(type: "varchar(255)", nullable: true)
+                    CategoryIconUrl = table.Column<string>(type: "varchar(255)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transactions", x => new { x.Date, x.Id })
+                    table.PrimaryKey("PK_Transactions", x => x.Id)
                         .Annotation("SqlServer:Clustered", false);
                     table.ForeignKey(
                         name: "FK_Transactions_Accounts_AccountId",
@@ -313,11 +313,27 @@ namespace Server.Migrations
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transactions_Amount_Id",
+                table: "Transactions",
+                columns: new[] { "Amount", "Id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_Category",
+                table: "Transactions",
+                column: "Category");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Transactions_Date_Id",
                 table: "Transactions",
                 columns: new[] { "Date", "Id" },
-                descending: [true, true])
+                descending: new bool[0])
                 .Annotation("SqlServer:Clustered", true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_Name",
+                table: "Transactions",
+                column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_UserId",

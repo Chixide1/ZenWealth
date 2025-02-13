@@ -17,7 +17,8 @@
 export type TransactionData = {
     transactions: Transaction[],
     nextCursor: number | null,
-    nextDate: Date | null
+    nextDate: Date | null,
+    nextAmount: number | null,
 }
 
 export type Account = {

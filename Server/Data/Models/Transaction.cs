@@ -1,21 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Going.Plaid.Entity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Data.Models;
 
 [Index(nameof(Name))]
-[Index(nameof(Amount))]
-[Index(nameof(MerchantName))]
-[Index(nameof(PersonalFinanceCategory))]
+[Index(nameof(Category))]
 public class Transaction
 {
 	/// <summary>
 	/// <para>Unique ID for each Transaction</para>
 	/// </summary>
-	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	public int Id { get; init; }
+	
+	/// <summary>
+	/// <para>The merchant name or transaction description. </para>
+	/// <para>Note: This is a legacy field that is not actively maintained. Use <c>merchant_name</c> instead for the merchant name.</para>
+	/// <para>If the <c>transactions</c> object was returned by a Transactions endpoint such as <c>/transactions/sync</c> or <c>/transactions/get</c>, this field will always appear. If the <c>transactions</c> object was returned by an Assets endpoint such as <c>/asset_report/get/</c> or <c>/asset_report/pdf/get</c>, this field will only appear in an Asset Report with Insights.</para>
+	/// </summary>
+	[Column(TypeName = "varchar(255)")]
+	public required string Name { get; init; }
 	
 	/// <summary>
 	/// <para>For pending transactions, the date that the transaction occurred; for posted transactions, the date that the transaction posted. Both dates are returned in an <a href="https://wikipedia.org/wiki/ISO_8601">ISO 8601</a> format ( <c>YYYY-MM-DD</c> ). To receive information about the date that a posted transaction was initiated, see the <c>authorized_date</c> field.</para>
@@ -68,14 +71,6 @@ public class Transaction
 	public string? UnofficialCurrencyCode { get; init; }
 
 	/// <summary>
-	/// <para>The merchant name or transaction description. </para>
-	/// <para>Note: This is a legacy field that is not actively maintained. Use <c>merchant_name</c> instead for the merchant name.</para>
-	/// <para>If the <c>transactions</c> object was returned by a Transactions endpoint such as <c>/transactions/sync</c> or <c>/transactions/get</c>, this field will always appear. If the <c>transactions</c> object was returned by an Assets endpoint such as <c>/asset_report/get/</c> or <c>/asset_report/pdf/get</c>, this field will only appear in an Asset Report with Insights.</para>
-	/// </summary>
-	[Column(TypeName = "varchar(255)")]
-	public required string Name { get; init; }
-
-	/// <summary>
 	/// <para>The merchant name, as enriched by Plaid from the <c>name</c> field. This is typically a more human-readable version of the merchant counterparty in the transaction. For some bank transactions (such as checks or account transfers) where there is no meaningful merchant name, this value will be <c>null</c>.</para>
 	/// </summary>
 	[Column(TypeName = "varchar(255)")]
@@ -110,7 +105,7 @@ public class Transaction
 	/// <para>See the <a href="https://plaid.com/documents/transactions-personal-finance-category-taxonomy.csv"><c>taxonomy CSV file</c></a> for a full list of personal finance categories. If you are migrating to personal finance categories from the legacy categories, also refer to the <a href="https://plaid.com/docs/transactions/pfc-migration/"><c>migration guide</c></a>.</para>
 	/// </summary>
 	[Column(TypeName = "varchar(255)")]
-	public string? PersonalFinanceCategory { get; init; }
+	public string? Category { get; init; }
 
 	/// <summary>
 	/// <para>An identifier classifying the transaction type.</para>
@@ -122,5 +117,5 @@ public class Transaction
 	/// <para>The URL of an icon associated with the primary personal finance category. The icon will always be 100×100 pixel PNG file.</para>
 	/// </summary>
 	[Column(TypeName = "varchar(255)")]
-	public string? PersonalFinanceCategoryIconUrl { get; init; }
+	public string? CategoryIconUrl { get; init; }
 }

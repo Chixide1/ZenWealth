@@ -17,13 +17,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Transaction>()
-            .HasKey(t => new { t.Date, t.Id })
+            .HasKey(t => t.Id)
             .IsClustered(false);
-
+        
         modelBuilder.Entity<Transaction>()
             .HasIndex(t => new { t.Date, t.Id })
-            .IsClustered()
-            .IsDescending([true, true]);
+            .IsDescending([true, true])
+            .IsClustered();
+
+        modelBuilder.Entity<Transaction>()
+            .HasIndex(t => new { t.Amount, t.Id })
+            .IsUnique();
         
         base.OnModelCreating(modelBuilder);
     }

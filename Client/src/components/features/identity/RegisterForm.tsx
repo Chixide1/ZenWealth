@@ -98,6 +98,7 @@ export function RegisterForm(){
             register: {...register("email")},
             icon: Mail,
             label: "Email",
+            autocomplete: "username"
         },
         {
             id: "registerFormPassword",
@@ -105,6 +106,7 @@ export function RegisterForm(){
             register: {...register("password")},
             icon: Lock,
             label: "Password",
+            autocomplete: "new-password"
         },
         {
             id: "registerFormConfirmPassword",
@@ -112,6 +114,7 @@ export function RegisterForm(){
             register: {...register("confirmPassword")},
             icon: Lock,
             label: "Confirm Password",
+            autocomplete: "new-password"
         }
     ];
     

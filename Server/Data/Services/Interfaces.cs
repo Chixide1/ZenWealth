@@ -32,7 +32,7 @@ public interface ITransactionsService
         DateOnly? endDate = null,
         string? sort = null,
         int[]? excludeId = null,
-        int? nextAmount = null
+        double? amount = null
     );
     
     Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId);

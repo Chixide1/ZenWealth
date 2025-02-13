@@ -3,7 +3,7 @@ import {Input} from "@/components/ui/input.tsx";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { useAtom } from "jotai"
+import { useAtom } from "jotai";
 import {transactionsParamsAtom} from "@/lib/atoms.ts";
 
 interface TransactionSearchButtonProps {

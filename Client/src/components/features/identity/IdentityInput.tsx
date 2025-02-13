@@ -10,9 +10,10 @@ export type IdentityInputConfig = {
     placeholder?: string;
     register: ReturnType<UseFormRegister<FieldValues>>;
     icon: LucideIcon;
+    autocomplete?: string;
 }
 
-export function IdentityInput({id, label, type = "text", placeholder, register, icon: Icon}: IdentityInputConfig) {
+export function IdentityInput({id, label, type = "text", placeholder, register, icon: Icon, autocomplete}: IdentityInputConfig) {
     return (
         <div className="relative border-b border-b-neutral-700 last:border-b-0">
             <Label
@@ -25,10 +26,11 @@ export function IdentityInput({id, label, type = "text", placeholder, register, 
                 {label}
             </Label>
             <Input
-                className="pl-14 pb-5 bg-neutral-300/[0.07] border-0 placeholder:text-transparent rounded-none border-b-0 pt-9"
+                className="pl-14 focus-visible:ring-0 focus-visible:bg-background/20 pb-5 bg-neutral-300/[0.07] border-0 placeholder:text-transparent rounded-none border-b-0 pt-9"
                 placeholder={placeholder}
                 type={type}
                 id={id}
+                autoComplete={autocomplete}
                 {...register}
             />
         </div>

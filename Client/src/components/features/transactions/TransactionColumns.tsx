@@ -27,7 +27,7 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
                             className="rounded min-w-6 h-auto ms-1"
                             width={imageSize}
                         />
-                    <span>{name}</span>
+                    <span title={name}>{name}</span>
                 </div>
             );
         },

@@ -31,7 +31,7 @@ public class TransactionsService(
         DateOnly? endDate = null,
         string? sort = null,
         int[]? excludeId = null,
-        int? nextAmount = null
+        double? amount = null
     )
     {
         // Always get only the user's transactions
@@ -40,7 +40,7 @@ public class TransactionsService(
         // Filters
         if (!string.IsNullOrWhiteSpace(name))
         {
-            transactions = transactions.Where(t => t.Name.Contains(name));
+            transactions = transactions.Where(t => t.Name.StartsWith(name));
         }
         
         if (minAmount is not null)
@@ -66,22 +66,24 @@ public class TransactionsService(
         // Sorting
         transactions = sort?.ToLower() switch
         {
-            "amount-asc" => transactions.OrderBy(t => t.Amount),
-            "amount-desc" => transactions.OrderByDescending(t => t.Amount),
+            "amount-asc" => transactions.OrderBy(t => t.Amount)
+                .ThenBy(t => t.Id),
+            "amount-desc" => transactions.OrderByDescending(t => t.Amount)
+                .ThenByDescending(t => t.Id),
             "date-asc"  => transactions.OrderBy(t => t.Date),
             _ => transactions.OrderByDescending(t => t.Date)
         };
 
         // Pagination
-        if (id != 0 || (sort is not null && sort.ToLower().Contains("amount")))
+        if (id != 0)
         {
-            if (sort?.ToLower() == "amount-asc" && excludeId is not null)
+            if (sort?.ToLower() == "amount-asc")
             {
-                transactions = transactions.Where(t => t.Amount >= nextAmount && excludeId.Contains(t.Id) == false);
+                transactions = transactions.Where(t => t.Amount > amount || (t.Amount == amount && t.Id > id) );
             }
-            else if (sort?.ToLower() == "amount-desc" && excludeId is not null)
+            else if (sort?.ToLower() == "amount-desc")
             {
-                transactions = transactions.Where(t => t.Amount <= nextAmount && excludeId.Contains(t.Id) == false);
+                transactions = transactions.Where(t => t.Amount < amount || (t.Amount == amount && t.Id < id));
             }
             else if (sort?.ToLower() == "date-asc")
             {
@@ -106,10 +108,10 @@ public class TransactionsService(
                 Datetime = t.Datetime,
                 IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
                 UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
-                PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+                PersonalFinanceCategory = t.Category ?? "UNKNOWN",
                 MerchantName = t.MerchantName,
                 LogoUrl = t.LogoUrl,
-                PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+                PersonalFinanceCategoryIconUrl = t.CategoryIconUrl,
                 TransactionCode = t.TransactionCode
             })
             .Take(pageSize + 1);
@@ -164,10 +166,10 @@ public class TransactionsService(
             Datetime = t.Datetime,
             IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
             UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
-            PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+            PersonalFinanceCategory = t.Category ?? "UNKNOWN",
             MerchantName = t.MerchantName,
             LogoUrl = t.LogoUrl,
-            PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+            PersonalFinanceCategoryIconUrl = t.CategoryIconUrl,
             TransactionCode = t.TransactionCode
         }).ToListAsync();
 
@@ -190,10 +192,10 @@ public class TransactionsService(
             Datetime = t.Datetime,
             IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
             UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
-            PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+            PersonalFinanceCategory = t.Category ?? "UNKNOWN",
             MerchantName = t.MerchantName,
             LogoUrl = t.LogoUrl,
-            PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+            PersonalFinanceCategoryIconUrl = t.CategoryIconUrl,
             TransactionCode = t.TransactionCode
         }).ToListAsync();
 
@@ -216,10 +218,10 @@ public class TransactionsService(
             Datetime = t.Datetime,
             IsoCurrencyCode = t.IsoCurrencyCode ?? "GBP",
             UnofficialCurrencyCode = t.UnofficialCurrencyCode ?? "GBP",
-            PersonalFinanceCategory = t.PersonalFinanceCategory ?? "UNKNOWN",
+            PersonalFinanceCategory = t.Category ?? "UNKNOWN",
             MerchantName = t.MerchantName,
             LogoUrl = t.LogoUrl,
-            PersonalFinanceCategoryIconUrl = t.PersonalFinanceCategoryIconUrl,
+            PersonalFinanceCategoryIconUrl = t.CategoryIconUrl,
             TransactionCode = t.TransactionCode
         }).ToListAsync();
         
@@ -236,13 +238,13 @@ public class TransactionsService(
         var results = await context.Database.SqlQuery<TopExpenseCategory>(
             $"""
              select top 3
-                 PersonalFinanceCategory as Category,
-                 PersonalFinanceCategoryIconUrl as IconUrl,
+                 Category as Category,
+                 CategoryIconUrl as IconUrl,
                  Sum(Amount) as Expenditure,
                  (select SUM(Amount) from Transactions where Date > DATEADD(month, -1, GETDATE()) and Amount > 0) as Total
              from Transactions
              where UserId={userId} and Date > DATEADD(month, -1, GETDATE()) and Amount > 0
-             group by PersonalFinanceCategory, PersonalFinanceCategoryIconUrl
+             group by Category, CategoryIconUrl
              order by Expenditure desc
              """
         ).ToListAsync();

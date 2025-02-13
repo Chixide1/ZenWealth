@@ -12,8 +12,8 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250207011318_Indexes")]
-    partial class Indexes
+    [Migration("20250213101309_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -246,9 +246,6 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Data.Models.Transaction", b =>
                 {
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
@@ -260,6 +257,15 @@ namespace Server.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("CategoryIconUrl")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
 
                     b.Property<DateTimeOffset?>("Datetime")
                         .HasColumnType("datetimeoffset");
@@ -280,12 +286,6 @@ namespace Server.Migrations
                     b.Property<string>("PaymentChannel")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("PersonalFinanceCategory")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("PersonalFinanceCategoryIconUrl")
-                        .HasColumnType("varchar(255)");
-
                     b.Property<string>("TransactionCode")
                         .HasColumnType("varchar(255)");
 
@@ -302,21 +302,20 @@ namespace Server.Migrations
                     b.Property<string>("Website")
                         .HasColumnType("varchar(255)");
 
-                    b.HasKey("Date", "Id");
+                    b.HasKey("Id");
 
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Date", "Id"), false);
+                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("Amount");
-
-                    b.HasIndex("MerchantName");
+                    b.HasIndex("Category");
 
                     b.HasIndex("Name");
 
-                    b.HasIndex("PersonalFinanceCategory");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("Amount", "Id")
+                        .IsUnique();
 
                     b.HasIndex("Date", "Id")
                         .IsDescending();

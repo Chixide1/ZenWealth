@@ -182,12 +182,12 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                     <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between">
-                                <span className="pl-2">
-                                    <span className="font-bold text-secondary">
-                                        {table.getFilteredRowModel().rows.length}
-                                    </span>
-                                    &nbsp;Total Transaction{table.getFilteredRowModel().rows.length > 1 && "s"}
-                                </span>
+                                {/*<span className="pl-2">*/}
+                                {/*    <span className="font-bold text-secondary">*/}
+                                {/*        {table.getFilteredRowModel().rows.length}*/}
+                                {/*    </span>*/}
+                                {/*    &nbsp;Total Transaction{table.getFilteredRowModel().rows.length > 1 && "s"}*/}
+                                {/*</span>*/}
                                 <div>
                                     <span className="mr-2">Per Page:</span>
                                     <DropdownMenu modal={false} open={pageSizeOpen} onOpenChange={setPageSizeOpen}>
