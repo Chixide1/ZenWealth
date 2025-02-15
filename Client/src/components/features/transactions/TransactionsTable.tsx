@@ -1,15 +1,8 @@
 ﻿import {
     ColumnDef,
     flexRender,
-    ColumnFiltersState,
     getCoreRowModel,
-    SortingState,
-    getSortedRowModel,
     useReactTable,
-    getFilteredRowModel,
-    getFacetedRowModel,
-    getFacetedUniqueValues,
-    getFacetedMinMaxValues,
     VisibilityState,
 } from "@tanstack/react-table";
 import { useAtom } from "jotai";
@@ -45,39 +38,6 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
     "use no memo"; // eslint-disable-line
     
     const [{fetchNextPage, hasNextPage}] = useAtom(transactionsAtom);
-    const [sorting, setSorting] = useState<SortingState>([]);
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-        {
-            id: "category",
-            value: {
-                "bank fees": true,
-                "home improvement": true,
-                "rent and utilities": true,
-                "entertainment": true,
-                "income": true,
-                "transfer in": true,
-                "food and drink": true,
-                "loan payments": true,
-                "transfer out": true,
-                "general merchandise": true,
-                "medical": true,
-                "transportation": true,
-                "general services": true,
-                "personal care": true,
-                "travel": true,
-                "government and non profit": true,
-                "other": true,
-                "unknown": true,
-            }
-        },
-        {
-            id: "amount",
-            value: {
-                min: Number.MIN_SAFE_INTEGER,
-                max: Number.MAX_SAFE_INTEGER,
-            }
-        },
-    ]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         category: true,
@@ -91,20 +51,11 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
     const table = useReactTable<Transaction>({
         data: data?.transactions ?? [],
         columns,
-        getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        getFacetedMinMaxValues: getFacetedMinMaxValues(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
         onColumnVisibilityChange: setColumnVisibility,
         onPaginationChange: setPagination,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
         state: {
             pagination,
-            sorting,
-            columnFilters,
             columnVisibility,
             columnOrder,
         },
@@ -181,13 +132,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                 <TableFooter className="bg-transparent">
                     <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
                         <TableCell colSpan={columns.length} className="px-6 py-6">
-                            <div className="flex items-center justify-between">
-                                {/*<span className="pl-2">*/}
-                                {/*    <span className="font-bold text-secondary">*/}
-                                {/*        {table.getFilteredRowModel().rows.length}*/}
-                                {/*    </span>*/}
-                                {/*    &nbsp;Total Transaction{table.getFilteredRowModel().rows.length > 1 && "s"}*/}
-                                {/*</span>*/}
+                            <div className="flex items-center justify-between px-6">
                                 <div>
                                     <span className="mr-2">Per Page:</span>
                                     <DropdownMenu modal={false} open={pageSizeOpen} onOpenChange={setPageSizeOpen}>

@@ -19,6 +19,6 @@ public abstract class Responses
     public record GetAllUserTransactionsResponseAmount(
         List<TransactionDto> Transactions,
         int? NextCursor,
-        double? NextAmount
+        decimal? NextAmount
     );
 }

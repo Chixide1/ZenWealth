@@ -55,7 +55,8 @@ public class Transaction
 	/// <summary>
 	/// <para>The settled value of the transaction, denominated in the transactions's currency, as stated in <c>iso_currency_code</c> or <c>unofficial_currency_code</c>. For all products except Income: Positive values when money moves out of the account; negative values when money moves in. For example, debit card purchases are positive; credit card payments, direct deposits, and refunds are negative. For Income endpoints, values are positive when representing income.</para>
 	/// </summary>
-	public required double Amount { get; init; }
+	[Precision(18, 2)] 
+	public required decimal Amount { get; init; }
 
 	/// <summary>
 	/// <para>The ISO-4217 currency code of the transaction. Always <c>null</c> if <c>unofficial_currency_code</c> is non-null.</para>

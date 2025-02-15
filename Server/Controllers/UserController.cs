@@ -10,7 +10,7 @@ namespace Server.Controllers;
 [Route("")]
 [Route("[controller]")]
 [Produces("application/json")]
-public class AuthController(IItemsService itemsService, UserManager<User> userManager) : ControllerBase
+public class UserController(IItemsService itemsService, UserManager<User> userManager) : ControllerBase
 {
     [HttpGet]
     [Authorize]

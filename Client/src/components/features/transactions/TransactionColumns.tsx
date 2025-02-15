@@ -14,15 +14,13 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
             </div>
         ),
         cell: ({row}) => {
-            const name = row.original.merchantName || row.original.name;
+            const name = row.original.name;
             const imageSize = 30;
 
             return (
                 <div className="flex gap-2 items-center justify-start">
                         <img
-                            src={row.original.logoUrl ??
-                                row.original.personalFinanceCategoryIconUrl ??
-                                "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
+                            src={row.original.logoUrl ?? row.original.categoryIconUrl}
                             alt="an image of the transaction logo"
                             className="rounded min-w-6 h-auto ms-1"
                             width={imageSize}
@@ -32,14 +30,8 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
             );
         },
         enableHiding: false,
-        size: 200,
     }),
-    columnHelper.accessor(row => {
-        if(!row.personalFinanceCategory){
-            return "Unknown";
-        }
-        return row.personalFinanceCategory.replace(/_/g, " ");
-    }, {
+    columnHelper.accessor(row => row.category.replace(/_/g, " "), {
         id: "category",
         header: ({column}) => (
             <div className="flex items-center">
@@ -52,7 +44,7 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
             return (
                 <div className="flex gap-2 items-center">
                     <img
-                        src={row.original.personalFinanceCategoryIconUrl || "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
+                        src={row.original.categoryIconUrl}
                         alt="an image of the transaction logo"
                         className="rounded min-w-6 h-auto ms-1 w-7"
                     />
@@ -60,15 +52,6 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
                 </div>
             );
         },
-        filterFn: (row, columnId, filterValue: Record<string, boolean>) => {
-            if(!filterValue){
-                return true;
-            }
-            
-            const colVal = row.getValue<string>(columnId);
-            return filterValue[colVal.toLowerCase()];
-        },
-        size: 200,
     }),
     columnHelper.accessor("amount", {
         header: ({column}) => {
@@ -89,23 +72,14 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
             const amount = row.getValue<number>("amount");
             const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
                 style: "currency",
-                currency: row.original.isoCurrencyCode || row.original.unofficialCurrencyCode,
+                currency: row.original.isoCurrencyCode,
                 currencyDisplay: "symbol",
             }).format(amount);
 
             return <div className="">{formatted}</div>;
         },
-        filterFn: (row, columnId, filterValue: {min: number, max: number}) => {
-            if(!filterValue){
-                return true;
-            }
-            
-            const colVal = row.getValue<number>(columnId);
-            return colVal >= filterValue.min && colVal <= filterValue.max;
-        },
     }),
     columnHelper.accessor("date", {
-        sortingFn: "datetime",
         header: ({column}) => {
             const [params, setParams] = useAtom(transactionsParamsAtom);
             const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
@@ -128,14 +102,16 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
             }).format(dateTime);
 
             return <div className="">{formatted}</div>;
-        },
-        filterFn: (row, columnId, filterValue: {from: Date, to: Date}) => {
-            if(!filterValue){
-                return true;
-            }
-            
-            const colVal = new Date(row.getValue<string>(columnId));
-            return colVal >= filterValue.from && colVal <= filterValue.to;
+        }
+    }),
+    columnHelper.accessor("accountName", {
+        id: "account Name",
+        header: ({column}) => {
+            return (
+                <div className="flex items-center">
+                    <span className="capitalize">{column.id}</span>
+                </div>
+            );
         },
     }),
 ];

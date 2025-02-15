@@ -14,16 +14,19 @@ public interface IItemsService
 
 public interface IAccountsService
 {
-    Task<List<AccountDto>> GetUserAccountsAsync(string userId);
+    Task<string?> GetAccountNameAsync(string accountId);
+    
+    Task<List<AccountDto>> GetAccountsAsync(string userId);
     
     Task UpdateAccountsAsync(string userId);
 }
 
 public interface ITransactionsService
 {
-    Task<List<TransactionDto>> GetTransactionsAsync(string userId,
+    Task<List<TransactionDto>> GetTransactionsAsync(
+        string userId,
         int id = 0,
-        DateOnly date = new DateOnly(),
+        DateOnly date = new(),
         int pageSize = 10,
         string? name = null,
         int? minAmount = null,
@@ -31,8 +34,7 @@ public interface ITransactionsService
         DateOnly? beginDate = null,
         DateOnly? endDate = null,
         string? sort = null,
-        int[]? excludeId = null,
-        double? amount = null
+        decimal? amount = null
     );
     
     Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId);

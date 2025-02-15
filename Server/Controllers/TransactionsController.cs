@@ -18,11 +18,10 @@ public class TransactionsController(
 {
     [HttpGet("[controller]")]
     [ProducesResponseType(typeof(Responses.GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllUserTransactions(
-        int cursor = 0, DateOnly date = new DateOnly(), int pageSize = 10,
+    public async Task<IActionResult> GetAllUserTransactions(int cursor = 0, DateOnly date = new DateOnly(),
+        int pageSize = 10,
         string? name = null, string? sort = null, [FromQuery(Name = "excludeId")] int[]? excludeId = null,
-        double? amount = null
-    )
+        decimal? amount = null)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -45,7 +44,6 @@ public class TransactionsController(
             pageSize: pageSize,
             name: name, 
             sort: sort,
-            excludeId: excludeId,
             amount: amount
         );
 

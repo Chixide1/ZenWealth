@@ -46,7 +46,7 @@ export function TransactionsCard({className, title, transactionsData, allFeature
                                 >
                                     <img
                                         src={transaction.logoUrl ??
-                                            transaction.personalFinanceCategoryIconUrl ??
+                                            transaction.categoryIconUrl ??
                                             "https://plaid-category-icons.plaid.com/PFC_OTHER.png"}
                                         alt="an image of the transaction logo"
                                         className="rounded min-w-6 h-auto"

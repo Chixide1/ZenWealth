@@ -28,7 +28,7 @@ public class AccountsController(
 
         await accountsService.UpdateAccountsAsync(user.Id);
         
-        var accounts = await accountsService.GetUserAccountsAsync(user.Id);
+        var accounts = await accountsService.GetAccountsAsync(user.Id);
             
         return Ok(accounts);
     }

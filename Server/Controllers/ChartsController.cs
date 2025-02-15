@@ -35,12 +35,9 @@ public class ChartsController(
         foreach (var monthlySummary in results)
         {
             monthlySummary.Month = monthlySummary.Month[..3];
-            monthlySummary.Income = Math.Round(Math.Abs(monthlySummary.Income), 2);
-            monthlySummary.Expenditure = Math.Round(monthlySummary.Expenditure, 2);
         }
 
         logger.LogInformation("Retrieved MonthlySummary for user {UserId}", user.Id);
-
         return Ok(results);
     }
     
@@ -56,12 +53,6 @@ public class ChartsController(
         }
 
         var results = await transactionsService.GetRecentTransactions(user.Id);
-        
-        foreach (var r in results.Income)
-        {
-            r.Amount = Math.Round(Math.Abs(r.Amount), 2);
-        }
-
         logger.LogInformation("Retrieved RecentTransactions for user {UserId}", user.Id);
 
         return Ok(results);
@@ -79,13 +70,6 @@ public class ChartsController(
         }
 
         var results = await transactionsService.GetTopExpenseCategories(user.Id);
-        
-        foreach (var r in results)
-        {
-            r.Expenditure = Math.Round(r.Expenditure, 2);
-            r.Total = Math.Round(r.Total, 2);
-        }
-
         logger.LogInformation("Retrieved Top Expense Categories for user {UserId}", user.Id);
 
         return Ok(results);

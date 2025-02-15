@@ -224,7 +224,7 @@ namespace Server.Migrations
                     TransactionId = table.Column<string>(type: "varchar(100)", nullable: false),
                     AccountId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Amount = table.Column<double>(type: "float", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     IsoCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
                     UnofficialCurrencyCode = table.Column<string>(type: "varchar(255)", nullable: true),
                     MerchantName = table.Column<string>(type: "varchar(255)", nullable: true),

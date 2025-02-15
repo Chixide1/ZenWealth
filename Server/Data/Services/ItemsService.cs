@@ -159,7 +159,7 @@ public class ItemsService(
                         AccountId = account.Id,
                         UserId = userId,
                         Name = transaction.Name ?? "",
-                        Amount = transaction.Amount == null ? 0.00 : (double)transaction.Amount,
+                        Amount = transaction.Amount ?? new decimal(0.00),
                         Date = transaction.Date ?? new DateOnly(),
                         Datetime = transaction.Datetime,
                         Website = transaction.Website,

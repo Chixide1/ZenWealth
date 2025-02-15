@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250213101309_Initial")]
+    [Migration("20250215012851_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -255,8 +255,9 @@ namespace Server.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Category")
                         .HasColumnType("varchar(255)");
