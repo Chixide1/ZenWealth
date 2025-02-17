@@ -18,7 +18,8 @@ type TransactionFilters = {
     maxAmount: number | null,
     beginDate: Date | null,
     endDate: Date | null,
-    category: string | null,
+    excludeCategories: string[] | null,
+    excludeAccounts: string[] | null,
 }
 
 type TransactionParams = TransactionRequest & TransactionFilters & {pageSize: number | null};
@@ -42,7 +43,8 @@ export const transactionsParamsAtom = atom<TransactionFilters>({
     maxAmount: null,
     beginDate: null,
     endDate: null,
-    category: null,
+    excludeAccounts: ["test1", "test2"],
+    excludeCategories: ["Other", "Bank Fees"],
 });
 
 export const accountsAtom = atomWithQuery(() => ({
@@ -65,7 +67,7 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
             pageSize: get(transactionsPaginationAtom).pageSize,
         };
 
-        console.log(params);
+        // console.log(params);
         
         const response = await api<TransactionData>("/transactions", { 
             params: { ...params },

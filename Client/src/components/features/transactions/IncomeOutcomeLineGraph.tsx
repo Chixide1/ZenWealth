@@ -1,4 +1,4 @@
-﻿import { Line, LineChart, ResponsiveContainer, type TooltipProps, XAxis } from "recharts";
+﻿import {CartesianGrid, Line, LineChart, ResponsiveContainer, type TooltipProps, XAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartTooltip } from "@/components/ui/chart";
 import { cn, currencyParser } from "@/lib/utils";
@@ -35,6 +35,11 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                             top: 5
                         }}
                     >
+                        <CartesianGrid
+                            strokeDasharray="3 3" 
+                            vertical={false}
+                            className="stroke-neutral-700/50"
+                        />
                         <XAxis
                             dataKey="month"
                             interval={0}

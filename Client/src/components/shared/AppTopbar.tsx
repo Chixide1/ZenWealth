@@ -33,20 +33,20 @@ const items: NavItem[] = [
         icon: () => <FontAwesomeIcon icon={faCreditCard} />,
     },
     {
-        title: "Analytics",
-        url: linkOptions({
-            to: "/analytics",
-            label: "Analytics",
-        }),
-        icon: () => <FontAwesomeIcon icon={faChartPie} />,
-    },
-    {
         title: "Budgets",
         url: linkOptions({
             to: "/budgets",
             label: "Budgets",
         }),
         icon: () => <FontAwesomeIcon icon={faPiggyBank} />,
+    },
+    {
+        title: "Analytics",
+        url: linkOptions({
+            to: "/analytics",
+            label: "Analytics",
+        }),
+        icon: () => <FontAwesomeIcon icon={faChartPie} />,
     },
 ];
 

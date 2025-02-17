@@ -14,7 +14,7 @@ const buttonVariants = cva(
         accent:
           "bg-accent text-black rounded-lg py-2 px-10 hover:bg-accent/80",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-neutral-600 transition-colors duration-100 hover:border-primary",
         secondary:
           "bg-secondary text-black rounded-lg py-2 px-10 hover:bg-secondary/80",
         ghost: "bg-transparent",

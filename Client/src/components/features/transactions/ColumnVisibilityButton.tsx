@@ -1,5 +1,4 @@
 ﻿import {useState} from "react";
-import { Eye} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {Column} from "@tanstack/react-table";
 import {Transaction} from "@/types";
@@ -9,6 +8,8 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faEye} from "@fortawesome/free-regular-svg-icons";
 
 
 export default function ColumnVisibilityButton({columns}: { columns: Column<Transaction>[] }) {
@@ -21,10 +22,13 @@ export default function ColumnVisibilityButton({columns}: { columns: Column<Tran
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="accent"
-                    className="flex items-center text-sm justify-center px-2"
+                    className="flex items-center gap-1 text-xs justify-center px-2"
                     size="sm"
                 >
-                    <Eye className="!h-auto !w-4" strokeWidth={1.5} />    
+                    Columns
+                    <FontAwesomeIcon
+                        icon={faEye}
+                    />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-accent border-0" align="end">
