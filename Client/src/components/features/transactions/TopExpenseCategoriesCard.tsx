@@ -14,8 +14,8 @@ export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCateg
     return (
         <Card className={cn("", className)}>
             <CardHeader className="pb-4 flex flex-row items-center justify-between">
-                    <CardTitle className="">Top Expense Categories</CardTitle>
-                    <ArrowLink to="/transactions" />
+                <CardTitle className="">Top Expense Categories</CardTitle>
+                <ArrowLink to="/transactions" />
             </CardHeader>
             <CardContent className="space-y-8 pt-4 pb-10 text-sm">
                 {gaugeData.map((gauge, index) => (

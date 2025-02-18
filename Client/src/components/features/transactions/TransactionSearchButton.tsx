@@ -28,7 +28,7 @@ export default function TransactionSearchButton({className}: TransactionSearchBu
     return (
         <div className={cn("relative w-full max-w-64", className)}>
             <Label htmlFor="searchTransactions"
-                   className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                className="absolute left-3 top-1/2 transform -translate-y-1/2">
                 <Search className="h-4 w-4 text-neutral-400"/>
             </Label>
             <Input

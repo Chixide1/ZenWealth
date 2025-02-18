@@ -1,6 +1,4 @@
-﻿"use client";
-
-import type React from "react";
+﻿import type React from "react";
 import { Filter, X } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { categories, cn } from "@/lib/utils";
@@ -37,6 +35,12 @@ const filtersMap = new Map([
     ["excludeAccounts", "Accounts"],
     ["excludeCategories", "Categories"],
 ]);
+
+const tabs = [
+    "Amount",
+    "Accounts",
+    "Categories",
+];
 
 export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
     const [{ data }] = useAtom(accountsAtom);
@@ -118,14 +122,14 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className={cn("w-[45rem] text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-0", className)}
+                className={cn("w-[45rem] text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-800", className)}
                 align="end"
             >
                 <div className="grid grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))]">
                     {/* Left Column */}
                     <h2 className="p-4 text-xl border-r border-neutral-600">Filters</h2>
                     <div className="flex flex-col justify-start px-4 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
-                        {Array.from(new Set(filtersMap.values())).map((name) => (
+                        {tabs.map((name) => (
                             <Button
                                 key={name + "::ColumnFilterButtonTabs"}
                                 onClick={() => setActiveFilter(name)}
@@ -166,10 +170,12 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                                         className="flex justify-between items-center"
                                     >
                                         <div>
-                                            <div className="text-sm text-neutral-400">{filter.type}</div>
-                                            <div className="text-white">
+                                            <p className="text-sm text-neutral-400">
+                                                {filter.type}
+                                            </p>
+                                            <p className="text-white">
                                                 {filter.value.replace(/_/g, " ")}
-                                            </div>
+                                            </p>
                                         </div>
                                         <Button
                                             variant="ghost"
@@ -268,117 +274,117 @@ function RenderFilterContent({ activeFilter, accounts, tempFilters, setTempFilte
     };
 
     switch (activeFilter) {
-        case "Amount":
-            if (isLoading) {
-                return <Loading fullScreen={false} className="h-52" />;
-            }
+    case "Amount":
+        if (isLoading) {
+            return <Loading fullScreen={false} className="h-52" />;
+        }
 
-            return (
-                <div className="p-4 h-52">
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label className="text-sm mb-2 block">From</label>
-                            <CurrencyInput
-                                id="input-from"
-                                name="input-from"
-                                placeholder={`Min: £${bounds?.min.toFixed(2)}`}
-                                prefix="£"
-                                value={range[0]}
-                                decimalScale={2}
-                                onValueChange={(value) => {
-                                    handleAmountChange([Number(value), range[1]]);
-                                }}
-                                className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-sm mb-2 block">To</label>
-                            <CurrencyInput
-                                id="input-to"
-                                name="input-to"
-                                placeholder={`Max: £${bounds?.max.toFixed(2)}`}
-                                value={range[1]}
-                                prefix="£"
-                                decimalScale={2}
-                                onValueChange={(value) => {
-                                    handleAmountChange([range[0], Number(value)]);
-                                }}
-                                className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
-                            />
-                        </div>
+        return (
+            <div className="p-4 h-52">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label className="text-sm mb-2 block">From</label>
+                        <CurrencyInput
+                            id="input-from"
+                            name="input-from"
+                            placeholder={`Min: £${bounds?.min.toFixed(2)}`}
+                            prefix="£"
+                            value={range[0]}
+                            decimalScale={2}
+                            onValueChange={(value) => {
+                                handleAmountChange([Number(value), range[1]]);
+                            }}
+                            className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
+                        />
                     </div>
-                    <DualRangeSlider
-                        max={bounds?.max ?? 0}
-                        min={bounds?.min ?? 0}
-                        step={0.1}
-                        value={range}
-                        onValueChange={handleAmountChange}
-                        className="py-4"
+                    <div>
+                        <label className="text-sm mb-2 block">To</label>
+                        <CurrencyInput
+                            id="input-to"
+                            name="input-to"
+                            placeholder={`Max: £${bounds?.max.toFixed(2)}`}
+                            value={range[1]}
+                            prefix="£"
+                            decimalScale={2}
+                            onValueChange={(value) => {
+                                handleAmountChange([range[0], Number(value)]);
+                            }}
+                            className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
+                        />
+                    </div>
+                </div>
+                <DualRangeSlider
+                    max={bounds?.max ?? 0}
+                    min={bounds?.min ?? 0}
+                    step={0.1}
+                    value={range}
+                    onValueChange={handleAmountChange}
+                    className="py-4"
+                />
+            </div>
+        );
+    case "Accounts":
+        return (
+            <ScrollArea className="h-52 p-4">
+                <div className="flex items-center justify-between mb-5">
+                    <label htmlFor="select-all-accounts" className="text-sm font-medium">
+                            Select All
+                    </label>
+                    <Checkbox
+                        id="select-all-accounts"
+                        onCheckedChange={handleSelectAllAccounts}
+                        checked={tempFilters.excludeAccounts.length === 0}
                     />
                 </div>
-            );
-        case "Accounts":
-            return (
-                <ScrollArea className="h-52 p-4">
-                    <div className="flex items-center justify-between mb-5">
-                        <label htmlFor="select-all-accounts" className="text-sm font-medium">
+                <ul className="flex flex-col gap-3 text-sm">
+                    {accounts.map((account) => (
+                        <li
+                            key={account.id + "::ColumnFilterButtonAccounts"}
+                            className="flex justify-between items-center gap-10"
+                        >
+                            <p>{account.name}</p>
+                            <Checkbox
+                                checked={!tempFilters.excludeAccounts?.includes(account.name)}
+                                onCheckedChange={() => handleAccountToggle(account.name)}
+                                className="data-[state=checked]:bg-secondary"
+                            />
+                        </li>
+                    ))}
+                </ul>
+            </ScrollArea>
+        );
+    case "Categories":
+        return (
+            <ScrollArea className="h-52 p-4">
+                <div className="flex items-center justify-between mb-5">
+                    <label htmlFor="select-all-categories" className="text-sm font-medium">
                             Select All
-                        </label>
-                        <Checkbox
-                            id="select-all-accounts"
-                            onCheckedChange={handleSelectAllAccounts}
-                            checked={tempFilters.excludeAccounts.length === 0}
-                        />
-                    </div>
-                    <ul className="flex flex-col gap-3 text-sm">
-                        {accounts.map((account) => (
-                            <li
-                                key={account.id + "::ColumnFilterButtonAccounts"}
-                                className="flex justify-between items-center gap-10"
-                            >
-                                <p>{account.name}</p>
-                                <Checkbox
-                                    checked={!tempFilters.excludeAccounts?.includes(account.name)}
-                                    onCheckedChange={() => handleAccountToggle(account.name)}
-                                    className="data-[state=checked]:bg-secondary"
-                                />
-                            </li>
-                        ))}
-                    </ul>
-                </ScrollArea>
-            );
-        case "Categories":
-            return (
-                <ScrollArea className="h-52 p-4">
-                    <div className="flex items-center justify-between mb-5">
-                        <label htmlFor="select-all-categories" className="text-sm font-medium">
-                            Select All
-                        </label>
-                        <Checkbox
-                            id="select-all-categories"
-                            onCheckedChange={handleSelectAllCategories}
-                            checked={tempFilters.excludeCategories.length === 0}
-                        />
-                    </div>
-                    <ul className="flex flex-col gap-3 text-sm">
-                        {categories.map((category) => (
-                            <li
-                                key={category + "::ColumnFilterButtonCategories"}
-                                className="flex justify-between items-center gap-10"
-                            >
-                                <p>{category.replace(/_/g, " ")}</p>
-                                <Checkbox
-                                    checked={!tempFilters.excludeCategories?.includes(category)}
-                                    onCheckedChange={() => handleCategoryToggle(category)}
-                                    className="data-[state=checked]:bg-secondary"
-                                />
-                            </li>
-                        ))}
-                    </ul>
-                </ScrollArea>
-            );
-        default:
-            return null;
+                    </label>
+                    <Checkbox
+                        id="select-all-categories"
+                        onCheckedChange={handleSelectAllCategories}
+                        checked={tempFilters.excludeCategories.length === 0}
+                    />
+                </div>
+                <ul className="flex flex-col gap-3 text-sm">
+                    {categories.map((category) => (
+                        <li
+                            key={category + "::ColumnFilterButtonCategories"}
+                            className="flex justify-between items-center gap-10"
+                        >
+                            <p>{category.replace(/_/g, " ")}</p>
+                            <Checkbox
+                                checked={!tempFilters.excludeCategories?.includes(category)}
+                                onCheckedChange={() => handleCategoryToggle(category)}
+                                className="data-[state=checked]:bg-secondary"
+                            />
+                        </li>
+                    ))}
+                </ul>
+            </ScrollArea>
+        );
+    default:
+        return null;
     }
 }
 

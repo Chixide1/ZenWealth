@@ -19,12 +19,12 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
 
             return (
                 <div className="flex gap-2 items-center justify-start">
-                        <img
-                            src={row.original.logoUrl ?? row.original.categoryIconUrl}
-                            alt="an image of the transaction logo"
-                            className="rounded min-w-6 h-auto ms-1"
-                            width={imageSize}
-                        />
+                    <img
+                        src={row.original.logoUrl ?? row.original.categoryIconUrl}
+                        alt="an image of the transaction logo"
+                        className="rounded min-w-6 h-auto ms-1"
+                        width={imageSize}
+                    />
                     <span title={name}>{name}</span>
                 </div>
             );

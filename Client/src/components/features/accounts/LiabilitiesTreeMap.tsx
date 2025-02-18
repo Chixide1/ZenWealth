@@ -30,7 +30,7 @@ export function LiabilitiesTreeMap({ className, accounts }: TotalBalanceCardProp
             <CardContent className="pb-2 px-4">
                 <ResponsiveContainer className="w-full" height={180}>
                     {data.length > 0 ? 
-                            <Treemap
+                        <Treemap
                             data={data}
                             nameKey="name"
                             dataKey="currentBalance"

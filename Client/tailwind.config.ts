@@ -2,12 +2,12 @@ import type { Config } from "tailwindcss";
 import * as tailwindcssAnimate from "tailwindcss-animate";
 
 export default  {
-  darkMode: "selector",
-  content: [
-    "./index.html", "./src/**/*.{ts,tsx,js,jsx}",
-  ],
-  prefix: "",
-  theme: {
+    darkMode: "selector",
+    content: [
+        "./index.html", "./src/**/*.{ts,tsx,js,jsx}",
+    ],
+    prefix: "",
+    theme: {
   	container: {
   		center: true,
   		padding: "2rem",
@@ -67,15 +67,15 @@ export default  {
   				border: "hsl(var(--sidebar-border))",
   				ring: "hsl(var(--sidebar-ring))"
   			},
-			tertiary: {
-				DEFAULT: "hsl(var(--tertiary))",
-			},
-			offblack : {
+                tertiary: {
+                    DEFAULT: "hsl(var(--tertiary))",
+                },
+                offblack : {
 				  DEFAULT: "hsl(var(--offblack))",
-			},
-			charcoal : {
-				DEFAULT: "hsl(var(--charcoal))",
-			}
+                },
+                charcoal : {
+                    DEFAULT: "hsl(var(--charcoal))",
+                }
   		},
   		borderRadius: {
   			lg: "var(--radius)",
@@ -99,24 +99,24 @@ export default  {
   					height: "0"
   				}
   			},
-			"fade-in-up": {
-				from: {
-					transform: "translateY(10%)",
-					opacity: "0.1",
-				},
-				to: {
-					transform: "translateY(0%)",
-					opacity: "1",
-				}
-			}
+                "fade-in-up": {
+                    from: {
+                        transform: "translateY(10%)",
+                        opacity: "0.1",
+                    },
+                    to: {
+                        transform: "translateY(0%)",
+                        opacity: "1",
+                    }
+                }
   		},
   		animation: {
   			"accordion-down": "accordion-down 0.2s ease-out",
   			"accordion-up": "accordion-up 0.2s ease-out",
-			"fade-in-up": "fade-in-up 0.3s ease-out",
+                "fade-in-up": "fade-in-up 0.3s ease-out",
   		}
   	}
-  },
-  plugins: [tailwindcssAnimate],
+    },
+    plugins: [tailwindcssAnimate],
 } satisfies Config;
 

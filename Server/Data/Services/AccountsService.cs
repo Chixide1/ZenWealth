@@ -24,7 +24,7 @@ public class AccountsService(
     public async Task<List<AccountDto>> GetAccountsAsync(string userId)
     {
         var accounts = await context.Accounts
-            .Where(a => a.UserId == userId)
+            .Where(a => a.UserId == userId && a.Type != "Loan")
             .Select(a => new AccountDto()
             {
                 Id = a.Id,

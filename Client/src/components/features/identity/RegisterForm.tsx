@@ -68,11 +68,11 @@ export function RegisterForm(){
                     const apiErrors = error.response.data.errors;
                     
                     Object.entries(apiErrors).forEach((key) => {
-                            toast({
-                                title: key[0],
-                                description: key[1][0],
-                                variant: "destructive",
-                            });
+                        toast({
+                            title: key[0],
+                            description: key[1][0],
+                            variant: "destructive",
+                        });
                     });
                 }
             });

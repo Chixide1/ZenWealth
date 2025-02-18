@@ -26,6 +26,7 @@ import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
 import {transactionsAtom, transactionsPaginationAtom} from "@/lib/atoms.ts";
 import { ColumnFilterButton } from "@/components/features/transactions/ColumnFilterButton.tsx";
+import {DateFilterButton} from "@/components/features/transactions/DateFilterButton.tsx";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction, never>[]
@@ -74,6 +75,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                             <div className="flex items-center justify-end gap-4">
                                 <span className="text-xl font-medium mr-auto md:pr-10">Transaction History</span>
                                 <TransactionSearchButton />
+                                <DateFilterButton />
                                 <ColumnFilterButton />
                                 <ColumnVisibilityButton columns={table.getAllColumns()}/>
                             </div>

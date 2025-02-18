@@ -26,8 +26,8 @@ type NetWorthCardProps = {
 export function NetWorthCard({accounts, className}: NetWorthCardProps) {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-    const assetAccounts = accounts?.filter(account => {
-        return account.type !== "Loan" && account.type !== "Credit";
+    const debitAccounts = accounts?.filter(account => {
+        return account.type !== "Credit";
     })
         .map((account, index) => {
             const colorIndex = index % assetColors.length;
@@ -42,8 +42,8 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
             return {...account, fill: creditColors[colorIndex]};
         });
 
-    const allAccounts = [...(assetAccounts ?? []), ...(creditAccounts ?? [])];
-    const totalBalance = assetAccounts?.reduce((total, account) => total + account.currentBalance, 0) ?? 0;
+    const allAccounts = [...(debitAccounts ?? []), ...(creditAccounts ?? [])];
+    const totalBalance = debitAccounts?.reduce((total, account) => total + account.currentBalance, 0) ?? 0;
     const liabilities = accounts?.reduce((liabilities, account) => {
         if (account.type === "Credit") {
             return liabilities + account.currentBalance;
@@ -69,14 +69,14 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
                                 content={<AccountsTooltip/>}
                             />
                             <Pie
-                                data={assetAccounts}
+                                data={debitAccounts}
                                 nameKey="name"
                                 dataKey="currentBalance"
                                 innerRadius={60}
                                 strokeWidth={5}
                                 paddingAngle={3}
                             >
-                                {assetAccounts?.map((entry) => (
+                                {debitAccounts?.map((entry) => (
                                     <Cell
                                         key={`${entry.id}::NetWorthCard::AssetPieCell`}
                                         opacity={hoveredIndex === null || hoveredIndex === entry.id ? 1 : 0.3}
@@ -102,8 +102,8 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
                             </Pie>
                         </PieChart>
                     </ChartContainer>
-                    :
-                    <Skeleton className="w-full h-full bg-background" />}
+                        :
+                        <Skeleton className="w-full h-full bg-background" />}
                 </ResponsiveContainer>
                 <ScrollArea className="h-64 md:w-72 w-full pt-5 md:pt-0">
                     <ul className="flex flex-col justify-center gap-2 md:gap-6 w-full md:w-fit pr-6">

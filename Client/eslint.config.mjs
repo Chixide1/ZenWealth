@@ -15,6 +15,7 @@ export default tseslint.config(
             "react-compiler/react-compiler": "error",
             "semi": ["error", "always"], // Enforce semicolons
             "quotes": ["error", "double"], // Enforce double quotes
+            "indent": ["error", 4],
         },
     }
 );
