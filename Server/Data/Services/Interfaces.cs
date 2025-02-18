@@ -29,12 +29,14 @@ public interface ITransactionsService
         DateOnly date = new(),
         int pageSize = 10,
         string? name = null,
-        int? minAmount = null,
-        int? maxAmount = null,
+        decimal? minAmount = null,
+        decimal? maxAmount = null,
         DateOnly? beginDate = null,
         DateOnly? endDate = null,
         string? sort = null,
-        decimal? amount = null
+        decimal? amount = null,
+        string[]? excludeCategories = null,
+        string[]? excludeAccounts = null
     );
     
     Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId);
@@ -42,5 +44,7 @@ public interface ITransactionsService
     Task<RecentTransactions> GetRecentTransactions(string userId, int count = 11);
     
     Task<List<TopExpenseCategory>> GetTopExpenseCategories(string userId);
+    
+    Task<MinMaxAmount> GetMinMaxAmount(string userId);
 }
 

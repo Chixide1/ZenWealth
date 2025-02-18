@@ -154,7 +154,7 @@ export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
     }
     
     return (
-        <Tabs >
+        <Tabs>
             <TabsList>
                 {tabs.map((item) => (
                     <TabsTrigger

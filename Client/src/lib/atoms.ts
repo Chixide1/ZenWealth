@@ -1,4 +1,11 @@
-﻿import {Account, MonthlySummary, RecentTransactions, TopExpenseCategory, TransactionData} from "@/types.ts";
+﻿import {
+    Account,
+    MinMaxAmount,
+    MonthlySummary,
+    RecentTransactions,
+    TopExpenseCategory,
+    TransactionData
+} from "@/types.ts";
 import { atomWithQuery, atomWithInfiniteQuery } from "jotai-tanstack-query";
 import api from "@/lib/api.ts";
 import { AxiosError } from "axios";
@@ -11,15 +18,15 @@ type TransactionRequest = {
     amount: number | null,
 }
 
-type TransactionFilters = {
+export type TransactionFilters = {
     name: string | null,
     sort: string | null,
     minAmount: number | null,
     maxAmount: number | null,
     beginDate: Date | null,
     endDate: Date | null,
-    excludeCategories: string[] | null,
-    excludeAccounts: string[] | null,
+    excludeCategories: string[],
+    excludeAccounts: string[],
 }
 
 type TransactionParams = TransactionRequest & TransactionFilters & {pageSize: number | null};
@@ -43,8 +50,8 @@ export const transactionsParamsAtom = atom<TransactionFilters>({
     maxAmount: null,
     beginDate: null,
     endDate: null,
-    excludeAccounts: ["test1", "test2"],
-    excludeCategories: ["Other", "Bank Fees"],
+    excludeAccounts: [],
+    excludeCategories: [],
 });
 
 export const accountsAtom = atomWithQuery(() => ({
@@ -71,6 +78,9 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
         
         const response = await api<TransactionData>("/transactions", { 
             params: { ...params },
+            paramsSerializer: {
+                indexes: null
+            }
         })
             .catch((e: AxiosError<TransactionData>) => console.error(e));
         
@@ -92,7 +102,7 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
         
         return {cursor: lastPage.nextCursor, date: lastPage.nextDate, amount: null};
     },
-    initialPageParam: {cursor: null, date: null},
+    initialPageParam: {},
     placeholderData: (previousData) => previousData,
 }));
 
@@ -124,4 +134,14 @@ export const topExpenseCategoriesAtom  = atomWithQuery(() => ({
 
         return response ? response.data : [];
     }
+}));
+
+export const minMaxAmountAtom = atomWithQuery(() => ({
+    queryKey: ["minMax"],
+    queryFn: async () => {
+        const response = await api<MinMaxAmount>("/transactions/minmax")
+            .catch((e: AxiosError<MinMaxAmount>) => console.error(e));
+
+        return response ? response.data : {min: 0, max: 0};
+    },
 }));

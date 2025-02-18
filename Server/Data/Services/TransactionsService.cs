@@ -24,12 +24,14 @@ public class TransactionsService(
         DateOnly date = new(),
         int pageSize = 10,
         string? name = null,
-        int? minAmount = null,
-        int? maxAmount = null,
+        decimal? minAmount = null,
+        decimal? maxAmount = null,
         DateOnly? beginDate = null,
         DateOnly? endDate = null,
         string? sort = null,
-        decimal? amount = null)
+        decimal? amount = null,
+        string[]? excludeCategories = null,
+        string[]? excludeAccounts = null)
     {
         // Always get only the user's transactions
         var transactions = context.Transactions.Where(t => t.UserId == userId);
@@ -58,6 +60,17 @@ public class TransactionsService(
         if (endDate is not null)
         {
             transactions = transactions.Where(t => t.Date <= endDate);
+        }
+
+        if (excludeCategories is not null)
+        {
+            transactions = transactions.Where(t => !excludeCategories.Contains(t.Category));
+        }
+        
+        if (excludeAccounts is not null)
+        {
+            transactions = transactions.Include(t => t.Account)
+                .Where(t => !excludeAccounts.Contains(t.Account.Name));
         }
 
         // Sorting
@@ -174,5 +187,20 @@ public class TransactionsService(
         ).ToListAsync();
 
         return results;
+    }
+
+    public async Task<MinMaxAmount> GetMinMaxAmount(string userId)
+    {
+        var min = await context.Transactions
+            .Where(t => t.UserId == userId)
+            .Select(t => t.Amount)
+            .MinAsync();
+        
+        var max = await context.Transactions
+            .Where(t => t.UserId == userId)
+            .Select(t => t.Amount)
+            .MaxAsync();
+
+        return new MinMaxAmount() { Min = min, Max = max };
     }
 }

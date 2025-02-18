@@ -3,12 +3,12 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./main.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+// import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import Loading from "./components/shared/Loading";
 import { Provider } from "jotai";
 import { queryClientAtom } from "jotai-tanstack-query";
 import { useHydrateAtoms } from "jotai/utils";
-import { persistQueryClient} from "@tanstack/react-query-persist-client";
+// import { persistQueryClient} from "@tanstack/react-query-persist-client";
 import { StrictMode } from "react";
 
 // Set up a Router instance
@@ -49,8 +49,8 @@ export const queryClient = new QueryClient({
 //     maxAge: 1000 * 60 * 60 * 6,
 // })
 
-const HydrateAtoms = ({ children }: any) => {
-    useHydrateAtoms([[queryClientAtom, queryClient]] as any);
+const HydrateAtoms = ({ children }: {children: React.ReactNode}) => {
+    useHydrateAtoms([[queryClientAtom, queryClient]] as never);
     return children;
 };
 

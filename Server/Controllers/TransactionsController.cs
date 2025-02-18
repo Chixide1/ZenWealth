@@ -20,8 +20,14 @@ public class TransactionsController(
     [ProducesResponseType(typeof(Responses.GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllUserTransactions(int cursor = 0, DateOnly date = new DateOnly(),
         int pageSize = 10,
-        string? name = null, string? sort = null, [FromQuery(Name = "excludeId")] int[]? excludeId = null,
-        decimal? amount = null)
+        string? name = null, string? sort = null,
+        [FromQuery(Name = "excludeCategories")]
+        string[]? excludeCategories = null,
+        [FromQuery(Name = "excludeAccounts")] string[]? excludeAccounts = null,
+        decimal? amount = null,
+        decimal? minAmount = null,
+        decimal? maxAmount = null
+    )
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -42,10 +48,11 @@ public class TransactionsController(
             id: cursor,
             date: date,
             pageSize: pageSize,
-            name: name, 
+            name: name,
+            minAmount: minAmount,
+            maxAmount: maxAmount,
             sort: sort,
-            amount: amount
-        );
+            amount: amount, excludeCategories: excludeCategories, excludeAccounts: excludeAccounts);
 
         if (sort is not null && sort.ToLower().Contains("amount"))
         {
@@ -79,5 +86,21 @@ public class TransactionsController(
         var updatedCount = await itemsService.UpdateItemsAsync(user.Id);
         
         return Ok(new { Message = $"{updatedCount} transactions added" });
+    }
+    
+    [HttpGet("[controller]/MinMax")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MinMaxAmount))]
+    public async Task<IActionResult> GetMinMaxTransactionsAmount()
+    {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var results = await transactionsService.GetMinMaxAmount(user.Id);
+        
+        return Ok(results);
     }
 }

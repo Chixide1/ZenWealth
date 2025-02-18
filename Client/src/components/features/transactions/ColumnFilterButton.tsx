@@ -1,16 +1,19 @@
 ﻿"use client";
 
+import type React from "react";
 import { Filter, X } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { categories, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAtom } from "jotai";
-import { accountsAtom, transactionsParamsAtom } from "@/lib/atoms";
+import { accountsAtom, minMaxAmountAtom, type TransactionFilters, transactionsParamsAtom } from "@/lib/atoms";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
+import type { Account } from "@/types";
+import Loading from "@/components/shared/Loading.tsx";
 
 type ColumnFilterButtonProps = {
     className?: string
@@ -21,125 +24,93 @@ type ColumnFilter = {
     value: string | number | Date
 }
 
+type RenderFilterContentProps = {
+    accounts: Account[]
+    activeFilter: string
+    tempFilters: TransactionFilters
+    setTempFilters: React.Dispatch<React.SetStateAction<TransactionFilters>>
+}
+
 const filtersMap = new Map([
-    ["minAmount", "Amount"],
+    ["minAmount", "Minimum Amount"],
+    ["maxAmount", "Maximum Amount"],
     ["excludeAccounts", "Accounts"],
     ["excludeCategories", "Categories"],
 ]);
 
 export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
-    const [range, setRange] = useState([-3000, 6700]);
     const [{ data }] = useAtom(accountsAtom);
     const [filters, setFilters] = useAtom(transactionsParamsAtom);
     const accounts = data ?? [];
     const [activeFilter, setActiveFilter] = useState("Amount");
+    const [isOpen, setIsOpen] = useState(false);
+    const [tempFilters, setTempFilters] = useState(filters);
 
-    const currentFilters = Object.entries(filters)
-        .flatMap<ColumnFilter>(([key, value]) => {
-            if (Array.isArray(value)) {
-                return value.map((item) => ({
-                    type: key,
-                    value: item,
-                }));
-            } else if (value !== null) {
-                return [{ type: key, value: value }];
-            } else {
-                return [];
-            }
-        })
-        .reduce<ColumnFilter[]>((acc, item) => {
-            if (filtersMap.has(item.type)) {
-                acc.push({ type: filtersMap.get(item.type)!, value: item.value });
-            }
-            return acc;
-        }, []);
-
-    const renderFilterContent = () => {
-        switch (activeFilter) {
-            case "Amount":
-                return (
-                    <div className="p-4 h-52">
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label className="text-sm mb-2 block">From</label>
-                                <CurrencyInput
-                                    id="input-from"
-                                    name="input-from"
-                                    placeholder="Enter Minimum Amount"
-                                    prefix="£"
-                                    value={range[0].toString()}
-                                    decimalScale={2}
-                                    onValueChange={(value) => {
-                                        setRange([Number(value), range[1]]);
-                                    }}
-                                    className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-sm mb-2 block">To</label>
-                                <CurrencyInput
-                                    id="input-to"
-                                    name="input-to"
-                                    placeholder="Enter Maximum Amount"
-                                    value={range[1]}
-                                    prefix="£"
-                                    decimalScale={2}
-                                    onValueChange={(value) => {
-                                        setRange([range[0], Number(value)]);
-                                    }}
-                                    className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
-                                />
-                            </div>
-                        </div>
-                        <DualRangeSlider
-                            max={10000}
-                            min={-3000}
-                            step={0.1}
-                            value={range}
-                            onValueChange={setRange}
-                            className="py-4"
-                        />
-                    </div>
-                );
-            case "Accounts":
-                return (
-                    <ScrollArea className="h-52 p-4">
-                        <ul className="flex flex-col gap-3 text-sm">
-                            {accounts.map((account) => (
-                                <li
-                                    key={account.id + "::ColumnFilterButtonAccounts"}
-                                    className="flex justify-between items-center gap-10"
-                                >
-                                    <p>{account.name}</p>
-                                    <Checkbox value={account.name} className="data-[state=checked]:bg-secondary" />
-                                </li>
-                            ))}
-                        </ul>
-                    </ScrollArea>
-                );
-            case "Categories":
-                return (
-                    <ScrollArea className="h-52 p-4">
-                        <ul className="flex flex-col gap-3 text-sm">
-                            {categories.map((category) => (
-                                <li
-                                    key={category + "::ColumnFilterButtonCategories"}
-                                    className="flex justify-between items-center gap-10"
-                                >
-                                    <p>{category}</p>
-                                    <Checkbox value={category} className="data-[state=checked]:bg-secondary" />
-                                </li>
-                            ))}
-                        </ul>
-                    </ScrollArea>
-                );
-            default:
-                return null;
+    useEffect(() => {
+        if (isOpen) {
+            setTempFilters(filters);
         }
+    }, [isOpen, filters]);
+
+    const currentFilters = useMemo(() => {
+        return Object.entries(tempFilters)
+            .flatMap<ColumnFilter>(([key, value]) => {
+                if (Array.isArray(value)) {
+                    return value.map((item) => ({
+                        type: key,
+                        value: item,
+                    }));
+                } else if (value !== null) {
+                    return [{ type: key, value: value }];
+                } else {
+                    return [];
+                }
+            })
+            .reduce<(Omit<ColumnFilter, "value"> & { value: string })[]>((acc, item) => {
+                if (filtersMap.has(item.type)) {
+                    acc.push({ type: filtersMap.get(item.type)!, value: item.value.toString() });
+                }
+                return acc;
+            }, []);
+    }, [tempFilters]);
+
+    const handleRemoveFilter = (item: ColumnFilter) => {
+        setTempFilters((prev) => {
+            const filterKey = Array.from(filtersMap.entries()).find(([, displayName]) => displayName === item.type)?.[0];
+
+            if (!filterKey) return prev;
+
+            if (filterKey === "excludeAccounts") {
+                const updatedAccounts = prev.excludeAccounts?.filter((a) => a !== item.value) ?? [];
+                return { ...prev, excludeAccounts: updatedAccounts };
+            } else if (filterKey === "excludeCategories") {
+                const updatedCategories = prev.excludeCategories?.filter((c) => c !== item.value) ?? [];
+                return { ...prev, excludeCategories: updatedCategories };
+            } else if (filterKey === "minAmount" || filterKey === "maxAmount") {
+                return { ...prev, [filterKey]: null };
+            }
+
+            return prev;
+        });
+    };
+
+    const handleApplyFilters = () => {
+        setFilters(tempFilters);
+        setIsOpen(false);
+    };
+
+    const handleResetAllFilters = () => {
+        setTempFilters({
+            ...tempFilters,
+            excludeAccounts: [],
+            excludeCategories: [],
+            minAmount: null,
+            maxAmount: null,
+        });
     };
 
     return (
-        <DropdownMenu modal={true}>
+        <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
                 <Button className="capitalize text-xs gap-1" variant="accent" size="sm">
                     Filters
@@ -154,7 +125,7 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                     {/* Left Column */}
                     <h2 className="p-4 text-xl border-r border-neutral-600">Filters</h2>
                     <div className="flex flex-col justify-start px-4 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
-                        {Array.from(filtersMap.values()).map((name) => (
+                        {Array.from(new Set(filtersMap.values())).map((name) => (
                             <Button
                                 key={name + "::ColumnFilterButtonTabs"}
                                 onClick={() => setActiveFilter(name)}
@@ -174,7 +145,12 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                         <h3 className="text-sm inline-flex items-center p-4 border-b border-neutral-600">
                             {activeFilter === "Amount" ? "Set Amount Range" : `Choose ${activeFilter}:`}
                         </h3>
-                        {renderFilterContent()}
+                        <RenderFilterContent
+                            activeFilter={activeFilter}
+                            accounts={accounts}
+                            tempFilters={tempFilters}
+                            setTempFilters={setTempFilters}
+                        />
                     </div>
 
                     {/* Right Column */}
@@ -191,16 +167,15 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                                     >
                                         <div>
                                             <div className="text-sm text-neutral-400">{filter.type}</div>
-                                            <div className="text-white">{filter.value.toString()}</div>
+                                            <div className="text-white">
+                                                {filter.value.replace(/_/g, " ")}
+                                            </div>
                                         </div>
                                         <Button
                                             variant="ghost"
                                             size="icon"
                                             className="h-8 w-8 text-neutral-400"
-                                            // onClick={() => setFilters({
-                                            //     ...filters,
-                                            //     [filter.type]: 
-                                            // })}
+                                            onClick={() => handleRemoveFilter(filter)}
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -212,27 +187,198 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
 
                     {/* Footer */}
                     <div className="col-span-3 border-t border-neutral-600 p-4 flex justify-end gap-2">
-                        <Button
-                            variant="outline"
-                            className=""
-                            size="sm"
-                            onClick={() => setFilters({
-                                ...filters,
-                                excludeAccounts: null,
-                                excludeCategories: null,
-                                minAmount: null,
-                                maxAmount: null,
-                            })}
-                        >
+                        <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
                             Reset all
                         </Button>
-                        <Button className="" variant="accent" size="sm">
-                            Apply
+                        <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
+                            Apply Filters
                         </Button>
                     </div>
                 </div>
             </DropdownMenuContent>
         </DropdownMenu>
     );
+}
+
+function RenderFilterContent({ activeFilter, accounts, tempFilters, setTempFilters }: RenderFilterContentProps) {
+    const [{ data: bounds, isLoading }] = useAtom(minMaxAmountAtom);
+    const [range, setRange] = useState([0, 0]);
+
+    useEffect(() => {
+        if (bounds) {
+            setRange([tempFilters.minAmount ?? bounds.min, tempFilters.maxAmount ?? bounds.max]);
+        }
+    }, [bounds, tempFilters.minAmount, tempFilters.maxAmount]);
+
+    const handleAmountChange = (newRange: [number, number]) => {
+        setRange(newRange);
+        setTempFilters((prev) => ({
+            ...prev,
+            minAmount: newRange[0] !== bounds?.min ? newRange[0] : null,
+            maxAmount: newRange[1] !== bounds?.max ? newRange[1] : null,
+        }));
+    };
+
+    const handleAccountToggle = (accountName: string) => {
+        setTempFilters((prev) => {
+            const excludeAccounts = prev.excludeAccounts || [];
+            if (excludeAccounts.includes(accountName)) {
+                return {
+                    ...prev,
+                    excludeAccounts: excludeAccounts.filter((a: string) => a !== accountName),
+                };
+            } else {
+                return {
+                    ...prev,
+                    excludeAccounts: [...excludeAccounts, accountName],
+                };
+            }
+        });
+    };
+
+    const handleCategoryToggle = (category: string) => {
+        setTempFilters((prev) => {
+            const excludeCategories = prev.excludeCategories || [];
+            if (excludeCategories.includes(category)) {
+                return {
+                    ...prev,
+                    excludeCategories: excludeCategories.filter((c: string) => c !== category),
+                };
+            } else {
+                return {
+                    ...prev,
+                    excludeCategories: [...excludeCategories, category],
+                };
+            }
+        });
+    };
+
+    const handleSelectAllAccounts = (checked: boolean) => {
+        setTempFilters((prev) => ({
+            ...prev,
+            excludeAccounts: checked ? [] : accounts.map((account) => account.name),
+        }));
+    };
+
+    const handleSelectAllCategories = (checked: boolean) => {
+        setTempFilters((prev) => ({
+            ...prev,
+            excludeCategories: checked ? [] : categories,
+        }));
+    };
+
+    switch (activeFilter) {
+        case "Amount":
+            if (isLoading) {
+                return <Loading fullScreen={false} className="h-52" />;
+            }
+
+            return (
+                <div className="p-4 h-52">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="text-sm mb-2 block">From</label>
+                            <CurrencyInput
+                                id="input-from"
+                                name="input-from"
+                                placeholder={`Min: £${bounds?.min.toFixed(2)}`}
+                                prefix="£"
+                                value={range[0]}
+                                decimalScale={2}
+                                onValueChange={(value) => {
+                                    handleAmountChange([Number(value), range[1]]);
+                                }}
+                                className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm mb-2 block">To</label>
+                            <CurrencyInput
+                                id="input-to"
+                                name="input-to"
+                                placeholder={`Max: £${bounds?.max.toFixed(2)}`}
+                                value={range[1]}
+                                prefix="£"
+                                decimalScale={2}
+                                onValueChange={(value) => {
+                                    handleAmountChange([range[0], Number(value)]);
+                                }}
+                                className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
+                            />
+                        </div>
+                    </div>
+                    <DualRangeSlider
+                        max={bounds?.max ?? 0}
+                        min={bounds?.min ?? 0}
+                        step={0.1}
+                        value={range}
+                        onValueChange={handleAmountChange}
+                        className="py-4"
+                    />
+                </div>
+            );
+        case "Accounts":
+            return (
+                <ScrollArea className="h-52 p-4">
+                    <div className="flex items-center justify-between mb-5">
+                        <label htmlFor="select-all-accounts" className="text-sm font-medium">
+                            Select All
+                        </label>
+                        <Checkbox
+                            id="select-all-accounts"
+                            onCheckedChange={handleSelectAllAccounts}
+                            checked={tempFilters.excludeAccounts.length === 0}
+                        />
+                    </div>
+                    <ul className="flex flex-col gap-3 text-sm">
+                        {accounts.map((account) => (
+                            <li
+                                key={account.id + "::ColumnFilterButtonAccounts"}
+                                className="flex justify-between items-center gap-10"
+                            >
+                                <p>{account.name}</p>
+                                <Checkbox
+                                    checked={!tempFilters.excludeAccounts?.includes(account.name)}
+                                    onCheckedChange={() => handleAccountToggle(account.name)}
+                                    className="data-[state=checked]:bg-secondary"
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                </ScrollArea>
+            );
+        case "Categories":
+            return (
+                <ScrollArea className="h-52 p-4">
+                    <div className="flex items-center justify-between mb-5">
+                        <label htmlFor="select-all-categories" className="text-sm font-medium">
+                            Select All
+                        </label>
+                        <Checkbox
+                            id="select-all-categories"
+                            onCheckedChange={handleSelectAllCategories}
+                            checked={tempFilters.excludeCategories.length === 0}
+                        />
+                    </div>
+                    <ul className="flex flex-col gap-3 text-sm">
+                        {categories.map((category) => (
+                            <li
+                                key={category + "::ColumnFilterButtonCategories"}
+                                className="flex justify-between items-center gap-10"
+                            >
+                                <p>{category.replace(/_/g, " ")}</p>
+                                <Checkbox
+                                    checked={!tempFilters.excludeCategories?.includes(category)}
+                                    onCheckedChange={() => handleCategoryToggle(category)}
+                                    className="data-[state=checked]:bg-secondary"
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                </ScrollArea>
+            );
+        default:
+            return null;
+    }
 }
 

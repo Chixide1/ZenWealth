@@ -47,3 +47,8 @@ export type TopExpenseCategory = {
     total: number,
     iconUrl: string,
 }
+
+export type MinMaxAmount = {
+    min: number,
+    max: number,
+}
