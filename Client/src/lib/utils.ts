@@ -1,6 +1,7 @@
 import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
 import {ChartConfig} from "@/components/ui/chart.tsx";
+import { format } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -12,6 +13,18 @@ export function camelCaseToSentence(text: string) {
 
     // Step 2: Capitalize the first letter and trim any leading space
     return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).trim();
+}
+
+/**
+ * @param date - The date variable to format.
+ * @returns Either a string version of the date suitable for the backend api or null if the variable is null.
+ */
+export function formatDate(date: Date | null){
+    if(!date){
+        return null;
+    }
+
+    return format(date, "yyyy-MM-dd");
 }
 
 export const currencyParser = new Intl.NumberFormat(["en-US", "en-GB"], {

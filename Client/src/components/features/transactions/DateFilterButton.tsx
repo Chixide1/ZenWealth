@@ -3,11 +3,10 @@ import { CalendarIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import {cn, formatDate} from "@/lib/utils";
 import { useAtom } from "jotai";
 import { transactionsParamsAtom } from "@/lib/atoms";
 import type { DateRange } from "react-day-picker";
-import { format } from "date-fns";
 
 type DateFilterButtonProps = {
     className?: string
@@ -87,10 +86,6 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                 return { from: startOfYear, to: today };
             })(),
         },
-        {
-            name: "Custom period",
-            value: { from: 0, to: 0 }, // Placeholder for manual selection
-        }
     ];
 
 
@@ -107,14 +102,6 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
     const handleApplyFilters = () => {
         setFilters(tempFilters);
         setIsOpen(false);
-    };
-
-    const handleResetAllFilters = () => {
-        setTempFilters({
-            ...tempFilters,
-            beginDate: null,
-            endDate: null,
-        });
     };
 
     const handleRemoveFilter = () => {
@@ -144,20 +131,25 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                                 key={button.name + "::DateFilterButton"}
                                 variant="ghost"
                                 size="sm"
-                                className="w-full text-sm text-neutral-400 hover:bg-background aria-selected:bg-background"
+                                className="w-full text-sm peer text-neutral-400 hover:bg-background aria-selected:bg-background"
                                 onClick={() => {
                                     setTempFilters({
                                         ...filters,
                                         beginDate: button.value.from,
                                         endDate: button.value.to
-                                    })
+                                    });
                                 }}
                                 aria-selected={
-                                    format(button.value.from, 'yyyy-MM-dd') === format(tempFilters.beginDate ?? 0, 'yyyy-MM-dd') &&
-                                    format(button.value.to, 'yyyy-MM-dd') === format(tempFilters.endDate ?? 0, 'yyyy-MM-dd')
+                                    formatDate(button.value.from) === formatDate(tempFilters.beginDate) &&
+                                    formatDate(button.value.to) === formatDate(tempFilters.endDate)
                                 }
                             >{button.name}</Button>
                         ))}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-sm text-neutral-400 bg-background peer-aria-[selected=true]:bg-transparent"
+                        >{"Custom Period"}</Button>
                     </div>
                     <div className="border-l border-neutral-600">
                         <Calendar
@@ -168,6 +160,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                             }}
                             onSelect={handleDateChange}
                             className=""
+                            
                         />
                     </div>
 
@@ -183,9 +176,6 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                                 </Button>
                             </div>
                         )}
-                        <Button variant="accent" size="sm" onClick={handleResetAllFilters}>
-                            Reset
-                        </Button>
                         <Button variant="accent" size="sm" onClick={handleApplyFilters}>
                             Apply
                         </Button>
