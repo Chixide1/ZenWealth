@@ -85,7 +85,7 @@ public class ItemsService(
                 
                 var transactions = await client.TransactionsSyncAsync(request);
                 
-                item.Cursor = transactions.NextCursor;
+                item.Cursor = string.IsNullOrEmpty(item.Cursor) ? null : transactions.NextCursor;
                 item.LastFetched =  string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
                 item.TransactionCount += transactions.Added.Count;
                 hasMore = transactions.HasMore;

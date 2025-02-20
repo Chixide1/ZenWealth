@@ -7,15 +7,21 @@ import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { transactionsParamsAtom } from "@/lib/atoms";
 import type { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 type DateFilterButtonProps = {
     className?: string
 }
 
-type DateButtonConfig = {
-    name: string,
-    onClick: () => void,
+type DateSpan = {
+    from: Date,
+    to: Date,
 }
+
+type DateButtonConfig = {
+    name: string;
+    value: DateSpan;
+};
 
 export function DateFilterButton({ className }: DateFilterButtonProps) {
     const [filters, setFilters] = useAtom(transactionsParamsAtom);
@@ -31,89 +37,64 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
     const dateButtons: DateButtonConfig[] = [
         {
             name: "Today",
-            onClick: () => {
-                setTempFilters({
-                    ...tempFilters,
-                    beginDate: new Date(),
-                    endDate: new Date(),
-                });
-            }
+            value: (() => {
+                const today = new Date();
+                return { from: today, to: today };
+            })(),
         },
         {
             name: "This week",
-            onClick: () => {
+            value: (() => {
                 const today = new Date();
                 const startOfWeek = new Date(today);
                 startOfWeek.setDate(today.getDate() - today.getDay());
-                setTempFilters({
-                    ...tempFilters,
-                    beginDate: startOfWeek,
-                    endDate: today,
-                });
-            }
+                return { from: startOfWeek, to: today };
+            })(),
         },
         {
             name: "Last week",
-            onClick: () => {
+            value: (() => {
                 const today = new Date();
-                const lastWeek = new Date(today);
-                lastWeek.setDate(today.getDate() - 7);
-                setTempFilters({
-                    ...tempFilters,
-                    beginDate: lastWeek,
-                    endDate: today,
-                });
-            }
+                const startOfLastWeek = new Date(today);
+                startOfLastWeek.setDate(today.getDate() - today.getDay() - 7);
+                const endOfLastWeek = new Date(startOfLastWeek);
+                endOfLastWeek.setDate(startOfLastWeek.getDate() + 6);
+                return { from: startOfLastWeek, to: endOfLastWeek };
+            })(),
         },
         {
             name: "This month",
-            onClick: () => {
+            value: (() => {
                 const today = new Date();
                 const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-                setTempFilters({
-                    ...tempFilters,
-                    beginDate: startOfMonth,
-                    endDate: today,
-                });
-            }
+                return { from: startOfMonth, to: today };
+            })(),
         },
         {
             name: "Last month",
-            onClick: () => {
+            value: (() => {
                 const today = new Date();
-                const lastMonth = new Date(today);
-                lastMonth.setMonth(today.getMonth() - 1);
-                setTempFilters({
-                    ...tempFilters,
-                    beginDate: lastMonth,
-                    endDate: today,
-                });
-            }
+                const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                return { from: startOfLastMonth, to: endOfLastMonth };
+            })(),
         },
         {
             name: "This year",
-            onClick: () => {
+            value: (() => {
                 const today = new Date();
                 const startOfYear = new Date(today.getFullYear(), 0, 1);
-                setTempFilters({
-                    ...tempFilters,
-                    beginDate: startOfYear,
-                    endDate: today,
-                });
-            }
+                return { from: startOfYear, to: today };
+            })(),
         },
         {
             name: "Custom period",
-            onClick: () => {
-                // Custom period just opens the calendar for manual selection
-                setTempFilters({
-                    ...tempFilters,
-                    beginDate: null,
-                    endDate: null,
-                });
-            }
+            value: { from: 0, to: 0 }, // Placeholder for manual selection
         }
     ];
+
+
+
 
     const handleDateChange = (range: DateRange | undefined) => {
         setTempFilters((prev) => ({
@@ -147,7 +128,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
     return (
         <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
-                <Button className="capitalize text-xs gap-1" variant="accent" size="sm">
+                <Button className="gap-1 text-xs capitalize" variant="accent" size="sm">
                     Date
                     <CalendarIcon className="h-4 w-4" strokeWidth={1.5} />
                 </Button>
@@ -156,14 +137,25 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                 className={cn("w-auto text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600", className)}
                 align="end"
             >
-                <div className="grid grid-cols-[auto,_minmax(0,_1fr))]">
-                    <div className="p-3 min-w-36 flex flex-col gap-1.5 items-center">
+                <div className="grid-cols-[auto,_minmax(0,_1fr))] grid">
+                    <div className="flex min-w-36 flex-col items-center gap-1.5 p-3">
                         {dateButtons.map((button) => (
                             <Button
+                                key={button.name + "::DateFilterButton"}
                                 variant="ghost"
                                 size="sm"
-                                className="text-sm text-neutral-400 hover:bg-background w-full"
-                                onClick={button.onClick}
+                                className="w-full text-sm text-neutral-400 hover:bg-background aria-selected:bg-background"
+                                onClick={() => {
+                                    setTempFilters({
+                                        ...filters,
+                                        beginDate: button.value.from,
+                                        endDate: button.value.to
+                                    })
+                                }}
+                                aria-selected={
+                                    format(button.value.from, 'yyyy-MM-dd') === format(tempFilters.beginDate ?? 0, 'yyyy-MM-dd') &&
+                                    format(button.value.to, 'yyyy-MM-dd') === format(tempFilters.endDate ?? 0, 'yyyy-MM-dd')
+                                }
                             >{button.name}</Button>
                         ))}
                     </div>
@@ -180,9 +172,9 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                     </div>
 
                     {/* Footer */}
-                    <div className="col-span-2 border-t border-neutral-600 p-4 flex justify-end gap-2 text-sm">
+                    <div className="col-span-2 flex justify-end gap-2 border-t border-neutral-600 p-4 text-sm">
                         {tempFilters.beginDate && tempFilters.endDate && (
-                            <div className="flex justify-between items-center mr-auto text-black bg-accent px-3 rounded-full">
+                            <div className="bg-accent mr-auto flex items-center justify-between rounded-full px-3 text-black">
                                 <p>
                                     {tempFilters.beginDate.toLocaleDateString()} - {tempFilters.endDate.toLocaleDateString()}
                                 </p>
