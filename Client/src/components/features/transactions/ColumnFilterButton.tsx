@@ -122,7 +122,7 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className={cn("w-[45rem] text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-800", className)}
+                className={cn("w-[45rem] text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg", className)}
                 align="end"
             >
                 <div className="grid grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))]">

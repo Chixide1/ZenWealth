@@ -11,6 +11,7 @@ import api from "@/lib/api.ts";
 import { AxiosError } from "axios";
 import { atom } from "jotai";
 import { VisibilityState } from "@tanstack/react-table";
+import { format } from "date-fns";
 
 type TransactionRequest = {
     cursor: number | null,
@@ -72,6 +73,8 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
             ...get(transactionsParamsAtom),
             name: get(transactionsParamsAtom).name === "" ? null : get(transactionsParamsAtom).name,
             pageSize: get(transactionsPaginationAtom).pageSize,
+            beginDate: get(transactionsParamsAtom).beginDate ? format(get(transactionsParamsAtom).beginDate!, "yyyy-MM-dd") : null,
+            endDate: get(transactionsParamsAtom).endDate ? format(get(transactionsParamsAtom).endDate!, "yyyy-MM-dd") : null,
         };
 
         // console.log(params);
@@ -79,7 +82,7 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
         const response = await api<TransactionData>("/transactions", { 
             params: { ...params },
             paramsSerializer: {
-                indexes: null
+                indexes: null,
             }
         })
             .catch((e: AxiosError<TransactionData>) => console.error(e));

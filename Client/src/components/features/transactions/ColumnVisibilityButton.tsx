@@ -31,7 +31,7 @@ export default function ColumnVisibilityButton({columns}: { columns: Column<Tran
                     />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-neutral-700/90 text-primary backdrop-blur-sm border-neutral-600" align="end">
+            <DropdownMenuContent className="bg-neutral-700/90 text-primary backdrop-blur-sm border-neutral-600 shadow-lg" align="end">
                 {columns
                     .filter((column) => column.getCanHide())
                     .map(column => (

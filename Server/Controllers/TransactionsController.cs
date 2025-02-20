@@ -18,7 +18,9 @@ public class TransactionsController(
 {
     [HttpGet("[controller]")]
     [ProducesResponseType(typeof(Responses.GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllUserTransactions(int cursor = 0, DateOnly date = new DateOnly(),
+    public async Task<IActionResult> GetAllUserTransactions(
+        int cursor = 0,
+        DateOnly date = new(),
         int pageSize = 10,
         string? name = null, string? sort = null,
         [FromQuery(Name = "excludeCategories")]
@@ -26,7 +28,9 @@ public class TransactionsController(
         [FromQuery(Name = "excludeAccounts")] string[]? excludeAccounts = null,
         decimal? amount = null,
         decimal? minAmount = null,
-        decimal? maxAmount = null
+        decimal? maxAmount = null,
+        DateOnly? beginDate = null,
+        DateOnly? endDate = null
     )
     {
         var user = await userManager.GetUserAsync(User);
@@ -52,7 +56,12 @@ public class TransactionsController(
             minAmount: minAmount,
             maxAmount: maxAmount,
             sort: sort,
-            amount: amount, excludeCategories: excludeCategories, excludeAccounts: excludeAccounts);
+            amount: amount,
+            excludeCategories: excludeCategories,
+            excludeAccounts: excludeAccounts,
+            beginDate: beginDate,
+            endDate: endDate
+        );
 
         if (sort is not null && sort.ToLower().Contains("amount"))
         {
