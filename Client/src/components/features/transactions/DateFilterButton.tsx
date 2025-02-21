@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect } from "react";
 import { CalendarIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { DateTimePicker} from "@/components/ui/date-time-picker.tsx";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {cn, formatDate} from "@/lib/utils";
 import { useAtom } from "jotai";
@@ -157,19 +157,19 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="w-full text-sm text-neutral-400 bg-background peer-aria-[selected=true]:bg-transparent"
+                            disabled={true}
+                            className="w-full text-sm text-neutral-400 disabled:opacity-100 bg-background peer-aria-[selected=true]:bg-transparent"
                         >{"Custom Period"}</Button>
                     </div>
                     <div className="border-l border-neutral-600">
-                        <Calendar
+                        <DateTimePicker
+                            yearRange={10}
                             mode="range"
                             selected={{
                                 from: tempFilters.beginDate ?? undefined,
                                 to: tempFilters.endDate ?? undefined,
                             }}
                             onSelect={handleDateChange}
-                            className=""
-                            
                         />
                     </div>
 
