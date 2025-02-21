@@ -227,9 +227,6 @@ namespace Server.Migrations
                     b.Property<DateTimeOffset?>("LastFetched")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("TransactionCount")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

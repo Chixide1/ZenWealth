@@ -86,6 +86,15 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                 return { from: startOfYear, to: today };
             })(),
         },
+        {
+            name: "Last year",
+            value: (() => {
+                const today = new Date();
+                const startOfYear = new Date(today.getFullYear() - 2, 0, 1);
+                const endOfYear = new Date(today.getFullYear() - 1, 0, 1);
+                return { from: startOfYear, to: endOfYear };
+            })(),
+        },
     ];
 
 
@@ -125,7 +134,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                 align="end"
             >
                 <div className="grid-cols-[auto,_minmax(0,_1fr))] grid">
-                    <div className="flex min-w-36 flex-col items-center gap-1.5 p-3">
+                    <div className="flex min-w-36 flex-col items-center gap-1.5 p-3 pb-4">
                         {dateButtons.map((button) => (
                             <Button
                                 key={button.name + "::DateFilterButton"}

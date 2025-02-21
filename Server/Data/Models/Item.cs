@@ -45,11 +45,6 @@ public class Item
     public required string InstitutionName { get; init; }
     
     /// <summary>
-    /// <para>The Institution Name</para>
-    /// </summary>
-    public int TransactionCount { get; set; }
-    
-    /// <summary>
     /// <para>Navigation property for Accounts associated with this Item</para>
     /// </summary>
     public List<Account> Accounts { get; } = [];

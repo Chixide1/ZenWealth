@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250215012851_Initial")]
+    [Migration("20250221111658_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -229,9 +229,6 @@ namespace Server.Migrations
 
                     b.Property<DateTimeOffset?>("LastFetched")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("TransactionCount")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
