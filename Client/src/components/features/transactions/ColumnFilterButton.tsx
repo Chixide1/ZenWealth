@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAtom } from "jotai";
-import { accountsAtom, minMaxAmountAtom, type TransactionFilters, transactionsParamsAtom } from "@/lib/atoms";
+import { accountsAtom, minMaxAmountAtom, transactionsParamsAtom } from "@/lib/atoms";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
-import type { Account } from "@/types";
+import type { Account, TransactionFilters } from "@/types";
 import Loading from "@/components/shared/Loading.tsx";
 
 type ColumnFilterButtonProps = {
@@ -192,7 +192,7 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                     </div>
 
                     {/* Footer */}
-                    <div className="col-span-3 border-t border-neutral-600 p-4 flex justify-end gap-2">
+                    <div className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
                         <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
                             Reset all
                         </Button>

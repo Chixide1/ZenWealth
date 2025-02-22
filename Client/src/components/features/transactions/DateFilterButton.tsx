@@ -90,8 +90,8 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
             name: "Last year",
             value: (() => {
                 const today = new Date();
-                const startOfYear = new Date(today.getFullYear() - 2, 0, 1);
-                const endOfYear = new Date(today.getFullYear() - 1, 0, 1);
+                const startOfYear = new Date(today.getFullYear() - 1, 0, 1);
+                const endOfYear = new Date(today.getFullYear() - 1, 12, 1);
                 return { from: startOfYear, to: endOfYear };
             })(),
         },
@@ -134,7 +134,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                 align="end"
             >
                 <div className="grid-cols-[auto,_minmax(0,_1fr))] grid">
-                    <div className="flex min-w-36 flex-col items-center gap-1.5 p-3 pb-4">
+                    <div className="flex min-w-36 flex-col items-center gap-2 p-3 pb-4">
                         {dateButtons.map((button) => (
                             <Button
                                 key={button.name + "::DateFilterButton"}
@@ -174,7 +174,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                     </div>
 
                     {/* Footer */}
-                    <div className="col-span-2 flex justify-end gap-2 border-t border-neutral-600 p-4 text-sm">
+                    <div className="col-span-2 flex justify-end gap-2 border-t border-neutral-600 p-2.5 text-sm">
                         {tempFilters.beginDate && tempFilters.endDate && (
                             <div className="bg-accent mr-auto flex items-center justify-between rounded-full px-3 text-black">
                                 <p>

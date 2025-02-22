@@ -279,7 +279,7 @@ export function Calendar({
             className={cn("p-3", className)}
             classNames={{
                 months: "flex flex-col sm:flex-row space-y-4  sm:space-y-0 justify-center",
-                month: "flex flex-col items-center space-y-4",
+                month: "flex flex-col items-center space-y-1",
                 month_caption: "flex justify-center pt-1 relative items-center",
                 caption_label: "text-sm font-medium",
                 nav: "space-x-1 flex items-center ",
@@ -296,7 +296,7 @@ export function Calendar({
                 month_grid: "w-full border-collapse space-y-1",
                 weekdays: cn("flex", props.showWeekNumber && "justify-end"),
                 weekday: "text-neutral-400 rounded-md w-9 font-normal text-[0.8rem]",
-                week: "flex w-full mt-2",
+                week: "flex w-full mt-1.5",
                 day: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20 rounded-1",
                 day_button: cn(
                     buttonVariants({ variant: "ghost" }),

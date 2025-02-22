@@ -1,53 +1,44 @@
-﻿import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-    VisibilityState,
-} from "@tanstack/react-table";
+﻿"use client";
+
+import { type ColumnDef, flexRender, getCoreRowModel, useReactTable, type VisibilityState } from "@tanstack/react-table";
 import { useAtom } from "jotai";
-import {
-    Table, TableBody, TableCell, TableFooter,
-    TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
-import {Button} from "@/components/ui/button.tsx";
-import { useState } from "react";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useState, useEffect } from "react";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
 import TransactionSearchButton from "@/components/features/transactions/TransactionSearchButton.tsx";
-import {Transaction, TransactionData} from "@/types";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu.tsx";
-import { ChevronDown } from "lucide-react";
+import type { Transaction, TransactionData } from "@/types";
 import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
-import {transactionsAtom, transactionsPaginationAtom} from "@/lib/atoms.ts";
+import { transactionsPaginationAtom, transactionsParamsAtom, resetPaginationAtom } from "@/lib/atoms.ts";
 import { ColumnFilterButton } from "@/components/features/transactions/ColumnFilterButton.tsx";
-import {DateFilterButton} from "@/components/features/transactions/DateFilterButton.tsx";
+import { DateFilterButton } from "@/components/features/transactions/DateFilterButton.tsx";
+import { NextButton, PageSizeButton, PrevButton } from "@/components/features/transactions/TransactionsPagination.tsx";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction, never>[]
-    data: TransactionData | undefined,
-    isLoading?: boolean,
-    className?: string,
+    data: TransactionData | undefined
+    isLoading?: boolean
+    className?: string
 }
 
-export function TransactionsTable({columns, data, isLoading, className}: TransactionTableProps) {
-    "use no memo"; // eslint-disable-line
-    
-    const [{fetchNextPage, hasNextPage}] = useAtom(transactionsAtom);
+export function TransactionsTable({ columns, data, isLoading, className }: TransactionTableProps) {
+    "use no memo" // eslint-disable-line
+
+    const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
+    const [transactionsParams] = useAtom(transactionsParamsAtom);
+    const [, resetPagination] = useAtom(resetPaginationAtom);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         category: true,
         amount: true,
         date: true,
     });
-    const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
     const [columnOrder] = useState<string[]>(["name", "amount", "date", "category"]);
-    const [pageSizeOpen, setPageSizeOpen] = useState(false);
+
+    // Reset pagination when filters change
+    useEffect(() => {
+        resetPagination();
+    }, [transactionsParams, resetPagination]);
 
     const table = useReactTable<Transaction>({
         data: data?.transactions ?? [],
@@ -61,13 +52,16 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
             columnOrder,
         },
         manualPagination: true,
-        rowCount: -1
+        rowCount: -1,
     });
 
-    const pageSizeOptions = [10, 20, 30, 40, 50];
-    
     return (
-        <div className={cn("relative overflow-auto border bg-primary/[0.125] backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom", className)}>
+        <div
+            className={cn(
+                "relative overflow-auto border bg-primary/[0.125] backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom",
+                className,
+            )}
+        >
             <Table className="rounded-2xl text-primary text-sm">
                 <TableHeader>
                     <TableRow>
@@ -77,7 +71,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                 <TransactionSearchButton />
                                 <DateFilterButton />
                                 <ColumnFilterButton />
-                                <ColumnVisibilityButton columns={table.getAllColumns()}/>
+                                <ColumnVisibilityButton columns={table.getAllColumns()} />
                             </div>
                         </TableCell>
                     </TableRow>
@@ -88,14 +82,9 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                     <TableHead
                                         key={header.id}
                                         className="text-primary bg-neutral-300/10 px-6"
-                                        style={{width: header.getSize()}}
+                                        style={{ width: header.getSize() }}
                                     >
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 );
                             })}
@@ -106,7 +95,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                     {isLoading ? (
                         <TableRow>
                             <TableCell colSpan={columns.length} className="h-24 text-center">
-                                <Loading fullScreen={false}/>
+                                <Loading fullScreen={false} />
                             </TableCell>
                         </TableRow>
                     ) : table.getRowModel().rows?.length ? (
@@ -117,7 +106,7 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                                 data-state={row.getIsSelected() && "selected"}
                             >
                                 {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id} className="px-6" style={{width: cell.column.getSize()}}>
+                                    <TableCell key={cell.id} className="px-6" style={{ width: cell.column.getSize() }}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
                                 ))}
@@ -137,53 +126,12 @@ export function TransactionsTable({columns, data, isLoading, className}: Transac
                             <div className="flex items-center justify-between px-6">
                                 <div>
                                     <span className="mr-2">Per Page:</span>
-                                    <DropdownMenu modal={false} open={pageSizeOpen} onOpenChange={setPageSizeOpen}>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="accent" className="gap-0.5 p-2 font-medium" size="sm">
-                                                {pagination.pageSize}
-                                                <ChevronDown className={"h-4 w-4 transition-all duration-300" + (pageSizeOpen && " " + "rotate-180")} />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-fit min-w-0 bg-accent">
-                                            {pageSizeOptions.map((size) => (
-                                                <DropdownMenuItem
-                                                    key={size}
-                                                    onClick={() => table.setPageSize(size)}
-                                                    className={
-                                                        "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10 hover:bg-black/10" +
-                                                        (pagination.pageSize === size && " bg-black/10")
-                                                    }
-                                                >
-                                                    {size}
-                                                </DropdownMenuItem>
-                                            ))}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <PageSizeButton />
                                 </div>
-                                <div className="">
-                                    <Button
-                                        className="me-2"
-                                        variant="accent"
-                                        size="sm"
-                                        onClick={async () => {
-                                            table.previousPage();
-                                        }}
-                                        disabled={!table.getCanPreviousPage()}
-                                    >
-                                        Previous
-                                    </Button>
-                                    <Button
-                                        className=""
-                                        variant="accent"
-                                        size="sm"
-                                        onClick={async () => {
-                                            await fetchNextPage();
-                                            table.nextPage();
-                                        }}
-                                        disabled={!hasNextPage}
-                                    >
-                                        Next
-                                    </Button></div>
+                                <div>
+                                    <PrevButton />
+                                    <NextButton />
+                                </div>
                             </div>
                         </TableCell>
                     </TableRow>

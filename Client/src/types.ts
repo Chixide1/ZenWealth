@@ -18,6 +18,17 @@ export type TransactionData = {
     nextAmount: number | null,
 }
 
+export type TransactionFilters = {
+    name: string | null
+    sort: string | null
+    minAmount: number | null
+    maxAmount: number | null
+    beginDate: Date | null
+    endDate: Date | null
+    excludeCategories: string[]
+    excludeAccounts: string[]
+}
+
 export type Account = {
     id: number,
     currentBalance: number,
