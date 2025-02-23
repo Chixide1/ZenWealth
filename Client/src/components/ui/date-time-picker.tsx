@@ -300,12 +300,13 @@ export function Calendar({
                 day: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20 rounded-1",
                 day_button: cn(
                     buttonVariants({ variant: "ghost" }),
-                    "h-9 w-9 p-0 hover:bg-accent hover:text-black rounded-none",
+                    "h-9 w-9 p-0 hover:bg-accent hover:text-black ",
                 ),
-                range_end: "day-range-end",
+                range_start: "day-range-start rounded-l-md",
+                range_end: "day-range-end rounded-r-md",
                 selected:
                     "bg-accent text-black focus:bg-accent",
-                today: "bg-secondary text-black aria-selected:bg-accent",
+                today: "bg-secondary text-black aria-selected:bg-accent rounded-md",
                 outside:
                     "day-outside text-neutral-500 opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
                 disabled: "text-muted-foreground opacity-50",

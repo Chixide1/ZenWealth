@@ -67,7 +67,7 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
                     <TableRow>
                         <TableCell className="px-6 py-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
-                                <span className="text-xl font-medium mr-auto md:pr-10">Transaction History</span>
+                                <span className="text-nowrap text-xl font-medium mr-auto md:pr-10">Transaction History</span>
                                 <TransactionSearchButton />
                                 <DateFilterButton />
                                 <ColumnFilterButton />
@@ -140,4 +140,3 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
         </div>
     );
 }
-

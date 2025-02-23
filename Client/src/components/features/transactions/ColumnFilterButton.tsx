@@ -1,17 +1,21 @@
-﻿import type React from "react";
+﻿"use client";
+
+import type React from "react";
 import { Filter, X } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { categories, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useAtom } from "jotai";
 import { accountsAtom, minMaxAmountAtom, transactionsParamsAtom } from "@/lib/atoms";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
 import type { Account, TransactionFilters } from "@/types";
-import Loading from "@/components/shared/Loading.tsx";
+import Loading from "@/components/shared/Loading";
+import { useIsMobile } from "@/hooks/use-mobile.tsx";
 
 type ColumnFilterButtonProps = {
     className?: string
@@ -36,11 +40,7 @@ const filtersMap = new Map([
     ["excludeCategories", "Categories"],
 ]);
 
-const tabs = [
-    "Amount",
-    "Accounts",
-    "Categories",
-];
+const tabs = ["Amount", "Accounts", "Categories"];
 
 export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
     const [{ data }] = useAtom(accountsAtom);
@@ -49,6 +49,7 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
     const [activeFilter, setActiveFilter] = useState("Amount");
     const [isOpen, setIsOpen] = useState(false);
     const [tempFilters, setTempFilters] = useState(filters);
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         if (isOpen) {
@@ -113,94 +114,118 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
         });
     };
 
+    const FilterContent = (
+        <div className="grid grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))]">
+            {/* Left Column */}
+            <h2 className="p-4 text-xl border-r border-neutral-600">Filters</h2>
+            <div className="flex flex-col justify-start px-4 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
+                {tabs.map((name) => (
+                    <Button
+                        key={name + "::ColumnFilterButtonTabs"}
+                        onClick={() => setActiveFilter(name)}
+                        className={cn(
+                            "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
+                            activeFilter === name && "bg-background text-white",
+                        )}
+                        variant="ghost"
+                    >
+                        {name}
+                    </Button>
+                ))}
+            </div>
+
+            {/* Middle Column */}
+            <div className="m-0 h-full grid grid-rows-subgrid row-start-1 col-start-2 row-span-2">
+                <h3 className="text-sm inline-flex items-center p-4 border-b border-neutral-600">
+                    {activeFilter === "Amount" ? "Set Amount Range" : `Choose ${activeFilter}:`}
+                </h3>
+                <RenderFilterContent
+                    activeFilter={activeFilter}
+                    accounts={accounts}
+                    tempFilters={tempFilters}
+                    setTempFilters={setTempFilters}
+                />
+            </div>
+
+            {/* Right Column */}
+            <div className="grid grid-rows-subgrid col-start-3 row-start-1 row-span-2 border-l border-neutral-600">
+                <h2 className="inline-flex items-center text-sm p-4 border-b border-neutral-600">
+                    {currentFilters.length} filters selected:
+                </h2>
+                <ScrollArea className="h-52 p-4">
+                    <ul className="flex flex-col gap-3 text-sm">
+                        {currentFilters.map((filter, index) => (
+                            <div
+                                key={filter.type + index + "::ColumnFilterButtonCurrentFilters"}
+                                className="flex justify-between items-center"
+                            >
+                                <div>
+                                    <p className="text-sm text-neutral-400">{filter.type}</p>
+                                    <p className="text-white">{filter.value.replace(/_/g, " ")}</p>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-neutral-400"
+                                    onClick={() => handleRemoveFilter(filter)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                    </ul>
+                </ScrollArea>
+            </div>
+
+            {/* Footer */}
+            <div className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
+                <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
+                    Reset all
+                </Button>
+                <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
+                    Apply Filters
+                </Button>
+            </div>
+        </div>
+    );
+
+    if (isMobile) {
+        return (
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogTrigger asChild>
+                    <Button className="capitalize text-xs gap-1 px-2 md:px-3" variant="accent" size="sm">
+                        <span className="hidden md:inline">Filters</span>
+                        <Filter className="h-4 w-4" strokeWidth={1.5} />
+                    </Button>
+                </DialogTrigger>
+                <DialogContent
+                    className={cn(
+                        "w-full max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg",
+                        className,
+                    )}
+                >
+                    {FilterContent}
+                </DialogContent>
+            </Dialog>
+        );
+    }
+
     return (
         <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
-                <Button className="capitalize text-xs gap-1" variant="accent" size="sm">
-                    Filters
+                <Button className="capitalize text-xs gap-1 px-2 md:px-3" variant="accent" size="sm">
+                    <span className="hidden md:inline">Filters</span>
                     <Filter className="h-4 w-4" strokeWidth={1.5} />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className={cn("w-[45rem] text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg", className)}
+                className={cn(
+                    "w-[45rem] text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg",
+                    className,
+                )}
                 align="end"
             >
-                <div className="grid grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))]">
-                    {/* Left Column */}
-                    <h2 className="p-4 text-xl border-r border-neutral-600">Filters</h2>
-                    <div className="flex flex-col justify-start px-4 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
-                        {tabs.map((name) => (
-                            <Button
-                                key={name + "::ColumnFilterButtonTabs"}
-                                onClick={() => setActiveFilter(name)}
-                                className={cn(
-                                    "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
-                                    activeFilter === name && "bg-background text-white",
-                                )}
-                                variant="ghost"
-                            >
-                                {name}
-                            </Button>
-                        ))}
-                    </div>
-
-                    {/* Middle Column */}
-                    <div className="m-0 h-full grid grid-rows-subgrid row-start-1 col-start-2 row-span-2">
-                        <h3 className="text-sm inline-flex items-center p-4 border-b border-neutral-600">
-                            {activeFilter === "Amount" ? "Set Amount Range" : `Choose ${activeFilter}:`}
-                        </h3>
-                        <RenderFilterContent
-                            activeFilter={activeFilter}
-                            accounts={accounts}
-                            tempFilters={tempFilters}
-                            setTempFilters={setTempFilters}
-                        />
-                    </div>
-
-                    {/* Right Column */}
-                    <div className="grid grid-rows-subgrid col-start-3 row-start-1 row-span-2 border-l border-neutral-600">
-                        <h2 className="inline-flex items-center text-sm p-4 border-b border-neutral-600">
-                            {currentFilters.length} filters selected:
-                        </h2>
-                        <ScrollArea className="h-52 p-4">
-                            <ul className="flex flex-col gap-3 text-sm">
-                                {currentFilters.map((filter, index) => (
-                                    <div
-                                        key={filter.type + index + "::ColumnFilterButtonCurrentFilters"}
-                                        className="flex justify-between items-center"
-                                    >
-                                        <div>
-                                            <p className="text-sm text-neutral-400">
-                                                {filter.type}
-                                            </p>
-                                            <p className="text-white">
-                                                {filter.value.replace(/_/g, " ")}
-                                            </p>
-                                        </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 text-neutral-400"
-                                            onClick={() => handleRemoveFilter(filter)}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                            </ul>
-                        </ScrollArea>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
-                        <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
-                            Reset all
-                        </Button>
-                        <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
-                            Apply Filters
-                        </Button>
-                    </div>
-                </div>
+                {FilterContent}
             </DropdownMenuContent>
         </DropdownMenu>
     );

@@ -92,3 +92,12 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
+/*---break--- */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background;
+  }
+}

@@ -1,17 +1,17 @@
 ﻿import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {ArrowLink} from "@/components/shared/ArrowLink.tsx";
 import {cn, currencyParser} from "@/lib/utils.ts";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {TransactionData} from "@/types.ts";
+import {NextButton, PageSizeButton, PrevButton} from "@/components/features/transactions/TransactionsPagination.tsx";
+import {DateFilterButton} from "@/components/features/transactions/DateFilterButton.tsx";
+import {ColumnFilterButton} from "@/components/features/transactions/ColumnFilterButton.tsx";
 
 type TransactionsCardProps = {
     className?: string,
-    title: string,
-    allFeatures?: boolean,
     transactionsData: TransactionData | undefined
 }
 
-export function TransactionsCard({className, title, transactionsData, allFeatures = false}: TransactionsCardProps) {
+export function TransactionsCard({className, transactionsData,}: TransactionsCardProps) {
     const dateParser = new Intl.DateTimeFormat("en-GB", {
         dateStyle: "medium",
     });
@@ -25,9 +25,12 @@ export function TransactionsCard({className, title, transactionsData, allFeature
     
     return (
         <Card className={cn("", className)}>
-            <CardHeader className="flex items-center justify-between flex-row px-3 md:px-4 pb-2 rounded-t-[inherit]">
-                <CardTitle className="text-xl">{title}</CardTitle>
-                {!allFeatures && <ArrowLink to="/transactions"></ArrowLink>}
+            <CardHeader className="flex items-center justify-between flex-row pt-4 px-3 pb-4 rounded-t-[inherit]">
+                <CardTitle className="text-xl text-nowrap">Transaction History</CardTitle>
+                <div className="inline-flex items-center gap-2">
+                    <ColumnFilterButton />
+                    <DateFilterButton />
+                </div>
             </CardHeader>
             <CardContent className="px-3">
                 <ul className="flex flex-col gap-2">
@@ -65,8 +68,12 @@ export function TransactionsCard({className, title, transactionsData, allFeature
                         ))}
                 </ul>
             </CardContent>
-            <CardFooter>
-                
+            <CardFooter className="flex items-center justify-between px-3 pb-4">
+                <PageSizeButton />
+                <div className="flex items-center">
+                    <PrevButton />
+                    <NextButton />
+                </div>
             </CardFooter>
         </Card>
     );
