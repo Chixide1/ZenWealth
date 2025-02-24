@@ -46,7 +46,7 @@ export const resetPaginationAtom = atom(null, (get, set) => {
 
 export const transactionsParamsAtom = atom<TransactionFilters>({
     name: null,
-    sort: null,
+    sort: "date-desc",
     minAmount: null,
     maxAmount: null,
     beginDate: null,

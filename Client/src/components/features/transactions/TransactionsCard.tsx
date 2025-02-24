@@ -6,7 +6,8 @@ import {NextButton, PageSizeButton, PrevButton} from "@/components/features/tran
 import {DateFilterButton} from "@/components/features/transactions/DateFilterButton.tsx";
 import {ColumnFilterButton} from "@/components/features/transactions/ColumnFilterButton.tsx";
 import { useAtom } from "jotai"
-import {transactionsPaginationAtom} from "@/lib/atoms.ts"; 
+import {transactionsPaginationAtom} from "@/lib/atoms.ts";
+import {MobileSortingButton} from "@/components/features/transactions/MobileSortingButton.tsx"; 
 
 type TransactionsCardProps = {
     className?: string,
@@ -34,6 +35,7 @@ export function TransactionsCard({className, transactionsData,}: TransactionsCar
                 <div className="!mt-0 inline-flex items-center gap-2">
                     <ColumnFilterButton />
                     <DateFilterButton />
+                    <MobileSortingButton />
                 </div>
             </CardHeader>
             <CardContent className="p-3 border-t border-neutral-500/30">

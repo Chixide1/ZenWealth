@@ -124,9 +124,10 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
     };
     
     const mobileSelectedPeriod = () => {
-        const result = dateButtons.find((b) => {
-            return formatDate(b.value.from) === formatDate(tempFilters.beginDate) && formatDate(b.value.to) === formatDate(tempFilters.endDate);
-        });
+        const result = dateButtons.find((b) => (
+            formatDate(b.value.from) === formatDate(tempFilters.beginDate) &&
+            formatDate(b.value.to) === formatDate(tempFilters.endDate)
+        ));
         
         if (!result) {
             return "Custom Period";
@@ -136,7 +137,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
     };
 
     const FilterContent = (
-        <div className="md:grid-cols-2  md:auto-cols-auto md:grid flex flex-col w-fit">
+        <div className="md:auto-cols-auto md:grid flex flex-col w-fit">
             <div className="hidden md:flex min-w-36 flex-col items-center gap-2 p-3 pb-4">
                 {dateButtons.map((button) => (
                     <Button
