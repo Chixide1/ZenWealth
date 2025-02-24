@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { CalendarIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { cn, formatDate } from "@/lib/utils";
 import { useAtom } from "jotai";
@@ -122,10 +122,22 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
             endDate: null,
         }));
     };
+    
+    const mobileSelectedPeriod = () => {
+        const result = dateButtons.find((b) => {
+            return formatDate(b.value.from) === formatDate(tempFilters.beginDate) && formatDate(b.value.to) === formatDate(tempFilters.endDate);
+        });
+        
+        if (!result) {
+            return "Custom Period";
+        }
+        
+        return result.name;
+    };
 
     const FilterContent = (
-        <div className="grid-cols-[auto,_minmax(0,_1fr))] grid">
-            <div className="flex min-w-36 flex-col items-center gap-2 p-3 pb-4">
+        <div className="md:grid-cols-2  md:auto-cols-auto md:grid flex flex-col w-fit">
+            <div className="hidden md:flex min-w-36 flex-col items-center gap-2 p-3 pb-4">
                 {dateButtons.map((button) => (
                     <Button
                         key={button.name + "::DateFilterButton"}
@@ -156,7 +168,47 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                     Custom Period
                 </Button>
             </div>
-            <div className="border-l border-neutral-600">
+            <header className="p-3 md:hidden border-b border-neutral-600">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="mr-auto">
+                            {mobileSelectedPeriod()}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        className="text-sm p-2 text-primary bg-neutral-700/90 backdrop-blur-sm border-neutral-600 overflow-y-scroll"
+                        align="start"
+                        collisionPadding={20}
+                        portal={false}
+                    >
+                        {dateButtons.map((button) => (
+                            <DropdownMenuItem
+                                key={button.name + "::DateFilterButtonMobile"}
+                                className="w-full text-sm peer text-neutral-400 hover:bg-background aria-selected:bg-background"
+                                onClick={() => {
+                                    setTempFilters({
+                                        ...filters,
+                                        beginDate: button.value.from,
+                                        endDate: button.value.to,
+                                    });
+                                }}
+                                aria-selected={
+                                    formatDate(button.value.from) === formatDate(tempFilters.beginDate) &&
+                                    formatDate(button.value.to) === formatDate(tempFilters.endDate)
+                                }
+                            >
+                                {button.name}
+                            </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuItem
+                            className="w-full text-sm text-neutral-400 disabled:opacity-100 bg-background peer-aria-[selected=true]:bg-transparent"
+                        >
+                            Custom Period
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </header>
+            <div className="mx-auto md:border-l border-neutral-600">
                 <DateTimePicker
                     yearRange={10}
                     mode="range"
@@ -198,7 +250,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
                 </DialogTrigger>
                 <DialogContent
                     className={cn(
-                        "w-full max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600",
+                        "rounded w-fit md:w-full max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600",
                         className,
                     )}
                 >
@@ -211,7 +263,7 @@ export function DateFilterButton({ className }: DateFilterButtonProps) {
     return (
         <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
-                <Button className="gap-1 text-xs capitalize px-2 md:px-3" variant="accent" size="sm">
+                <Button className="gap-1 text-xs capitalize p-3" variant="accent" size="sm">
                     <span className="hidden md:inline">Date</span>
                     <CalendarIcon className="h-4 w-4" strokeWidth={1.5} />
                 </Button>

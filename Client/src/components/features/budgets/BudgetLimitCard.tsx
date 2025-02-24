@@ -43,7 +43,7 @@ export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, classNa
     };
     
     return (
-        <Card className={cn("bg-primary/[0.125] backdrop-blur-sm border-neutral-800", className)}>
+        <Card className={cn("bg-background backdrop-blur-sm", className)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">Monthly Budget spending</CardTitle>
                 <ArrowLink to="/budgets" />

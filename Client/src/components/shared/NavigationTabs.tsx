@@ -128,7 +128,11 @@ export function NavigationTabs({tabs}: {tabs: NavItem[]}) {
                 <SheetTrigger className="order-first h-full w-auto mr-3">
                     <AlignLeft className="h-auto w-8"/>
                 </SheetTrigger>
-                <SheetContent side={"left"} className="bg-sidebar border-neutral-800 w-60">
+                <SheetContent
+                    side={"left"}
+                    className="bg-sidebar border-neutral-800 w-60"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                >
                     <SheetHeader className="mb-6 pb-4">
                         <SheetTitle className="">
                             <Logo />

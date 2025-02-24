@@ -1,6 +1,4 @@
-﻿"use client";
-
-import {
+﻿import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -10,21 +8,19 @@ import { Button } from "@/components/ui/button.tsx";
 import { useAtom } from "jotai";
 import { transactionsAtom, transactionsPaginationAtom, resetPaginationAtom } from "@/lib/atoms.ts";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 const pageSizeOptions = [10, 20, 30, 40, 50];
 
 export function PageSizeButton() {
     const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
     const [, resetPagination] = useAtom(resetPaginationAtom);
-    const [pageSizeOpen, setPageSizeOpen] = useState(false);
 
     return (
-        <DropdownMenu modal={false} open={pageSizeOpen} onOpenChange={setPageSizeOpen}>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-                <Button variant="accent" className="gap-0.5 p-2 font-medium" size="sm">
+                <Button variant="accent" className="group gap-0.5 p-2 font-medium" size="sm">
                     {pagination.pageSize}
-                    <ChevronDown className={"h-4 w-4 transition-all duration-300" + (pageSizeOpen && " " + "rotate-180")} />
+                    <ChevronDown className="h-4 w-4 transition-all duration-300 group-data-[state=open]:rotate-180" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-fit min-w-0 bg-accent">

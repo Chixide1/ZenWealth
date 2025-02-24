@@ -58,7 +58,7 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
     return (
         <div
             className={cn(
-                "relative overflow-auto border bg-primary/[0.125] backdrop-blur-sm border-neutral-500/[0.3] rounded-2xl scrollbar-custom",
+                "relative overflow-auto border bg-primary/[0.125] backdrop-blur-sm border-neutral-500/30 rounded-2xl scrollbar-custom",
                 className,
             )}
         >

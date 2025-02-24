@@ -1,12 +1,12 @@
 ﻿"use client";
 
 import type React from "react";
-import { Filter, X } from "lucide-react";
+import {ChevronDown, Filter, X } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { categories, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useAtom } from "jotai";
 import { accountsAtom, minMaxAmountAtom, transactionsParamsAtom } from "@/lib/atoms";
@@ -114,80 +114,163 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
         });
     };
 
-    const FilterContent = (
-        <div className="grid grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))]">
-            {/* Left Column */}
-            <h2 className="p-4 text-xl border-r border-neutral-600">Filters</h2>
-            <div className="flex flex-col justify-start px-4 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
-                {tabs.map((name) => (
-                    <Button
-                        key={name + "::ColumnFilterButtonTabs"}
-                        onClick={() => setActiveFilter(name)}
-                        className={cn(
-                            "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
-                            activeFilter === name && "bg-background text-white",
-                        )}
-                        variant="ghost"
-                    >
-                        {name}
-                    </Button>
-                ))}
-            </div>
-
-            {/* Middle Column */}
-            <div className="m-0 h-full grid grid-rows-subgrid row-start-1 col-start-2 row-span-2">
-                <h3 className="text-sm inline-flex items-center p-4 border-b border-neutral-600">
-                    {activeFilter === "Amount" ? "Set Amount Range" : `Choose ${activeFilter}:`}
-                </h3>
-                <RenderFilterContent
-                    activeFilter={activeFilter}
-                    accounts={accounts}
-                    tempFilters={tempFilters}
-                    setTempFilters={setTempFilters}
-                />
-            </div>
-
-            {/* Right Column */}
-            <div className="grid grid-rows-subgrid col-start-3 row-start-1 row-span-2 border-l border-neutral-600">
-                <h2 className="inline-flex items-center text-sm p-4 border-b border-neutral-600">
-                    {currentFilters.length} filters selected:
-                </h2>
-                <ScrollArea className="h-52 p-4">
-                    <ul className="flex flex-col gap-3 text-sm">
-                        {currentFilters.map((filter, index) => (
-                            <div
-                                key={filter.type + index + "::ColumnFilterButtonCurrentFilters"}
-                                className="flex justify-between items-center"
-                            >
-                                <div>
-                                    <p className="text-sm text-neutral-400">{filter.type}</p>
-                                    <p className="text-white">{filter.value.replace(/_/g, " ")}</p>
-                                </div>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 text-neutral-400"
-                                    onClick={() => handleRemoveFilter(filter)}
-                                >
-                                    <X className="h-4 w-4" />
+    const FilterContent = () => {
+        if(isMobile) {
+            return (
+                <div className="">
+                    <header className="p-3 border-b border-neutral-600">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="group text-xl w-fit gap-1" size="icon">
+                                    <span>Filters</span>
+                                    <ChevronDown className="mt-0.5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                 </Button>
-                            </div>
-                        ))}
-                    </ul>
-                </ScrollArea>
-            </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-fit bg-neutral-700/90 border-neutral-600 backdrop-blur-sm" align="start">
+                                {tabs.map((name) => (
+                                    <DropdownMenuItem
+                                        key={name + "::ColumnFilterButtonTabsMobile"}
+                                        onClick={() => setActiveFilter(name)}
+                                        className={cn(
+                                            "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
+                                            activeFilter === name && "bg-background text-white",
+                                        )}
+                                    >
+                                        {name}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </header>
+                    <RenderFilterContent
+                        activeFilter={activeFilter}
+                        accounts={accounts}
+                        tempFilters={tempFilters}
+                        setTempFilters={setTempFilters}
+                    />
+                    <footer className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm" className="mr-auto">
+                                    {currentFilters.length} Filters Selected
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                className="text-sm p-0 text-primary bg-neutral-700/90 backdrop-blur-sm border-neutral-600 overflow-y-scroll max-h-52"
+                                align="start"
+                                collisionPadding={20}
+                                portal={false}
+                            >
+                                {currentFilters.map((filter, index) => (
+                                    <DropdownMenuItem className="mx-auto text-sm w-full">
+                                        <div
+                                            key={filter.type + index + "::ColumnFilterButtonCurrentFilters"}
+                                            className="flex justify-between items-center w-full"
+                                        >
+                                            <div>
+                                                <p className="text-sm text-neutral-400">{filter.type}</p>
+                                                <p className="text-white">{filter.value.replace(/_/g, " ")}</p>
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-neutral-400 float-right"
+                                                onClick={() => handleRemoveFilter(filter)}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
+                            Reset all
+                        </Button>
+                        <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
+                            Apply Filters
+                        </Button>
+                    </footer>
+                </div>
+            );
+        }
+        
+        return (
+            <div className="grid md:grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))] grid-rows-1 md:grid-rows-none">
+                {/* Left Column */}
+                <h2 className="p-3 text-xl border-r border-neutral-600">Filters</h2>
+                <div className="flex flex-col justify-start p-3 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
+                    {tabs.map((name) => (
+                        <Button
+                            key={name + "::ColumnFilterButtonTabs"}
+                            onClick={() => setActiveFilter(name)}
+                            className={cn(
+                                "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
+                                activeFilter === name && "bg-background text-white",
+                            )}
+                            variant="ghost"
+                        >
+                            {name}
+                        </Button>
+                    ))}
+                </div>
 
-            {/* Footer */}
-            <div className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
-                <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
-                    Reset all
-                </Button>
-                <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
-                    Apply Filters
-                </Button>
+                {/* Middle Column */}
+                <div className="m-0 h-full grid grid-rows-subgrid row-start-1 col-start-2 row-span-2">
+                    <h3 className="text-sm inline-flex items-center p-3 border-b border-neutral-600">
+                        {activeFilter === "Amount" ? "Set Amount Range" : `Choose ${activeFilter}:`}
+                    </h3>
+                    <RenderFilterContent
+                        activeFilter={activeFilter}
+                        accounts={accounts}
+                        tempFilters={tempFilters}
+                        setTempFilters={setTempFilters}
+                    />
+                </div>
+
+                {/* Right Column */}
+                <div className="grid grid-rows-subgrid col-start-3 row-start-1 row-span-2 border-l border-neutral-600">
+                    <h2 className="inline-flex items-center text-sm p-3 border-b border-neutral-600">
+                        {currentFilters.length} filters selected:
+                    </h2>
+                    <ScrollArea className="h-52 p-3">
+                        <ul className="flex flex-col gap-3 text-sm">
+                            {currentFilters.map((filter, index) => (
+                                <div
+                                    key={filter.type + index + "::ColumnFilterButtonCurrentFilters"}
+                                    className="flex justify-between items-center"
+                                >
+                                    <div>
+                                        <p className="text-sm text-neutral-400">{filter.type}</p>
+                                        <p className="text-white">{filter.value.replace(/_/g, " ")}</p>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 text-neutral-400"
+                                        onClick={() => handleRemoveFilter(filter)}
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </ul>
+                    </ScrollArea>
+                </div>
+
+                {/* Footer */}
+                <footer className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
+                    
+                    <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
+                        Reset all
+                    </Button>
+                    <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
+                        Apply Filters
+                    </Button>
+                </footer>
             </div>
-        </div>
-    );
+        );
+    };
 
     if (isMobile) {
         return (
@@ -200,11 +283,11 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                 </DialogTrigger>
                 <DialogContent
                     className={cn(
-                        "w-full max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg",
+                        "w-11/12 md:w-full rounded-md max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg",
                         className,
                     )}
                 >
-                    {FilterContent}
+                    <FilterContent />
                 </DialogContent>
             </Dialog>
         );
@@ -225,7 +308,7 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                 )}
                 align="end"
             >
-                {FilterContent}
+                <FilterContent />
             </DropdownMenuContent>
         </DropdownMenu>
     );
@@ -305,8 +388,8 @@ function RenderFilterContent({ activeFilter, accounts, tempFilters, setTempFilte
         }
 
         return (
-            <div className="p-4 h-52">
-                <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="p-3 h-52">
+                <div className="grid grid-cols-2 gap-3 mb-4">
                     <div>
                         <label className="text-sm mb-2 block">From</label>
                         <CurrencyInput
@@ -350,7 +433,7 @@ function RenderFilterContent({ activeFilter, accounts, tempFilters, setTempFilte
         );
     case "Accounts":
         return (
-            <ScrollArea className="h-52 p-4">
+            <ScrollArea className="h-52 p-3">
                 <div className="flex items-center justify-between mb-5">
                     <label htmlFor="select-all-accounts" className="text-sm font-medium">
                             Select All
@@ -380,7 +463,7 @@ function RenderFilterContent({ activeFilter, accounts, tempFilters, setTempFilte
         );
     case "Categories":
         return (
-            <ScrollArea className="h-52 p-4">
+            <ScrollArea className="h-52 p-3">
                 <div className="flex items-center justify-between mb-5">
                     <label htmlFor="select-all-categories" className="text-sm font-medium">
                             Select All

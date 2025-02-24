@@ -5,6 +5,8 @@ import {TransactionData} from "@/types.ts";
 import {NextButton, PageSizeButton, PrevButton} from "@/components/features/transactions/TransactionsPagination.tsx";
 import {DateFilterButton} from "@/components/features/transactions/DateFilterButton.tsx";
 import {ColumnFilterButton} from "@/components/features/transactions/ColumnFilterButton.tsx";
+import { useAtom } from "jotai"
+import {transactionsPaginationAtom} from "@/lib/atoms.ts"; 
 
 type TransactionsCardProps = {
     className?: string,
@@ -12,6 +14,8 @@ type TransactionsCardProps = {
 }
 
 export function TransactionsCard({className, transactionsData,}: TransactionsCardProps) {
+    const [{pageSize}] = useAtom(transactionsPaginationAtom);
+    
     const dateParser = new Intl.DateTimeFormat("en-GB", {
         dateStyle: "medium",
     });
@@ -25,14 +29,14 @@ export function TransactionsCard({className, transactionsData,}: TransactionsCar
     
     return (
         <Card className={cn("", className)}>
-            <CardHeader className="flex items-center justify-between flex-row pt-4 px-3 pb-4 rounded-t-[inherit]">
+            <CardHeader className="flex items-center justify-between flex-row p-3 rounded-t-[inherit]">
                 <CardTitle className="text-xl text-nowrap">Transaction History</CardTitle>
-                <div className="inline-flex items-center gap-2">
+                <div className="!mt-0 inline-flex items-center gap-2">
                     <ColumnFilterButton />
                     <DateFilterButton />
                 </div>
             </CardHeader>
-            <CardContent className="px-3">
+            <CardContent className="p-3 border-t border-neutral-500/30">
                 <ul className="flex flex-col gap-2">
                     {transactions.length > 0 ? transactions.map((transaction) => (
                         <li
@@ -56,7 +60,7 @@ export function TransactionsCard({className, transactionsData,}: TransactionsCar
                                 <p className="text-neutral-400 text-nowrap">{timeParser.format(new Date(transaction.datetime ?? transaction.date))}</p>
                             </div>
                         </li>
-                    )) : Array.from({ length: 10 })
+                    )) : Array.from({ length: pageSize })
                         .map((_, i) => (
                             <li className="flex items-center space-x-4" key={i + "::TransactionsCardSkeleton"}>
                                 <Skeleton className="h-12 w-12 rounded-full" />
@@ -68,7 +72,7 @@ export function TransactionsCard({className, transactionsData,}: TransactionsCar
                         ))}
                 </ul>
             </CardContent>
-            <CardFooter className="flex items-center justify-between px-3 pb-4">
+            <CardFooter className="flex items-center justify-between p-3 border-t border-neutral-500/30">
                 <PageSizeButton />
                 <div className="flex items-center">
                     <PrevButton />

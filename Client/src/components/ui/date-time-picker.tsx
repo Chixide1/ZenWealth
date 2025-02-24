@@ -278,19 +278,19 @@ export function Calendar({
             endMonth={new Date()}
             className={cn("p-3", className)}
             classNames={{
-                months: "flex flex-col sm:flex-row space-y-4  sm:space-y-0 justify-center",
+                months: "flex flex-col space-y-0 justify-center",
                 month: "flex flex-col items-center space-y-1",
                 month_caption: "flex justify-center pt-1 relative items-center",
                 caption_label: "text-sm font-medium",
                 nav: "space-x-1 flex items-center ",
                 button_previous: cn(
                     buttonVariants({ variant: "ghost" }),
-                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute top-4",
+                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute top-[4.45rem] md:top-4",
                     disableLeftNavigation() && "pointer-events-none",
                 ),
                 button_next: cn(
                     buttonVariants({ variant: "ghost" }),
-                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-5 top-4",
+                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-3 top-[4.45rem] md:top-4",
                     disableRightNavigation() && "pointer-events-none",
                 ),
                 month_grid: "w-full border-collapse space-y-1",
@@ -302,15 +302,15 @@ export function Calendar({
                     buttonVariants({ variant: "ghost" }),
                     "h-9 w-9 p-0 hover:bg-accent hover:text-black ",
                 ),
-                range_start: "day-range-start rounded-l-md",
-                range_end: "day-range-end rounded-r-md",
+                range_start: "day-range-start rounded-l-md data-[today=true]:rounded-r-none",
+                range_end: "day-range-end rounded-r-md data-[today=true]:rounded-l-none",
                 selected:
                     "bg-accent text-black focus:bg-accent",
                 today: "bg-secondary text-black aria-selected:bg-accent rounded-md",
                 outside:
                     "day-outside text-neutral-500 opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
                 disabled: "text-muted-foreground opacity-50",
-                range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground aria-selected:rounded-none",
                 hidden: "invisible",
                 ...classNames,
             }}
@@ -719,15 +719,6 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
             onMonthChange?.(newDateFull);
             setMonth(newDateFull);
         };
-
-        // const onSelect = (newDay?: Date) => {
-        //     if (!newDay) {
-        //         return;
-        //     }
-        //     onChange?.(newDay);
-        //     setMonth(newDay);
-        //     setDisplayDate(newDay);
-        // };
 
         useImperativeHandle(
             ref,
