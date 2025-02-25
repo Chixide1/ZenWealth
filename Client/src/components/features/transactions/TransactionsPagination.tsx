@@ -6,14 +6,13 @@
 } from "@/components/ui/dropdown-menu.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { useAtom } from "jotai";
-import { transactionsAtom, transactionsPaginationAtom, resetPaginationAtom } from "@/lib/atoms.ts";
+import { transactionsAtom, transactionsPaginationAtom } from "@/lib/atoms.ts";
 import { ChevronDown } from "lucide-react";
 
 const pageSizeOptions = [10, 20, 30, 40, 50];
 
 export function PageSizeButton() {
     const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
-    const [, resetPagination] = useAtom(resetPaginationAtom);
 
     return (
         <DropdownMenu modal={false}>
@@ -27,13 +26,7 @@ export function PageSizeButton() {
                 {pageSizeOptions.map((size) => (
                     <DropdownMenuItem
                         key={size}
-                        onClick={() => {
-                            setPagination((prev) => ({
-                                ...prev,
-                                pageSize: size,
-                            }));
-                            resetPagination();
-                        }}
+                        onClick={() => setPagination({pageSize: size, pageIndex: 0})}
                         className={
                             "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10 hover:bg-black/10" +
                             (pagination.pageSize === size && " bg-black/10")

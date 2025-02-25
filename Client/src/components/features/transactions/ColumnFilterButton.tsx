@@ -13,7 +13,7 @@ import { accountsAtom, minMaxAmountAtom, transactionsParamsAtom } from "@/lib/at
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
-import type { Account, TransactionFilters } from "@/types";
+import type { Account, TransactionParams } from "@/types";
 import Loading from "@/components/shared/Loading";
 import { useIsMobile } from "@/hooks/use-mobile.tsx";
 
@@ -29,8 +29,8 @@ type ColumnFilter = {
 type RenderFilterContentProps = {
     accounts: Account[]
     activeFilter: string
-    tempFilters: TransactionFilters
-    setTempFilters: React.Dispatch<React.SetStateAction<TransactionFilters>>
+    tempFilters: TransactionParams
+    setTempFilters: React.Dispatch<React.SetStateAction<TransactionParams>>
 }
 
 const filtersMap = new Map([

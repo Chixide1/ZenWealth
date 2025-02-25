@@ -105,7 +105,7 @@ export const transactionColumns: ColumnDef<Transaction, never>[] = [
         }
     }),
     columnHelper.accessor("accountName", {
-        id: "account Name",
+        id: "account",
         header: ({column}) => {
             return (
                 <div className="flex items-center">

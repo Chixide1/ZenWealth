@@ -5,14 +5,14 @@
     RecentTransactions,
     TopExpenseCategory,
     TransactionData,
-    TransactionFilters,
+    TransactionParams,
 } from "@/types.ts";
 import { atomWithQuery, atomWithInfiniteQuery } from "jotai-tanstack-query";
 import api from "@/lib/api.ts";
 import type { AxiosError } from "axios";
 import { atom } from "jotai";
-import type { VisibilityState } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { SetStateAction } from "react";
 
 type TransactionRequest = {
     cursor: number | null
@@ -20,31 +20,17 @@ type TransactionRequest = {
     amount: number | null
 }
 
-type ApiTransactionParams = Omit<TransactionFilters, "beginDate" | "endDate"> & {
-    beginDate: string | null; // Overwrite with new type
-    endDate: string | null;   // Overwrite with new type
+type ApiTransactionParams = Omit<TransactionParams, "beginDate" | "endDate"> & {
+    beginDate: string | null // Overwrite with new type
+    endDate: string | null // Overwrite with new type
 } & TransactionRequest & { pageSize: number | null }
-
-export const columnVisibilityAtom = atom<VisibilityState>({
-    name: true,
-    category: true,
-    amount: true,
-    date: true,
-});
 
 export const transactionsPaginationAtom = atom({
     pageIndex: 0,
     pageSize: 10,
 });
 
-export const resetPaginationAtom = atom(null, (get, set) => {
-    set(transactionsPaginationAtom, {
-        pageIndex: 0,
-        pageSize: get(transactionsPaginationAtom).pageSize,
-    });
-});
-
-export const transactionsParamsAtom = atom<TransactionFilters>({
+const baseTransactionsParamsAtom = atom<TransactionParams>({
     name: null,
     sort: "date-desc",
     minAmount: null,
@@ -54,6 +40,28 @@ export const transactionsParamsAtom = atom<TransactionFilters>({
     excludeAccounts: [],
     excludeCategories: [],
 });
+
+export const transactionsParamsAtom = atom<
+    TransactionParams,
+    [SetStateAction<TransactionParams>],
+    void
+>(
+    (get) => get(baseTransactionsParamsAtom),
+    (get, set, update) => {
+        const nextValue =
+            typeof update === "function"
+                ? (update as (prev: TransactionParams) => TransactionParams)(get(baseTransactionsParamsAtom))
+                : update;
+
+        set(baseTransactionsParamsAtom, nextValue);
+
+        // Reset pagination whenever filters change
+        set(transactionsPaginationAtom, {
+            pageIndex: 0,
+            pageSize: get(transactionsPaginationAtom).pageSize,
+        });
+    },
+);
 
 export const accountsAtom = atomWithQuery(() => ({
     queryKey: ["accounts"],
@@ -77,8 +85,6 @@ export const transactionsAtom = atomWithInfiniteQuery((get) => ({
                 : null,
             endDate: get(transactionsParamsAtom).endDate ? format(get(transactionsParamsAtom).endDate!, "yyyy-MM-dd") : null,
         };
-
-        // console.log(params);
 
         const response = await api<TransactionData>("/transactions", {
             params: { ...params },

@@ -3,7 +3,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {cn} from "@/lib/utils.ts";
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
-import {resetPaginationAtom, transactionsParamsAtom} from "@/lib/atoms";
+import { transactionsParamsAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
 
 type SortingOption = {
@@ -21,7 +21,6 @@ const sortingOptions: SortingOption[] = [
 export function MobileSortingButton(){
     const [isOpen, setIsOpen] = useState(false);
     const [{sort}, setParams] = useAtom(transactionsParamsAtom);
-    const [, resetPagination] = useAtom(resetPaginationAtom);
     
     return (
         <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
@@ -42,7 +41,6 @@ export function MobileSortingButton(){
                         key={"MobileSortingButton::" + option.name}
                         onClick={() => {
                             setParams((prev) => ({ ...prev, sort: option.value }));
-                            resetPagination();
                             setIsOpen(false);
                         }}
                     >

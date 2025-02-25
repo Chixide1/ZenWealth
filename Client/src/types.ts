@@ -18,7 +18,7 @@ export type TransactionData = {
     nextAmount: number | null,
 }
 
-export type TransactionFilters = {
+export type TransactionParams = {
     name: string | null
     sort: string | null
     minAmount: number | null

@@ -1,21 +1,19 @@
-﻿"use client";
-
-import { type ColumnDef, flexRender, getCoreRowModel, useReactTable, type VisibilityState } from "@tanstack/react-table";
+﻿import { type ColumnDef, flexRender, getCoreRowModel, useReactTable, type VisibilityState } from "@tanstack/react-table";
 import { useAtom } from "jotai";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ColumnVisibilityButton from "@/components/features/transactions/ColumnVisibilityButton.tsx";
 import TransactionSearchButton from "@/components/features/transactions/TransactionSearchButton.tsx";
 import type { Transaction, TransactionData } from "@/types";
 import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
-import { transactionsPaginationAtom, transactionsParamsAtom, resetPaginationAtom } from "@/lib/atoms.ts";
+import { transactionsPaginationAtom } from "@/lib/atoms.ts";
 import { ColumnFilterButton } from "@/components/features/transactions/ColumnFilterButton.tsx";
 import { DateFilterButton } from "@/components/features/transactions/DateFilterButton.tsx";
 import { NextButton, PageSizeButton, PrevButton } from "@/components/features/transactions/TransactionsPagination.tsx";
 
 interface TransactionTableProps {
-    columns: ColumnDef<Transaction, never>[]
+    columns: ColumnDef<Transaction, any>[] // eslint-disable-line
     data: TransactionData | undefined
     isLoading?: boolean
     className?: string
@@ -25,20 +23,20 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
     "use no memo" // eslint-disable-line
 
     const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
-    const [transactionsParams] = useAtom(transactionsParamsAtom);
-    const [, resetPagination] = useAtom(resetPaginationAtom);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         category: true,
         amount: true,
         date: true,
+        account: true,
     });
-    const [columnOrder] = useState<string[]>(["name", "amount", "date", "category"]);
-
-    // Reset pagination when filters change
-    useEffect(() => {
-        resetPagination();
-    }, [transactionsParams, resetPagination]);
+    const [columnOrder] = useState<string[]>([
+        "name",
+        "amount",
+        "date",
+        "category",
+        "account"
+    ]);
 
     const table = useReactTable<Transaction>({
         data: data?.transactions ?? [],
