@@ -1,4 +1,4 @@
-﻿import { type ColumnDef, flexRender, getCoreRowModel, useReactTable, type VisibilityState } from "@tanstack/react-table";
+﻿import { flexRender, getCoreRowModel, useReactTable, type VisibilityState } from "@tanstack/react-table";
 import { useAtom } from "jotai";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
@@ -11,9 +11,10 @@ import { transactionsPaginationAtom } from "@/lib/atoms.ts";
 import { ColumnFilterButton } from "@/components/features/transactions/ColumnFilterButton.tsx";
 import { DateFilterButton } from "@/components/features/transactions/DateFilterButton.tsx";
 import { NextButton, PageSizeButton, PrevButton } from "@/components/features/transactions/TransactionsPagination.tsx";
+import {transactionColumns} from "@/components/features/transactions/TransactionColumns.tsx";
 
 interface TransactionTableProps {
-    columns: ColumnDef<Transaction, any>[] // eslint-disable-line
+    columns: typeof transactionColumns
     data: TransactionData | undefined
     isLoading?: boolean
     className?: string

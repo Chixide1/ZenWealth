@@ -1,4 +1,4 @@
-﻿import {ColumnDef, createColumnHelper } from "@tanstack/react-table";
+﻿import { createColumnHelper } from "@tanstack/react-table";
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 import { Transaction } from "@/types";
 import {useAtom } from "jotai";
@@ -6,7 +6,7 @@ import {transactionsPaginationAtom, transactionsParamsAtom} from "@/lib/atoms.ts
 
 const columnHelper = createColumnHelper<Transaction>();
 
-export const transactionColumns: ColumnDef<Transaction, never>[] = [
+export const transactionColumns = [ 
     columnHelper.accessor("name", {
         header: ({column}) => (
             <div className="flex items-center">
