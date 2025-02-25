@@ -48,12 +48,7 @@ export const transactionsParamsAtom = atom<
 >(
     (get) => get(baseTransactionsParamsAtom),
     (get, set, update) => {
-        const nextValue =
-            typeof update === "function"
-                ? (update as (prev: TransactionParams) => TransactionParams)(get(baseTransactionsParamsAtom))
-                : update;
-
-        set(baseTransactionsParamsAtom, nextValue);
+        set(baseTransactionsParamsAtom, update);
 
         // Reset pagination whenever filters change
         set(transactionsPaginationAtom, {
