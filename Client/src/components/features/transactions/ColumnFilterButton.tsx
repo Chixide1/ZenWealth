@@ -5,7 +5,7 @@ import { categories, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
 import { useAtom } from "jotai";
 import { accountsAtom, minMaxAmountAtom, transactionsParamsAtom } from "@/lib/atoms";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -292,6 +292,8 @@ export function ColumnFilterButton({
                 {/* Header/Tabs */}
                 {isMobile ? (
                     <div className="p-2 border-b border-neutral-600">
+                        <DialogTitle className="sr-only">Filters Modal</DialogTitle>
+                        <DialogDescription className="sr-only">Filters Modal allowing filtering by amount, Categories and Accounts</DialogDescription>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="mr-auto flex group text-xl w-fit gap-1" size="icon">

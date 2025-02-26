@@ -218,11 +218,17 @@ function genMonths(locale: Pick<Locale, "options" | "localize" | "formatLong">) 
 
 function genYears(yearRange = 50) {
     const today = new Date();
-    return Array.from({ length: yearRange * 2 + 1 }, (_, i) => ({
+    return Array.from({ length: yearRange + 1 }, (_, i) => ({
         value: today.getFullYear() - yearRange + i,
         label: (today.getFullYear() - yearRange + i).toString(),
     }));
 }
+
+const isFutureDate = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+    return date > today;
+};
 
 // ---------- utils end ----------
 
@@ -277,6 +283,7 @@ export function Calendar({
             showOutsideDays={showOutsideDays}
             endMonth={new Date()}
             className={cn("p-3", className)}
+            disabled={isFutureDate}
             classNames={{
                 months: "flex flex-col space-y-0 justify-center",
                 month: "flex flex-col items-center space-y-1",
@@ -309,7 +316,7 @@ export function Calendar({
                 today: "bg-secondary text-black aria-selected:bg-accent rounded-md",
                 outside:
                     "day-outside text-neutral-500 opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-                disabled: "text-muted-foreground opacity-50",
+                disabled: "text-neutral-500 opacity-50",
                 range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground aria-selected:rounded-none",
                 hidden: "invisible",
                 ...classNames,
@@ -677,7 +684,7 @@ type DateTimePickerRef = {
     value?: Date;
 } & Omit<HTMLButtonElement, "value">;
 
-const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePickerProps & {mode: "range", selected: DateRange, onSelect: (range: DateRange | undefined) => void}>(
+const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePickerProps & {mode: "range", selected: DateRange | undefined, onSelect: (range: DateRange | undefined) => void}>(
     (
         {
             locale = enUS,
