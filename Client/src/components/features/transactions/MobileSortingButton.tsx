@@ -31,7 +31,7 @@ export function MobileSortingButton(){
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className={cn("w-auto text-primary bg-neutral-700/90 backdrop-blur-sm border-neutral-600 p-2 space-y-1")}
+                className={cn("w-auto text-primary bg-neutral-700/90 backdrop-blur-sm border-neutral-600 p-1 space-y-1")}
                 align="end"
             >
                 {sortingOptions.map((option) => (

@@ -1,101 +1,253 @@
-﻿"use client";
-
-import type React from "react";
-import {useEffect, useState} from "react";
-import {ChevronDown, Filter, X} from "lucide-react";
-import {categories, cn} from "@/lib/utils";
-import {Button} from "@/components/ui/button";
-import {DualRangeSlider} from "@/components/ui/dual-range-slider";
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
-import {useAtom} from "jotai";
-import {accountsAtom, minMaxAmountAtom, transactionsParamsAtom} from "@/lib/atoms";
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {Checkbox} from "@/components/ui/checkbox";
+﻿import type React from "react";
+import { useEffect, useState } from "react";
+import { ChevronDown, Filter, X } from "lucide-react";
+import { categories, cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { DualRangeSlider } from "@/components/ui/dual-range-slider";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useAtom } from "jotai";
+import { accountsAtom, minMaxAmountAtom, transactionsParamsAtom } from "@/lib/atoms";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
-import type {Account, TransactionParams} from "@/types";
+import type { Account, TransactionParams } from "@/types";
 import Loading from "@/components/shared/Loading";
-import {useIsMobile} from "@/hooks/use-mobile.tsx";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-type ColumnFilterButtonProps = {
-    className?: string
-}
+// =========================
+// Types
+// =========================
 
-type ColumnFilter = {
-    type: string
-    value: string | number | Date
-}
-
-type RenderFilterContentProps = {
+type FilterType = "Amount" | "Accounts" | "Categories"
+type ColumnFilter = { type: string; value: string | number | Date }
+type FilterContentProps = {
+    activeFilter: FilterType
     accounts: Account[]
-    activeFilter: string
     tempFilters: TransactionParams
     setTempFilters: React.Dispatch<React.SetStateAction<TransactionParams>>
+    onClose?: () => void
 }
 
-const filtersMap = new Map([
+// =========================
+// Constants
+// =========================
+
+const FILTER_TABS: FilterType[] = ["Amount", "Accounts", "Categories"];
+const FILTERS_MAP = new Map([
     ["minAmount", "Minimum Amount"],
     ["maxAmount", "Maximum Amount"],
     ["excludeAccounts", "Accounts"],
     ["excludeCategories", "Categories"],
 ]);
 
-export function filtersParser(filters: TransactionParams){
-    return Object.entries(filters)
-        .flatMap<ColumnFilter>(([key, value]) => {
-            if (Array.isArray(value)) {
-                return value.map((item) => ({
-                    type: key,
-                    value: item,
-                }));
-            } else if (value !== null) {
-                return [{type: key, value: value}];
-            } else {
-                return [];
-            }
-        })
-        .reduce<(Omit<ColumnFilter, "value"> & { value: string })[]>((acc, item) => {
-            if (filtersMap.has(item.type)) {
-                acc.push({type: filtersMap.get(item.type)!, value: item.value.toString()});
-            }
-            return acc;
-        }, []);
+// =========================
+// Utility Functions
+// =========================
+
+const filtersParser = (filters: TransactionParams) => (Object.entries(filters)
+    .flatMap<ColumnFilter>(([key, value]) => {
+        if (Array.isArray(value)) {
+            return value.map((item) => ({ type: key, value: item }));
+        }
+        return value !== null ? [{ type: key, value }] : [];
+    })
+    .reduce<(Omit<ColumnFilter, "value"> & { value: string })[]>((acc, item) => {
+        if (FILTERS_MAP.has(item.type)) {
+            acc.push({
+                type: FILTERS_MAP.get(item.type)!,
+                value: item.value.toString(),
+            });
+        }
+        return acc;
+    }, [])
+);
+
+// =========================
+// Filter Content Components
+// ==========================
+
+const AmountFilter = ({
+    bounds,
+    range,
+    onRangeChange,
+}: {
+    bounds: { min: number; max: number } | undefined
+    range: [number, number]
+    onRangeChange: (range: [number, number]) => void
+}) => (
+    <div className="p-3 h-52">
+        <div className="grid grid-cols-2 gap-3 mb-4">
+            {["From", "To"].map((label, index) => (
+                <div key={label + index + "AmountFilter"}>
+                    <label className="text-sm mb-2 block text-start">{label}</label>
+                    <CurrencyInput
+                        id={`input-${label.toLowerCase()}`}
+                        name={`input-${label.toLowerCase()}`}
+                        placeholder={`${label === "From" ? "Min" : "Max"}: £${bounds?.[label === "From" ? "min" : "max"].toFixed(
+                            2,
+                        )}`}
+                        prefix="£"
+                        value={range[index]}
+                        decimalScale={2}
+                        onValueChange={(value) =>
+                            onRangeChange(index === 0 ? [Number(value), range[1]] : [range[0], Number(value)])
+                        }
+                        className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
+                    />
+                </div>
+            ))}
+        </div>
+        <DualRangeSlider
+            max={bounds?.max ?? 0}
+            min={bounds?.min ?? 0}
+            step={0.1}
+            value={range}
+            onValueChange={onRangeChange}
+            className="py-4"
+        />
+    </div>
+);
+
+const CheckboxList = ({
+    items,
+    selectedItems,
+    onItemToggle,
+    onSelectAll,
+    formatLabel = (item: string) => item.replace(/_/g, " "),
+}: {
+    items: string[]
+    selectedItems: string[]
+    onItemToggle: (item: string) => void
+    onSelectAll: (checked: boolean) => void
+    formatLabel?: (item: string) => string
+}) => (
+    <ScrollArea className="h-52 px-3">
+        <div className="flex items-center justify-between mt-3 mb-5">
+            <label className="text-sm font-medium">Select All</label>
+            <Checkbox onCheckedChange={onSelectAll} checked={selectedItems.length === 0} />
+        </div>
+        <ul className="flex flex-col gap-3 text-sm">
+            {items.map((item, index) => (
+                <li key={`${item}-${index}` + "::CheckboxList"} className="last:mb-3 flex justify-between items-center gap-10">
+                    <p>{formatLabel(item)}</p>
+                    <Checkbox
+                        checked={!selectedItems.includes(item)}
+                        onCheckedChange={() => onItemToggle(item)}
+                        className="data-[state=checked]:bg-secondary"
+                    />
+                </li>
+            ))}
+        </ul>
+    </ScrollArea>
+);
+
+// =========================
+// Main Filter Content Component
+// =========================
+
+function FilterContent({ activeFilter, accounts, tempFilters, setTempFilters }: FilterContentProps) {
+    const [{ data: bounds, isLoading }] = useAtom(minMaxAmountAtom);
+    const [range, setRange] = useState<[number, number]>([0, 0]);
+
+    useEffect(() => {
+        if (bounds) {
+            setRange([tempFilters.minAmount ?? bounds.min, tempFilters.maxAmount ?? bounds.max]);
+        }
+    }, [bounds, tempFilters.minAmount, tempFilters.maxAmount]);
+
+    const handleAmountChange = (newRange: [number, number]) => {
+        setRange(newRange);
+        setTempFilters((prev) => ({
+            ...prev,
+            minAmount: newRange[0] !== bounds?.min ? newRange[0] : null,
+            maxAmount: newRange[1] !== bounds?.max ? newRange[1] : null,
+        }));
+    };
+
+    if (activeFilter === "Amount") {
+        return isLoading ? (
+            <Loading fullScreen={false} className="h-52" />
+        ) : (
+            <AmountFilter bounds={bounds} range={range} onRangeChange={handleAmountChange} />
+        );
+    }
+
+    const items = activeFilter === "Accounts" ? accounts.map((a) => a.name) : categories;
+    const selectedItems = activeFilter === "Accounts" ? tempFilters.excludeAccounts : tempFilters.excludeCategories;
+
+    const handleToggle = (item: string) => {
+        const key = activeFilter === "Accounts" ? "excludeAccounts" : "excludeCategories";
+        setTempFilters((prev) => {
+            const current = prev[key] || [];
+            return {
+                ...prev,
+                [key]: current.includes(item) ? current.filter((i: string) => i !== item) : [...current, item],
+            };
+        });
+    };
+
+    const handleSelectAll = (checked: boolean) => {
+        const key = activeFilter === "Accounts" ? "excludeAccounts" : "excludeCategories";
+        setTempFilters((prev) => ({
+            ...prev,
+            [key]: checked ? [] : items,
+        }));
+    };
+
+    return (
+        <CheckboxList
+            items={items}
+            selectedItems={selectedItems}
+            onItemToggle={handleToggle}
+            onSelectAll={handleSelectAll}
+        />
+    );
 }
 
-const tabs = ["Amount", "Accounts", "Categories"];
+// =========================
+// Main Component
+// =========================
 
-export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
+export function ColumnFilterButton({
+    className,
+}: {
+    className?: string
+}) {
     const [{ data }] = useAtom(accountsAtom);
     const [filters, setFilters] = useAtom(transactionsParamsAtom);
-    const accounts = data ?? [];
-    const [activeFilter, setActiveFilter] = useState("Amount");
+    const [activeFilter, setActiveFilter] = useState<FilterType>("Amount");
     const [isOpen, setIsOpen] = useState(false);
     const [tempFilters, setTempFilters] = useState(filters);
     const isMobile = useIsMobile();
 
     useEffect(() => {
-        if (isOpen) {
-            setTempFilters(filters);
-        }
+        if (isOpen) setTempFilters(filters);
     }, [isOpen, filters]);
 
     const currentFilters = filtersParser(tempFilters);
     const appliedFilters = filtersParser(filters);
 
-    const handleRemoveFilter = (item: ColumnFilter) => {
+    const handleRemoveFilter = (filter: ColumnFilter) => {
         setTempFilters((prev) => {
-            const filterKey = Array.from(filtersMap.entries()).find(([, displayName]) => displayName === item.type)?.[0];
-
+            const filterKey = Array.from(FILTERS_MAP.entries()).find(([, displayName]) => displayName === filter.type)?.[0];
             if (!filterKey) return prev;
 
-            if (filterKey === "excludeAccounts") {
-                const updatedAccounts = prev.excludeAccounts?.filter((a) => a !== item.value) ?? [];
-                return { ...prev, excludeAccounts: updatedAccounts };
-            } else if (filterKey === "excludeCategories") {
-                const updatedCategories = prev.excludeCategories?.filter((c) => c !== item.value) ?? [];
-                return { ...prev, excludeCategories: updatedCategories };
+            if (filterKey === "excludeAccounts" || filterKey === "excludeCategories") {
+                // Explicitly type the key to ensure type safety
+                const key = filterKey as "excludeAccounts" | "excludeCategories";
+                const current = prev[key] || []; // Handle potential undefined case
+                return {
+                    ...prev,
+                    [key]: current.filter((item) => item !== filter.value),
+                };
             } else if (filterKey === "minAmount" || filterKey === "maxAmount") {
-                return { ...prev, [filterKey]: null };
+                // Explicitly type the key for amount filters
+                const key = filterKey as "minAmount" | "maxAmount";
+                return {
+                    ...prev,
+                    [key]: null,
+                };
             }
 
             return prev;
@@ -117,41 +269,119 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
         });
     };
 
-    const FilterContent = () => {
-        if(isMobile) {
-            return (
-                <div className="">
-                    <header className="p-3 border-b border-neutral-600">
+    const FilterWrapper = isMobile ? Dialog : DropdownMenu;
+    const FilterTrigger = isMobile ? DialogTrigger : DropdownMenuTrigger;
+    const FilterContainer = isMobile ? DialogContent : DropdownMenuContent;
+
+    return (
+        <FilterWrapper open={isOpen} onOpenChange={setIsOpen}>
+            <FilterTrigger asChild>
+                <Button className="capitalize text-xs gap-1 px-2 md:px-3" variant="accent" size="sm">
+                    <span className="hidden md:inline">Filters {appliedFilters.length > 0 && `(${appliedFilters.length})`}</span>
+                    <Filter className="h-4 w-4" strokeWidth={1.5} />
+                </Button>
+            </FilterTrigger>
+            <FilterContainer
+                className={cn(
+                    "text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg",
+                    isMobile ? "block w-10/12 md:w-full rounded-md max-w-lg" : "grid grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))] grid-rows-1 md:grid-rows-none w-[45rem]",
+                    className,
+                )}
+                align="end"
+            >
+                {/* Header/Tabs */}
+                {isMobile ? (
+                    <div className="p-2 border-b border-neutral-600">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="group text-xl w-fit gap-1" size="icon">
+                                <Button variant="ghost" className="mr-auto flex group text-xl w-fit gap-1" size="icon">
                                     <span>Filters</span>
                                     <ChevronDown className="mt-0.5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-fit bg-neutral-700/90 border-neutral-600 backdrop-blur-sm" align="start">
-                                {tabs.map((name) => (
+                            <DropdownMenuContent
+                                className="p-1 border-b space-y-1 w-fit bg-neutral-700/90 border-neutral-600 backdrop-blur-sm"
+                                align="start"
+                            >
+                                {FILTER_TABS.map((tab) => (
                                     <DropdownMenuItem
-                                        key={name + "::ColumnFilterButtonTabsMobile"}
-                                        onClick={() => setActiveFilter(name)}
+                                        key={tab}
+                                        onClick={() => setActiveFilter(tab)}
                                         className={cn(
                                             "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
-                                            activeFilter === name && "bg-background text-white",
+                                            activeFilter === tab && "bg-background text-white",
                                         )}
                                     >
-                                        {name}
+                                        {tab}
                                     </DropdownMenuItem>
                                 ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    </header>
-                    <RenderFilterContent
+                    </div>
+                ) : (
+                    <>
+                        <h2 className="row-start-1 col-start-1 p-3 text-xl border-r border-neutral-600">Filters</h2>
+                        <div className="row-start-2 col-start-1 col-span-1 flex flex-col justify-start p-3 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
+                            {FILTER_TABS.map((tab) => (
+                                <Button
+                                    key={tab}
+                                    onClick={() => setActiveFilter(tab)}
+                                    className={cn(
+                                        "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
+                                        activeFilter === tab && "bg-background text-white",
+                                    )}
+                                    variant="ghost"
+                                >
+                                    {tab}
+                                </Button>
+                            ))}
+                        </div>
+                    </>
+                )}
+
+                {/* Filter Content */}
+                <div className="md:grid md:grid-rows-subgrid col-start-1 md:col-start-2 row-start-2 md:row-start-1 row-span-2">
+                    <h2 className="hidden md:inline-flex items-center text-sm ps-3 border-b border-neutral-600">Choose {activeFilter}:</h2>
+                    <FilterContent
                         activeFilter={activeFilter}
-                        accounts={accounts}
+                        accounts={data ?? []}
                         tempFilters={tempFilters}
                         setTempFilters={setTempFilters}
                     />
-                    <footer className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
+                </div>
+
+                {/* Selected Filters */}
+                {!isMobile && (
+                    <div className="grid grid-rows-subgrid col-start-3 row-start-1 row-span-2 border-l border-neutral-600">
+                        <h2 className="inline-flex items-center text-sm ps-3 border-b border-neutral-600">
+                            {currentFilters.length} filters selected:
+                        </h2>
+                        <ScrollArea className="h-52 px-3">
+                            <ul className="flex flex-col gap-3 text-sm">
+                                {currentFilters.map((filter, index) => (
+                                    <div key={`${filter.type}-${index}`} className="first:mt-3 last:mb-3 flex justify-between items-center">
+                                        <div>
+                                            <p className="text-sm text-neutral-400">{filter.type}</p>
+                                            <p className="text-white">{filter.value.toString().replace(/_/g, " ")}</p>
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-neutral-400"
+                                            onClick={() => handleRemoveFilter(filter)}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </ul>
+                        </ScrollArea>
+                    </div>
+                )}
+
+                {/* Footer */}
+                <footer className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
+                    {isMobile && (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="sm" className="mr-auto">
@@ -165,14 +395,11 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                                 portal={false}
                             >
                                 {currentFilters.map((filter, index) => (
-                                    <DropdownMenuItem className="mx-auto text-sm w-full">
-                                        <div
-                                            key={filter.type + index + "::ColumnFilterButtonCurrentFilters"}
-                                            className="flex justify-between items-center w-full"
-                                        >
+                                    <DropdownMenuItem key={`${filter.type}-${index}::CurrentFilters`} className="mx-auto text-sm w-full">
+                                        <div className="flex justify-between items-center w-full">
                                             <div>
-                                                <p className="text-sm text-neutral-400">{filter.type}</p>
-                                                <p className="text-white">{filter.value.replace(/_/g, " ")}</p>
+                                                <p className="w-fit text-sm text-neutral-400">{filter.type}</p>
+                                                <p className="w-fit text-white">{filter.value.toString().replace(/_/g, " ")}</p>
                                             </div>
                                             <Button
                                                 variant="ghost"
@@ -187,315 +414,15 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
                                 ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
+                    )}
+                    <Button variant="accent" size="sm" onClick={handleResetAllFilters}>
                             Reset all
-                        </Button>
-                        <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
-                            Apply Filters
-                        </Button>
-                    </footer>
-                </div>
-            );
-        }
-        
-        return (
-            <div className="grid md:grid-cols-[12rem,_repeat(2,_minmax(0,_1fr))] grid-rows-1 md:grid-rows-none">
-                {/* Left Column */}
-                <h2 className="p-3 text-xl border-r border-neutral-600">Filters</h2>
-                <div className="flex flex-col justify-start p-3 bg-transparent gap-1 h-auto border-r border-neutral-600 rounded-none">
-                    {tabs.map((name) => (
-                        <Button
-                            key={name + "::ColumnFilterButtonTabs"}
-                            onClick={() => setActiveFilter(name)}
-                            className={cn(
-                                "capitalize text-neutral-400 py-2 w-full rounded-sm hover:bg-background bg-inherit justify-start",
-                                activeFilter === name && "bg-background text-white",
-                            )}
-                            variant="ghost"
-                        >
-                            {name}
-                        </Button>
-                    ))}
-                </div>
-
-                {/* Middle Column */}
-                <div className="m-0 h-full grid grid-rows-subgrid row-start-1 col-start-2 row-span-2">
-                    <h3 className="text-sm inline-flex items-center p-3 border-b border-neutral-600">
-                        {activeFilter === "Amount" ? "Set Amount Range" : `Choose ${activeFilter}:`}
-                    </h3>
-                    <RenderFilterContent
-                        activeFilter={activeFilter}
-                        accounts={accounts}
-                        tempFilters={tempFilters}
-                        setTempFilters={setTempFilters}
-                    />
-                </div>
-
-                {/* Right Column */}
-                <div className="grid grid-rows-subgrid col-start-3 row-start-1 row-span-2 border-l border-neutral-600">
-                    <h2 className="inline-flex items-center text-sm p-3 border-b border-neutral-600">
-                        {currentFilters.length} filters selected:
-                    </h2>
-                    <ScrollArea className="h-52 p-3">
-                        <ul className="flex flex-col gap-3 text-sm">
-                            {currentFilters.map((filter, index) => (
-                                <div
-                                    key={filter.type + index + "::ColumnFilterButtonCurrentFilters"}
-                                    className="flex justify-between items-center"
-                                >
-                                    <div>
-                                        <p className="text-sm text-neutral-400">{filter.type}</p>
-                                        <p className="text-white">{filter.value.replace(/_/g, " ")}</p>
-                                    </div>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8 text-neutral-400"
-                                        onClick={() => handleRemoveFilter(filter)}
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </ul>
-                    </ScrollArea>
-                </div>
-
-                {/* Footer */}
-                <footer className="col-span-3 border-t border-neutral-600 p-2.5 flex justify-end gap-2">
-                    
-                    <Button variant="accent" className="" size="sm" onClick={handleResetAllFilters}>
-                        Reset all
                     </Button>
-                    <Button variant="accent" className="" size="sm" onClick={handleApplyFilters}>
-                        Apply Filters
+                    <Button variant="accent" size="sm" onClick={handleApplyFilters}>
+                            Apply Filters
                     </Button>
                 </footer>
-            </div>
-        );
-    };
-
-    if (isMobile) {
-        return (
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogTrigger asChild>
-                    <Button className="capitalize text-xs gap-1 px-2 md:px-3" variant="accent" size="sm">
-                        <span className="hidden md:inline">Filters</span>
-                        <Filter className="h-4 w-4" strokeWidth={1.5} />
-                    </Button>
-                </DialogTrigger>
-                <DialogContent
-                    className={cn(
-                        "w-11/12 md:w-full rounded-md max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg",
-                        className,
-                    )}
-                >
-                    <FilterContent />
-                </DialogContent>
-            </Dialog>
-        );
-    }
-
-    return (
-        <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
-            <DropdownMenuTrigger asChild>
-                <Button className="capitalize text-xs gap-1 px-2 md:px-3" variant="accent" size="sm">
-                    <span className="hidden md:inline">Filters {appliedFilters.length > 0 && `(${appliedFilters.length})`} </span>
-                    <Filter className="h-4 w-4" strokeWidth={1.5} />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-                className={cn(
-                    "w-[45rem] text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600 shadow-lg",
-                    className,
-                )}
-                align="end"
-            >
-                <FilterContent />
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </FilterContainer>
+        </FilterWrapper>
     );
 }
-
-function RenderFilterContent({ activeFilter, accounts, tempFilters, setTempFilters }: RenderFilterContentProps) {
-    const [{ data: bounds, isLoading }] = useAtom(minMaxAmountAtom);
-    const [range, setRange] = useState([0, 0]);
-
-    useEffect(() => {
-        if (bounds) {
-            setRange([tempFilters.minAmount ?? bounds.min, tempFilters.maxAmount ?? bounds.max]);
-        }
-    }, [bounds, tempFilters.minAmount, tempFilters.maxAmount]);
-
-    const handleAmountChange = (newRange: [number, number]) => {
-        setRange(newRange);
-        setTempFilters((prev) => ({
-            ...prev,
-            minAmount: newRange[0] !== bounds?.min ? newRange[0] : null,
-            maxAmount: newRange[1] !== bounds?.max ? newRange[1] : null,
-        }));
-    };
-
-    const handleAccountToggle = (accountName: string) => {
-        setTempFilters((prev) => {
-            const excludeAccounts = prev.excludeAccounts || [];
-            if (excludeAccounts.includes(accountName)) {
-                return {
-                    ...prev,
-                    excludeAccounts: excludeAccounts.filter((a: string) => a !== accountName),
-                };
-            } else {
-                return {
-                    ...prev,
-                    excludeAccounts: [...excludeAccounts, accountName],
-                };
-            }
-        });
-    };
-
-    const handleCategoryToggle = (category: string) => {
-        setTempFilters((prev) => {
-            const excludeCategories = prev.excludeCategories || [];
-            if (excludeCategories.includes(category)) {
-                return {
-                    ...prev,
-                    excludeCategories: excludeCategories.filter((c: string) => c !== category),
-                };
-            } else {
-                return {
-                    ...prev,
-                    excludeCategories: [...excludeCategories, category],
-                };
-            }
-        });
-    };
-
-    const handleSelectAllAccounts = (checked: boolean) => {
-        setTempFilters((prev) => ({
-            ...prev,
-            excludeAccounts: checked ? [] : accounts.map((account) => account.name),
-        }));
-    };
-
-    const handleSelectAllCategories = (checked: boolean) => {
-        setTempFilters((prev) => ({
-            ...prev,
-            excludeCategories: checked ? [] : categories,
-        }));
-    };
-
-    switch (activeFilter) {
-    case "Amount":
-        if (isLoading) {
-            return <Loading fullScreen={false} className="h-52" />;
-        }
-
-        return (
-            <div className="p-3 h-52">
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <label className="text-sm mb-2 block">From</label>
-                        <CurrencyInput
-                            id="input-from"
-                            name="input-from"
-                            placeholder={`Min: £${bounds?.min.toFixed(2)}`}
-                            prefix="£"
-                            value={range[0]}
-                            decimalScale={2}
-                            onValueChange={(value) => {
-                                handleAmountChange([Number(value), range[1]]);
-                            }}
-                            className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-sm mb-2 block">To</label>
-                        <CurrencyInput
-                            id="input-to"
-                            name="input-to"
-                            placeholder={`Max: £${bounds?.max.toFixed(2)}`}
-                            value={range[1]}
-                            prefix="£"
-                            decimalScale={2}
-                            onValueChange={(value) => {
-                                handleAmountChange([range[0], Number(value)]);
-                            }}
-                            className="text-sm w-full p-2 border border-neutral-600 rounded bg-neutral-800/50 text-primary"
-                        />
-                    </div>
-                </div>
-                <DualRangeSlider
-                    max={bounds?.max ?? 0}
-                    min={bounds?.min ?? 0}
-                    step={0.1}
-                    value={range}
-                    onValueChange={handleAmountChange}
-                    className="py-4"
-                />
-            </div>
-        );
-    case "Accounts":
-        return (
-            <ScrollArea className="h-52 p-3">
-                <div className="flex items-center justify-between mb-5">
-                    <label htmlFor="select-all-accounts" className="text-sm font-medium">
-                            Select All
-                    </label>
-                    <Checkbox
-                        id="select-all-accounts"
-                        onCheckedChange={handleSelectAllAccounts}
-                        checked={tempFilters.excludeAccounts.length === 0}
-                    />
-                </div>
-                <ul className="flex flex-col gap-3 text-sm">
-                    {accounts.map((account) => (
-                        <li
-                            key={account.id + "::ColumnFilterButtonAccounts"}
-                            className="flex justify-between items-center gap-10"
-                        >
-                            <p>{account.name}</p>
-                            <Checkbox
-                                checked={!tempFilters.excludeAccounts?.includes(account.name)}
-                                onCheckedChange={() => handleAccountToggle(account.name)}
-                                className="data-[state=checked]:bg-secondary"
-                            />
-                        </li>
-                    ))}
-                </ul>
-            </ScrollArea>
-        );
-    case "Categories":
-        return (
-            <ScrollArea className="h-52 p-3">
-                <div className="flex items-center justify-between mb-5">
-                    <label htmlFor="select-all-categories" className="text-sm font-medium">
-                            Select All
-                    </label>
-                    <Checkbox
-                        id="select-all-categories"
-                        onCheckedChange={handleSelectAllCategories}
-                        checked={tempFilters.excludeCategories.length === 0}
-                    />
-                </div>
-                <ul className="flex flex-col gap-3 text-sm">
-                    {categories.map((category) => (
-                        <li
-                            key={category + "::ColumnFilterButtonCategories"}
-                            className="flex justify-between items-center gap-10"
-                        >
-                            <p>{category.replace(/_/g, " ")}</p>
-                            <Checkbox
-                                checked={!tempFilters.excludeCategories?.includes(category)}
-                                onCheckedChange={() => handleCategoryToggle(category)}
-                                className="data-[state=checked]:bg-secondary"
-                            />
-                        </li>
-                    ))}
-                </ul>
-            </ScrollArea>
-        );
-    default:
-        return null;
-    }
-}
-
