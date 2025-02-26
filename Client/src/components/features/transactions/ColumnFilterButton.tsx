@@ -1,21 +1,21 @@
 ﻿"use client";
 
 import type React from "react";
-import {ChevronDown, Filter, X } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
-import { categories, cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { DualRangeSlider } from "@/components/ui/dual-range-slider";
+import {useEffect, useState} from "react";
+import {ChevronDown, Filter, X} from "lucide-react";
+import {categories, cn} from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {DualRangeSlider} from "@/components/ui/dual-range-slider";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { useAtom } from "jotai";
-import { accountsAtom, minMaxAmountAtom, transactionsParamsAtom } from "@/lib/atoms";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox";
+import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
+import {useAtom} from "jotai";
+import {accountsAtom, minMaxAmountAtom, transactionsParamsAtom} from "@/lib/atoms";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {Checkbox} from "@/components/ui/checkbox";
 import CurrencyInput from "react-currency-input-field";
-import type { Account, TransactionParams } from "@/types";
+import type {Account, TransactionParams} from "@/types";
 import Loading from "@/components/shared/Loading";
-import { useIsMobile } from "@/hooks/use-mobile.tsx";
+import {useIsMobile} from "@/hooks/use-mobile.tsx";
 
 type ColumnFilterButtonProps = {
     className?: string
@@ -40,6 +40,28 @@ const filtersMap = new Map([
     ["excludeCategories", "Categories"],
 ]);
 
+export function filtersParser(filters: TransactionParams){
+    return Object.entries(filters)
+        .flatMap<ColumnFilter>(([key, value]) => {
+            if (Array.isArray(value)) {
+                return value.map((item) => ({
+                    type: key,
+                    value: item,
+                }));
+            } else if (value !== null) {
+                return [{type: key, value: value}];
+            } else {
+                return [];
+            }
+        })
+        .reduce<(Omit<ColumnFilter, "value"> & { value: string })[]>((acc, item) => {
+            if (filtersMap.has(item.type)) {
+                acc.push({type: filtersMap.get(item.type)!, value: item.value.toString()});
+            }
+            return acc;
+        }, []);
+}
+
 const tabs = ["Amount", "Accounts", "Categories"];
 
 export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
@@ -57,27 +79,8 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
         }
     }, [isOpen, filters]);
 
-    const currentFilters = useMemo(() => {
-        return Object.entries(tempFilters)
-            .flatMap<ColumnFilter>(([key, value]) => {
-                if (Array.isArray(value)) {
-                    return value.map((item) => ({
-                        type: key,
-                        value: item,
-                    }));
-                } else if (value !== null) {
-                    return [{ type: key, value: value }];
-                } else {
-                    return [];
-                }
-            })
-            .reduce<(Omit<ColumnFilter, "value"> & { value: string })[]>((acc, item) => {
-                if (filtersMap.has(item.type)) {
-                    acc.push({ type: filtersMap.get(item.type)!, value: item.value.toString() });
-                }
-                return acc;
-            }, []);
-    }, [tempFilters]);
+    const currentFilters = filtersParser(tempFilters);
+    const appliedFilters = filtersParser(filters);
 
     const handleRemoveFilter = (item: ColumnFilter) => {
         setTempFilters((prev) => {
@@ -297,7 +300,7 @@ export function ColumnFilterButton({ className }: ColumnFilterButtonProps) {
         <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
                 <Button className="capitalize text-xs gap-1 px-2 md:px-3" variant="accent" size="sm">
-                    <span className="hidden md:inline">Filters</span>
+                    <span className="hidden md:inline">Filters {appliedFilters.length > 0 && `(${appliedFilters.length})`} </span>
                     <Filter className="h-4 w-4" strokeWidth={1.5} />
                 </Button>
             </DropdownMenuTrigger>
