@@ -123,8 +123,8 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
                     <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between px-6">
-                                <div>
-                                    <span className="mr-2">Per Page:</span>
+                                <div className="inline-flex gap-2 items-center">
+                                    <span className="text-nowrap">Per Page:</span>
                                     <PageSizeButton />
                                 </div>
                                 <div>

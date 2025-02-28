@@ -53,7 +53,7 @@ export function NetWorthCard({accounts, className}: NetWorthCardProps) {
     }, 0) ?? 0;
     
     return (
-        <Card className={cn("bg-transparent text-primary border-0", className)}>
+        <Card className={cn("text-primary", className)}>
             <CardHeader className="pb-4 flex-row justify-between items-center">
                 <CardTitle className="text-xl w-fit">Net Worth</CardTitle>
             </CardHeader>

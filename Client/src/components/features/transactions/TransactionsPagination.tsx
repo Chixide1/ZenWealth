@@ -1,42 +1,37 @@
-﻿import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx";
-import { Button } from "@/components/ui/button.tsx";
+﻿import { Button } from "@/components/ui/button.tsx";
 import { useAtom } from "jotai";
 import { transactionsAtom, transactionsPaginationAtom } from "@/lib/atoms.ts";
-import { ChevronDown } from "lucide-react";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
 
 const pageSizeOptions = [10, 20, 30, 40, 50];
 
 export function PageSizeButton() {
-    const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
+    const [{pageSize}, setPagination] = useAtom(transactionsPaginationAtom);
 
     return (
-        <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-                <Button variant="accent" className="group gap-0.5 p-2 font-medium" size="sm">
-                    {pagination.pageSize}
-                    <ChevronDown className="h-4 w-4 transition-all duration-300 group-data-[state=open]:rotate-180" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-fit min-w-0 bg-accent">
+        <Select
+            value={pageSize.toString()}
+            onValueChange={(value) => setPagination({pageSize: Number(value), pageIndex: 0})}
+        >
+            <SelectTrigger className="bg-accent text-black text-xs px-2 w-fit">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="w-fit min-w-0 bg-accent">
                 {pageSizeOptions.map((size) => (
-                    <DropdownMenuItem
-                        key={size}
-                        onClick={() => setPagination({pageSize: size, pageIndex: 0})}
+                    <SelectItem
+                        hideCheck={true}
+                        value={size.toString()}
+                        key={size + "::PageSizeButton"}
                         className={
                             "justify-center my-1 py-1 px-2.5 text-sm focus:bg-black/10 hover:bg-black/10" +
-                            (pagination.pageSize === size && " bg-black/10")
+                            (pageSize === size && " bg-black/10")
                         }
                     >
                         {size}
-                    </DropdownMenuItem>
+                    </SelectItem>
                 ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </SelectContent>
+        </Select>
     );
 }
 

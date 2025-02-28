@@ -20,7 +20,7 @@ export type TransactionData = {
 
 export type TransactionParams = {
     name: string | null
-    sort: string | null
+    sort: string
     minAmount: number | null
     maxAmount: number | null
     beginDate: Date | null

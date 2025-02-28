@@ -304,10 +304,10 @@ export function Calendar({
                 weekdays: cn("flex", props.showWeekNumber && "justify-end"),
                 weekday: "text-neutral-400 rounded-md w-9 font-normal text-[0.8rem]",
                 week: "flex w-full mt-1.5",
-                day: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20 rounded-1",
+                day: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
                 day_button: cn(
                     buttonVariants({ variant: "ghost" }),
-                    "h-9 w-9 p-0 hover:bg-accent hover:text-black ",
+                    "h-9 w-9 p-0 hover:bg-accent hover:text-black",
                 ),
                 range_start: "day-range-start rounded-l-md data-[today=true]:rounded-r-none",
                 range_end: "day-range-end rounded-r-md data-[today=true]:rounded-l-none",
@@ -317,7 +317,7 @@ export function Calendar({
                 outside:
                     "day-outside text-neutral-500 opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
                 disabled: "text-neutral-500 opacity-50",
-                range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground aria-selected:rounded-none",
+                range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground rounded-none",
                 hidden: "invisible",
                 ...classNames,
             }}

@@ -183,7 +183,7 @@ function DateFilterContent({
 
             <div className="col-span-2 flex justify-end gap-2 border-t border-neutral-600 p-2.5 text-sm">
                 {selected?.from && selected?.to && (
-                    <div className="bg-accent mr-auto flex items-center justify-between rounded-full px-3 text-black">
+                    <div className="bg-accent mr-auto flex items-center justify-between rounded-full pl-2 pr-1 text-black">
                         <p>
                             {selected.from.toLocaleDateString()} - {selected.to.toLocaleDateString()}
                         </p>
@@ -192,7 +192,7 @@ function DateFilterContent({
                         </Button>
                     </div>
                 )}
-                <Button variant="accent" size="sm" onClick={onApply}>
+                <Button variant="accent" className="px-2" size="sm" onClick={onApply}>
                     Apply
                 </Button>
             </div>
@@ -205,6 +205,8 @@ function DateFilterContent({
 // =========================
 
 export function DateFilterButton({ className }: DateFilterProps) {
+    "use no memo" // eslint-disable-line
+    
     const [filters, setFilters] = useAtom(transactionsParamsAtom);
     const [isOpen, setIsOpen] = useState(false);
     const [tempFilters, setTempFilters] = useState<DateRange | undefined>(

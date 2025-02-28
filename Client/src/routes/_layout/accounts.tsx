@@ -12,8 +12,13 @@ function AccountsPage() {
     const accounts = data ?? [];
     
     return (
-        <div className="">
-            <NetWorthCard accounts={accounts} className="w-full"/>
+        <div className="w-dvw flex px-4">
+            <section className="w-7/12">
+                <NetWorthCard accounts={accounts} className="w-full"/>
+            </section>
+            <section className="w-5/12">
+                
+            </section>
         </div>
     );
 }
