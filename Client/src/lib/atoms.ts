@@ -167,3 +167,4 @@ export const minMaxAmountAtom = atomWithQuery(() => ({
     },
 }));
 
+export const AccountsAccordionAtom = atom<string[]>([]);
