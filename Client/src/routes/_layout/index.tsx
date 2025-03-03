@@ -25,7 +25,12 @@ function DashboardPage() {
     return (
         <div className="grid grid-cols-12 auto-rows-auto gap-4 px-3 md:px-4 pb-8">
             <AccountSummarySection className="col-span-full">
-                <MonthlyAccountsWidget title="Total Balance" amount={accounts?.reduce((total, a) => total + a.currentBalance, 0) ?? 0} />
+                <MonthlyAccountsWidget title="Total Balance" amount={accounts?.reduce((total, a) => {
+                    if(a.type === "Credit" || a.type === "Loan"){
+                        return total;
+                    }
+                    return total + a.currentBalance;
+                }, 0) ?? 0} />
                 <MonthlyTransactionsWidget
                     title="Total Expenditure"
                     amount={monthlySummaryData?.[monthlySummaryData?.length - 1]?.expenditure ?? 0}

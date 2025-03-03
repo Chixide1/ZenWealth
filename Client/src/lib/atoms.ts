@@ -13,6 +13,7 @@ import type { AxiosError } from "axios";
 import { atom } from "jotai";
 import { format } from "date-fns";
 import { SetStateAction } from "react";
+import {addColors, creditColors, debitColors} from "@/lib/utils.ts";
 
 type TransactionRequest = {
     cursor: number | null
@@ -60,10 +61,17 @@ export const transactionsParamsAtom = atom<
 
 export const accountsAtom = atomWithQuery(() => ({
     queryKey: ["accounts"],
-    queryFn: async () => {
+    queryFn: async (): Promise<Account[]> => {
         const response = await api<Account[]>("/accounts").catch((e: AxiosError<Account[]>) => console.error(e));
 
-        return response ? response.data : [];
+        if(response){
+            const credit = response.data.filter((account: Account) => account.type === "Credit" || account.type === "Loan");
+            const debit = response.data.filter((account: Account) => account.type === "Depository" || account.type === "Other");
+            
+            return [...addColors(credit, creditColors), ...addColors(debit, debitColors)];
+        }
+        
+        return [];
     },
 }));
 

@@ -38,6 +38,7 @@ export type Account = {
     officialName: string,
     type: "Credit" | "Loan" | "Depository" | "Other",
     subtype: string,
+    fill?: string
 }
 
 export type MonthlySummary = {

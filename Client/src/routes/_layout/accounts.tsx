@@ -1,7 +1,9 @@
 ﻿import { createFileRoute } from "@tanstack/react-router";
-import {NetWorthCard} from "@/components/features/accounts/NetWorthCard.tsx";
+import {AccountDetailsCard, NetWorthCard} from "@/components/features/accounts/NetWorthCard.tsx";
 import {accountsAtom} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
+import {AccountsOverviewCard} from "@/components/features/accounts/AccountsOverviewCard.tsx";
+import {groupBy} from "@/lib/utils.ts";
 
 export const Route = createFileRoute("/_layout/accounts")({
     component: AccountsPage,
@@ -11,13 +13,23 @@ function AccountsPage() {
     const [{data}] = useAtom(accountsAtom);
     const accounts = data ?? [];
     
+    const accountTypes =  Object.entries(groupBy(accounts, (account) => account.type));
+    
     return (
-        <div className="w-dvw flex px-4">
-            <section className="w-7/12">
-                <NetWorthCard accounts={accounts} className="w-full"/>
+        <div className="w-dvw flex flex-col md:flex-row px-4 pb-8 gap-4">
+            <section className="md:w-8/12 rounded-xl h-fit space-y-4">
+                <NetWorthCard accounts={accounts} className="w-full rounded-[inherit]"/>
+                <AccountDetailsCard accountTypes={accountTypes} />
             </section>
-            <section className="w-5/12">
-                
+            <section className="md:w-4/12 p-6 bg-background border border-neutral-600 rounded-xl h-fit sticky top-0">
+                <h2 className="mb-4 text-lg font-medium">Accounts Overview</h2>
+                {accountTypes.map((type, i) => (
+                    <AccountsOverviewCard
+                        key={`${type}-${i}::AccountsOverviewCard`}
+                        title={type[0]}
+                        accounts={type[1]}
+                    /> 
+                ))}
             </section>
         </div>
     );

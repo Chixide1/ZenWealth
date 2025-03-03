@@ -57,7 +57,7 @@ export const chartConfig = {
     }
 } satisfies ChartConfig;
 
-export const assetColors = [
+export const debitColors = [
     "hsl(var(--chart-1))",
     "hsl(var(--chart-2))",
     "hsl(var(--chart-3))",
@@ -72,6 +72,10 @@ export const creditColors = [
     "var(--red-chart-4)",
     "var(--red-chart-5)",
 ];
+
+export function addColors<T>(items: T[], colors: string[]){
+    return items.map((item, i) => ({...item, fill: colors[i % colors.length]}));
+}
 
 export const categories = [
     "Bank_Fees",
@@ -92,3 +96,14 @@ export const categories = [
     "Government_And_Non_Profit",
     "Other",
 ];
+
+export function groupBy<T, K extends keyof never>(arr: T[], key: (i: T) => K) {
+    return arr.reduce((groups, item) => {
+        (groups[key(item)] ||= []).push(item);
+        return groups;
+    }, {} as Record<K, T[]>);
+}
+
+export function addSpaceBetweenCapitals(input: string): string {
+    return input.replace(/([A-Z])/g, " $1").trim();
+}
