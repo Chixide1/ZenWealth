@@ -35,6 +35,7 @@ public class ChartsController(
         foreach (var monthlySummary in results)
         {
             monthlySummary.Month = monthlySummary.Month[..3];
+            monthlySummary.Income = Math.Abs(monthlySummary.Income);
         }
 
         logger.LogInformation("Retrieved MonthlySummary for user {UserId}", user.Id);

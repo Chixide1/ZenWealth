@@ -48,3 +48,9 @@ public interface ITransactionsService
     Task<MinMaxAmount> GetMinMaxAmount(string userId);
 }
 
+public interface IBudgetsService
+{
+    Task AddBudgetAsync(string userId, Budget budget);
+    
+    Task<List<Budget>> GetBudgetsAsync(string userId);
+}

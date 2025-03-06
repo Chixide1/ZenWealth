@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250221111658_Initial")]
+    [Migration("20250306002012_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -206,6 +206,35 @@ namespace Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Accounts");
+                });
+
+            modelBuilder.Entity("Server.Data.Models.Budget", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Limit")
+                        .HasColumnType("decimal(10, 2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Budgets");
                 });
 
             modelBuilder.Entity("Server.Data.Models.Item", b =>
@@ -452,6 +481,17 @@ namespace Server.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Item");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Server.Data.Models.Budget", b =>
+                {
+                    b.HasOne("Server.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

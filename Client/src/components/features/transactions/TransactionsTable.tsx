@@ -1,4 +1,4 @@
-﻿import { flexRender, getCoreRowModel, useReactTable, type VisibilityState } from "@tanstack/react-table";
+﻿import {ColumnDef, flexRender, getCoreRowModel, useReactTable, type VisibilityState } from "@tanstack/react-table";
 import { useAtom } from "jotai";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
@@ -11,10 +11,9 @@ import { transactionsPaginationAtom } from "@/lib/atoms.ts";
 import { ColumnFilterButton } from "@/components/features/transactions/ColumnFilterButton.tsx";
 import { DateFilterButton } from "@/components/features/transactions/DateFilterButton.tsx";
 import { NextButton, PageSizeButton, PrevButton } from "@/components/features/transactions/TransactionsPagination.tsx";
-import {transactionColumns} from "@/components/features/transactions/TransactionColumns.tsx";
 
 interface TransactionTableProps {
-    columns: typeof transactionColumns
+    columns: ColumnDef<Transaction>[]
     data: TransactionData | undefined
     isLoading?: boolean
     className?: string
@@ -39,7 +38,7 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
         "account"
     ]);
 
-    const table = useReactTable<Transaction>({
+    const table = useReactTable({
         data: data?.transactions ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
@@ -57,22 +56,22 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
     return (
         <div
             className={cn(
-                "relative overflow-auto border bg-primary/[0.125] backdrop-blur-sm border-neutral-500/30 rounded-2xl scrollbar-custom",
+                "relative overflow-auto border bg-background backdrop-blur-sm border-neutral-600/50 rounded-2xl scrollbar-custom",
                 className,
             )}
         >
             <Table className="rounded-2xl text-primary text-sm">
                 <TableHeader>
                     <TableRow>
-                        <TableCell className="px-6 py-6" colSpan={columns.length}>
+                        <TableHead className="p-6" colSpan={columns.length}>
                             <div className="flex items-center justify-end gap-4">
-                                <span className="text-nowrap text-xl font-medium mr-auto md:pr-10">Transaction History</span>
+                                <h2 className="text-nowrap text-primary text-xl font-medium mr-auto md:pr-10">Transaction History</h2>
                                 <TransactionSearchButton />
                                 <DateFilterButton />
                                 <ColumnFilterButton />
                                 <ColumnVisibilityButton columns={table.getAllColumns()} />
                             </div>
-                        </TableCell>
+                        </TableHead>
                     </TableRow>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
@@ -80,7 +79,7 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
                                 return (
                                     <TableHead
                                         key={header.id}
-                                        className="text-primary bg-neutral-300/10 px-6"
+                                        className="text-primary bg-background px-6"
                                         style={{ width: header.getSize() }}
                                     >
                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -100,7 +99,7 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
                     ) : table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
-                                className="transition-colors hover:bg-muted/[0.03] rounded-2xl"
+                                className="transition-colors hover:bg-primary/5 rounded-2xl"
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                             >
@@ -120,7 +119,7 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
                     )}
                 </TableBody>
                 <TableFooter className="bg-transparent">
-                    <TableRow className="border-t-[0.5px] border-t-neutral-600/[0.2]">
+                    <TableRow className="border-t-[0.5px] border-t-neutral-600/50">
                         <TableCell colSpan={columns.length} className="px-6 py-6">
                             <div className="flex items-center justify-between px-6">
                                 <div className="inline-flex gap-2 items-center">

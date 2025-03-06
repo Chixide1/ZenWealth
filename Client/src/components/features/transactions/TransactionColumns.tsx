@@ -87,7 +87,7 @@ export const transactionColumns = [
             return (
                 <ColumnSortingButton
                     onClick={() => {
-                        setParams(params.sort === "Date-Asc" ? {...params, sort: null} : {...params, sort: "Date-Asc"});
+                        setParams(params.sort === "Date-Asc" ? {...params, sort: "Date-Desc"} : {...params, sort: "Date-Asc"});
                         setPagination({...pagination, pageIndex: 0});
                     }}
                     name={column.id}

@@ -20,7 +20,7 @@ function DashboardPage() {
     const [{data: monthlySummaryData}]  = useAtom(monthlySummaryDataAtom);
     const [{data: recentTransactions}]  = useAtom(recentTransactionsAtom);
     const [{data: topExpenseCategories}]  = useAtom(topExpenseCategoriesAtom);
-    // console.log(accounts);
+    console.log(monthlySummaryData);
     
     return (
         <div className="grid grid-cols-12 auto-rows-auto gap-4 px-3 md:px-4 pb-8">

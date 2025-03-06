@@ -64,3 +64,11 @@ export type MinMaxAmount = {
     min: number,
     max: number,
 }
+
+export type BudgetItem = {
+    id: number
+    category: string
+    limit: number
+    spent: number
+    remaining: number
+}

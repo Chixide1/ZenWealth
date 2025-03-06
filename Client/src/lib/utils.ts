@@ -77,25 +77,25 @@ export function addColors<T>(items: T[], colors: string[]){
     return items.map((item, i) => ({...item, fill: colors[i % colors.length]}));
 }
 
-export const categories = [
-    "Bank_Fees",
-    "Home_Improvement",
-    "Rent_And_Utilities",
-    "Entertainment",
-    "Income",
-    "Transfer_In",
-    "Food_And_Drink",
-    "Loan_Payments",
-    "Transfer_Out",
-    "General_Merchandise",
-    "Medical",
-    "Transportation",
-    "General_Services",
-    "Personal_Care",
-    "Travel",
-    "Government_And_Non_Profit",
-    "Other",
-];
+export const categoryMap = new Map([
+    ["BANK_FEES", "https://plaid-category-icons.plaid.com/PFC_BANK_FEES.png"],
+    ["HOME_IMPROVEMENT", "https://plaid-category-icons.plaid.com/PFC_HOME_IMPROVEMENT.png"],
+    ["RENT_AND_UTILITIES", "https://plaid-category-icons.plaid.com/PFC_RENT_AND_UTILITIES.png"],
+    ["ENTERTAINMENT", "https://plaid-category-icons.plaid.com/PFC_ENTERTAINMENT.png"],
+    ["INCOME", "https://plaid-category-icons.plaid.com/PFC_INCOME.png"],
+    ["TRANSFER_IN", "https://plaid-category-icons.plaid.com/PFC_TRANSFER_IN.png"],
+    ["FOOD_AND_DRINK", "https://plaid-category-icons.plaid.com/PFC_FOOD_AND_DRINK.png"],
+    ["LOAN_PAYMENTS", "https://plaid-category-icons.plaid.com/PFC_LOAN_PAYMENTS.png"],
+    ["TRANSFER_OUT", "https://plaid-category-icons.plaid.com/PFC_TRANSFER_OUT.png"],
+    ["GENERAL_MERCHANDISE", "https://plaid-category-icons.plaid.com/PFC_GENERAL_MERCHANDISE.png"],
+    ["MEDICAL", "https://plaid-category-icons.plaid.com/PFC_MEDICAL.png"],
+    ["TRANSPORTATION", "https://plaid-category-icons.plaid.com/PFC_TRANSPORTATION.png"],
+    ["GENERAL_SERVICES", "https://plaid-category-icons.plaid.com/PFC_GENERAL_SERVICES.png"],
+    ["PERSONAL_CARE", "https://plaid-category-icons.plaid.com/PFC_PERSONAL_CARE.png"],
+    ["TRAVEL", "https://plaid-category-icons.plaid.com/PFC_TRAVEL.png"],
+    ["GOVERNMENT_AND_NON_PROFIT", "https://plaid-category-icons.plaid.com/PFC_GOVERNMENT_AND_NON_PROFIT.png"],
+    ["OTHER", "https://plaid-category-icons.plaid.com/PFC_OTHER.png"]
+]);
 
 export function groupBy<T, K extends keyof never>(arr: T[], key: (i: T) => K) {
     return arr.reduce((groups, item) => {

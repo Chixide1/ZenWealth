@@ -72,7 +72,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                         />
                         <Line
                             type="monotone"
-                            dataKey="expenditure"
+                            dataKey="income"
                             stroke="hsl(var(--secondary))"
                             strokeWidth={2}
                             strokeDasharray="5 5"
@@ -81,7 +81,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                         />
                         <Line
                             type="monotone"
-                            dataKey="income"
+                            dataKey="expenditure"
                             stroke="hsl(var(--tertiary))"
                             strokeWidth={2}
                             dot={false}

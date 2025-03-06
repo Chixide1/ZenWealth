@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IItemsService, ItemsService>();
 builder.Services.AddScoped<IAccountsService, AccountsService>();
 builder.Services.AddScoped<ITransactionsService, TransactionsService>();
+builder.Services.AddScoped<IBudgetsService, BudgetsService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();

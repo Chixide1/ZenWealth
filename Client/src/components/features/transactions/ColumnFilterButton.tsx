@@ -1,7 +1,7 @@
 ﻿import type React from "react";
 import { useEffect, useState } from "react";
 import { ChevronDown, Filter, X } from "lucide-react";
-import { categories, cn } from "@/lib/utils";
+import { categoryMap, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -173,7 +173,7 @@ function FilterContent({ activeFilter, accounts, tempFilters, setTempFilters }: 
         );
     }
 
-    const items = activeFilter === "Accounts" ? accounts.map((a) => a.name) : categories;
+    const items = activeFilter === "Accounts" ? accounts.map((a) => a.name) : Array.from(categoryMap.keys());
     const selectedItems = activeFilter === "Accounts" ? tempFilters.excludeAccounts : tempFilters.excludeCategories;
 
     const handleToggle = (item: string) => {
