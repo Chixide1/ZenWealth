@@ -1,7 +1,8 @@
 using Going.Plaid;
 using Server.Common;
 using Server.Data.Models;
-using Server.Data.Services;
+using Server.Extensions;
+using Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapFallbackToFile("/index.html");
-app.MapGroup("/Identity").MapIdentityApi<User>();
+// app.MapGroup("/Identity").MapIdentityApi<User>();
 
 app.Run();

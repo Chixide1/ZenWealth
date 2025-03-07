@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Server.Data.Models;
 
@@ -30,10 +31,10 @@ public class Budget
     /// <para>The budget limit which the amount shouldn't exceed</para>
     /// </summary>
     [Column(TypeName = "decimal(10, 2)")]
-    public required decimal Limit { get; init; }
+    public required decimal Limit { get; set; }
 
     /// <summary>
     /// <para>The day that the budget will start / reset</para>
     /// </summary>
-    public required int Day { get; init; }
+    public required int Day { get; set; }
 }

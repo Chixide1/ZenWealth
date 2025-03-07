@@ -1,10 +1,10 @@
-﻿using Azure.Core;
-using Going.Plaid;
+﻿using Going.Plaid;
 using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Server.Data;
 using Server.Data.Models;
 
-namespace Server.Data.Services;
+namespace Server.Services;
 
 /// <summary>
 /// The Service where the business logic for Items is implemented.

@@ -1,7 +1,7 @@
-﻿using Server.Common;
+﻿using Server.Data.DTOs;
 using Server.Data.Models;
 
-namespace Server.Data.Services;
+namespace Server.Services;
 
 public interface IItemsService
 {
@@ -50,7 +50,7 @@ public interface ITransactionsService
 
 public interface IBudgetsService
 {
-    Task AddBudgetAsync(string userId, Budget budget);
+    Task AddBudgetAsync(Budget budget);
     
-    Task<List<Budget>> GetBudgetsAsync(string userId);
+    Task<List<BudgetDto>> GetBudgetsAsync(string userId);
 }

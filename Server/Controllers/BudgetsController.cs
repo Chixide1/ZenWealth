@@ -1,10 +1,10 @@
-﻿using Going.Plaid.Entity;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Server.Common;
+using Server.Data.DTOs;
 using Server.Data.Models;
-using Server.Data.Services;
+using Server.Services;
 
 namespace Server.Controllers;
 
@@ -15,12 +15,11 @@ namespace Server.Controllers;
 public class BudgetsController(
     ILogger<BudgetsController> logger,
     IBudgetsService budgetsService,
-    ITransactionsService transactionsService,
     UserManager<User> userManager
 ) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Budget>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BudgetDto>))]
     public async Task<IActionResult> GetUserBudgets()
     {
         var user = await userManager.GetUserAsync(User);
@@ -30,14 +29,14 @@ public class BudgetsController(
             return Unauthorized();
         }
 
-        var results = await budgetsService.GetBudgetsAsync(user.Id);
+        var budgets = await budgetsService.GetBudgetsAsync(user.Id);
         
-        return Ok(results);
+        return Ok(budgets);
     }
     
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> AddUserBudgets(string category, decimal limit, int day)
+    public async Task<IActionResult> AddUserBudgets([FromBody]List<BudgetInputDto> budgets)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -45,21 +44,34 @@ public class BudgetsController(
         {
             return Unauthorized();
         }
-        
-        var validCategory = Enum.TryParse<Categories>(category, true, out _);
 
-        if (day > 0 & day < 28 || validCategory == false)
+        if (budgets.Any(b => b.Day != budgets[0].Day))
         {
-            return BadRequest();
+            return BadRequest("All days should be the same");
         }
 
-        await budgetsService.AddBudgetAsync(user.Id, new Budget()
+        foreach (var budget in budgets)
         {
-            Category = category,
-            Limit = limit,
-            Day = day,
-            UserId = user.Id
-        });
+            var validCategory = Enum.TryParse<Categories>(budget.Category, true, out _);
+
+            if (budget.Day < 1 || budget.Day > 28)
+            {
+                return BadRequest("All of the budget days must be between 1 and 28");
+            }
+
+            if (validCategory == false)
+            {
+                return BadRequest("There is an invalid category in one of the budgets");
+            }
+
+            await budgetsService.AddBudgetAsync(new Budget()
+            {
+                Category = budget.Category.ToUpper(),
+                Limit = budget.Limit,
+                Day = budget.Day,
+                UserId = user.Id
+            });
+        }
         
         return Ok();
     }

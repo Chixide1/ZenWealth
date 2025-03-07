@@ -1,7 +1,7 @@
 ﻿import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Lock, Loader2, UserRound } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import {useToast} from "@/hooks/use-toast.ts";
@@ -14,7 +14,7 @@ import {camelCaseToSentence} from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
 
 const formSchema = z.object({
-    email: z.string().email(),
+    username: z.string().min(1, "Username cannot be empty"),
     password: z.string().min(1, "Password cannot be empty"),
     rememberMe: z.boolean().default(false)
 });
@@ -28,34 +28,23 @@ export function LoginForm() {
         control,
         register,
         handleSubmit,
-        setValue,
         formState: { errors, isSubmitting },
     } = useForm<FormSchemaVals>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: "",
+            username: "",
             password: "",
             rememberMe: false
         }
     });
 
     async function onSubmit(values: FormSchemaVals) {
-        if (values.rememberMe) {
-            localStorage.setItem("email", values.email);
-            localStorage.setItem("password", values.password);
-        }
-
         await api.post(
-            "/Identity/login",
+            "/Auth/Login",
             {
-                email: values.email,
-                password: values.password
-            },
-            {
-                params: {
-                    useCookies: true,
-                    useSessionCookies: false
-                }
+                username: values.username,
+                password: values.password,
+                rememberMe: values.rememberMe,
             }
         )
             .then(response => {
@@ -73,21 +62,11 @@ export function LoginForm() {
                 });
             });
     }
-
-    useEffect(() => {
-        const storedEmail = localStorage.getItem("email") || "";
-        const storedPass = localStorage.getItem("password") || "";
-
-        setValue("email", storedEmail);
-        setValue("password", storedPass);
-        setValue("rememberMe", !!storedEmail && !!storedPass);
-    }, [setValue]);
-
+    
     useEffect(() => {
         if (errors) {
             Object.keys(errors).forEach((key) => {
                 const field = errors[key as keyof typeof errors];
-
                 toast({
                     title: camelCaseToSentence(key),
                     description: field?.message,
@@ -100,10 +79,10 @@ export function LoginForm() {
     const inputs: IdentityInputConfig[] = [
         {
             id: "loginFormEmail",
-            type: "email",
-            register: {...register("email")},
-            icon: Mail,
-            label: "Email",
+            type: "username",
+            register: {...register("username")},
+            icon: UserRound,
+            label: "Username",
             autocomplete: "username"
         },
         {

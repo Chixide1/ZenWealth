@@ -9,4 +9,6 @@ public class User : IdentityUser
     public List<Account> Accounts { get; } = [];
     
     public List<Transaction> Transactions { get; } = [];
+    
+    public List<Budget> Budgets { get; } = [];
 }

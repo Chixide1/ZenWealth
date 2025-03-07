@@ -1,7 +1,7 @@
 ﻿import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Mail, Lock, Loader2} from "lucide-react";
+import { Mail, Lock, Loader2, UserRound} from "lucide-react";
 import { AxiosError } from "axios";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -14,6 +14,7 @@ import api from "@/lib/api.ts";
 
 const formSchema = z.object({
     email: z.string().email(),
+    username: z.string().min(1, "Username is required"),
     password: z.string().min(1, "Password cannot be empty"),
     confirmPassword: z.string().min(1, "Password cannot be empty"),
 }).superRefine(({ confirmPassword, password }, ctx) => {
@@ -28,12 +29,10 @@ const formSchema = z.object({
 
 type FormSchemaVals = z.infer<typeof formSchema>
 type RegisterApiResponse = {
-    "type": "string",
-    "title": "string",
-    "status": 0,
-    "detail": "string",
-    "instance": "string",
-    "errors": Record<string, string[]>
+    "errors": {
+            code: string,
+            description: string, 
+    }[]
 }
 
 export function RegisterForm(){
@@ -47,6 +46,7 @@ export function RegisterForm(){
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
+            username: "",
             password: "",
             confirmPassword: "",
         }
@@ -54,9 +54,10 @@ export function RegisterForm(){
 
     async function onSubmit(values: FormSchemaVals) {
         await api.post(
-            "/Identity/register",
+            "/Auth/Register",
             {
                 email: values.email,
+                username: values.username,
                 password: values.password
             }
         )
@@ -67,10 +68,10 @@ export function RegisterForm(){
                 if(error.status === 400 && error.response){
                     const apiErrors = error.response.data.errors;
                     
-                    Object.entries(apiErrors).forEach((key) => {
+                    apiErrors.forEach((error) => {
                         toast({
-                            title: key[0],
-                            description: key[1][0],
+                            title: camelCaseToSentence(error.code),
+                            description: error.description,
                             variant: "destructive",
                         });
                     });
@@ -98,6 +99,14 @@ export function RegisterForm(){
             register: {...register("email")},
             icon: Mail,
             label: "Email",
+            autocomplete: "username"
+        },
+        {
+            id: "registerFormUsername",
+            type: "username",
+            register: {...register("username")},
+            icon: UserRound,
+            label: "Username",
             autocomplete: "username"
         },
         {

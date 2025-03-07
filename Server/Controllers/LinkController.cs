@@ -7,7 +7,8 @@ using Going.Plaid.Link;
 using Microsoft.AspNetCore.Identity;
 using Server.Common;
 using Server.Data.Models;
-using Server.Data.Services;
+using Server.Extensions;
+using Server.Services;
 
 namespace Server.Controllers;
 
@@ -49,7 +50,7 @@ public class LinkController(
 
         if (response.Error != null)
         {
-            return PlaidApiError(response.Error);
+            return this.PlaidApiError(response.Error, logger);
         }
 
         logger.LogInformation("Successfully obtained link token: {token}", response.LinkToken);
@@ -75,7 +76,7 @@ public class LinkController(
 
         if (response.Error != null)
         {
-            return PlaidApiError(response.Error);
+            return this.PlaidApiError(response.Error, logger);
         }
         
         itemsService.CreateItem(response.AccessToken, user.Id, data.InstitutionName);
@@ -87,17 +88,4 @@ public class LinkController(
         return Ok(new { AddedTransactions = addedTransactions });
     }
     
-    [ApiExplorerSettings(IgnoreApi = true)]
-    private IActionResult PlaidApiError(PlaidError error)
-    {
-        logger.LogError(
-            "Error Type - {ErrorType}\n" +
-            "Error Code - {ErrorCode}\n" +
-            "Error Message - {ErrorMessage}",
-            error.ErrorType,
-            error.ErrorCode,
-            error.ErrorMessage);
-            
-        return StatusCode(StatusCodes.Status400BadRequest, error);
-    }
 }

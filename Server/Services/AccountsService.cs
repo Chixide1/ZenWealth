@@ -1,9 +1,11 @@
 ﻿using Going.Plaid;
 using Going.Plaid.Accounts;
 using Microsoft.EntityFrameworkCore;
+using Server.Data;
+using Server.Data.DTOs;
 using Server.Data.Models;
 
-namespace Server.Data.Services;
+namespace Server.Services;
 
 public class AccountsService(
     ILogger<AccountsService> logger,

@@ -1,4 +1,4 @@
-﻿namespace Server.Data.Models;
+﻿namespace Server.Data.DTOs;
 
 public class TransactionDto
 

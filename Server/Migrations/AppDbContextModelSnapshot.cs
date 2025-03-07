@@ -202,7 +202,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("Server.Data.Models.Budget", b =>
@@ -231,7 +231,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Budgets");
+                    b.ToTable("Budgets", (string)null);
                 });
 
             modelBuilder.Entity("Server.Data.Models.Item", b =>
@@ -264,7 +264,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("Server.Data.Models.Transaction", b =>
@@ -346,7 +346,7 @@ namespace Server.Migrations
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Date", "Id"));
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Server.Data.Models.User", b =>

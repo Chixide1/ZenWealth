@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
+using Server.Data.DTOs;
 using Server.Data.Models;
-using Server.Data.Services;
 
-namespace Server.Common;
+namespace Server.Extensions;
 
 public static class ServiceExtensions
 {

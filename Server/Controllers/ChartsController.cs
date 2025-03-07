@@ -1,4 +1,5 @@
 ﻿using Going.Plaid.Entity;
+using Server.Services;
 
 namespace Server.Controllers;
 
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Server.Common;
 using Server.Data.Models;
-using Server.Data.Services;
 
 [Authorize]
 [ApiController]

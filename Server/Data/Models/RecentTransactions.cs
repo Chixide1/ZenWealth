@@ -1,4 +1,6 @@
-﻿namespace Server.Data.Models;
+﻿using Server.Data.DTOs;
+
+namespace Server.Data.Models;
 
 public class RecentTransactions
 {

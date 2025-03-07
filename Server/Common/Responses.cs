@@ -1,4 +1,6 @@
-﻿using Server.Data.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Server.Data.DTOs;
+using Server.Data.Models;
 
 namespace Server.Common;
 
@@ -21,4 +23,9 @@ public abstract class Responses
         int? NextCursor,
         decimal? NextAmount
     );
+    
+    public class AuthResponse
+    {
+        public List<IdentityError> Errors { get; } = [];
+    }
 }

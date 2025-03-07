@@ -22,7 +22,7 @@ export function Layout() {
 
     useEffect(() => {
         async function fetchUserDetails(){
-            await api("/")
+            await api("/Auth/Details")
                 .then((response: AxiosResponse<UserDetailsResponse>) => {
                     setUserDetails(response.data);
                 })

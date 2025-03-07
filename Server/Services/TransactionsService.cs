@@ -1,11 +1,11 @@
 ﻿using Going.Plaid;
-using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Server.Common;
+using Server.Data;
+using Server.Data.DTOs;
 using Server.Data.Models;
+using Server.Extensions;
 
-namespace Server.Data.Services;
+namespace Server.Services;
 
 /// <summary>
 /// The Service where the business logic for transactions is implemented.
