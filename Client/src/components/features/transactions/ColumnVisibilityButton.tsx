@@ -25,7 +25,6 @@ export default function ColumnVisibilityButton({columns}: { columns: Column<Tran
                     className="flex items-center gap-1 text-xs justify-center px-2"
                     size="sm"
                 >
-                    {/*Columns*/}
                     <FontAwesomeIcon
                         icon={faEye}
                     />

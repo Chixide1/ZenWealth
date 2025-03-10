@@ -36,7 +36,7 @@ public class BudgetsController(
     
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> AddUserBudgets([FromBody]List<BudgetInputDto> budgets)
+    public async Task<IActionResult> UpdateUserBudgets([FromBody]List<BudgetInputDto> budgets)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -62,6 +62,12 @@ public class BudgetsController(
             if (validCategory == false)
             {
                 return BadRequest("There is an invalid category in one of the budgets");
+            }
+
+            if (budget.Limit < 1)
+            {
+                await budgetsService.DeleteBudgetAsync(budget.Category, user.Id);
+                continue;
             }
 
             await budgetsService.AddBudgetAsync(new Budget()

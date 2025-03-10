@@ -6,8 +6,6 @@ public enum Categories
         HOME_IMPROVEMENT,
         RENT_AND_UTILITIES,
         ENTERTAINMENT,
-        INCOME,
-        TRANSFER_IN,
         FOOD_AND_DRINK,
         LOAN_PAYMENTS,
         TRANSFER_OUT,

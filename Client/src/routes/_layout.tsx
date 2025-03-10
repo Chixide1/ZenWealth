@@ -7,6 +7,7 @@ import Loading from "@/components/shared/Loading.tsx";
 import api from "@/lib/api.ts";
 import AppTopbar from "@/components/shared/AppTopbar.tsx";
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 export const Route = createFileRoute("/_layout")({
     component: Layout,
@@ -49,6 +50,7 @@ export function Layout() {
             <ScrollArea className="w-full h-full max-w-screen-[1700px] mx-auto">
                 <Outlet />
             </ScrollArea>
+            <Toaster />
         </main>
     );
 }

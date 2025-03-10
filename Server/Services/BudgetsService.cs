@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Server.Common;
 using Server.Data;
 using Server.Data.DTOs;
 using Server.Data.Models;
@@ -8,7 +9,6 @@ namespace Server.Services;
 
 public class BudgetsService(
     AppDbContext context,
-    UserManager<User> userManager,
     ILogger<BudgetsService> logger
 ): IBudgetsService
 {
@@ -37,30 +37,58 @@ public class BudgetsService(
     public async Task<List<BudgetDto>> GetBudgetsAsync(string userId)
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
-        var budgetDate = new DateOnly(currentDate.Year, currentDate.Month, context.Budgets.First().Day);
-        
-        var budgets = await context.Budgets
+    
+        // First, get all budgets for this user
+        var userBudgets = await context.Budgets
             .AsNoTracking()
-            .Join(
-                context.Transactions,
-                b => b.Category,
-                t => t.Category,
-                (b, t) => new { b, t }
-            )
-            .Where(x => x.b.UserId == userId && x.t.Date >= budgetDate)
-            .GroupBy(
-                x => new { x.b.Id, x.b.Category, x.b.Day, x.b.Limit }
-            )
-            .Select(g => new BudgetDto
-            {
-                Id = g.Key.Id,
-                Category = g.Key.Category,
-                Day = g.Key.Day,
-                Limit = g.Key.Limit,
-                Spent = g.Sum(x => x.t.Amount),
-                Remaining = g.Key.Limit - g.Sum(x => x.t.Amount)
-            }).ToListAsync();
+            .Where(b => b.UserId == userId)
+            .ToListAsync();
+    
+        var result = new List<BudgetDto>();
+    
+        foreach (var budget in userBudgets)
+        {
+            // Calculate the start date for this specific budget
+            var budgetDate = new DateOnly(currentDate.Year, currentDate.Month, budget.Day);
         
-        return budgets;
+            // If budget day is after current day, use previous month
+            if (budgetDate > currentDate)
+            {
+                budgetDate = budgetDate.AddMonths(-1);
+            }
+        
+            // Sum transactions for this category since the budget start date
+            var spent = await context.Transactions
+                .Where(t => t.UserId == userId && 
+                            t.Category == budget.Category && 
+                            t.Date >= budgetDate)
+                .SumAsync(t => t.Amount);
+        
+            result.Add(new BudgetDto
+            {
+                Category = budget.Category,
+                Day = budget.Day,
+                Limit = budget.Limit,
+                Spent = spent,
+                Remaining = budget.Limit - spent
+            });
+        }
+    
+        return result;
+    }
+
+    public async Task DeleteBudgetAsync(string category, string userId)
+    {
+        var budgets = context.Budgets
+            .Where(b => b.Category == category.ToUpper() && b.UserId == userId)
+            .ToList();
+        
+        foreach (var budget in budgets)
+        {
+            Console.WriteLine(budget.Category + " - " + "Tried to delete");
+            context.Budgets.Remove(budget);
+            logger.LogInformation("Deleted budget category {category} for user: {userId}", category, userId);
+            await context.SaveChangesAsync();
+        }
     }
 }

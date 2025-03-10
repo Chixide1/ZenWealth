@@ -3,8 +3,8 @@ import { type PlaidLinkError, type PlaidLinkOnExit, usePlaidLink } from "react-p
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
-import { queryClient } from "@/main.tsx";
 import Loading from "@/components/shared/Loading.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 type LinkButtonProps = ButtonProps & {
     className?: string
@@ -13,6 +13,7 @@ type LinkButtonProps = ButtonProps & {
 }
 
 export function LinkButton({ children, className, reload = false, ...props }: LinkButtonProps) {
+    const queryClient = useQueryClient();
     const [linkToken, setLinkToken] = useState<string>("");
 
     const GetLinkToken = useCallback(async () => {

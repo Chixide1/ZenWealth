@@ -1,5 +1,5 @@
 ﻿import type {
-    Account,
+    Account, Budget,
     MinMaxAmount,
     MonthlySummary,
     RecentTransactions,
@@ -159,12 +159,23 @@ export const topExpenseCategoriesAtom = atomWithQuery(() => ({
 export const minMaxAmountAtom = atomWithQuery(() => ({
     queryKey: ["minMax"],
     queryFn: async () => {
-        const response = await api<MinMaxAmount>("/transactions/minmax").catch((e: AxiosError<MinMaxAmount>) =>
-            console.error(e),
-        );
+        const response = await api<MinMaxAmount>("/transactions/minmax")
+            .catch(
+                (e: AxiosError<MinMaxAmount>) => console.error(e)
+            );
 
         return response ? response.data : { min: 0, max: 0 };
     },
+}));
+
+export const budgetsAtom = atomWithQuery(() => ({
+    queryKey: ["budgets"],
+    queryFn: async () => {
+        const response = await api<Budget[]>("/Budgets")
+            .catch((e: AxiosError<Budget[]>) => console.error(e));
+        
+        return response ? response.data : [];
+    }
 }));
 
 export const AccountsAccordionAtom = atom<string[]>([]);

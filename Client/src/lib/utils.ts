@@ -2,6 +2,7 @@ import {type ClassValue, clsx} from "clsx";
 import {twMerge} from "tailwind-merge";
 import {ChartConfig} from "@/components/ui/chart.tsx";
 import { format } from "date-fns";
+import {Budget} from "@/types.ts";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -77,25 +78,34 @@ export function addColors<T>(items: T[], colors: string[]){
     return items.map((item, i) => ({...item, fill: colors[i % colors.length]}));
 }
 
-export const categoryMap = new Map([
-    ["BANK_FEES", "https://plaid-category-icons.plaid.com/PFC_BANK_FEES.png"],
-    ["HOME_IMPROVEMENT", "https://plaid-category-icons.plaid.com/PFC_HOME_IMPROVEMENT.png"],
-    ["RENT_AND_UTILITIES", "https://plaid-category-icons.plaid.com/PFC_RENT_AND_UTILITIES.png"],
-    ["ENTERTAINMENT", "https://plaid-category-icons.plaid.com/PFC_ENTERTAINMENT.png"],
-    ["INCOME", "https://plaid-category-icons.plaid.com/PFC_INCOME.png"],
-    ["TRANSFER_IN", "https://plaid-category-icons.plaid.com/PFC_TRANSFER_IN.png"],
-    ["FOOD_AND_DRINK", "https://plaid-category-icons.plaid.com/PFC_FOOD_AND_DRINK.png"],
-    ["LOAN_PAYMENTS", "https://plaid-category-icons.plaid.com/PFC_LOAN_PAYMENTS.png"],
-    ["TRANSFER_OUT", "https://plaid-category-icons.plaid.com/PFC_TRANSFER_OUT.png"],
-    ["GENERAL_MERCHANDISE", "https://plaid-category-icons.plaid.com/PFC_GENERAL_MERCHANDISE.png"],
-    ["MEDICAL", "https://plaid-category-icons.plaid.com/PFC_MEDICAL.png"],
-    ["TRANSPORTATION", "https://plaid-category-icons.plaid.com/PFC_TRANSPORTATION.png"],
-    ["GENERAL_SERVICES", "https://plaid-category-icons.plaid.com/PFC_GENERAL_SERVICES.png"],
-    ["PERSONAL_CARE", "https://plaid-category-icons.plaid.com/PFC_PERSONAL_CARE.png"],
-    ["TRAVEL", "https://plaid-category-icons.plaid.com/PFC_TRAVEL.png"],
-    ["GOVERNMENT_AND_NON_PROFIT", "https://plaid-category-icons.plaid.com/PFC_GOVERNMENT_AND_NON_PROFIT.png"],
-    ["OTHER", "https://plaid-category-icons.plaid.com/PFC_OTHER.png"]
-]);
+export const categories = [
+    "BANK_FEES",
+    "HOME_IMPROVEMENT",
+    "RENT_AND_UTILITIES",
+    "ENTERTAINMENT",
+    "INCOME",
+    "TRANSFER_IN",
+    "FOOD_AND_DRINK",
+    "LOAN_PAYMENTS",
+    "TRANSFER_OUT",
+    "GENERAL_MERCHANDISE",
+    "MEDICAL",
+    "TRANSPORTATION",
+    "GENERAL_SERVICES",
+    "PERSONAL_CARE",
+    "TRAVEL",
+    "GOVERNMENT_AND_NON_PROFIT",
+    "OTHER"
+] as const;
+
+export type TransactionCategory = typeof categories[number];
+
+export const categoryMap = new Map(
+    categories.map(key => [
+        key,
+        `https://plaid-category-icons.plaid.com/PFC_${key}.png`
+    ])
+);
 
 export function groupBy<T, K extends keyof never>(arr: T[], key: (i: T) => K) {
     return arr.reduce((groups, item) => {
@@ -106,4 +116,29 @@ export function groupBy<T, K extends keyof never>(arr: T[], key: (i: T) => K) {
 
 export function addSpaceBetweenCapitals(input: string): string {
     return input.replace(/([A-Z])/g, " $1").trim();
+}
+
+export function getAllBudgets(budgets: Budget[] | undefined) {
+    if(!budgets){
+        return [];    
+    }
+    
+    // Extract categories from existing budgets
+    const currentBudgets = budgets.map(budget => budget.category);
+
+    // Create default budget items for categories that don't have budgets yet
+    const defaultBudgets = categories.filter(c => !(c === "INCOME" || c === "TRANSFER_IN"))
+        .filter(c => !currentBudgets.includes(c))
+        .map(c => new Budget(c, budgets.length > 0 ? budgets[0]?.day : 1));
+
+    // Combine existing and default budgets
+    return [...budgets, ...defaultBudgets];
+}
+
+export function formatDayWithOrdinal(day: number) {
+    // Create a date object with the day
+    const date = new Date(2023, 0, day); // Using arbitrary year/month
+
+    // Use format with 'do' token for day of month with ordinal
+    return `${format(date, "do")} of the month`;
 }

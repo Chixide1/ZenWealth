@@ -29,7 +29,7 @@ declare module "@tanstack/react-router" {
 const rootElement = document.getElementById("root")!;
 const root = ReactDOM.createRoot(rootElement);
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             staleTime: Infinity,

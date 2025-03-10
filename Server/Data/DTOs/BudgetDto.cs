@@ -3,11 +3,6 @@
 public class BudgetDto
 {
     /// <summary>
-    /// <para>Unique ID for each Budget</para>
-    /// </summary>
-    public int Id { get; init; }
-    
-    /// <summary>
     /// <para>The category which the budget is set for</para>
     /// </summary>
     public required string Category { get; init; }

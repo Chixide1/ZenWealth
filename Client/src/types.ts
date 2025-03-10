@@ -1,4 +1,6 @@
-﻿export type Transaction = {
+﻿import { TransactionCategory } from "@/lib/utils.ts";
+
+export type Transaction = {
     id: number,
     name: string,
     accountName: string,
@@ -65,10 +67,18 @@ export type MinMaxAmount = {
     max: number,
 }
 
-export type BudgetItem = {
-    id: number
-    category: string
-    limit: number
-    spent: number
-    remaining: number
+export class Budget {
+    readonly category: TransactionCategory;
+    readonly limit: number;
+    readonly spent: number;
+    readonly remaining: number;
+    readonly day: number;
+
+    constructor(category: TransactionCategory, day: number = 1, limit: number = 0, spent: number = 0) {
+        this.category = category;
+        this.limit = limit;
+        this.spent = spent;
+        this.remaining = limit - spent;
+        this.day = day;
+    }
 }
