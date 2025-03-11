@@ -75,6 +75,8 @@ export const accountsAtom = atomWithQuery(() => ({
     },
 }));
 
+export const AccountsAccordionAtom = atom<string[]>([]);
+
 export const transactionsAtom = atomWithInfiniteQuery((get) => ({
     queryKey: ["transactions", get(transactionsParamsAtom), get(transactionsPaginationAtom).pageSize],
     queryFn: async ({ pageParam }) => {
@@ -178,4 +180,16 @@ export const budgetsAtom = atomWithQuery(() => ({
     }
 }));
 
-export const AccountsAccordionAtom = atom<string[]>([]);
+export const budgetTotalsAtom = atom(get => {
+    const {data: budgets} = get(budgetsAtom);
+    const defaultTotals = { totalLimit: 0, totalSpent: 0, totalRemaining: 0 };
+    
+    return budgets?.reduce(
+        (totals, budget) => ({
+            totalLimit: totals.totalLimit + budget.limit,
+            totalSpent: totals.totalSpent + budget.spent,
+            totalRemaining: totals.totalRemaining + budget.remaining
+        }),
+        defaultTotals
+    ) ?? defaultTotals;
+});

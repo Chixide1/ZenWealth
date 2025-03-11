@@ -1,5 +1,11 @@
 ﻿import { useState, useEffect } from "react";
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { 
+    flexRender,
+    getCoreRowModel,
+    useReactTable,
+    getSortedRowModel,
+    SortingState,
+} from "@tanstack/react-table";
 import { Cog, Loader2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -8,10 +14,8 @@ import type { Budget } from "@/types";
 import { columns } from "@/components/features/budgets/BudgetColumns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCalendarDays, faSackXmark } from "@fortawesome/free-solid-svg-icons";
-import { useToast } from "@/hooks/use-toast";
-import api from "@/lib/api.ts";
-import { useQueryClient } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import {UseSaveBudgets} from "@/hooks/use-save-budgets.tsx";
 
 interface BudgetTableProps {
     className?: string
@@ -20,16 +24,11 @@ interface BudgetTableProps {
 
 export function BudgetTable({ className, budgets }: BudgetTableProps) {
     "use no memo" // eslint-disable-line
-    const queryClient = useQueryClient();
-
-    // Add state management for budgets
+    
+    const {saveBudgets, isSaving} = UseSaveBudgets();
+    const [sorting, setSorting] = useState<SortingState>([]);
     const [data, setData] = useState<Budget[]>(budgets);
-    // Add state to track whether editing is enabled
     const [editMode, setEditMode] = useState(false);
-    // Add loading state for save operation
-    const [isSaving, setIsSaving] = useState(false);
-    // Add toast for notifications
-    const { toast } = useToast();
     // Add state for the selected day - initialize from the first budget if available
     const [selectedDay, setSelectedDay] = useState<string>(
         budgets.length > 0 ? budgets[0].day.toString() : "1"
@@ -44,75 +43,9 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
         }
     }, [budgets]);
 
-    // Function to save budget data to the backend
-    const saveBudgetData = async (dataToSave = data) => {
-        try {
-            setIsSaving(true);
-            const response = await api.post("/Budgets", dataToSave);
-            // Show success toast
-
-            if (response.status === 200) {
-                toast({
-                    title: "Budget updated",
-                    description: "Your budget limits have been saved successfully.",
-                });
-            } else {
-                toast({
-                    title: "Error saving budget",
-                    description: "There was a problem saving your budget limits. Please try again.",
-                    variant: "destructive",
-                });
-            }
-            // Exit edit mode
-            setEditMode(false);
-        } catch (error) {
-            console.error("Error saving budget data:", error);
-
-            // Show error toast
-            toast({
-                title: "Error saving budget",
-                description: "There was a problem saving your budget limits. Please try again.",
-                variant: "destructive",
-            });
-        } finally {
-            await queryClient.invalidateQueries({ queryKey: ["budgets"] });
-            setIsSaving(false);
-        }
-    };
-
     const clearBudgetData = async () => {
         const defaultBudgets = getAllBudgets([]);
-
-        try {
-            setIsSaving(true);
-            const response = await api.post("/Budgets", defaultBudgets);
-            // Show success toast
-
-            if (response.status === 200) {
-                toast({
-                    title: "Budget updated",
-                    description: "Your budget limits have been saved successfully.",
-                });
-            } else {
-                toast({
-                    title: "Error saving budget",
-                    description: "There was a problem saving your budget limits. Please try again.",
-                    variant: "destructive",
-                });
-            }
-        } catch (error) {
-            console.error("Error saving budget data:", error);
-
-            // Show error toast
-            toast({
-                title: "Error saving budget",
-                description: "There was a problem saving your budget limits. Please try again.",
-                variant: "destructive",
-            });
-        } finally {
-            await queryClient.invalidateQueries({ queryKey: ["budgets"] });
-            setIsSaving(false);
-        }
+        await saveBudgets(defaultBudgets);
     };
 
     const updateDayForAllBudgets = async (day: string) => {
@@ -123,48 +56,26 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
             ...budget,
             day: Number.parseInt(day, 10),
         }));
-
-        // Update the state
-        setData(updatedData);
-
-        // Save the updated data
-        try {
-            setIsSaving(true);
-            const response = await api.post("/Budgets", updatedData);
-
-            if (response.status === 200) {
-                toast({
-                    title: "Budget day updated",
-                    description: "Budget start day has been updated successfully.",
-                });
-            } else {
-                toast({
-                    title: "Error updating budget day",
-                    description: "There was a problem updating the budget day. Please try again.",
-                    variant: "destructive",
-                });
-            }
-        } catch (error) {
-            console.error("Error saving budget day:", error);
-            toast({
-                title: "Error updating budget day",
-                description: "There was a problem updating the budget day. Please try again.",
-                variant: "destructive",
-            });
-        } finally {
-            await queryClient.invalidateQueries({ queryKey: ["budgets"] });
-            setIsSaving(false);
-        }
+        
+        await saveBudgets(updatedData);
     };
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        state: {
+            sorting,
+        },
         // Provide our data and functions to the meta allowing access through the table api
         meta: {
+            saveBudgets: async () => {
+                saveBudgets(data);
+                setEditMode(false);
+            },
             editMode,
-            saveBudgetData,
             updateData: (rowIndex, columnId, value) => {
                 setData((old) =>
                     old.map((row, index) => {
@@ -197,7 +108,7 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
                                         disabled={isSaving}
                                         onClick={clearBudgetData}
                                     >
-                                        <span>Clear Budgets</span>
+                                        <span>Clear</span>
                                         <FontAwesomeIcon icon={faSackXmark} />
                                     </Button>
                                     <Button
@@ -208,7 +119,7 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
                                         disabled={isSaving}
                                         onClick={() => {
                                             if (editMode) {
-                                                saveBudgetData();
+                                                saveBudgets(data);
                                             } else {
                                                 setEditMode(true);
                                             }
@@ -228,7 +139,7 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
                                             )
                                         ) : (
                                             <>
-                                                <span>Edit Limits</span>
+                                                <span>Set Limits</span>
                                                 <Cog />
                                             </>
                                         )}
@@ -270,7 +181,7 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
                 <TableBody>
                     {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row, rowIndex) => (
-                            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="hover:bg-primary/5">
+                            <TableRow key={row.id} data-state={row.getIsSelected() && "selected"} className="hover:bg-primary/5 aria-selected:bg-primary/5">
                                 {row.getVisibleCells().map((cell, cellIndex) => (
                                     <TableCell
                                         className={cn(

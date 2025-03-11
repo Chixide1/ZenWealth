@@ -3,13 +3,14 @@ import { categoryMap, currencyParser } from "@/lib/utils";
 import type { Budget } from "@/types";
 import CurrencyInput from "react-currency-input-field";
 import { useEffect, useState } from "react";
+import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
 
 declare module "@tanstack/react-table" {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface TableMeta<TData extends RowData> {
         updateData: (rowIndex: number, columnId: string, value: unknown) => void,
         editMode: boolean,
-        saveBudgetData: () => Promise<void>,
+        saveBudgets: () => Promise<void>,
     }
 }
 
@@ -17,7 +18,13 @@ const columnHelper = createColumnHelper<Budget>();
 
 export const columns = [
     columnHelper.accessor("category", {
-        header: "Category",
+        header: ({column}) => (
+            <ColumnSortingButton
+                name={column.id}
+                className=""
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            />
+        ),
         cell: ({ row }) => (
             <div className="flex gap-2 items-center">
                 <img
@@ -30,7 +37,12 @@ export const columns = [
         ),
     }),
     columnHelper.accessor("limit", {
-        header: "Limit",
+        header: ({column}) => (
+            <ColumnSortingButton
+                name={column.id}
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            />
+        ),
         cell: ({ getValue, row, column, table }) => {
             const initialValue = getValue();
             const editMode = table.options.meta?.editMode || false;
@@ -58,6 +70,7 @@ export const columns = [
                             decimalsLimit={2}
                             prefix="£"
                             decimalScale={2}
+                            step={1.01}
                             decimalSeparator="."
                             groupSeparator=","
                             onValueChange={(value) => setValue(value ? Number.parseFloat(value) : 0)}
@@ -66,7 +79,7 @@ export const columns = [
                                 if (e.key === "Enter") {
                                     onBlur();
                                     setTimeout(() => {
-                                        table.options.meta?.saveBudgetData();
+                                        table.options.meta?.saveBudgets();
                                     }, 0);
                                 }
                             }}
@@ -79,13 +92,23 @@ export const columns = [
         },
     }),
     columnHelper.accessor("spent", {
-        header: "Spent",
+        header: ({column}) => (
+            <ColumnSortingButton
+                name={column.id}
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            />
+        ),
         cell: ({ row }) => (
             <div className="text-right text-sm font-medium text-primary">{currencyParser.format(row.original.spent)}</div>
         ),
     }),
     columnHelper.accessor("remaining", {
-        header: "Remaining",
+        header: ({column}) => (
+            <ColumnSortingButton
+                name={column.id}
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            />
+        ),
         cell: ({ row }) => {
             const { remaining } = row.original;
             const bgColor = remaining < 0 ? "bg-red-500/20" : "bg-secondary/20";

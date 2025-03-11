@@ -2,9 +2,15 @@
 import {MonthlyTransactionsWidget} from "@/components/features/transactions/MonthlyTransactionsWidget.tsx";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area.tsx";
 import {RecentTransactionsCard} from "@/components/features/transactions/RecentTransactionsCard.tsx";
-import {BudgetLimitCard} from "@/components/features/budgets/BudgetLimitCard.tsx";
+import {BudgetGauge} from "@/components/features/budgets/BudgetGauge.tsx";
 import {cn} from "@/lib/utils.ts";
-import {accountsAtom, monthlySummaryDataAtom, recentTransactionsAtom, topExpenseCategoriesAtom} from "@/lib/atoms.ts";
+import {
+    accountsAtom,
+    budgetTotalsAtom,
+    monthlySummaryDataAtom,
+    recentTransactionsAtom,
+    topExpenseCategoriesAtom
+} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
 import {IncomeOutcomeLineGraph} from "@/components/features/transactions/IncomeOutcomeLineGraph.tsx";
 import TopExpenseCategoriesCard from "@/components/features/transactions/TopExpenseCategoriesCard.tsx";
@@ -20,7 +26,8 @@ function DashboardPage() {
     const [{data: monthlySummaryData}]  = useAtom(monthlySummaryDataAtom);
     const [{data: recentTransactions}]  = useAtom(recentTransactionsAtom);
     const [{data: topExpenseCategories}]  = useAtom(topExpenseCategoriesAtom);
-    console.log(monthlySummaryData);
+    const [{totalSpent, totalLimit}] = useAtom(budgetTotalsAtom);
+    // console.log(monthlySummaryData);
     
     return (
         <div className="grid grid-cols-12 auto-rows-auto gap-4 px-3 md:px-4 pb-8">
@@ -49,7 +56,7 @@ function DashboardPage() {
                 recentTransactions={recentTransactions}
                 className="col-span-full md:col-span-5 row-span-2" 
             />
-            <BudgetLimitCard spent={2000} limit={7000} className="col-span-full md:col-span-7"/>
+            <BudgetGauge spent={totalSpent} limit={totalLimit} className="col-span-full md:col-span-7"/>
             <TopExpenseCategoriesCard gaugeData={topExpenseCategories ?? []} className="col-span-full md:col-span-5" />
             <LiabilitiesTreeMap accounts={accounts?.filter((account) => account.type === "Credit") ?? []} className="col-span-full md:col-span-7"/>
         </div>

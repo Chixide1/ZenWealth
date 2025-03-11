@@ -22,7 +22,7 @@ type GaugeProps = {
     segments?: number,
     className?: string
 }
-export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, className }: GaugeProps) {
+export function BudgetGauge({ spent = 0, limit = 100, segments = 60, className }: GaugeProps) {
     const safeMax = limit > 0 ? limit : 1; // Prevent division by zero
     const safeValue = Math.max(0, Math.min(spent, safeMax)); // Ensure value is between 0 and max
     const percentage = (safeValue / safeMax) * 100;
@@ -45,7 +45,7 @@ export function BudgetLimitCard({ spent = 0, limit = 100, segments = 60, classNa
     return (
         <Card className={cn("bg-background backdrop-blur-sm", className)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">Monthly Budget spending</CardTitle>
+                <CardTitle className="text-xl">Monthly Budget Spending</CardTitle>
                 <ArrowLink to="/budgets" />
             </CardHeader>
             <CardContent className="flex flex-col md:flex-row space-y-4 overflow-hidden relative">

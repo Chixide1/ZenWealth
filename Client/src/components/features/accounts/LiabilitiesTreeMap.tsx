@@ -37,7 +37,7 @@ export function LiabilitiesTreeMap({ className, accounts }: TotalBalanceCardProp
                             stroke="hsl(var(--offblack))"
                             fill="hsl(var(--offblack))"
                         >
-                            <Tooltip content={<AccountsTooltip className="bg-neutral-700/50 text-sm" showNegatives={false}/>}/>
+                            <Tooltip content={<AccountsTooltip className="bg-neutral-700/50 text-sm" showLimits={true} showNegatives={false}/>}/>
                         </Treemap> 
                         :
                         <div className="text-neutral-400 text-xl w-full flex items-center justify-center my-auto h-full">

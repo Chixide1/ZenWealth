@@ -2,6 +2,8 @@
 import {Budget} from "@/types.ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarDay, faCashRegister, faCoins, faPiggyBank } from "@fortawesome/free-solid-svg-icons";
+import { useAtom } from "jotai";
+import {budgetTotalsAtom} from "@/lib/atoms.ts";
 
 type BudgetSummaryProps = {
     className?: string,
@@ -9,14 +11,7 @@ type BudgetSummaryProps = {
 }
 
 export function BudgetSummary({className, budgets}: BudgetSummaryProps) {
-    const { totalLimit, totalSpent, totalRemaining } = budgets.reduce(
-        (totals, budget) => ({
-            totalLimit: totals.totalLimit + budget.limit,
-            totalSpent: totals.totalSpent + budget.spent,
-            totalRemaining: totals.totalRemaining + budget.remaining
-        }),
-        { totalLimit: 0, totalSpent: 0, totalRemaining: 0 }
-    );
+    const [{totalLimit, totalSpent, totalRemaining}] = useAtom(budgetTotalsAtom);
 
     const summaryItems = [
         {

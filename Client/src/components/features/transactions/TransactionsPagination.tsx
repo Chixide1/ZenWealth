@@ -16,7 +16,7 @@ export function PageSizeButton() {
             <SelectTrigger className="bg-accent text-black text-xs px-2 w-fit">
                 <SelectValue />
             </SelectTrigger>
-            <SelectContent className="w-fit min-w-0 bg-accent">
+            <SelectContent className="w-fit min-w-0 bg-accent text-black">
                 {pageSizeOptions.map((size) => (
                     <SelectItem
                         hideCheck={true}
