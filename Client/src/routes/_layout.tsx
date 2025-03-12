@@ -1,48 +1,35 @@
-﻿import { createFileRoute,} from "@tanstack/react-router";
-import {LinkStart} from "@/components/features/link/LinkStart.tsx";
-import { Outlet } from "@tanstack/react-router";
+﻿import { createFileRoute, Outlet, useLoaderData } from "@tanstack/react-router";
+import { LinkStart } from "@/components/features/link/LinkStart.tsx";
 import { AxiosResponse } from "axios";
-import {useEffect, useState } from "react";
-import Loading from "@/components/shared/Loading.tsx";
 import api from "@/lib/api.ts";
 import AppTopbar from "@/components/shared/AppTopbar.tsx";
-import {ScrollArea} from "@/components/ui/scroll-area.tsx";
-import {Toaster} from "@/components/ui/toaster.tsx";
+import { ScrollArea } from "@/components/ui/scroll-area.tsx";
+import { Toaster } from "@/components/ui/toaster.tsx";
+import { useQueryClient } from "@tanstack/react-query";
+
+type UserDetailsResponse = {
+    hasItems: boolean | null;
+    userName: string;
+};
 
 export const Route = createFileRoute("/_layout")({
     component: Layout,
+    loader: fetchUserDetails,
 });
 
-type UserDetailsResponse = {
-    hasItems: boolean | null,
-    userName: string,
-}
+function Layout() {
+    const queryClient = useQueryClient();
+    const userDetails = useLoaderData({ from: Route.id });
 
-export function Layout() {
-    const [userDetails, setUserDetails] = useState<UserDetailsResponse>({hasItems: null, userName: ""});
-
-    useEffect(() => {
-        async function fetchUserDetails(){
-            await api("/Auth/Details")
-                .then((response: AxiosResponse<UserDetailsResponse>) => {
-                    setUserDetails(response.data);
-                })
-                .catch(e => console.error("You need to reauthenticate: " + e));
-        }
-        fetchUserDetails();
-    }, []);
-
-    if(userDetails.hasItems === null){
-        return <Loading/>;
-    }
-
-    if (userDetails.hasItems === false) {
+    if (!userDetails.hasItems) {
         return (
             <div className={"w-full h-screen flex items-center justify-center"}>
                 <LinkStart />
             </div>
         );
     }
+    
+    queryClient.prefetchQuery({queryKey: ["transactions"]});
     
     return (
         <main className="w-full h-screen flex flex-col overflow-hidden min-w-[350px]">
@@ -55,3 +42,16 @@ export function Layout() {
     );
 }
 
+async function fetchUserDetails() {
+    try {
+        const response: AxiosResponse<UserDetailsResponse> = await api("/Auth/Details");
+
+        if (!response) {
+            throw new Error();
+        }
+        return response.data;
+    } catch (e) {
+        console.error(e);
+        throw new Error("Couldn't contact the Server", { cause: e });
+    }
+}

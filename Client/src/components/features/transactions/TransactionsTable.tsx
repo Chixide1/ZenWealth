@@ -13,7 +13,7 @@ import { DateFilterButton } from "@/components/features/transactions/DateFilterB
 import { NextButton, PageSizeButton, PrevButton } from "@/components/features/transactions/TransactionsPagination.tsx";
 
 interface TransactionTableProps {
-    columns: ColumnDef<Transaction>[]
+    columns: ColumnDef<Transaction, any>[] //eslint-disable-line
     data: TransactionData | undefined
     isLoading?: boolean
     className?: string

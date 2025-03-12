@@ -50,8 +50,6 @@ export const columns = [
                 setValue(initialValue);
             }, [initialValue]);
 
-            // console.log(inputRef);
-
             return (
                 <div className={`text-right text-sm font-medium text-primary ${editMode && "p-0"}`}>
                     {editMode ? (

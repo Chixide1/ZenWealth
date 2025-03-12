@@ -10,13 +10,30 @@ import { queryClientAtom } from "jotai-tanstack-query";
 import { useHydrateAtoms } from "jotai/utils";
 // import { persistQueryClient} from "@tanstack/react-query-persist-client";
 import { StrictMode } from "react";
+import {NotFoundPage} from "@/components/shared/NotFoundPage.tsx";
+import {ErrorPage} from "@/components/shared/ErrorPage.tsx";
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: Infinity,
+            gcTime: Infinity, // 12 hours
+        },
+
+    },
+});
 
 // Set up a Router instance
 export const router = createRouter({
     defaultPendingComponent: Loading,
     routeTree,
+    context: {
+        queryClient,
+    },
     defaultPreload: "intent",
     defaultStaleTime: 5000,
+    defaultNotFoundComponent: NotFoundPage,
+    defaultErrorComponent: ErrorPage,
 });
 
 // Register things for typesafety
@@ -28,16 +45,6 @@ declare module "@tanstack/react-router" {
 
 const rootElement = document.getElementById("root")!;
 const root = ReactDOM.createRoot(rootElement);
-
-const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            staleTime: Infinity,
-            gcTime: Infinity, // 12 hours
-        },
-        
-    },
-});
 
 // persistQueryClient({
 //     queryClient,
