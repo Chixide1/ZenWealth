@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from "react";
 import type { Account } from "@/types";
 import { currencyParser } from "@/lib/utils.ts";
+import {useAccountScroll} from "@/hooks/use-account-scroll.tsx";
 
 type AccountsOverviewCardProps = {
     accounts: Account[]
@@ -8,11 +9,11 @@ type AccountsOverviewCardProps = {
 }
 
 export function AccountsOverviewCard({ accounts, title }: AccountsOverviewCardProps) {
+    const { scrollToAccount } = useAccountScroll();
     const [mounted, setMounted] = useState(false);
     const [hoveredAccountId, setHoveredAccountId] = useState<number | null>(null);
-
     const total = accounts.reduce((sum, account) => sum + account.currentBalance, 0);
-
+    
     // Trigger animation after component mounts
     useEffect(() => {
         setMounted(true);
@@ -31,9 +32,11 @@ export function AccountsOverviewCard({ accounts, title }: AccountsOverviewCardPr
                     const percentage = (account.currentBalance / total) * 100;
                     return (
                         <div
+                            onClick={() => scrollToAccount(account)}
                             className="rounded-sm transition-all duration-1000 ease-out"
                             key={account.id + "::AccountsOverviewCardBar"}
                             style={{
+                                cursor: "pointer",
                                 width: mounted ? `${percentage}%` : "0%",
                                 backgroundColor: account.fill,
                                 height: "20px",
@@ -52,6 +55,7 @@ export function AccountsOverviewCard({ accounts, title }: AccountsOverviewCardPr
                     const percentage = (account.currentBalance / total) * 100;
                     return (
                         <div
+                            onClick={() => scrollToAccount(account)}
                             key={account.id + "::AccountsOverviewCardLegend"}
                             className="flex justify-between items-center"
                             onMouseEnter={() => setHoveredAccountId(account.id)}

@@ -4,8 +4,7 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { chartConfig, cn, currencyParser } from "@/lib/utils.ts";
 import type { Account } from "@/types.ts";
 import { AccountsTooltip } from "@/components/shared/AccountsTooltip.tsx";
-import {AccountsAccordionAtom} from "@/lib/atoms.ts";
-import { useAtom } from "jotai";
+import {useAccountScroll} from "@/hooks/use-account-scroll.tsx";
 
 type NetWorthCardProps = {
     accounts: Account[]
@@ -13,7 +12,7 @@ type NetWorthCardProps = {
 }
 
 export function NetWorthCard({ accounts, className }: NetWorthCardProps) {
-    const [items, setItems] = useAtom(AccountsAccordionAtom);
+    const { scrollToAccount } = useAccountScroll();
     const debitAccounts = accounts?.filter((account) => account.type === "Depository" || account.type === "Other");
     const creditAccounts = accounts?.filter((account) => account.type === "Credit" || account.type === "Loan");
 
@@ -28,25 +27,9 @@ export function NetWorthCard({ accounts, className }: NetWorthCardProps) {
         }, 0) ?? 0;
 
     // Function to handle pie slice click
-    const handlePieClick = (data: Account) => {
-        if (data && data.id) {
-            // Create the account ID and scroll to it
-            const accountId = `${data.id}::AccountDetailsCardAccordion`;
-            
-            if(!items.includes(data.type)) {
-                setItems((prev) => [...prev, data.type]);
-            }
-
-            // Scroll to the account with a small delay to allow accordion to open
-            setTimeout(() => {
-                const accountElement = document.getElementById(accountId);
-                accountElement?.scrollIntoView({ behavior: "smooth", block: "center" });
-                // Add a temporary highlight class
-                accountElement?.classList.add("bg-secondary/10");
-                setTimeout(() => {
-                    accountElement?.classList.remove("bg-secondary/10");
-                }, 4000);
-            }, 500);
+    const handlePieClick = (data: {payload: Account}) => {
+        if (data && data.payload) {
+            scrollToAccount(data.payload);
         }
     };
 

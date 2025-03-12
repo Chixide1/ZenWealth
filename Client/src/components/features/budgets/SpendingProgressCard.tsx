@@ -1,6 +1,7 @@
 ﻿import { Progress } from "@/components/ui/progress";
 import {categoryMap, cn} from "@/lib/utils";
 import { Budget } from "@/types";
+import {useEffect, useState } from "react";
 
 type SpendingProgressCardProps = {
     className?: string;
@@ -8,7 +9,11 @@ type SpendingProgressCardProps = {
 }
 
 export function SpendingProgressCard({className, budgets}: SpendingProgressCardProps) {
+    const [mounted, setMounted] = useState(false);
 
+    useEffect(() => {
+        setTimeout(() => setMounted(true), 500);
+    }, []);
     
     return (
         <div className={cn("rounded-lg bg-offblack border-neutral-800 border p-6", className)}>
@@ -38,7 +43,7 @@ export function SpendingProgressCard({className, budgets}: SpendingProgressCardP
                                     </div>
                                 </div>
                                 <Progress
-                                    value={percentage > 100 ? 100 : Number(percentage.toFixed(2))}
+                                    value={mounted ? (percentage > 100 ? 100 : Number(percentage.toFixed(2))) : 0}
                                     className="h-5 bg-charcoal rounded-sm"
                                     indicatorClassName={percentage >= 100 ? "from-red-500 to-red-700" : ""}
                                 />
