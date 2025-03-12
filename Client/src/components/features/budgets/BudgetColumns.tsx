@@ -1,18 +1,9 @@
-﻿import { createColumnHelper, type RowData } from "@tanstack/react-table";
+﻿import { createColumnHelper } from "@tanstack/react-table";
 import { categoryMap, currencyParser } from "@/lib/utils";
 import type { Budget } from "@/types";
 import CurrencyInput from "react-currency-input-field";
 import { useEffect, useState } from "react";
 import ColumnSortingButton from "@/components/features/transactions/ColumnSortingButton.tsx";
-
-declare module "@tanstack/react-table" {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    interface TableMeta<TData extends RowData> {
-        updateData: (rowIndex: number, columnId: string, value: unknown) => void,
-        editMode: boolean,
-        saveBudgets: () => Promise<void>,
-    }
-}
 
 const columnHelper = createColumnHelper<Budget>();
 
@@ -79,7 +70,7 @@ export const columns = [
                                 if (e.key === "Enter") {
                                     onBlur();
                                     setTimeout(() => {
-                                        table.options.meta?.saveBudgets();
+                                        table.options.meta?.saveBudgetData();
                                     }, 0);
                                 }
                             }}

@@ -57,7 +57,7 @@ function DashboardPage() {
                 className="col-span-full md:col-span-5 row-span-2" 
             />
             <BudgetGauge spent={totalSpent} limit={totalLimit} className="col-span-full md:col-span-7"/>
-            <TopExpenseCategoriesCard gaugeData={topExpenseCategories ?? []} className="col-span-full md:col-span-5" />
+            <TopExpenseCategoriesCard data={topExpenseCategories ?? []} className="col-span-full md:col-span-5" />
             <LiabilitiesTreeMap accounts={accounts?.filter((account) => account.type === "Credit") ?? []} className="col-span-full md:col-span-7"/>
         </div>
     );

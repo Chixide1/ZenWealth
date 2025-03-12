@@ -64,7 +64,7 @@ public class AccountsService(
 
         var existingAccounts = await context.Accounts
             .Where(a => a.UserId == userId)
-            .ToDictionaryAsync(a => a.AccountId, a => a);
+            .ToDictionaryAsync(a => a.PlaidAccountId, a => a);
 
         foreach (var item in items)
         {
@@ -80,7 +80,7 @@ public class AccountsService(
                     entity.CurrentBalance = (double?)account.Balances.Current ?? 0.00;
 
                     logger.LogInformation(
-                        "Updated account {AccountId} for user {UserId} of item {ItemId}",
+                        "Updated account {PlaidAccountId} for user {UserId} of item {ItemId}",
                         account.AccountId, userId, item.Id
                     );
                 }
@@ -88,7 +88,7 @@ public class AccountsService(
                 {
                     context.Accounts.Add(new Account()
                     {
-                        AccountId = account.AccountId,
+                        PlaidAccountId = account.AccountId,
                         ItemId = item.Id,
                         UserId = item.UserId,
                         Name = account.Name,
@@ -100,7 +100,7 @@ public class AccountsService(
                         OfficialName = account.OfficialName,
                     });
                     
-                    logger.LogInformation("Added account {AccountId} for user {UserId} of item {ItemId}", account.AccountId, userId, item.Id);
+                    logger.LogInformation("Added account {PlaidAccountId} for user {UserId} of item {ItemId}", account.AccountId, userId, item.Id);
                 }
             }
         }

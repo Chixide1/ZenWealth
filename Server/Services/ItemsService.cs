@@ -1,4 +1,5 @@
-﻿using Going.Plaid;
+﻿using EFCore.BulkExtensions;
+using Going.Plaid;
 using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
@@ -83,31 +84,33 @@ public class ItemsService(
                     Cursor = item.Cursor
                 };
                 
-                var transactions = await client.TransactionsSyncAsync(request);
+                var data = await client.TransactionsSyncAsync(request);
                 
-                item.Cursor = string.IsNullOrEmpty(transactions.NextCursor) ? null : transactions.NextCursor;
+                item.Cursor = string.IsNullOrEmpty(data.NextCursor) ? null : data.NextCursor;
                 item.LastFetched =  string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
-                hasMore = transactions.HasMore;
+                hasMore = data.HasMore;
                 await context.SaveChangesAsync();
 
                 logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
-                    transactions.Added.Count, item.Id, userId
+                    data.Added.Count, item.Id, userId
                 );
 
-                foreach (var account in transactions.Accounts)
+                var accounts = new List<Account>();
+                
+                foreach (var account in data.Accounts)
                 {
-                    if (context.Accounts.Any(a => a.AccountId == account.AccountId))
+                    if (context.Accounts.Any(a => a.PlaidAccountId == account.AccountId))
                     {
                         logger.LogInformation(
-                            "Skipping account {AccountId} for item {ItemId} and user {UserId} as it already exists",
+                            "Skipping account {PlaidAccountId} for item {ItemId} and user {UserId} as it already exists",
                             account.AccountId, item.Id, userId
                         );
                         continue;
                     }
 
-                    await context.Accounts.AddAsync(new Account()
+                    accounts.Add(new Account
                     {
-                        AccountId = account.AccountId,
+                        PlaidAccountId = account.AccountId,
                         ItemId = item.Id,
                         UserId = userId,
                         Name = account.Name,
@@ -118,41 +121,39 @@ public class ItemsService(
                         Subtype = account.Subtype.ToString(),
                         OfficialName = account.OfficialName,
                     });
-
-                    logger.LogInformation("Added account {AccountId} for item {ItemId} and user {UserId}",
-                        account.AccountId, item.Id, userId);
-
-                    await context.SaveChangesAsync();
                 }
                 
-                var sortedTransactions = transactions.Added.OrderBy(t => t.Date);
-
+                await context.BulkInsertOrUpdateAsync(accounts);
+                
+                var sortedTransactions = data.Added.OrderBy(t => t.Date);
+                var transactions = new List<Transaction>();
+                
                 foreach (var transaction in sortedTransactions)
                 {
-                    if (context.Transactions.Any(t => t.TransactionId == transaction.TransactionId))
+                    if (context.Transactions.Any(t => t.PlaidTransactionId == transaction.TransactionId))
                     {
                         logger.LogInformation(
-                            "Skipping transaction {TransactionId} for item {ItemId} and user {UserId} as it already exists",
+                            "Skipping transaction {PlaidTransactionId} for item {ItemId} and user {UserId} as it already exists",
                             transaction.TransactionId, item.Id, userId
                         );
                         continue;
                     }
 
-                    var account = await context.Accounts.SingleOrDefaultAsync(a => a.AccountId == transaction.AccountId);
+                    var account = await context.Accounts.FirstOrDefaultAsync(a => a.PlaidAccountId == transaction.AccountId);
 
                     if (account == null)
                     {
                         logger.LogInformation(
-                            "Skipping transaction {TransactionId} for item {ItemId} and user {UserId} as the account does not exist",
+                            "Skipping transaction {PlaidTransactionId} for item {ItemId} and user {UserId} as the account does not exist",
                             transaction.TransactionId, item.Id, userId
                         );
                         
                         continue;
                     }
 
-                    await context.Transactions.AddAsync(new Transaction()
+                    transactions.Add(new Transaction()
                     {
-                        TransactionId = transaction.TransactionId!,
+                        PlaidTransactionId = transaction.TransactionId!,
                         AccountId = account.Id,
                         UserId = userId,
                         Name = transaction.Name ?? "",
@@ -170,14 +171,9 @@ public class ItemsService(
                             ? null
                             : transaction.TransactionCode.ToString(),
                     });
-
-                    logger.LogInformation(
-                        "Added transaction {TransactionId} for item {ItemId} and user {UserId}",
-                        transaction.TransactionId, item.Id, userId
-                    );
-
-                    await context.SaveChangesAsync();
                 }
+
+                await context.BulkInsertOrUpdateAsync(transactions);
             }
         }
 

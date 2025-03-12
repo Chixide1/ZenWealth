@@ -29,7 +29,7 @@ public class Transaction
 	/// <para>The unique ID of the transaction. Like all Plaid identifiers, the <c>transaction_id</c> is case sensitive.</para>
 	/// </summary>
 	[Column(TypeName = "varchar(100)")]
-	public required string TransactionId { get; init; }
+	public required string PlaidTransactionId { get; init; }
 	
 	/// <summary>
 	/// <para>The ID of the account in which this transaction occurred.</para>

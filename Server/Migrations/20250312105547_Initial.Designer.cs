@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250306002012_Initial")]
+    [Migration("20250312105547_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -166,10 +166,6 @@ namespace Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AccountId")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
                     b.Property<double>("AvailableBalance")
                         .HasColumnType("float");
 
@@ -188,6 +184,10 @@ namespace Server.Migrations
 
                     b.Property<string>("OfficialName")
                         .HasColumnType("varchar(255)");
+
+                    b.Property<string>("PlaidAccountId")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("Subtype")
                         .HasColumnType("varchar(255)");
@@ -313,12 +313,12 @@ namespace Server.Migrations
                     b.Property<string>("PaymentChannel")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("TransactionCode")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("TransactionId")
+                    b.Property<string>("PlaidTransactionId")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
+
+                    b.Property<string>("TransactionCode")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("UnofficialCurrencyCode")
                         .HasColumnType("varchar(255)");
@@ -488,7 +488,7 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Data.Models.Budget", b =>
                 {
                     b.HasOne("Server.Data.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Budgets")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -537,6 +537,8 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Data.Models.User", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("Budgets");
 
                     b.Navigation("Items");
 

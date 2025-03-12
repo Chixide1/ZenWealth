@@ -7,10 +7,10 @@ import {TopExpenseCategory} from "@/types.ts";
 
 type TopExpenseCategoriesCardProps = {
     className?: string,
-    gaugeData: TopExpenseCategory[],
+    data: TopExpenseCategory[],
 }
 
-export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCategoriesCardProps) {
+export function TopExpenseCategoriesCard({className, data}: TopExpenseCategoriesCardProps) {
     return (
         <Card className={cn("", className)}>
             <CardHeader className="pb-4 flex flex-row items-center justify-between">
@@ -18,15 +18,17 @@ export function TopExpenseCategoriesCard({className, gaugeData}: TopExpenseCateg
                 <ArrowLink to="/transactions" />
             </CardHeader>
             <CardContent className="space-y-8 pt-4 pb-10 text-sm">
-                {gaugeData.map((gauge, index) => (
-                    <Gauge key={index + "::TopExpenseCategoriesCardGauge"} {...gauge} />
-                ))}
+                {data.length > 0 ? data.map((barData, index) => (
+                    <TopExpenseCategoryProgressBar key={index + "::TopExpenseCategoriesCardGauge"} {...barData} />
+                )) : <div className="w-full text-neutral-400 text-center pt-20">
+                    <h2 className="text-xl">No Data...</h2>
+                </div>}
             </CardContent>
         </Card>
     );
 }
 
-function Gauge({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCategory){
+function TopExpenseCategoryProgressBar({ category, expenditure = 0, total = 0, iconUrl}: TopExpenseCategory){
     const [progress, setProgress] = useState(0);
     const percentage = expenditure / total * 100;
 

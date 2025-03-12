@@ -163,10 +163,6 @@ namespace Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AccountId")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
                     b.Property<double>("AvailableBalance")
                         .HasColumnType("float");
 
@@ -186,6 +182,10 @@ namespace Server.Migrations
                     b.Property<string>("OfficialName")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("PlaidAccountId")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("Subtype")
                         .HasColumnType("varchar(255)");
 
@@ -202,7 +202,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("Server.Data.Models.Budget", b =>
@@ -231,7 +231,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Budgets", (string)null);
+                    b.ToTable("Budgets");
                 });
 
             modelBuilder.Entity("Server.Data.Models.Item", b =>
@@ -264,7 +264,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("Server.Data.Models.Transaction", b =>
@@ -310,12 +310,12 @@ namespace Server.Migrations
                     b.Property<string>("PaymentChannel")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("TransactionCode")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("TransactionId")
+                    b.Property<string>("PlaidTransactionId")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
+
+                    b.Property<string>("TransactionCode")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("UnofficialCurrencyCode")
                         .HasColumnType("varchar(255)");
@@ -346,7 +346,7 @@ namespace Server.Migrations
 
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("Date", "Id"));
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Server.Data.Models.User", b =>
@@ -485,7 +485,7 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Data.Models.Budget", b =>
                 {
                     b.HasOne("Server.Data.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Budgets")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -534,6 +534,8 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Data.Models.User", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("Budgets");
 
                     b.Navigation("Items");
 

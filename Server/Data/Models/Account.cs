@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Server.Data.Models;
 
@@ -8,6 +10,7 @@ public class Account
 	/// <summary>
 	/// <para>Unique ID for each Account</para>
 	/// </summary>
+	[Key]
 	public int Id { get; init; }
 	
 	/// <summary>
@@ -38,7 +41,7 @@ public class Account
 	/// <para>Like all Plaid identifiers, the <c>account_id</c> is case sensitive.</para>
 	/// </summary>
 	[Column(TypeName = "varchar(100)")]
-	public required string AccountId { get; init; }
+	public required string PlaidAccountId { get; init; }
 
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>

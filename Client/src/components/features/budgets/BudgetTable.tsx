@@ -5,6 +5,7 @@ import {
     useReactTable,
     getSortedRowModel,
     SortingState,
+    RowData,
 } from "@tanstack/react-table";
 import { Cog, Loader2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,6 +17,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faCalendarDays, faSackXmark } from "@fortawesome/free-solid-svg-icons";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import {UseSaveBudgets} from "@/hooks/use-save-budgets.tsx";
+
+declare module "@tanstack/react-table" {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface TableMeta<TData extends RowData> {
+        updateData: (rowIndex: number, columnId: string, value: unknown) => void,
+        editMode: boolean,
+        saveBudgetData: () => Promise<void>,
+    }
+}
 
 interface BudgetTableProps {
     className?: string
@@ -58,6 +68,11 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
         }));
         
         await saveBudgets(updatedData);
+    }
+    
+    const saveBudgetData = async () => {
+        await saveBudgets(data);
+        setEditMode(false);
     };
 
     const table = useReactTable({
@@ -71,10 +86,7 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
         },
         // Provide our data and functions to the meta allowing access through the table api
         meta: {
-            saveBudgets: async () => {
-                saveBudgets(data);
-                setEditMode(false);
-            },
+            saveBudgetData,
             editMode,
             updateData: (rowIndex, columnId, value) => {
                 setData((old) =>
@@ -112,17 +124,16 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
                                         <FontAwesomeIcon icon={faSackXmark} />
                                     </Button>
                                     <Button
-                                        id="SaveBudgetDataButton"
                                         className="flex items-center gap-1 text-xs justify-center px-2"
                                         variant="accent"
                                         size="sm"
                                         disabled={isSaving}
-                                        onClick={() => {
-                                            if (editMode) {
-                                                saveBudgets(data);
-                                            } else {
-                                                setEditMode(true);
+                                        onClick={async () => {
+                                            if(editMode){
+                                                await saveBudgetData();
+                                                return;
                                             }
+                                            setEditMode(true);
                                         }}
                                     >
                                         {editMode ? (
