@@ -2,6 +2,7 @@
 import type { Account } from "@/types";
 import { currencyParser } from "@/lib/utils.ts";
 import {useAccountScroll} from "@/hooks/use-account-scroll.tsx";
+import {Progress} from "@/components/ui/progress.tsx";
 
 type AccountsOverviewCardProps = {
     accounts: Account[]
@@ -16,7 +17,7 @@ export function AccountsOverviewCard({ accounts, title }: AccountsOverviewCardPr
     
     // Trigger animation after component mounts
     useEffect(() => {
-        setMounted(true);
+        setTimeout(() => setMounted(true), 500);
     }, []);
 
     return (
@@ -28,22 +29,23 @@ export function AccountsOverviewCard({ accounts, title }: AccountsOverviewCardPr
 
             {/* Stacked bar chart using divs */}
             <div className="w-full flex gap-0.5 overflow-hidden mb-4">
-                {accounts.map((account, index) => {
+                {accounts.map((account) => {
                     const percentage = (account.currentBalance / total) * 100;
+                    const color = account.fill;
+                    
                     return (
-                        <div
+                        <Progress
+                            value={mounted ? 100 : 0}
                             onClick={() => scrollToAccount(account)}
-                            className="rounded-sm transition-all duration-1000 ease-out"
-                            key={account.id + "::AccountsOverviewCardBar"}
+                            className="rounded-sm transition-all duration-1000 ease-out h-5 from-transparent bg-transparent"
+                            key={account.id + "::AccountsOverviewCardProgressBar"}
                             style={{
+                                width: `${percentage}%`,
                                 cursor: "pointer",
-                                width: mounted ? `${percentage}%` : "0%",
-                                backgroundColor: account.fill,
-                                height: "20px",
-                                transitionDelay: `${index * 150}ms`, // Add staggered delay based on index
                                 opacity: hoveredAccountId ? (hoveredAccountId === account.id ? 1 : 0.4) : 1,
-                                transition: "opacity 0.3s ease, width 1000ms ease-out",
                             }}
+                            indicatorClassName="bg-none"
+                            indicatorStyle={{backgroundColor: color}}
                         />
                     );
                 })}

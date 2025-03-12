@@ -85,7 +85,7 @@ export default function AppTopbar({ username }: { username: string }) {
                     <span>{username?.slice(0,1).toUpperCase() + username?.slice(1)}</span>
                 </SelectTrigger>
                 <SelectContent align="end">
-                    <SelectItem value="signout">
+                    <SelectItem value="signout" className="focus:text-primary focus:bg-background">
                         Sign Out
                     </SelectItem>
                 </SelectContent>
