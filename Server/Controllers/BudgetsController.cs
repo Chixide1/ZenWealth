@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Server.Common;
 using Server.Data.DTOs;
 using Server.Data.Models;
 using Server.Services;
+using Server.Utils;
 
 namespace Server.Controllers;
 

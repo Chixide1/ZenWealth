@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Server.Common;
+using Server.Data.DTOs;
 using Server.Data.Models;
 using Server.Services;
 
@@ -17,7 +17,7 @@ public class TransactionsController(
     UserManager<User> userManager) : ControllerBase
 {
     [HttpGet("[controller]")]
-    [ProducesResponseType(typeof(Responses.GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllUserTransactions(
         int cursor = 0,
         DateOnly date = new(),
@@ -63,9 +63,9 @@ public class TransactionsController(
             endDate: endDate
         );
 
-        if (sort is not null && sort.ToLower().Contains("amount"))
+        if (sort is not null && sort.Contains("amount", StringComparison.CurrentCultureIgnoreCase))
         {
-            return Ok(new Responses.GetAllUserTransactionsResponseAmount
+            return Ok(new GetAllUserTransactionsResponseAmount
             (
                 Transactions: transactions.Count >= pageSize ? transactions[..pageSize] : transactions,
                 NextCursor: transactions.Count >= pageSize ? transactions[..pageSize].Last().Id : null,
@@ -73,7 +73,7 @@ public class TransactionsController(
             ));
         }
         
-        return Ok(new Responses.GetAllUserTransactionsResponse
+        return Ok(new GetAllUserTransactionsResponse
         (
             Transactions: transactions.Count >= pageSize ? transactions[..pageSize] : transactions,
             NextCursor: transactions.Count >= pageSize ? transactions.Last().Id : null,
@@ -112,4 +112,16 @@ public class TransactionsController(
         
         return Ok(results);
     }
+
+    public record GetAllUserTransactionsResponseAmount(
+        List<TransactionDto> Transactions,
+        int? NextCursor,
+        decimal? NextAmount
+    );
+
+    public record GetAllUserTransactionsResponse(
+        List<TransactionDto> Transactions,
+        int? NextCursor,
+        DateOnly? NextDate
+    );
 }

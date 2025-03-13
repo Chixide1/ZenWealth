@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Server.Common;
 using Server.Data;
 using Server.Data.DTOs;
 using Server.Data.Models;

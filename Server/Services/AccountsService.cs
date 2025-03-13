@@ -12,12 +12,6 @@ public class AccountsService(
     PlaidClient client,
     AppDbContext context) : IAccountsService
 {
-    public async Task<string?> GetAccountNameAsync(string accountId)
-    {
-        var account = await context.Accounts.FindAsync(accountId);
-        return account?.Name;
-    }
-    
     /// <summary>
     /// Asynchronously retrieves all accounts for a specified user and returns them as a list of account DTOs.
     /// </summary>

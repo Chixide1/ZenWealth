@@ -1,8 +1,7 @@
 using Going.Plaid;
-using Server.Common;
-using Server.Data.Models;
 using Server.Extensions;
 using Server.Services;
+using Server.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 

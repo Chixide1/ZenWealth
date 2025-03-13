@@ -1,9 +1,14 @@
 ﻿using EFCore.BulkExtensions;
 using Going.Plaid;
+using Going.Plaid.Entity;
+using Going.Plaid.Item;
+using Going.Plaid.Link;
 using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
-using Server.Data.Models;
+using Account = Server.Data.Models.Account;
+using Item = Server.Data.Models.Item;
+using Transaction = Server.Data.Models.Transaction;
 
 namespace Server.Services;
 
@@ -33,7 +38,6 @@ public class ItemsService(
         });
         
         context.SaveChanges();
-        
         logger.LogInformation("Added item for user {UserId}", userId);
     }
     
@@ -174,9 +178,130 @@ public class ItemsService(
                 }
 
                 await context.BulkInsertOrUpdateAsync(transactions);
+                updatedCount += transactions.Count;
             }
         }
 
         return updatedCount;
+    }
+
+    /// <summary>
+    /// Deletes an item for a user.
+    /// </summary>
+    /// <param name="userId">The user ID of the user that the item belongs to.</param>
+    /// <param name="itemId">The ID of the item to delete.</param>
+    /// <returns>True if the item was deleted, false otherwise.</returns>
+    public async Task<bool> DeleteItemAsync(string userId, int itemId)
+    {
+        var item = await context.Items.SingleOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
+        if (item == null)
+        {
+            return false;
+        }
+
+        var response = await client.ItemRemoveAsync(new ItemRemoveRequest
+        {
+            AccessToken = item.AccessToken,
+        });
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return false;
+        }
+        
+        context.Items.Remove(item);
+        await context.SaveChangesAsync();
+        
+        logger.LogInformation("Deleted item {ItemId} for user {UserId}", itemId, userId);
+            
+        return true;
+    }
+    
+    /// <summary>
+    /// Exchanges a public token for an access token and creates a new item for the user
+    /// </summary>
+    /// <param name="publicToken">The public token to exchange</param>
+    /// <param name="institutionName">The name of the institution</param>
+    /// <param name="userId">The ID of the user</param>
+    /// <returns>A result containing success status, any errors, and number of added transactions</returns>
+    public async Task<ItemTokenExchangeResult> ExchangePublicTokenAsync(string publicToken, string institutionName, string userId)
+    {
+        try
+        {
+            var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
+            {
+                PublicToken = publicToken
+            });
+
+            if (response.Error != null)
+            {
+                logger.LogError("Error exchanging public token: {ErrorMessage}", response.Error.ErrorMessage);
+                return ItemTokenExchangeResult.Failure(response.Error);
+            }
+
+            CreateItem(response.AccessToken, userId, institutionName);
+
+            // Wait briefly before updating items to ensure the item is created
+            await Task.Delay(1000);
+
+            var addedTransactions = await UpdateItemsAsync(userId);
+            
+            logger.LogInformation("Successfully exchanged public token for user {UserId} with {AddedTransactions} transactions", 
+                userId, addedTransactions);
+                
+            return ItemTokenExchangeResult.Success(addedTransactions);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception while exchanging public token for user {UserId}", userId);
+            return ItemTokenExchangeResult.Failure(new PlaidError
+            {
+                ErrorType = "API_ERROR",
+                ErrorCode = "INTERNAL_SERVER_ERROR",
+                ErrorMessage = "An unexpected error occurred while processing your request."
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Creates a link token for the given user
+    /// </summary>
+    /// <param name="userId">The ID of the user</param>
+    /// <returns>A result containing success status, link token, and any errors</returns>
+    public async Task<LinkTokenResult> CreateLinkTokenAsync(string userId)
+    {
+        try
+        {
+            var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest
+            {
+                User = new LinkTokenCreateRequestUser
+                {
+                    ClientUserId = userId
+                },
+                ClientName = "ZenWealth",
+                Products = [Products.Transactions],
+                Language = Language.English,
+                CountryCodes = [CountryCode.Gb]
+            });
+
+            if (response.Error != null)
+            {
+                logger.LogError("Error creating link token: {ErrorType} - {ErrorCode}: {ErrorMessage}",
+                    response.Error.ErrorType, response.Error.ErrorCode, response.Error.ErrorMessage);
+                
+                return LinkTokenResult.Failure(
+                    $"Unable to create link token: {response.Error.ErrorMessage}", 
+                    response.Error);
+            }
+
+            logger.LogInformation("Successfully created link token for user {UserId}", userId);
+            return LinkTokenResult.Success(response.LinkToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception while creating link token for user {UserId}", userId);
+            return LinkTokenResult.Failure("An unexpected error occurred while creating the link token");
+        }
     }
 }

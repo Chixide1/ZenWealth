@@ -17,7 +17,7 @@ export function TopExpenseCategoriesCard({className, data}: TopExpenseCategories
                 <CardTitle className="">Top Expense Categories</CardTitle>
                 <ArrowLink to="/transactions" />
             </CardHeader>
-            <CardContent className="space-y-8 pt-4 pb-10 text-sm">
+            <CardContent className="flex flex-col gap-8 pt-4 pb-10 text-sm">
                 {data.length > 0 ? data.map((barData, index) => (
                     <TopExpenseCategoryProgressBar key={index + "::TopExpenseCategoriesCardGauge"} {...barData} />
                 )) : <div className="w-full text-neutral-400 text-center pt-20">
@@ -66,7 +66,7 @@ function TopExpenseCategoryProgressBar({ category, expenditure = 0, total = 0, i
                 </p>
             </div>
             <Progress
-                className="h-6 rounded-sm"
+                className="h-8 rounded-sm bg-primary/5"
                 value={progress}
                 max={100}
             />

@@ -46,7 +46,7 @@ export function LiabilitiesTreeMap({ className, accounts }: TotalBalanceCardProp
                     }
                 </ResponsiveContainer>
             </CardContent>
-            <CardFooter className="bg-charcoal mx-3 mb-3 rounded-2xl p-2 block">
+            <CardFooter className="bg-charcoal mx-3 mb-3 mt-6 rounded-2xl p-2 block">
                 <div className="inline-flex gap-4 justify-between items-center w-full border-b border-neutral-700 p-1">
                     <div className="inline-flex flex-col md:flex-row md:gap-2 items-center">
                         <span className="text-primary">{currencyParser.format(totalLiabilities)}</span>
@@ -55,7 +55,7 @@ export function LiabilitiesTreeMap({ className, accounts }: TotalBalanceCardProp
                     <Separator orientation="vertical" className="h-10 md:h-5 bg-neutral-700" />
                     <div className="inline-flex flex-col md:flex-row md:gap-2 items-center">
                         <span className="text-primary">{currencyParser.format(totalCreditLimit)}</span>
-                        <span className="text-sm text-center text-neutral-400">Remaining Credit Limit</span>
+                        <span className="text-sm text-center text-neutral-400">Available Credit</span>
                     </div>
                 </div>
                 <CardDescription className="rounded-md w-full p-2 text-neutral-400">
