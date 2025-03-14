@@ -10,13 +10,14 @@ namespace Server.Controllers;
 [Authorize]
 [ApiController]
 [Produces("application/json")]
+[Route("[controller]")]
 public class TransactionsController(
     ILogger<TransactionsController> logger,
     ITransactionsService transactionsService,
     IItemsService itemsService,
     UserManager<User> userManager) : ControllerBase
 {
-    [HttpGet("[controller]")]
+    [HttpGet]
     [ProducesResponseType(typeof(GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllUserTransactions(
         int cursor = 0,
@@ -81,7 +82,7 @@ public class TransactionsController(
         ));
     }
     
-    [HttpGet("[controller]/Sync")]
+    [HttpGet("Sync")]
     [ProducesResponseType(StatusCodes.Status200OK )]
     public async Task<IActionResult> SyncAllUserTransactions()
     {
@@ -97,8 +98,8 @@ public class TransactionsController(
         return Ok(new { Message = $"{updatedCount} transactions added" });
     }
     
-    [HttpGet("[controller]/MinMax")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MinMaxAmount))]
+    [HttpGet("MinMax")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MinMaxAmountDto))]
     public async Task<IActionResult> GetMinMaxTransactionsAmount()
     {
         var user = await userManager.GetUserAsync(User);
@@ -111,6 +112,29 @@ public class TransactionsController(
         var results = await transactionsService.GetMinMaxAmount(user.Id);
         
         return Ok(results);
+    }
+    
+    // Add to TransactionsController.cs
+    [HttpGet("CategoryTotals")]
+    [ProducesResponseType(typeof(List<CategorySummary>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTransactionsByCategoryAsync(
+        DateOnly? beginDate = null, 
+        DateOnly? endDate = null)
+    {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var categoryTotals = await transactionsService.GetTransactionsByCategoryAsync(
+            userId: user.Id,
+            beginDate: beginDate,
+            endDate: endDate
+        );
+    
+        return Ok(categoryTotals);
     }
 
     public record GetAllUserTransactionsResponseAmount(

@@ -21,11 +21,14 @@ public interface ITransactionsService
         string[]? excludeAccounts = null
     );
     
-    Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId);
+    Task<List<MonthlySummaryDto>> GetMonthlyIncomeAndOutcome(string userId);
 
-    Task<RecentTransactions> GetRecentTransactions(string userId, int count = 11);
+    Task<RecentTransactionsDto> GetRecentTransactions(string userId, int count = 11);
     
-    Task<List<TopExpenseCategory>> GetTopExpenseCategories(string userId);
+    Task<List<TopExpenseCategoryDto>> GetTopExpenseCategories(string userId);
     
-    Task<MinMaxAmount> GetMinMaxAmount(string userId);
+    Task<MinMaxAmountDto> GetMinMaxAmount(string userId);
+    
+    // Add to ITransactionsService.cs
+    Task<List<CategorySummary>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null);
 }

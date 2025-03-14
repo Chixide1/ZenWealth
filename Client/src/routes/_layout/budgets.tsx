@@ -22,7 +22,7 @@ function BudgetsPage() {
         <div className="p-4 pb-8 w-screen">
             <BudgetSummary budgets={budgets} className="mb-4" />
             <div className="flex flex-col md:flex-row gap-4">
-                <BudgetTable budgets={budgets} className="w-full md:w-8/12 h-fit" />
+                <BudgetTable budgets={budgets} className="w-full md:w-8/12 h-fit animate-in slide-in-from-bottom-1/4 duration-300" />
                 <SpendingProgressCard budgets={budgets} className="w-full md:w-4/12 h-fit" />
             </div>
         </div>

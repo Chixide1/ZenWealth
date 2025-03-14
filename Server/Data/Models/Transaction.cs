@@ -106,7 +106,7 @@ public class Transaction
 	/// <para>See the <a href="https://plaid.com/documents/transactions-personal-finance-category-taxonomy.csv"><c>taxonomy CSV file</c></a> for a full list of personal finance categories. If you are migrating to personal finance categories from the legacy categories, also refer to the <a href="https://plaid.com/docs/transactions/pfc-migration/"><c>migration guide</c></a>.</para>
 	/// </summary>
 	[Column(TypeName = "varchar(255)")]
-	public string? Category { get; init; }
+	public required string Category { get; init; }
 
 	/// <summary>
 	/// <para>An identifier classifying the transaction type.</para>

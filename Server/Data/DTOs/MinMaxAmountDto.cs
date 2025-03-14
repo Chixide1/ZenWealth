@@ -1,6 +1,6 @@
-﻿namespace Server.Data.Models;
+﻿namespace Server.Data.DTOs;
 
-public class MinMaxAmount
+public class MinMaxAmountDto
 {
     public required decimal Min { get; init; }
     

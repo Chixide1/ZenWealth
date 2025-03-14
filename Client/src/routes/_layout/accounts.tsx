@@ -1,5 +1,5 @@
 ﻿import { createFileRoute } from "@tanstack/react-router";
-import {NetWorthCard} from "@/components/features/accounts/NetWorthCard.tsx";
+import {NetWorthPieChart} from "@/components/features/accounts/NetWorthPieChart.tsx";
 import {accountsAtom} from "@/lib/atoms.ts";
 import {useAtom} from "jotai";
 import {AccountsOverviewCard} from "@/components/features/accounts/AccountsOverviewCard.tsx";
@@ -19,7 +19,7 @@ function AccountsPage() {
     return (
         <div className="w-dvw flex flex-col md:flex-row px-4 pb-8 gap-4">
             <section className="md:w-8/12 rounded-xl h-fit space-y-4">
-                <NetWorthCard accounts={accounts} className="w-full rounded-[inherit]"/>
+                <NetWorthPieChart accounts={accounts} className="w-full rounded-[inherit]"/>
                 <AccountsAccordion accountTypes={accountTypes} />
             </section>
             <section className="md:w-4/12 p-6 bg-background border border-neutral-600 rounded-xl h-fit sticky top-0">

@@ -1,6 +1,6 @@
-﻿namespace Server.Data.Models;
+﻿namespace Server.Data.DTOs;
 
-public class TopExpenseCategory
+public class TopExpenseCategoryDto
 {
     public required string Category { get; set; }
     

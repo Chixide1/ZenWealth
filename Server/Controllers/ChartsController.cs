@@ -1,4 +1,5 @@
 ﻿using Going.Plaid.Entity;
+using Server.Data.DTOs;
 using Server.Services;
 
 namespace Server.Controllers;
@@ -19,7 +20,7 @@ public class ChartsController(
 ) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MonthlySummary>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MonthlySummaryDto>))]
     public async Task<IActionResult> MonthlySummary()
     {
         var user = await userManager.GetUserAsync(User);
@@ -42,7 +43,7 @@ public class ChartsController(
     }
     
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RecentTransactions))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RecentTransactionsDto))]
     public async Task<IActionResult> RecentTransactions()
     {
         var user = await userManager.GetUserAsync(User);
@@ -59,7 +60,7 @@ public class ChartsController(
     }
     
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RecentTransactions))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RecentTransactionsDto))]
     public async Task<IActionResult> TopExpenseCategories()
     {
         var user = await userManager.GetUserAsync(User);

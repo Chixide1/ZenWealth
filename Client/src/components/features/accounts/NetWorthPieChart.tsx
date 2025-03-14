@@ -11,7 +11,7 @@ type NetWorthCardProps = {
     className?: string
 }
 
-export function NetWorthCard({ accounts, className }: NetWorthCardProps) {
+export function NetWorthPieChart({ accounts, className }: NetWorthCardProps) {
     const { scrollToAccount } = useAccountScroll();
     const debitAccounts = accounts?.filter((account) => account.type === "Depository" || account.type === "Other");
     const creditAccounts = accounts?.filter((account) => account.type === "Credit" || account.type === "Loan");

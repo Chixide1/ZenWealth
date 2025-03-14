@@ -116,15 +116,10 @@ public class TransactionsService(
         
         return results;
     }
-
-    /// <summary>
-    /// Asynchronously retrieves the total income and outcome for a specified user in each of the last 12 months.
-    /// </summary>
-    /// <param name="userId">The unique identifier of the user whose transactions are to be retrieved.</param>
-    /// <returns>A task representing the asynchronous operation, containing a list of monthly expenditure data.</returns>
-    public async Task<List<MonthlySummary>> GetMonthlyIncomeAndOutcome(string userId)
+    
+    public async Task<List<MonthlySummaryDto>> GetMonthlyIncomeAndOutcome(string userId)
     {
-        var results = await context.Database.SqlQuery<MonthlySummary>(
+        var results = await context.Database.SqlQuery<MonthlySummaryDto>(
             $"""
              SELECT
                  DATENAME(Month, Date) as Month,
@@ -140,7 +135,7 @@ public class TransactionsService(
         return results;
     }
 
-    public async Task<RecentTransactions> GetRecentTransactions(string userId, int count = 11)
+    public async Task<RecentTransactionsDto> GetRecentTransactions(string userId, int count = 11)
     {
         var all = await context.Transactions
             .OrderByDescending(t => t.Date)
@@ -162,7 +157,7 @@ public class TransactionsService(
             .ToTransactionDto()
             .ToListAsync();
         
-        return new RecentTransactions()
+        return new RecentTransactionsDto()
         {
             All = all,
             Income = income,
@@ -170,9 +165,9 @@ public class TransactionsService(
         };
     }
 
-    public async Task<List<TopExpenseCategory>> GetTopExpenseCategories(string userId)
+    public async Task<List<TopExpenseCategoryDto>> GetTopExpenseCategories(string userId)
     {
-        var results = await context.Database.SqlQuery<TopExpenseCategory>(
+        var results = await context.Database.SqlQuery<TopExpenseCategoryDto>(
             $"""
              select top 3
                  Category as Category,
@@ -189,7 +184,7 @@ public class TransactionsService(
         return results;
     }
 
-    public async Task<MinMaxAmount> GetMinMaxAmount(string userId)
+    public async Task<MinMaxAmountDto> GetMinMaxAmount(string userId)
     {
         var min = await context.Transactions
             .Where(t => t.UserId == userId)
@@ -201,6 +196,34 @@ public class TransactionsService(
             .Select(t => t.Amount)
             .MaxAsync();
 
-        return new MinMaxAmount() { Min = min, Max = max };
+        return new MinMaxAmountDto() { Min = min, Max = max };
+    }
+    
+    // Add to TransactionsService.cs
+    public async Task<List<CategorySummary>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null)
+    {
+        var transactions = context.Transactions.Where(t => t.UserId == userId);
+    
+        if (beginDate is not null)
+        {
+            transactions = transactions.Where(t => t.Date >= beginDate);
+        }
+
+        if (endDate is not null)
+        {
+            transactions = transactions.Where(t => t.Date <= endDate);
+        }
+    
+        var categoryTotals = await transactions
+            .GroupBy(t => t.Category)
+            .Select(g => new CategorySummary
+            {
+                Category = g.Key,
+                Total = g.Sum(t => t.Amount)
+            })
+            .Where(t => t.Total > 0)
+            .ToListAsync();
+    
+        return categoryTotals;
     }
 }

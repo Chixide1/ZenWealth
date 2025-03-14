@@ -1,5 +1,5 @@
 ﻿import type {
-    Account, Budget,
+    Account, Budget, CategoryTotal,
     MinMaxAmount,
     MonthlySummary,
     RecentTransactions,
@@ -193,3 +193,18 @@ export const budgetTotalsAtom = atom(get => {
         defaultTotals
     ) ?? defaultTotals;
 });
+
+export const categoryTotalsAtom = atomWithQuery(() => ({
+    queryKey: ["categoryTotals"],
+    queryFn: async () => {
+        const response = await api<CategoryTotal[]>("/transactions/categoryTotals", {
+            params: {
+                beginDate: null,
+                endDate: null,
+            }
+        })
+            .catch((e: AxiosError<CategoryTotal[]>) => console.error(e));
+
+        return response ? response.data : [];
+    }
+}));

@@ -1,12 +1,19 @@
 ﻿import { createFileRoute } from "@tanstack/react-router";
-import {ExpensesPie} from "@/components/features/analytics/ExpensesPie.tsx";
+import { ExpensesRoseChart} from "@/components/features/analytics/ExpensesRoseChart.tsx";
+import { useAtom } from "jotai";
+import {categoryTotalsAtom} from "@/lib/atoms.ts";
 
 export const Route = createFileRoute("/_layout/analytics")({
     component: AnalyticsPage,
 });
 
 function AnalyticsPage() {
-    return <div className="">
-        <ExpensesPie />
-    </div>;
+    const [{data}] = useAtom(categoryTotalsAtom);
+    
+    console.log(data)
+    return (
+        <div className="">
+            <ExpensesRoseChart data={data ?? []} />
+        </div>
+    );
 }

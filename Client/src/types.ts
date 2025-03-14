@@ -82,3 +82,8 @@ export class Budget {
         this.day = day;
     }
 }
+
+export type CategoryTotal = {
+    category: TransactionCategory,
+    total: number,
+}

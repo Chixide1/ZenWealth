@@ -1,8 +1,6 @@
-﻿using Server.Data.DTOs;
+﻿namespace Server.Data.DTOs;
 
-namespace Server.Data.Models;
-
-public class RecentTransactions
+public class RecentTransactionsDto
 {
     public required List<TransactionDto> All { get; set; }
     public required List<TransactionDto> Income { get; set; }

@@ -68,7 +68,7 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
         }));
         
         await saveBudgets(updatedData);
-    }
+    };
     
     const saveBudgetData = async () => {
         await saveBudgets(data);

@@ -19,7 +19,7 @@ function TransactionsPage() {
     // console.log(data);
   
     return (
-        <div className="w-dvw px-3 md:px-4 pt-2 pb-6">
+        <div className="animate-in slide-in-from-bottom-1/4 duration-300 w-dvw px-3 md:px-4 pt-2 pb-6">
             {isMobile ?
                 <TransactionsCard
                     transactionsData={transactions}
