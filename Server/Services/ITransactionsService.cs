@@ -3,24 +3,6 @@ using Server.Data.Models;
 
 namespace Server.Services;
 
-public interface IItemsService
-{
-    void CreateItem(string accessToken, string userId, string institutionName);
-    
-    Task<bool> CheckItemExistsAsync(string userId);
-    
-    Task<int> UpdateItemsAsync(string userId);
-}
-
-public interface IAccountsService
-{
-    Task<string?> GetAccountNameAsync(string accountId);
-    
-    Task<List<AccountDto>> GetAccountsAsync(string userId);
-    
-    Task UpdateAccountsAsync(string userId);
-}
-
 public interface ITransactionsService
 {
     Task<List<TransactionDto>> GetTransactionsAsync(
@@ -46,13 +28,4 @@ public interface ITransactionsService
     Task<List<TopExpenseCategory>> GetTopExpenseCategories(string userId);
     
     Task<MinMaxAmount> GetMinMaxAmount(string userId);
-}
-
-public interface IBudgetsService
-{
-    Task AddBudgetAsync(Budget budget);
-    
-    Task<List<BudgetDto>> GetBudgetsAsync(string userId);
-    
-    Task DeleteBudgetAsync(string category, string userId);
 }

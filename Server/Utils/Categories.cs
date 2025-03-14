@@ -1,5 +1,8 @@
-﻿namespace Server.Common;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Server.Utils;
+
+[SuppressMessage("ReSharper", "InconsistentNaming")]
 public enum Categories
 {
         BANK_FEES,

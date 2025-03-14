@@ -6,7 +6,6 @@ namespace Server.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Server.Common;
 using Server.Data.Models;
 
 [Authorize]

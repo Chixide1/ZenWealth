@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Server.Common;
 using Server.Data.DTOs;
 using Server.Data.Models;
 using Server.Services;
@@ -18,7 +17,7 @@ public class AuthController(
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        var response = new Responses.AuthResponse();
+        var response = new AuthController.AuthResponse();
 
         var user = new User { UserName = dto.Username, Email = dto.Email };
         var result = await userManager.CreateAsync(user, dto.Password);
@@ -35,7 +34,7 @@ public class AuthController(
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
-        var response = new Responses.AuthResponse();
+        var response = new AuthController.AuthResponse();
         
         var result = await signInManager.PasswordSignInAsync(
             dto.Username,
@@ -74,7 +73,7 @@ public class AuthController(
     
     [HttpGet]
     [Authorize]
-    [ProducesResponseType(type: typeof(Responses.HasItemsResponse), statusCode: 200)]
+    [ProducesResponseType(type: typeof(AuthController.HasItemsResponse), statusCode: 200)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Details()
     {
@@ -86,6 +85,13 @@ public class AuthController(
         }
         
         var result = await itemsService.CheckItemExistsAsync(user.Id);
-        return Ok(new Responses.HasItemsResponse(result, user.UserName!));
+        return Ok(new AuthController.HasItemsResponse(result, user.UserName!));
     }
+
+    private class  AuthResponse
+    {
+        public List<IdentityError> Errors { get; } = [];
+    }
+
+    public record HasItemsResponse(bool HasItems, string UserName);
 }
