@@ -194,14 +194,34 @@ export const budgetTotalsAtom = atom(get => {
     ) ?? defaultTotals;
 });
 
-export const categoryTotalsAtom = atomWithQuery(() => ({
-    queryKey: ["categoryTotals"],
+type CategoryTotalsParams = {
+    beginDate: Date | null,
+    endDate: Date | null
+}
+
+type ApiCategoryTotalsParams = {
+    beginDate: string | null,
+    endDate: string | null
+}
+
+export const categoryTotalsParamsAtom = atom<CategoryTotalsParams>({
+    beginDate: null, endDate: null
+});
+
+export const categoryTotalsAtom = atomWithQuery((get) => ({
+    queryKey: ["categoryTotals", get(categoryTotalsParamsAtom)],
     queryFn: async () => {
+        const params: ApiCategoryTotalsParams = {
+            beginDate: get(categoryTotalsParamsAtom).beginDate ? 
+                format(get(categoryTotalsParamsAtom).beginDate!, "yyyy-MM-dd") :
+                null,
+            endDate: get(categoryTotalsParamsAtom).endDate ?
+                format(get(categoryTotalsParamsAtom).endDate!, "yyyy-MM-dd") :
+                null,
+        };
+        
         const response = await api<CategoryTotal[]>("/transactions/categoryTotals", {
-            params: {
-                beginDate: null,
-                endDate: null,
-            }
+            params: {...params}
         })
             .catch((e: AxiosError<CategoryTotal[]>) => console.error(e));
 

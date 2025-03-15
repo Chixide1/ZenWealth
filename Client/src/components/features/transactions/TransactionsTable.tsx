@@ -7,10 +7,11 @@ import TransactionSearchButton from "@/components/features/transactions/Transact
 import type { Transaction, TransactionData } from "@/types";
 import Loading from "@/components/shared/Loading.tsx";
 import { cn } from "@/lib/utils";
-import { transactionsPaginationAtom } from "@/lib/atoms.ts";
+import { transactionsPaginationAtom, transactionsParamsAtom } from "@/lib/atoms.ts";
 import { ColumnFilterButton } from "@/components/features/transactions/ColumnFilterButton.tsx";
 import { DateFilterButton } from "@/components/features/transactions/DateFilterButton.tsx";
 import { NextButton, PageSizeButton, PrevButton } from "@/components/features/transactions/TransactionsPagination.tsx";
+import type { DateRange } from "react-day-picker";
 
 interface TransactionTableProps {
     columns: ColumnDef<Transaction, any>[] //eslint-disable-line
@@ -23,6 +24,7 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
     "use no memo" // eslint-disable-line
 
     const [pagination, setPagination] = useAtom(transactionsPaginationAtom);
+    const [filters, setFilters] = useAtom(transactionsParamsAtom);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
         name: true,
         category: true,
@@ -37,6 +39,20 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
         "category",
         "account"
     ]);
+
+    // Handler for date range changes
+    const handleDateRangeChange = (range: DateRange | undefined) => {
+        setFilters(prev => ({
+            ...prev,
+            beginDate: range?.from ?? null,
+            endDate: range?.to ?? null,
+        }));
+    };
+
+    // Create an initial date range from the filters
+    const initialDateRange = filters.beginDate && filters.endDate
+        ? { from: filters.beginDate, to: filters.endDate }
+        : undefined;
 
     const table = useReactTable({
         data: data?.transactions ?? [],
@@ -67,7 +83,10 @@ export function TransactionsTable({ columns, data, isLoading, className }: Trans
                             <div className="flex items-center justify-end gap-4">
                                 <h2 className="text-nowrap text-primary text-xl font-medium mr-auto md:pr-10">Transaction History</h2>
                                 <TransactionSearchButton />
-                                <DateFilterButton />
+                                <DateFilterButton
+                                    initialDateRange={initialDateRange}
+                                    onDateRangeChange={handleDateRangeChange}
+                                />
                                 <ColumnFilterButton />
                                 <ColumnVisibilityButton columns={table.getAllColumns()} />
                             </div>

@@ -10,10 +10,10 @@ export const Route = createFileRoute("/_layout/analytics")({
 function AnalyticsPage() {
     const [{data}] = useAtom(categoryTotalsAtom);
     
-    console.log(data)
+    console.log(data);
     return (
-        <div className="">
-            <ExpensesRoseChart data={data ?? []} />
-        </div>
+        <section className="px-4 pb-8">
+            <ExpensesRoseChart className="" data={data?.slice(0,6) ?? []} />
+        </section>
     );
 }

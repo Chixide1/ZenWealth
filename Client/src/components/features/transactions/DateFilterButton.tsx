@@ -4,26 +4,33 @@ import { Button } from "@/components/ui/button";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import {cn, formatDate} from "@/lib/utils";
-import { useAtom } from "jotai";
-import { transactionsParamsAtom } from "@/lib/atoms";
+import { cn, formatDate } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { DateRange } from "react-day-picker";
 
-type DateSpan = {
+// =========================
+// Types
+// =========================
+
+export type DateSpan = {
     from: Date
     to: Date
 }
 
-type DateFilterProps = {
-    className?: string
+export type DateFilterProps = {
+    className?: string;
+    initialDateRange?: DateRange;
+    onDateRangeChange?: (range: DateRange | undefined) => void;
+    buttonLabel?: string;
+    yearRange?: number;
+    disabled?: boolean;
 }
 
 // =========================
 // Date utility functions
 // =========================
 
-const getDateRanges = {
+export const getDateRanges = {
     today: (): DateSpan => {
         const today = new Date();
         return { from: today, to: today };
@@ -70,7 +77,7 @@ const getDateRanges = {
 // Constants
 // =========================
 
-const DATE_BUTTONS = [
+export const DATE_BUTTONS = [
     { name: "Today", getValue: getDateRanges.today },
     { name: "This Week", getValue: getDateRanges.thisWeek },
     { name: "Last Week", getValue: getDateRanges.lastWeek },
@@ -88,10 +95,12 @@ function DateFilterContent({
     selected,
     onSelect,
     onApply,
+    yearRange = 10,
 }: {
-    selected: DateRange | undefined
-    onSelect: (range: DateRange | undefined) => void
-    onApply: () => void
+    selected: DateRange | undefined;
+    onSelect: (range: DateRange | undefined) => void;
+    onApply: () => void;
+    yearRange?: number;
 }) {
     const handleRemoveFilter = () => onSelect(undefined);
 
@@ -178,7 +187,7 @@ function DateFilterContent({
             </header>
 
             <div className="mx-auto md:border-l border-neutral-600">
-                <DateTimePicker yearRange={10} mode="range" selected={selected} onSelect={onSelect} />
+                <DateTimePicker yearRange={yearRange} mode="range" selected={selected} onSelect={onSelect} />
             </div>
 
             <div className="col-span-2 flex justify-end gap-2 border-t border-neutral-600 p-2.5 text-sm">
@@ -204,54 +213,59 @@ function DateFilterContent({
 // Main component
 // =========================
 
-export function DateFilterButton({ className }: DateFilterProps) {
-    "use no memo" // eslint-disable-line
-    
-    const [filters, setFilters] = useAtom(transactionsParamsAtom);
+export function DateFilterButton({
+    className,
+    initialDateRange,
+    onDateRangeChange,
+    buttonLabel = "Date",
+    yearRange = 10,
+    disabled = false
+}: DateFilterProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const [tempFilters, setTempFilters] = useState<DateRange | undefined>(
-        filters.beginDate && filters.endDate ? { from: filters.beginDate, to: filters.endDate } : undefined,
-    );
+    const [tempFilters, setTempFilters] = useState<DateRange | undefined>(initialDateRange);
     const isMobile = useIsMobile();
 
     useEffect(() => {
         if (isOpen) {
-            setTempFilters(
-                filters.beginDate && filters.endDate ? { from: filters.beginDate, to: filters.endDate } : undefined,
-            );
+            setTempFilters(initialDateRange);
         }
-    }, [isOpen, filters]);
+    }, [isOpen, initialDateRange]);
 
     const handleDateChange = (range: DateRange | undefined) => {
         setTempFilters(range);
     };
 
     const handleApplyFilters = () => {
-        setFilters((prev) => ({
-            ...prev,
-            beginDate: tempFilters?.from ?? null,
-            endDate: tempFilters?.to ?? null,
-        }));
+        if (onDateRangeChange) {
+            onDateRangeChange(tempFilters);
+        }
         setIsOpen(false);
     };
 
     const filterContent = (
-        <DateFilterContent selected={tempFilters} onSelect={handleDateChange} onApply={handleApplyFilters} />
+        <DateFilterContent
+            selected={tempFilters}
+            onSelect={handleDateChange}
+            onApply={handleApplyFilters}
+            yearRange={yearRange}
+        />
     );
-    
-    return ( isMobile ? (
+
+    return (isMobile ? (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-1 text-xs capitalize px-2 md:px-3" variant="accent" size="sm">
-                    <span className="hidden md:inline">Date</span>
+                <Button
+                    className={cn("gap-1 text-xs capitalize px-2 md:px-3", className)}
+                    variant="accent"
+                    size="sm"
+                    disabled={disabled}
+                >
+                    <span className="hidden md:inline">{buttonLabel}</span>
                     <CalendarIcon className="h-4 w-4" strokeWidth={1.5} />
                 </Button>
             </DialogTrigger>
             <DialogContent
-                className={cn(
-                    "rounded w-fit md:w-full max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600",
-                    className,
-                )}
+                className="rounded w-fit md:w-full max-w-lg text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600"
             >
                 <DialogTitle className="sr-only">Date Modal</DialogTitle>
                 <DialogDescription className="sr-only">Date Modal allowing filtering by Date</DialogDescription>
@@ -261,13 +275,18 @@ export function DateFilterButton({ className }: DateFilterProps) {
     ) : (
         <DropdownMenu modal={true} open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
-                <Button className="gap-1 text-xs capitalize p-3" variant="accent" size="sm">
-                    <span className="hidden md:inline">Date</span>
+                <Button
+                    className={cn("gap-1 text-xs capitalize p-3", className)}
+                    variant="accent"
+                    size="sm"
+                    disabled={disabled}
+                >
+                    <span className="hidden md:inline">{buttonLabel}</span>
                     <CalendarIcon className="h-4 w-4" strokeWidth={1.5} />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className={cn("w-auto text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600", className)}
+                className="w-auto text-primary p-0 bg-neutral-700/90 backdrop-blur-sm border-neutral-600"
                 align="end"
             >
                 {filterContent}
@@ -275,4 +294,3 @@ export function DateFilterButton({ className }: DateFilterProps) {
         </DropdownMenu>
     ));
 }
-

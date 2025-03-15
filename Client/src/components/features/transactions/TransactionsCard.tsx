@@ -5,9 +5,10 @@ import {TransactionData} from "@/types.ts";
 import {NextButton, PageSizeButton, PrevButton} from "@/components/features/transactions/TransactionsPagination.tsx";
 import {DateFilterButton} from "@/components/features/transactions/DateFilterButton.tsx";
 import {ColumnFilterButton} from "@/components/features/transactions/ColumnFilterButton.tsx";
-import { useAtom } from "jotai"
-import {transactionsPaginationAtom} from "@/lib/atoms.ts";
-import {MobileSortingButton} from "@/components/features/transactions/MobileSortingButton.tsx"; 
+import { useAtom } from "jotai";
+import {transactionsPaginationAtom, transactionsParamsAtom} from "@/lib/atoms.ts";
+import {MobileSortingButton} from "@/components/features/transactions/MobileSortingButton.tsx";
+import type { DateRange } from "react-day-picker";
 
 type TransactionsCardProps = {
     className?: string,
@@ -16,25 +17,43 @@ type TransactionsCardProps = {
 
 export function TransactionsCard({className, transactionsData,}: TransactionsCardProps) {
     const [{pageSize}] = useAtom(transactionsPaginationAtom);
-    
+    const [filters, setFilters] = useAtom(transactionsParamsAtom);
+
     const dateParser = new Intl.DateTimeFormat("en-GB", {
         dateStyle: "medium",
     });
-    
+
     const timeParser = new Intl.DateTimeFormat("en-GB", {
         timeStyle: "short",
         hour12: true
     });
-    
+
     const transactions = transactionsData?.transactions ?? [];
-    
+
+    // Handler for date range changes
+    const handleDateRangeChange = (range: DateRange | undefined) => {
+        setFilters(prev => ({
+            ...prev,
+            beginDate: range?.from ?? null,
+            endDate: range?.to ?? null,
+        }));
+    };
+
+    // Create an initial date range from the filters
+    const initialDateRange = filters.beginDate && filters.endDate
+        ? { from: filters.beginDate, to: filters.endDate }
+        : undefined;
+
     return (
         <Card className={cn("", className)}>
             <CardHeader className="flex items-center justify-between flex-row p-3 rounded-t-[inherit]">
                 <CardTitle className="text-xl text-nowrap">Transaction History</CardTitle>
                 <div className="!mt-0 inline-flex items-center gap-2">
                     <ColumnFilterButton />
-                    <DateFilterButton />
+                    <DateFilterButton
+                        initialDateRange={initialDateRange}
+                        onDateRangeChange={handleDateRangeChange}
+                    />
                     <MobileSortingButton />
                 </div>
             </CardHeader>
