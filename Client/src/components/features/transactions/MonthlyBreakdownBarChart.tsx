@@ -3,6 +3,7 @@ import { ComposedChart, Legend, XAxis, YAxis, CartesianGrid, Bar, Line, Tooltip,
 import { MonthlyBreakdown } from "@/types.ts";
 import {cn, debitColors, currencyParser, chartColors} from "@/lib/utils.ts";
 import { format } from "date-fns";
+import {useIsMobile} from "@/hooks/use-mobile.tsx";
 
 type MonthlyBreakdownBarChartProps = {
     className?: string,
@@ -10,12 +11,12 @@ type MonthlyBreakdownBarChartProps = {
 }
 
 export function MonthlyBreakdownBarChart({ className, data }: MonthlyBreakdownBarChartProps) {
+    const isMobile = useIsMobile();
+    
     // Transform the data to format needed for the chart
     const chartData = data.map(item => {
         // Create a Date object from year and month (month is 0-indexed in JS Date)
         const date = new Date(item.year, item.month - 1);
-
-        // Format the date to show three-letter month and year (e.g., "Jan 2025")
         const formattedDate = format(date, "MMM yyyy");
 
         // Create an object with the formatted date and netProfit
@@ -62,11 +63,11 @@ export function MonthlyBreakdownBarChart({ className, data }: MonthlyBreakdownBa
             <CardHeader>
                 <CardTitle>Income vs Expenses</CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-2 md:p-6">
                 <ResponsiveContainer width="100%" height={475}>
-                    <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 50, bottom: 20 }}>
+                    <ComposedChart data={chartData} margin={{ top: 20, right: isMobile ? 10 : 30, left: isMobile ? 10: 30, bottom: 20 }}>
                         <XAxis dataKey="month" stroke={"grey"}/>
-                        <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>
+                        {!isMobile && <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>}
                         {/* Net profit as a line */}
                         <Line
                             type="monotone"
@@ -94,13 +95,13 @@ export function MonthlyBreakdownBarChart({ className, data }: MonthlyBreakdownBa
                             wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-800/90"
                             wrapperStyle={{pointerEvents: "auto"}}
                         />
-                        <Legend formatter={(value: string) => {
-                            if(value === "netProfit") {
+                        {!isMobile && <Legend formatter={(value: string) => {
+                            if (value === "netProfit") {
                                 return "Net Profit".toUpperCase();
                             }
-                            
+
                             return value.replace(/expense_|income_/gi, "").replace(/_/g, " ");
-                        }} />
+                        }}/>}
                         <CartesianGrid className="stroke-white/30 " strokeDasharray="3 3" />
 
                         {/* Income categories as stacked bars */}
