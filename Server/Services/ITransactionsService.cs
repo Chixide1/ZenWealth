@@ -29,7 +29,7 @@ public interface ITransactionsService
     
     Task<MinMaxAmountDto> GetMinMaxAmount(string userId);
     
-    Task<List<CategoryTotalDto>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null);
+    Task<List<CategoryTotalDto>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null, int count = 0);
     
     Task<List<MonthlyBreakdown>> GetMonthlyBreadowns(string userId);
 }

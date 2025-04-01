@@ -200,7 +200,12 @@ public class TransactionsService(
     }
     
     // Add to TransactionsService.cs
-    public async Task<List<CategoryTotalDto>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null)
+    public async Task<List<CategoryTotalDto>> GetTransactionsByCategoryAsync(
+        string userId,
+        DateOnly? beginDate = null,
+        DateOnly? endDate = null,
+        int count = 0
+    )
     {
         var transactions = context.Transactions.Where(t => t.UserId == userId);
     
@@ -213,18 +218,24 @@ public class TransactionsService(
         {
             transactions = transactions.Where(t => t.Date <= endDate);
         }
-    
-        var categoryTotals = await transactions
+
+        var categoryTotals = transactions
             .GroupBy(t => t.Category)
             .Select(g => new CategoryTotalDto
             {
                 Category = g.Key,
                 Total = g.Sum(t => t.Amount)
             })
-            .Where(t => t.Total > 0)
-            .ToListAsync();
-    
-        return categoryTotals;
+            .Where(t => t.Total > 0);
+        
+        if (count != 0)
+        {
+            categoryTotals = categoryTotals.Take(count);
+        }
+        
+        return await categoryTotals
+            .OrderByDescending(t => t.Total)
+            .ToListAsync();;
     }
 
     public async Task<List<MonthlyBreakdown>> GetMonthlyBreadowns(string userId)

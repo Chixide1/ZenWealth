@@ -14,7 +14,7 @@ function AnalyticsPage() {
     
     return (
         <section className="px-4 pb-8 space-y-6">
-            <ExpensesRoseChart className="" data={categoryTotals?.slice(0,6) ?? []} />
+            <ExpensesRoseChart className="" data={categoryTotals ?? []} />
             <MonthlyBreakdownBarChart data={monthlyBreakdowns ?? []} />
         </section>
     );

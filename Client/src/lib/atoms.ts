@@ -196,12 +196,13 @@ export const budgetTotalsAtom = atom(get => {
 
 type CategoryTotalsParams = {
     beginDate: Date | null,
-    endDate: Date | null
+    endDate: Date | null,
 }
 
 type ApiCategoryTotalsParams = {
     beginDate: string | null,
-    endDate: string | null
+    endDate: string | null,
+    count: number,
 }
 
 export const categoryTotalsParamsAtom = atom<CategoryTotalsParams>({
@@ -218,6 +219,7 @@ export const categoryTotalsAtom = atomWithQuery((get) => ({
             endDate: get(categoryTotalsParamsAtom).endDate ?
                 format(get(categoryTotalsParamsAtom).endDate!, "yyyy-MM-dd") :
                 null,
+            count: 6
         };
         
         const response = await api<CategoryTotal[]>("/transactions/categoryTotals", {

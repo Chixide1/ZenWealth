@@ -117,8 +117,10 @@ public class TransactionsController(
     [HttpGet("CategoryTotals")]
     [ProducesResponseType(typeof(List<CategoryTotalDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTransactionsByCategoryAsync(
-        DateOnly? beginDate = null, 
-        DateOnly? endDate = null)
+        int count = 0,
+        DateOnly? beginDate = null,
+        DateOnly? endDate = null
+    )
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -130,9 +132,10 @@ public class TransactionsController(
         var categoryTotals = await transactionsService.GetTransactionsByCategoryAsync(
             userId: user.Id,
             beginDate: beginDate,
-            endDate: endDate
+            endDate: endDate,
+            count: count
         );
-    
+        
         return Ok(categoryTotals);
     }
     
