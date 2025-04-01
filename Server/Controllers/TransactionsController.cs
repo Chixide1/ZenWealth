@@ -113,10 +113,9 @@ public class TransactionsController(
         
         return Ok(results);
     }
-    
-    // Add to TransactionsController.cs
+
     [HttpGet("CategoryTotals")]
-    [ProducesResponseType(typeof(List<CategorySummary>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<CategoryTotalDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTransactionsByCategoryAsync(
         DateOnly? beginDate = null, 
         DateOnly? endDate = null)
@@ -136,16 +135,37 @@ public class TransactionsController(
     
         return Ok(categoryTotals);
     }
+    
+    [HttpGet("MonthlyBreakdowns")]
+    [ProducesResponseType(typeof(List<MonthlyBreakdown>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetMonthlyBreakdowns()
+    {
+        var user = await userManager.GetUserAsync(User);
 
-    public record GetAllUserTransactionsResponseAmount(
-        List<TransactionDto> Transactions,
-        int? NextCursor,
-        decimal? NextAmount
-    );
+        if (user == null)
+        {
+            return Unauthorized();
+        }
 
-    public record GetAllUserTransactionsResponse(
-        List<TransactionDto> Transactions,
-        int? NextCursor,
-        DateOnly? NextDate
-    );
+        var breakdowns = await transactionsService.GetMonthlyBreadowns(user.Id);
+
+        foreach (var c in breakdowns.SelectMany(breakdown => breakdown.Income))
+        {
+            c.Total = Math.Abs(c.Total);
+        }
+    
+        return Ok(breakdowns);
+    }
 }
+
+public record GetAllUserTransactionsResponseAmount(
+    List<TransactionDto> Transactions,
+    int? NextCursor,
+    decimal? NextAmount
+);
+
+public record GetAllUserTransactionsResponse(
+    List<TransactionDto> Transactions,
+    int? NextCursor,
+    DateOnly? NextDate
+);

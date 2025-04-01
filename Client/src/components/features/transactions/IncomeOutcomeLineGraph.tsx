@@ -50,12 +50,12 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                                     return (
                                         <div className="bg-transparent space-y-2">
                                             <p className="w-fit bg-neutral-700/10 border backdrop-blur-sm border-neutral-700 rounded-full px-2 py-1 inline-flex items-center gap-1">
-                                                <span className="h-1 w-1 rounded-full bg-secondary" />
+                                                <span className="h-1 w-1 rounded-full bg-tertiary" />
                                                 {payload[0] && typeof payload[0].value === "number"
                                                     ? currencyParser.format(payload[0].value)
                                                     : "N/A"}
                                             </p>
-                                            <p className="bg-tertiary rounded-full px-2 w-fit py-1">
+                                            <p className="bg-red-500 rounded-full px-2 w-fit py-1">
                                                 {payload[1] && typeof payload[1].value === "number"
                                                     ? currencyParser.format(payload[1].value)
                                                     : "N/A"}
@@ -73,7 +73,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                         <Line
                             type="monotone"
                             dataKey="income"
-                            stroke="hsl(var(--secondary))"
+                            stroke="hsl(var(--tertiary))"
                             strokeWidth={2}
                             strokeDasharray="5 5"
                             dot={false}
@@ -82,7 +82,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                         <Line
                             type="monotone"
                             dataKey="expenditure"
-                            stroke="hsl(var(--tertiary))"
+                            stroke="var(--red-chart-2)"
                             strokeWidth={2}
                             dot={false}
                             activeDot={{stroke: "none"}}
@@ -99,11 +99,11 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                     <Separator orientation="vertical" className="h-10 md:h-5 bg-neutral-700" />
                     <div className="inline-flex flex-col md:flex-row items-center me-10 md:me-0 md:gap-6 text-neutral-500 text-sm">
                         <div className="inline-flex gap-1 items-center me-auto text-neutral-400">
-                            <div className="w-2 h-2 rounded-full bg-secondary" />
+                            <div className="w-2 h-2 rounded-full bg-tertiary" />
                             <span>Income</span>
                         </div>
                         <div className="inline-flex gap-1 items-center me-auto text-neutral-400">
-                            <div className="w-2 h-2 rounded-full bg-tertiary" />
+                            <div className="w-2 h-2 rounded-full bg-red-500" />
                             <span>Expenses</span>
                         </div>
                     </div>

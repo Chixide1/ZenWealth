@@ -1,19 +1,21 @@
 ﻿import { createFileRoute } from "@tanstack/react-router";
-import { ExpensesRoseChart} from "@/components/features/analytics/ExpensesRoseChart.tsx";
+import { ExpensesRoseChart} from "@/components/features/transactions/ExpensesRoseChart.tsx";
 import { useAtom } from "jotai";
-import {categoryTotalsAtom} from "@/lib/atoms.ts";
+import {categoryTotalsAtom, monthlyBreakdownsAtom} from "@/lib/atoms.ts";
+import {MonthlyBreakdownBarChart} from "@/components/features/transactions/MonthlyBreakdownBarChart.tsx";
 
 export const Route = createFileRoute("/_layout/analytics")({
     component: AnalyticsPage,
 });
 
 function AnalyticsPage() {
-    const [{data}] = useAtom(categoryTotalsAtom);
+    const [{data: categoryTotals}] = useAtom(categoryTotalsAtom);
+    const [{data: monthlyBreakdowns}] = useAtom(monthlyBreakdownsAtom);
     
-    console.log(data);
     return (
-        <section className="px-4 pb-8">
-            <ExpensesRoseChart className="" data={data?.slice(0,6) ?? []} />
+        <section className="px-4 pb-8 space-y-6">
+            <ExpensesRoseChart className="" data={categoryTotals?.slice(0,6) ?? []} />
+            <MonthlyBreakdownBarChart data={monthlyBreakdowns ?? []} />
         </section>
     );
 }

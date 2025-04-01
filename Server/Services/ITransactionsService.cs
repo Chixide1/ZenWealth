@@ -29,6 +29,20 @@ public interface ITransactionsService
     
     Task<MinMaxAmountDto> GetMinMaxAmount(string userId);
     
-    // Add to ITransactionsService.cs
-    Task<List<CategorySummary>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null);
+    Task<List<CategoryTotalDto>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null);
+    
+    Task<List<MonthlyBreakdown>> GetMonthlyBreadowns(string userId);
+}
+
+public class MonthlyBreakdown
+{
+    public int Year { get; set; }
+    
+    public int Month { get; set; }
+
+    public  List<CategoryTotalDto> Income { get; set; } = [];
+
+    public List<CategoryTotalDto> Expenditure { get; set; } = [];
+    
+    public decimal NetProfit { get; set; }
 }

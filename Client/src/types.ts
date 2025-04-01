@@ -87,3 +87,11 @@ export type CategoryTotal = {
     category: TransactionCategory,
     total: number,
 }
+
+export type MonthlyBreakdown = {
+    year: number
+    month: number,
+    income: CategoryTotal[],
+    expenditure: CategoryTotal[],
+    netProfit: number,
+}

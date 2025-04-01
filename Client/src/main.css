@@ -32,11 +32,17 @@
     --charcoal: 0 0% 14%;
 
     /* Extra Chart Colors */
-    --red-chart-1: theme(colors.red.400);
-    --red-chart-2: theme(colors.red.500);
-    --red-chart-3: theme(colors.red.600);
-    --red-chart-4: theme(colors.red.700);
-    --red-chart-5: theme(colors.red.800);
+    --credit-chart-1: theme(colors.red.400);
+    --credit-chart-2: theme(colors.red.500);
+    --credit-chart-3: theme(colors.red.600);
+    --credit-chart-4: theme(colors.red.700);
+    --credit-chart-5: theme(colors.red.800);
+
+    --debit-chart-1: 225 73% 57%;
+    --debit-chart-2: 222 64% 33%;
+    --debit-chart-3: 188 94% 43%;
+    --debit-chart-4: 173 80% 40%;
+    --debit-chart-5: 330 84% 60%;
   }
 }
 
@@ -76,11 +82,21 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
-    --chart-1: 225 73% 57%;
-    --chart-2: 222 64% 33%;
-    --chart-3: 188 94% 43%;
-    --chart-4: 173 80% 40%;
-    --chart-5: 330 84% 60%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --chart-6: 25 34% 28%;
+    --chart-7: 26 36% 34%;
+    --chart-8: 28 40% 40%;
+    --chart-9: 31 41% 48%;
+    --chart-10: 35 43% 53%;
+    --chart-11: 359 2% 90%;
+    --chart-12: 240 1% 74%;
+    --chart-13: 240 1% 58%;
+    --chart-14: 240 1% 42%;
+    --chart-15: 240 2% 26%;
     --radius: 0.5rem;
     --sidebar-background: var(--offblack);
     --sidebar-foreground: var(--charcoal);

@@ -59,6 +59,14 @@ export const chartConfig = {
 } satisfies ChartConfig;
 
 export const debitColors = [
+    "hsl(var(--debit-chart-1))",
+    "hsl(var(--debit-chart-2))",
+    "hsl(var(--debit-chart-3))",
+    "hsl(var(--debit-chart-4))",
+    "hsl(var(--debit-chart-5))",
+];
+
+export const chartColors = [
     "hsl(var(--chart-1))",
     "hsl(var(--chart-2))",
     "hsl(var(--chart-3))",
@@ -67,11 +75,11 @@ export const debitColors = [
 ];
 
 export const creditColors = [
-    "var(--red-chart-1)",
-    "var(--red-chart-2)",
-    "var(--red-chart-3)",
-    "var(--red-chart-4)",
-    "var(--red-chart-5)",
+    "var(--credit-chart-1)",
+    "var(--credit-chart-2)",
+    "var(--credit-chart-3)",
+    "var(--credit-chart-4)",
+    "var(--credit-chart-5)",
 ];
 
 export function addColors<T>(items: T[], colors: string[]){

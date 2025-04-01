@@ -67,21 +67,7 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
         return Math.max(scaledRadius, minRadius);
     };
 
-    // Calculate tooltip position
-    const getTooltipPosition = (index: number) => {
-        const expense = data[index];
-        const radius = Math.min(getRadius(expense.total), maxRadius);
 
-        // Calculate the middle angle of the sector in radians
-        const middleAngle = ((index * angle + (index + 1) * angle) / 2) * (Math.PI / 180);
-
-        // Position the tooltip slightly outside the sector
-        const tooltipRadius = radius + maxRadius * 0.1;
-        const x = centerX + tooltipRadius * Math.cos(middleAngle);
-        const y = centerY + tooltipRadius * Math.sin(middleAngle);
-
-        return { x, y };
-    };
 
     // Function to trigger animation
     const triggerAnimation = () => {
@@ -126,6 +112,26 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
             window.removeEventListener("resize", handleResize);
         };
     }, []);
+
+    // Calculate tooltip X position
+    const calculateTooltipX = (index: number) => {
+        // Get the middle angle of the segment
+        const middleAngle = ((index * angle + (index + 1) * angle) / 2) * (Math.PI / 180);
+        const radius = getRadius(data[index].total);
+
+        // Calculate position with offset to place tooltip next to segment
+        return centerX + Math.cos(middleAngle) * (radius / 2) - 60; // 60px offset for tooltip width
+    };
+
+    // Calculate tooltip Y position
+    const calculateTooltipY = (index: number) => {
+        // Get the middle angle of the segment
+        const middleAngle = ((index * angle + (index + 1) * angle) / 2) * (Math.PI / 180);
+        const radius = getRadius(data[index].total);
+
+        // Calculate position with offset
+        return centerY + Math.sin(middleAngle) * (radius / 2) - 40; // 40px offset for tooltip height
+    };
 
     return (
         <div className="w-full h-auto max-h-[31rem] relative flex flex-col" ref={containerRef}>
@@ -182,10 +188,8 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
                 <div
                     className="absolute w-fit h-fit pointer-events-none bg-neutral-600/70 backdrop-blur-sm shadow-md rounded text-primary"
                     style={{
-                        left: `${getTooltipPosition(activeIndex).x}px`,
-                        top: `${getTooltipPosition(activeIndex).y}px`,
-                        transform: "translate(-50%, -50%)",
-                        zIndex: 10
+                        top: calculateTooltipY(activeIndex),
+                        left: calculateTooltipX(activeIndex)
                     }}
                 >
                     <div className="bg-transparent px-2 m-2 border-l-4 text-nowrap text-sm" style={{borderColor: colorPalette[activeIndex]}}>
@@ -305,7 +309,7 @@ export function ExpensesRoseChart({ data, className }: ExpensesCoxcombChartProps
         : undefined;
 
     return (
-        <Card className={cn("bg-offblack rounded-md w-full h-auto", className)}>
+        <Card className={cn("bg-offblack w-full h-auto", className)}>
             <CardHeader className="pb-0 flex-row justify-between">
                 <CardTitle className="">Top Expenses Rose</CardTitle>
                 <DateFilterButton initialDateRange={initialDateRange} onDateRangeChange={handleDateRangeChange} className="!mt-0"/>

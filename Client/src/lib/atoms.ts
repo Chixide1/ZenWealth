@@ -1,6 +1,6 @@
 ﻿import type {
     Account, Budget, CategoryTotal,
-    MinMaxAmount,
+    MinMaxAmount, MonthlyBreakdown,
     MonthlySummary,
     RecentTransactions,
     TopExpenseCategory,
@@ -227,4 +227,15 @@ export const categoryTotalsAtom = atomWithQuery((get) => ({
 
         return response ? response.data : [];
     }
+}));
+
+export const monthlyBreakdownsAtom = atomWithQuery(() => ({
+    queryKey: ["monthlyBreakdowns"],
+    queryFn: async () => {
+        const response = await api<MonthlyBreakdown[]>("Transactions/MonthlyBreakdowns").catch(
+            (e: AxiosError<MonthlyBreakdown>) => console.error(e),
+        );
+
+        return response ? response.data : [];
+    },
 }));
