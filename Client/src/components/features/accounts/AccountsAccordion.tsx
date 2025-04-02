@@ -41,7 +41,7 @@ export function AccountsAccordion({ accountTypes, className }: AccountDetailsCar
                                         <div
                                             key={`${a.id}::AccountDetailsCardAccordion`}
                                             id={`${a.id}::AccountDetailsCardAccordion`}
-                                            className="flex items-center gap-2 border-charcoal rounded-2xl p-2 first:border-t transition-colors duration-300"
+                                            className="flex items-center gap-2 border-charcoal rounded-sm p-2 first:border-t transition-colors duration-300"
                                         >
                                             <div className="bg-charcoal w-fit h-auto rounded-full p-2">
                                                 <Wallet className="h-auto w-5" />

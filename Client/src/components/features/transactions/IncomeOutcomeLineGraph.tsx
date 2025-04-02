@@ -82,7 +82,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                         <Line
                             type="monotone"
                             dataKey="expenditure"
-                            stroke="var(--red-chart-2)"
+                            stroke="var(--credit-chart-2)"
                             strokeWidth={2}
                             dot={false}
                             activeDot={{stroke: "none"}}

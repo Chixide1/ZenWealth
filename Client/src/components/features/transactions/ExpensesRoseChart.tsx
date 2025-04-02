@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { Surface, Sector, PolarGrid } from "recharts";
-import { cn, currencyParser } from "@/lib/utils.ts";
+import { cn, currencyParser, debitColors } from "@/lib/utils.ts";
 import { CategoryTotal } from "@/types.ts";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {DateFilterButton} from "@/components/features/transactions/DateFilterButton.tsx";
@@ -179,7 +179,7 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
 
             {/* Labels at bottom */}
             <div className="absolute inset-x-0 bottom-0 flex flex-col items-center text-center gap-0.5">
-                <p className="text-sm text-neutral-400">Total Expenses</p>
+                <p className="text-sm text-neutral-400">Top Expenses Total</p>
                 <p className="text-xl font-bold">{currencyParser.format(totalSpending)}</p>
             </div>
 
@@ -206,18 +206,7 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
 }
 
 function ExpensesTable({ data }: { data: CategoryTotal[] }) {
-    // Calculate total spending
     const totalSpending = data.reduce((sum, expense) => sum + expense.total, 0);
-
-    // Define color palette to match the image
-    const colorPalette = [
-        "#4169E1", // Royal Blue
-        "#1E3A8A", // Dark Blue
-        "#06B6D4", // Light Cyan
-        "#14B8A6", // Teal
-        "#EC4899", // Pink
-        "#D1D5DB"  // Light Gray
-    ];
 
     return (
         <div className="w-full overflow-x-auto">
@@ -241,7 +230,7 @@ function ExpensesTable({ data }: { data: CategoryTotal[] }) {
                                 <td className="p-2 flex items-center gap-2">
                                     <div
                                         className="w-2 h-2 rounded-full"
-                                        style={{ backgroundColor: colorPalette[index % colorPalette.length] }}
+                                        style={{ backgroundColor: debitColors[index % debitColors.length] }}
                                     />
                                     {expense.category.replace(/_/g, " ")}
                                 </td>

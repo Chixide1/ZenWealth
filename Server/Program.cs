@@ -33,6 +33,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapFallbackToFile("/index.html");
-// app.MapGroup("/Identity").MapIdentityApi<User>();
 
 app.Run();

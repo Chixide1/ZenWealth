@@ -110,8 +110,6 @@ public class TransactionsService(
             .ToTransactionDto()
             .Take(pageSize + 1);
         
-        logger.LogInformation("Generated SQL is {query}", query.ToQueryString());
-        
         var results = await query.ToListAsync();
         
         return results;
@@ -198,8 +196,7 @@ public class TransactionsService(
 
         return new MinMaxAmountDto() { Min = min, Max = max };
     }
-    
-    // Add to TransactionsService.cs
+
     public async Task<List<CategoryTotalDto>> GetTransactionsByCategoryAsync(
         string userId,
         DateOnly? beginDate = null,
@@ -241,7 +238,7 @@ public class TransactionsService(
     public async Task<List<MonthlyBreakdown>> GetMonthlyBreadowns(string userId)
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
-        var pastYearDate = currentDate.AddYears(-1);
+        var pastYearDate = currentDate.AddMonths(-6);
 
         var result = await context.Transactions
             .Where(t => t.Date >= pastYearDate && t.UserId == userId) // Filter for the past year

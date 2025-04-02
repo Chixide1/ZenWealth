@@ -1,9 +1,13 @@
-﻿import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+﻿import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import { ComposedChart, Legend, XAxis, YAxis, CartesianGrid, Bar, Line, Tooltip, ResponsiveContainer } from "recharts";
 import { MonthlyBreakdown } from "@/types.ts";
 import {cn, debitColors, currencyParser, chartColors} from "@/lib/utils.ts";
 import { format } from "date-fns";
 import {useIsMobile} from "@/hooks/use-mobile.tsx";
+import { Tabs, TabsList } from "@radix-ui/react-tabs";
+import { TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChartSimple, faTable } from "@fortawesome/free-solid-svg-icons";
 
 type MonthlyBreakdownBarChartProps = {
     className?: string,
@@ -60,78 +64,93 @@ export function MonthlyBreakdownBarChart({ className, data }: MonthlyBreakdownBa
 
     return (
         <Card className={cn("bg-offblack", className)}>
-            <CardHeader>
-                <CardTitle>Income vs Expenses</CardTitle>
-            </CardHeader>
-            <CardContent className="p-2 md:p-6">
-                <ResponsiveContainer width="100%" height={475}>
-                    <ComposedChart data={chartData} margin={{ top: 20, right: isMobile ? 10 : 30, left: isMobile ? 10: 30, bottom: 20 }}>
-                        <XAxis dataKey="month" stroke={"grey"}/>
-                        {!isMobile && <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>}
-                        {/* Net profit as a line */}
-                        <Line
-                            type="monotone"
-                            dataKey="netProfit"
-                            stroke="hsl(var(--tertiary))"
-                            strokeWidth={2}
-                            dot={{stroke: "none", fill: "hsl(var(--tertiary))"}}
-                            activeDot={{stroke: "none"}}
-                            name="netProfit"
-                        />
-                        <Tooltip
-                            formatter={(value: number, name: string) => {
-                                // Format the value as currency
-                                const formattedValue = currencyParser.format(value);
+            <Tabs defaultValue="BarChart">
+                <CardHeader className="flex flex-col items-center justify-between space-y-2 md:space-y-0 md:flex-row pb-2">
+                    <CardTitle>Income vs Expenses overview</CardTitle>
+                    <TabsList className="bg-background rounded-md p-1 space-x-1">
+                        <TabsTrigger value="BarChart" className="bg-transparent rounded-sm p-2">
+                            <FontAwesomeIcon icon={faChartSimple} />
+                        </TabsTrigger>
+                        <TabsTrigger value="Table" className="bg-transparent rounded-sm p-2">
+                            <FontAwesomeIcon icon={faTable} />
+                        </TabsTrigger>
+                    </TabsList>
+                </CardHeader>
+                <CardContent className="p-2 md:p-6">
+                    <TabsContent value="BarChart">
+                        <ResponsiveContainer width="100%" height={475}>
+                            <ComposedChart data={chartData} margin={{ top: 0, right: 0, left: isMobile ? 10: 30, bottom: 20 }}>
+                                <XAxis dataKey="month" stroke={"grey"}/>
+                                {!isMobile && <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>}
+                                {/* Net profit as a line */}
+                                <Line
+                                    type="monotone"
+                                    dataKey="netProfit"
+                                    stroke="hsl(var(--tertiary))"
+                                    strokeWidth={2}
+                                    dot={{stroke: "none", fill: "hsl(var(--tertiary))"}}
+                                    activeDot={{stroke: "none"}}
+                                    name="netProfit"
+                                />
+                                <Tooltip
+                                    formatter={(value: number, name: string) => {
+                                        // Format the value as currency
+                                        const formattedValue = currencyParser.format(value);
 
-                                // Clean up the category name by removing the prefix and formatting
-                                let cleanName = name.replace(/expense_|income_/gi, "").replace(/_/g, " ");
+                                        // Clean up the category name by removing the prefix and formatting
+                                        let cleanName = name.replace(/expense_|income_/gi, "").replace(/_/g, " ");
+                                        
+                                        if (cleanName === "netProfit") {
+                                            cleanName = "Net Profit";
+                                        }
+
+                                        return [formattedValue, cleanName];
+                                    }}
+                                    wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-800/90"
+                                    wrapperStyle={{pointerEvents: "auto"}}
+                                />
+                                {!isMobile && <Legend formatter={(value: string) => {
+                                    if (value === "netProfit") {
+                                        return "Net Profit".toUpperCase();
+                                    }
+
+                                    return value.replace(/expense_|income_/gi, "").replace(/_/g, " ");
+                                }}/>}
+                                <CartesianGrid className="stroke-white/30 " strokeDasharray="3 3" />
+
+                                {/* Income categories as stacked bars */}
+                                {Array.from(incomeCategories).map((category, index) => {
+                                    return (
+                                        <Bar
+                                            key={`income_${category}`}
+                                            dataKey={`income_${category}`}
+                                            stackId="income"
+                                            fill={debitColors[index % debitColors.length]}
+                                            name={`income_${category}`}
+                                        />
+                                    );
+                                })}
+
+                                {/* Expense categories as stacked bars (with a different stackId) */}
+                                {Array.from(expenseCategories).map((category, index) => {
+                                    return (
+                                        <Bar
+                                            key={`expense_${category}`}
+                                            dataKey={`expense_${category}`}
+                                            stackId="expense"
+                                            fill={chartColors[index % chartColors.length]}
+                                            name={`expense_${category}`}
+                                        />
+                                    );
+                                })}
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </TabsContent>
+                    <TabsContent value="Table">
                                 
-                                if (cleanName === "netProfit") {
-                                    cleanName = "Net Profit";
-                                }
-
-                                return [formattedValue, cleanName];
-                            }}
-                            wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-800/90"
-                            wrapperStyle={{pointerEvents: "auto"}}
-                        />
-                        {!isMobile && <Legend formatter={(value: string) => {
-                            if (value === "netProfit") {
-                                return "Net Profit".toUpperCase();
-                            }
-
-                            return value.replace(/expense_|income_/gi, "").replace(/_/g, " ");
-                        }}/>}
-                        <CartesianGrid className="stroke-white/30 " strokeDasharray="3 3" />
-
-                        {/* Income categories as stacked bars */}
-                        {Array.from(incomeCategories).map((category, index) => {
-                            return (
-                                <Bar
-                                    key={`income_${category}`}
-                                    dataKey={`income_${category}`}
-                                    stackId="income"
-                                    fill={debitColors[index % debitColors.length]}
-                                    name={`income_${category}`}
-                                />
-                            );
-                        })}
-
-                        {/* Expense categories as stacked bars (with a different stackId) */}
-                        {Array.from(expenseCategories).map((category, index) => {
-                            return (
-                                <Bar
-                                    key={`expense_${category}`}
-                                    dataKey={`expense_${category}`}
-                                    stackId="expense"
-                                    fill={chartColors[index % chartColors.length]}
-                                    name={`expense_${category}`}
-                                />
-                            );
-                        })}
-                    </ComposedChart>
-                </ResponsiveContainer>
-            </CardContent>
+                    </TabsContent>
+                </CardContent>
+            </Tabs>
         </Card>
     );
 }
