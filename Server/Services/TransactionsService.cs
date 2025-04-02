@@ -289,4 +289,55 @@ public class TransactionsService(
         
         return monthlyBreakdowns;
     }
+
+    public async Task<List<FinancialPeriodDto>> GetFinancialPeriods(string userId)
+    {
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var pastYearDate = currentDate.AddMonths(-6);
+        
+        var results = await context.Transactions
+            .Where(t => t.Date >= pastYearDate && t.UserId == userId)
+            .GroupBy(t => new
+            {
+                Year = t.Date.Year,
+                Month = t.Date.Month,
+                Category = t.Category
+            })
+            .Select(g => new
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Category = g.Key.Category,
+                Amount = g.Sum(t => t.Amount),
+            })
+            .ToListAsync();
+
+        var financialPeriods = results
+            .GroupBy(r => new { r.Year, r.Month })
+            .Select(periodGroup => new FinancialPeriodDto
+            {
+                Year = periodGroup.Key.Year,
+                Month = periodGroup.Key.Month,
+                Categories = periodGroup.ToDictionary(
+                    item => item.Category,
+                    item => item.Amount
+                ),
+                Totals = new FinancialPeriodDto.CategoriesTotals
+                {
+                    Income = periodGroup.Where(item => item.Amount < 0).Sum(item => item.Amount),
+                    Expenses = periodGroup.Where(item => item.Amount > 0).Sum(item => item.Amount),
+                    NetProfit = 0
+                }
+            })
+            .OrderByDescending(f => f.Year)
+            .ThenByDescending(f => f.Month)
+            .ToList();
+        
+        foreach (var f in financialPeriods)
+        {
+            f.Totals.NetProfit = Math.Abs(f.Totals.Income) - f.Totals.Expenses;
+        }
+        
+        return financialPeriods;
+    }
 }

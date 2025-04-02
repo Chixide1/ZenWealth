@@ -159,6 +159,27 @@ public class TransactionsController(
     
         return Ok(breakdowns);
     }
+    
+    [HttpGet("FinancialPeriods")]
+    [ProducesResponseType(typeof(List<FinancialPeriodDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFinancialPeriodsByMonth()
+    {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var financialPeriods = await transactionsService.GetFinancialPeriods(user.Id);
+
+        // foreach (var c in breakdowns.SelectMany(breakdown => breakdown.Income))
+        // {
+        //     c.Total = Math.Abs(c.Total);
+        // }
+    
+        return Ok(financialPeriods);
+    }
 }
 
 public record GetAllUserTransactionsResponseAmount(

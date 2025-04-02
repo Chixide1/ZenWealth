@@ -32,6 +32,8 @@ public interface ITransactionsService
     Task<List<CategoryTotalDto>> GetTransactionsByCategoryAsync(string userId, DateOnly? beginDate = null, DateOnly? endDate = null, int count = 0);
     
     Task<List<MonthlyBreakdown>> GetMonthlyBreadowns(string userId);
+
+    Task<List<FinancialPeriodDto>> GetFinancialPeriods(string userId);
 }
 
 public class MonthlyBreakdown

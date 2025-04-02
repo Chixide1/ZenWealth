@@ -1,5 +1,5 @@
 ﻿import type {
-    Account, Budget, CategoryTotal,
+    Account, Budget, CategoryTotal, FinancialPeriod,
     MinMaxAmount, MonthlyBreakdown,
     MonthlySummary,
     RecentTransactions,
@@ -235,7 +235,18 @@ export const monthlyBreakdownsAtom = atomWithQuery(() => ({
     queryKey: ["monthlyBreakdowns"],
     queryFn: async () => {
         const response = await api<MonthlyBreakdown[]>("Transactions/MonthlyBreakdowns").catch(
-            (e: AxiosError<MonthlyBreakdown>) => console.error(e),
+            (e: AxiosError<MonthlyBreakdown[]>) => console.error(e),
+        );
+
+        return response ? response.data : [];
+    },
+}));
+
+export const financialPeriodsAtom = atomWithQuery(() => ({
+    queryKey: ["financialPeriods"],
+    queryFn: async () => {
+        const response = await api<FinancialPeriod[]>("Transactions/FinancialPeriods").catch(
+            (e: AxiosError<FinancialPeriod[]>) => console.error(e),
         );
 
         return response ? response.data : [];
