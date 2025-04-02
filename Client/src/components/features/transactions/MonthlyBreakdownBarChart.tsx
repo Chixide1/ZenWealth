@@ -1,4 +1,4 @@
-﻿import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+﻿import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import { ComposedChart, Legend, XAxis, YAxis, CartesianGrid, Bar, Line, Tooltip, ResponsiveContainer } from "recharts";
 import { MonthlyBreakdown } from "@/types.ts";
 import {cn, debitColors, currencyParser, chartColors} from "@/lib/utils.ts";
@@ -8,6 +8,7 @@ import { Tabs, TabsList } from "@radix-ui/react-tabs";
 import { TabsContent, TabsTrigger } from "@/components/ui/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartSimple, faTable } from "@fortawesome/free-solid-svg-icons";
+import IncomeExpensesTable from "./IncomeExpensesTable";
 
 type MonthlyBreakdownBarChartProps = {
     className?: string,
@@ -91,6 +92,7 @@ export function MonthlyBreakdownBarChart({ className, data }: MonthlyBreakdownBa
                                     dot={{stroke: "none", fill: "hsl(var(--tertiary))"}}
                                     activeDot={{stroke: "none"}}
                                     name="netProfit"
+                                    z={1000}
                                 />
                                 <Tooltip
                                     formatter={(value: number, name: string) => {
@@ -106,7 +108,7 @@ export function MonthlyBreakdownBarChart({ className, data }: MonthlyBreakdownBa
 
                                         return [formattedValue, cleanName];
                                     }}
-                                    wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-800/90"
+                                    wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-700"
                                     wrapperStyle={{pointerEvents: "auto"}}
                                 />
                                 {!isMobile && <Legend formatter={(value: string) => {
@@ -147,7 +149,7 @@ export function MonthlyBreakdownBarChart({ className, data }: MonthlyBreakdownBa
                         </ResponsiveContainer>
                     </TabsContent>
                     <TabsContent value="Table">
-                                
+                        <IncomeExpensesTable data={data} />
                     </TabsContent>
                 </CardContent>
             </Tabs>

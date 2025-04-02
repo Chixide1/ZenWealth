@@ -12,6 +12,7 @@ function AnalyticsPage() {
     const [{data: categoryTotals}] = useAtom(categoryTotalsAtom);
     const [{data: monthlyBreakdowns}] = useAtom(monthlyBreakdownsAtom);
     
+    // console.log(monthlyBreakdowns);
     return (
         <section className="px-4 pb-8 space-y-6">
             <ExpensesRoseChart className="" data={categoryTotals ?? []} />

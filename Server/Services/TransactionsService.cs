@@ -280,7 +280,7 @@ public class TransactionsService(
                         Total = t.Total 
                     })
                     .ToList(),
-                NetProfit = g.Where(t => t.Type == "Income").Sum(t => t.Total) - 
+                NetProfit = g.Where(t => t.Type == "Income").Sum(t => Math.Abs(t.Total)) - 
                             g.Where(t => t.Type == "Expenditure").Sum(t => t.Total)
             })
             .OrderByDescending(m => m.Year)
