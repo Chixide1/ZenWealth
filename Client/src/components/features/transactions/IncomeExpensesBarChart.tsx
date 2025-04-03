@@ -16,24 +16,14 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
 
     return (
         <div className="w-full overflow-x-auto">
-            <div style={{ minWidth: '500px', width: '100%', height: '475px' }}>
+            <div style={{ minWidth: "500px", width: "100%", height: "475px" }}>
                 <ResponsiveContainer width="100%" height="100%" className={cn(className)}>
-                    <ComposedChart data={preparedData} margin={{ top: 0, right: 0, left: isMobile ? 10: 30, bottom: 20 }}>
+                    <ComposedChart data={preparedData} margin={{ top: 0, right: 20, left: 50, bottom: 20 }}>
                         <XAxis
                             dataKey="display"
                             stroke={"grey"}
                         />
                         <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>
-                        <Line
-                            type="monotone"
-                            dataKey="netProfit"
-                            stroke="hsl(var(--tertiary))"
-                            strokeWidth={2}
-                            dot={{stroke: "none", fill: "hsl(var(--tertiary))"}}
-                            activeDot={{stroke: "none"}}
-                            name="netProfit"
-                            className="!z-[1000]"
-                        />
                         <Tooltip
                             formatter={tooltipFormatter}
                             wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-700"
@@ -63,12 +53,23 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
                             />
                         ))}
 
+                        <Line
+                            type="monotone"
+                            dataKey="netProfit"
+                            stroke="hsl(var(--secondary))"
+                            strokeWidth={2}
+                            dot={{stroke: "none", fill: "hsl(var(--secondary))"}}
+                            activeDot={{stroke: "none"}}
+                            strokeDasharray={"5 5"}
+                            name="netProfit"
+                        />
+
                         {!isMobile && <Legend formatter={legendFormatter}/>}
                     </ComposedChart>
                 </ResponsiveContainer>
             </div>
         </div>
-    )
+    );
 }
 
 type TransformedPeriod = {

@@ -64,7 +64,7 @@ export function BudgetGauge({ spent = 0, limit = 100, segments = 60, className }
                                 {data.map((entry, index) => (
                                     <Cell
                                         key={`cell-${index}`}
-                                        className={`stroke-0 ${entry.isActive ? (percentage > 100 ? "fill-red-500" : "-secondary") : "fill-secondary/5"}`}
+                                        className={`stroke-0 ${entry.isActive ? (percentage > 100 ? "fill-red-500" : "fill-secondary") : "fill-secondary/5"}`}
                                     />
                                 ))}
                             </Pie>

@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment } from "react";
 import {
     Table,
     TableBody,
@@ -6,15 +6,16 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from '@/components/ui/accordion';
-import { categories, cn, currencyParser } from '@/lib/utils';
-import { FinancialPeriod } from '@/types';
+} from "@/components/ui/accordion";
+import { categories, cn, currencyParser } from "@/lib/utils";
+import { FinancialPeriod } from "@/types";
+import { format } from "date-fns";
 
 type IncomeExpensesTableProps = {
     className?: string;
@@ -22,12 +23,7 @@ type IncomeExpensesTableProps = {
 }
 
 export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProps) {
-    // Format numbers as currency
-    const formatCurrency = (amount: number) => {
-        return currencyParser.format(amount)
-    };
-
-    // Separate categories into income and expense categories
+    
     const incomeCategories = categories.filter(category => 
         data.some(period => period.categories[category] < 0)
     );
@@ -35,7 +31,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
     const expenseCategories = categories.filter(category => 
         data.some(period => period.categories[category] >= 0)
     );
-
+    
     return (
         <div className={cn("text-white p-4 rounded-lg w-full overflow-auto", className)}>
             <Table>
@@ -58,7 +54,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                             <Accordion type="single" className="w-full border-b border-neutral-700" collapsible>
                                 <AccordionItem value="income" className="border-0">
                                     <div className="grid grid-cols-[1fr_repeat(var(--data-length),1fr)] w-full items-center" 
-                                         style={{ '--data-length': data.length } as React.CSSProperties}>
+                                        style={{ "--data-length": data.length } as React.CSSProperties}>
                                         <div className="py-2 px-4">
                                             <AccordionTrigger className="font-medium hover:no-underline">
                                                 Income
@@ -66,17 +62,17 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                                         </div>
                                         {data.map((period) => (
                                             <div key={`${period.year}-${period.month}-income`} className="text-right py-4 px-2">
-                                                {formatCurrency(Math.abs(period.totals.income))}
+                                                {formatIncome(period.totals.income)}
                                             </div>
                                         ))}
                                     </div>
                                     
                                     <AccordionContent>
                                         <div className="grid grid-cols-[1fr_repeat(var(--data-length),1fr)] w-full" 
-                                             style={{ '--data-length': data.length } as React.CSSProperties}>
+                                            style={{ "--data-length": data.length } as React.CSSProperties}>
                                             {incomeCategories.map((category) => (
                                                 <Fragment key={category}>
-                                                    <div className="pl-8 py-4 border-t border-neutral-800 text-neutral-400">
+                                                    <div title={category.replace(/_/g, " ")} className="text-ellipsis overflow-hidden md:pl-8 py-4 border-t border-neutral-800 text-neutral-400">
                                                         {category.replace(/_/g, " ")}
                                                     </div>
                                                     {data.map((period) => (
@@ -84,7 +80,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                                                             key={`${period.year}-${period.month}-${category}`} 
                                                             className="text-right p-4 pr-2 border-t border-neutral-800 text-neutral-400"
                                                         >
-                                                            {formatCurrency(Math.abs(period.categories[category] || 0))}
+                                                            {formatIncome(period.categories[category])}
                                                         </div>
                                                     ))}
                                                 </Fragment>
@@ -102,7 +98,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                             <Accordion type="single" collapsible className="w-full">
                                 <AccordionItem value="expenses" className="border-neutral-700">
                                     <div className="grid grid-cols-[1fr_repeat(var(--data-length),1fr)] w-full items-center" 
-                                         style={{ '--data-length': data.length } as React.CSSProperties}>
+                                        style={{ "--data-length": data.length } as React.CSSProperties}>
                                         <div className="py-2 px-4">
                                             <AccordionTrigger className="font-medium hover:no-underline">
                                                 Expense
@@ -110,18 +106,18 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                                         </div>
                                         {data.map((period) => (
                                             <div key={`${period.year}-${period.month}-expenses`} className="text-right py-4 px-2">
-                                                {formatCurrency(period.totals.expenses)}
+                                                {formatExpense(period.totals.expenses)}
                                             </div>
                                         ))}
                                     </div>
                                     
                                     <AccordionContent>
                                         <div className="grid grid-cols-[1fr_repeat(var(--data-length),1fr)] w-full pb-0" 
-                                             style={{ '--data-length': data.length } as React.CSSProperties}>
+                                            style={{ "--data-length": data.length } as React.CSSProperties}>
                                             {expenseCategories.length > 0 ? (
                                                 expenseCategories.map((category) => (
                                                     <Fragment key={category}>
-                                                        <div className="pl-8 py-4 border-t  border-neutral-800 text-neutral-400">
+                                                        <div title={category.replace(/_/g, " ")} className="text-ellipsis overflow-hidden md:pl-8 py-4 border-t  border-neutral-800 text-neutral-400">
                                                             {category.replace(/_/g, " ")}
                                                         </div>
                                                         {data.map((period) => (
@@ -129,13 +125,13 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                                                                 key={`${period.year}-${period.month}-${category}`} 
                                                                 className="text-right p-4 pr-2 border-t border-neutral-800 text-neutral-400"
                                                             >
-                                                                {formatCurrency(period.categories[category] || 0)}
+                                                                {formatExpense(period.categories[category])}
                                                             </div>
                                                         ))}
                                                     </Fragment>
                                                 ))
                                             ) : (
-                                                <div className="pl-8 py-4 border-b border-neutral-800 text-neutral-400 col-span-full">
+                                                <div className="md:pl-8 py-4 border-b border-neutral-800 text-neutral-400 col-span-full">
                                                     No expense categories found
                                                 </div>
                                             )}
@@ -151,7 +147,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                         <TableCell className="font-medium py-6 px-4">Net profit</TableCell>
                         {data.map((period) => (
                             <TableCell key={`${period.year}-${period.month}-netProfit`} className="text-right text-nowrap">
-                                {formatCurrency(period.totals.netProfit)}
+                                {currencyParser.format(period.totals.netProfit)}
                             </TableCell>
                         ))}
                     </TableRow>
@@ -161,8 +157,29 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
     );
 }
 
-// Helper function to get month name
+
+/** Helper Functions **/
+
+// Get the Month Name
 const getMonthName = (monthNum: number) => {
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return monthNames[monthNum - 1];
+    const date = new Date().setMonth(monthNum - 1);
+    return format(date, "MMM");
+};
+
+// Format category amounts that are expenses
+const formatExpense = (amount: number | undefined) => {
+    if(!amount || amount < 0 ){
+        return currencyParser.format(0);
+    }
+
+    return currencyParser.format(amount);
+};
+
+// Format category amounts that are income
+const formatIncome = (amount: number | undefined) => {
+    if(!amount || amount > 0 ){
+        return currencyParser.format(0);
+    }
+
+    return currencyParser.format(Math.abs(amount));
 };
