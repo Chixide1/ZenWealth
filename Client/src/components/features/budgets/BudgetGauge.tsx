@@ -25,11 +25,12 @@ type GaugeProps = {
 export function BudgetGauge({ spent = 0, limit = 100, segments = 60, className }: GaugeProps) {
     const safeMax = limit > 0 ? limit : 1; // Prevent division by zero
     const safeValue = Math.max(0, Math.min(spent, safeMax)); // Ensure value is between 0 and max
-    const percentage = (safeValue / safeMax) * 100;
+    const safePercentage = (safeValue / safeMax) * 100;
+    const percentage = (spent / limit) * 100;
 
     const data = Array.from({ length: segments }, (_, index) => ({
         value: 100 / segments,
-        isActive: (index / segments) * 100 <= percentage,
+        isActive: (index / segments) * 100 <= safePercentage,
     }));
 
     const needleData: NeedleProps = {
@@ -39,7 +40,7 @@ export function BudgetGauge({ spent = 0, limit = 100, segments = 60, className }
         outerRadius: 130,
         value: 0,
         total: 0,
-        color: "hsl(var(--secondary))",
+        color: percentage > 100 ? "hsl(var(--destructive))" : "hsl(var(--secondary))",
     };
     
     return (
@@ -63,8 +64,7 @@ export function BudgetGauge({ spent = 0, limit = 100, segments = 60, className }
                                 {data.map((entry, index) => (
                                     <Cell
                                         key={`cell-${index}`}
-                                        fill={entry.isActive ? "hsl(var(--secondary))" : "hsl(var(--secondary)/0.05)"}
-                                        className="stroke-0"
+                                        className={`stroke-0 ${entry.isActive ? (percentage > 100 ? "fill-red-500" : "-secondary") : "fill-secondary/5"}`}
                                     />
                                 ))}
                             </Pie>
@@ -72,13 +72,13 @@ export function BudgetGauge({ spent = 0, limit = 100, segments = 60, className }
                     </ResponsiveContainer>
                     <Needle
                         {...needleData}
-                        value={percentage}
+                        value={safePercentage}
                         total={100}
                         classname="absolute h-full w-full pl-1"
                     />
                 </div>
                 <CardDescription className="w-full flex flex-col items-center justify-center">
-                    <p className="text-2xl font-bold text-secondary">{percentage.toFixed(2)}%</p>
+                    <p className={`text-2xl font-bold ${percentage > 100 ? "text-red-500" : "text-secondary"}`}>{percentage.toFixed(2)}%</p>
                     <p className="text-lg text-neutral-400 mt-5 md:mt-auto">You have spent</p>
                     <p className="text-neutral-400 text-lg">
                         <span className="text-primary">{currencyParser.format(spent)} </span>

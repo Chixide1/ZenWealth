@@ -67,7 +67,6 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                             }}
                             cursor={{
                                 opacity: 0.1,
-                                // stroke: "red"
                             }}
                         />
                         <Line
@@ -75,7 +74,6 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                             dataKey="income"
                             stroke="hsl(var(--tertiary))"
                             strokeWidth={2}
-                            strokeDasharray="5 5"
                             dot={false}
                             activeDot={{stroke: "none"}}
                         />
@@ -83,6 +81,7 @@ export function IncomeOutcomeLineGraph({ className, data }: IncomeOutcomeLineGra
                             type="monotone"
                             dataKey="expenditure"
                             stroke="var(--credit-chart-2)"
+                            strokeDasharray="5 5"
                             strokeWidth={2}
                             dot={false}
                             activeDot={{stroke: "none"}}
