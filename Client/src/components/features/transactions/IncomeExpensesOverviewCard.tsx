@@ -18,7 +18,7 @@ export function IncomeExpensesOverviewCard({ className, data }: IncomeExpensesOv
     return (
         <Card className={cn("bg-offblack", className)}>
             <Tabs defaultValue="BarChart">
-                <CardHeader className="flex flex-col items-center justify-between space-y-2 md:space-y-0 md:flex-row pb-2">
+                <CardHeader className="flex flex-col items-center justify-between gap-4 md:flex-row pb-2">
                     <CardTitle>Income vs Expenses overview</CardTitle>
                     <TabsList className="bg-background rounded-md p-1 space-x-1">
                         <TabsTrigger value="BarChart" className="bg-transparent rounded-sm p-2">

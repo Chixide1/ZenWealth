@@ -14,56 +14,60 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
     const isMobile = useIsMobile();
     const preparedData = prepareData(data);
 
-    return(
-        <ResponsiveContainer width="100%" height={475} className={cn("", className)}>
-            <ComposedChart data={preparedData} margin={{ top: 0, right: 0, left: isMobile ? 10: 30, bottom: 20 }}>
-                <XAxis
-                    dataKey="display"
-                    stroke={"grey"}
-                />
-                {!isMobile && <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>}
-                <Line
-                    type="monotone"
-                    dataKey="netProfit"
-                    stroke="hsl(var(--tertiary))"
-                    strokeWidth={2}
-                    dot={{stroke: "none", fill: "hsl(var(--tertiary))"}}
-                    activeDot={{stroke: "none"}}
-                    name="netProfit"
-                    className="!z-[1000]"
-                />
-                <Tooltip
-                    formatter={tooltipFormatter}
-                    wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-700"
-                    wrapperStyle={{pointerEvents: "auto"}}
-                />
-                <CartesianGrid className="stroke-white/30 " strokeDasharray="3 3" />
+    return (
+        <div className="w-full overflow-x-auto">
+            <div style={{ minWidth: '500px', width: '100%', height: '475px' }}>
+                <ResponsiveContainer width="100%" height="100%" className={cn(className)}>
+                    <ComposedChart data={preparedData} margin={{ top: 0, right: 0, left: isMobile ? 10: 30, bottom: 20 }}>
+                        <XAxis
+                            dataKey="display"
+                            stroke={"grey"}
+                        />
+                        <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>
+                        <Line
+                            type="monotone"
+                            dataKey="netProfit"
+                            stroke="hsl(var(--tertiary))"
+                            strokeWidth={2}
+                            dot={{stroke: "none", fill: "hsl(var(--tertiary))"}}
+                            activeDot={{stroke: "none"}}
+                            name="netProfit"
+                            className="!z-[1000]"
+                        />
+                        <Tooltip
+                            formatter={tooltipFormatter}
+                            wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-700"
+                            wrapperStyle={{pointerEvents: "auto"}}
+                        />
+                        <CartesianGrid className="stroke-white/30 " strokeDasharray="3 3" />
 
-                {/* Stacked income values */}
-                {categories.map((category, index) => (
-                    <Bar
-                        key={`MonthlyBreakdownChartBar::income_${category}`}
-                        dataKey={`income_${category}`}
-                        name={`income_${category}`}
-                        stackId="income"
-                        fill={debitColors[index % chartColors.length]}
-                    />
-                ))}
+                        {/* Stacked income values */}
+                        {categories.map((category, index) => (
+                            <Bar
+                                key={`MonthlyBreakdownChartBar::income_${category}`}
+                                dataKey={`income_${category}`}
+                                name={`income_${category}`}
+                                stackId="income"
+                                fill={debitColors[index % chartColors.length]}
+                            />
+                        ))}
 
-                {/* Stacked expense values */}
-                {categories.map((category, index) => (
-                    <Bar
-                        key={`MonthlyBreakdownChartBar::expense_${category}`}
-                        dataKey={`expense_${category}`}
-                        name={`expense_${category}`}
-                        stackId="expense"
-                        fill={chartColors[index % debitColors.length]}
-                    />
-                ))}
+                        {/* Stacked expense values */}
+                        {categories.map((category, index) => (
+                            <Bar
+                                key={`MonthlyBreakdownChartBar::expense_${category}`}
+                                dataKey={`expense_${category}`}
+                                name={`expense_${category}`}
+                                stackId="expense"
+                                fill={chartColors[index % debitColors.length]}
+                            />
+                        ))}
 
-                {!isMobile && <Legend formatter={legendFormatter}/>}
-            </ComposedChart>
-        </ResponsiveContainer>
+                        {!isMobile && <Legend formatter={legendFormatter}/>}
+                    </ComposedChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
     )
 }
 

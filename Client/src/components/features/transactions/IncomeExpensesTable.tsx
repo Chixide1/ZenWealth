@@ -37,7 +37,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
     );
 
     return (
-        <div className={cn("text-white p-4 rounded-lg w-dvw overflow-auto", className)}>
+        <div className={cn("text-white p-4 rounded-lg w-full overflow-auto", className)}>
             <Table>
                 <TableHeader>
                     <TableRow className="border-neutral-700">
@@ -46,7 +46,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                         </TableHead>
                         {data.map((period) => (
                             <TableHead key={`${period.year}-${period.month}`} className="text-right rounded-md text-neutral-300">
-                                <div className="bg-neutral-700/70 rounded-md p-3">{getMonthName(period.month)} {period.year}</div>
+                                <div className="bg-neutral-700/70 rounded-md p-3 text-nowrap">{getMonthName(period.month)} {period.year}</div>
                             </TableHead>
                         ))}
                     </TableRow>
@@ -150,7 +150,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                     <TableRow>
                         <TableCell className="font-medium py-6 px-4">Net profit</TableCell>
                         {data.map((period) => (
-                            <TableCell key={`${period.year}-${period.month}-netProfit`} className="text-right">
+                            <TableCell key={`${period.year}-${period.month}-netProfit`} className="text-right text-nowrap">
                                 {formatCurrency(period.totals.netProfit)}
                             </TableCell>
                         ))}
