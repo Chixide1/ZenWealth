@@ -139,27 +139,6 @@ public class TransactionsController(
         return Ok(categoryTotals);
     }
     
-    [HttpGet("MonthlyBreakdowns")]
-    [ProducesResponseType(typeof(List<MonthlyBreakdown>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMonthlyBreakdowns()
-    {
-        var user = await userManager.GetUserAsync(User);
-
-        if (user == null)
-        {
-            return Unauthorized();
-        }
-
-        var breakdowns = await transactionsService.GetMonthlyBreadowns(user.Id);
-
-        foreach (var c in breakdowns.SelectMany(breakdown => breakdown.Income))
-        {
-            c.Total = Math.Abs(c.Total);
-        }
-    
-        return Ok(breakdowns);
-    }
-    
     [HttpGet("FinancialPeriods")]
     [ProducesResponseType(typeof(List<FinancialPeriodDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFinancialPeriodsByMonth()
@@ -172,11 +151,6 @@ public class TransactionsController(
         }
 
         var financialPeriods = await transactionsService.GetFinancialPeriods(user.Id);
-
-        // foreach (var c in breakdowns.SelectMany(breakdown => breakdown.Income))
-        // {
-        //     c.Total = Math.Abs(c.Total);
-        // }
     
         return Ok(financialPeriods);
     }

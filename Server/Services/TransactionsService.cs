@@ -136,6 +136,7 @@ public class TransactionsService(
     public async Task<RecentTransactionsDto> GetRecentTransactions(string userId, int count = 11)
     {
         var all = await context.Transactions
+            .Where(t => t.UserId == userId)
             .OrderByDescending(t => t.Date)
             .Take(count)
             .ToTransactionDto()
@@ -233,61 +234,6 @@ public class TransactionsService(
         return await categoryTotals
             .OrderByDescending(t => t.Total)
             .ToListAsync();;
-    }
-
-    public async Task<List<MonthlyBreakdown>> GetMonthlyBreadowns(string userId)
-    {
-        var currentDate = DateOnly.FromDateTime(DateTime.Now);
-        var pastYearDate = currentDate.AddMonths(-6);
-
-        var result = await context.Transactions
-            .Where(t => t.Date >= pastYearDate && t.UserId == userId) // Filter for the past year
-            .GroupBy(t => new 
-            { 
-                Year = t.Date.Year, 
-                Month = t.Date.Month, 
-                Category = t.Category
-            })
-            .Select(g=> new MonthlyBreakdownDto
-            {
-                Type = g.Sum(t => t.Amount) > 0 ? "Expenditure" : "Income",
-                Month = g.Key.Month,
-                Year = g.Key.Year,
-                Category = g.Key.Category,
-                Total = g.Sum(t => t.Amount)
-            })
-            .OrderByDescending(r => r.Year)
-            .ThenByDescending(r => r.Month)
-            .ToListAsync();
-        
-        var monthlyBreakdowns = result
-            .GroupBy(t => new { t.Year, t.Month })
-            .Select(g => new MonthlyBreakdown
-            {
-                Year = g.Key.Year,
-                Month = g.Key.Month,
-                Income = g.Where(t => t.Type == "Income")
-                    .Select(t => new CategoryTotalDto 
-                    { 
-                        Category = t.Category, 
-                        Total = t.Total 
-                    })
-                    .ToList(),
-                Expenditure = g.Where(t => t.Type == "Expenditure")
-                    .Select(t => new CategoryTotalDto 
-                    { 
-                        Category = t.Category, 
-                        Total = t.Total 
-                    })
-                    .ToList(),
-                NetProfit = g.Where(t => t.Type == "Income").Sum(t => Math.Abs(t.Total)) - 
-                            g.Where(t => t.Type == "Expenditure").Sum(t => t.Total)
-            })
-            .OrderByDescending(m => m.Year)
-            .ThenByDescending(m => m.Month)
-            .ToList();
-        
-        return monthlyBreakdowns;
     }
 
     public async Task<List<FinancialPeriodDto>> GetFinancialPeriods(string userId)
