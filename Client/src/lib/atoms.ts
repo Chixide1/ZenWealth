@@ -1,6 +1,6 @@
 ﻿import type {
     Account, Budget, CategoryTotal, FinancialPeriod,
-    MinMaxAmount, MonthlyBreakdown,
+    MinMaxAmount,
     MonthlySummary,
     RecentTransactions,
     TopExpenseCategory,
@@ -11,6 +11,7 @@ import { atomWithQuery, atomWithInfiniteQuery } from "jotai-tanstack-query";
 import api from "@/lib/api.ts";
 import type { AxiosError } from "axios";
 import { atom } from "jotai";
+import { atomWithStorage, createJSONStorage } from "jotai/utils";
 import { format } from "date-fns";
 import { SetStateAction } from "react";
 import {addColors, creditColors, debitColors} from "@/lib/utils.ts";
@@ -22,8 +23,8 @@ type TransactionRequest = {
 }
 
 type ApiTransactionParams = Omit<TransactionParams, "beginDate" | "endDate"> & {
-    beginDate: string | null // Overwrite with new type
-    endDate: string | null // Overwrite with new type
+    beginDate: string | null
+    endDate: string | null
 } & TransactionRequest & { pageSize: number | null }
 
 export const transactionsPaginationAtom = atom({
@@ -31,16 +32,42 @@ export const transactionsPaginationAtom = atom({
     pageSize: 10,
 });
 
-const baseTransactionsParamsAtom = atom<TransactionParams>({
-    name: null,
-    sort: "date-desc",
-    minAmount: null,
-    maxAmount: null,
-    beginDate: null,
-    endDate: null,
-    excludeAccounts: [],
-    excludeCategories: [],
-});
+const initDateStorage = <T>() => createJSONStorage<T>(
+    () => localStorage,
+    {
+        // Custom replacer for JSON.stringify to handle Date objects
+        replacer: (key, value) => {
+            if (key === "beginDate" || key === "endDate") {
+                return value instanceof Date ? value.toISOString() : value;
+            }
+            return value;
+        },
+
+        // Custom reviver for JSON.parse to reconstruct Date objects
+        reviver: (key, value) => {
+            if ((key === "beginDate" || key === "endDate") && value !== null) {
+                return new Date(value as string | number | Date);
+            }
+            return value;
+        }
+    }
+);
+
+const baseTransactionsParamsAtom = atomWithStorage<TransactionParams>(
+    "baseTransactionsParamsAtom",
+    {
+        name: null,
+        sort: "date-desc",
+        minAmount: null,
+        maxAmount: null,
+        beginDate: null,
+        endDate: null,
+        excludeAccounts: [],
+        excludeCategories: [],
+    },
+    initDateStorage(),
+    {getOnInit: true}
+);
 
 export const transactionsParamsAtom = atom<
     TransactionParams,
@@ -205,9 +232,14 @@ type ApiCategoryTotalsParams = {
     count: number,
 }
 
-export const categoryTotalsParamsAtom = atom<CategoryTotalsParams>({
-    beginDate: null, endDate: null
-});
+export const categoryTotalsParamsAtom = atomWithStorage<CategoryTotalsParams>(
+    "categoryTotalsParamsAtom",
+    {
+        beginDate: null, endDate: null
+    },
+    initDateStorage(),
+    {getOnInit: true},
+);
 
 export const categoryTotalsAtom = atomWithQuery((get) => ({
     queryKey: ["categoryTotals", get(categoryTotalsParamsAtom)],
@@ -229,17 +261,6 @@ export const categoryTotalsAtom = atomWithQuery((get) => ({
 
         return response ? response.data : [];
     }
-}));
-
-export const monthlyBreakdownsAtom = atomWithQuery(() => ({
-    queryKey: ["monthlyBreakdowns"],
-    queryFn: async () => {
-        const response = await api<MonthlyBreakdown[]>("Transactions/MonthlyBreakdowns").catch(
-            (e: AxiosError<MonthlyBreakdown[]>) => console.error(e),
-        );
-
-        return response ? response.data : [];
-    },
 }));
 
 export const financialPeriodsAtom = atomWithQuery(() => ({

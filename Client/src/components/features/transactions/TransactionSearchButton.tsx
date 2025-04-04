@@ -33,10 +33,10 @@ export default function TransactionSearchButton({className}: TransactionSearchBu
             </Label>
             <Input
                 id="searchTransactions"
-                placeholder="Search"
+                placeholder="Search..."
                 value={inputValue}
                 onChange={(event) => setInputValue(event.target.value)}
-                className="placeholder:text-neutral-400 pl-10 border-0 focus-visible:ring-1 !ring-primary/30 bg-background h-8"
+                className="placeholder:text-neutral-400 text-primary pl-10 border-0 focus-visible:ring-1 !ring-primary/30 bg-background h-8"
             />
         </div>
     );

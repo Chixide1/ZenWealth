@@ -88,21 +88,13 @@ export type CategoryTotal = {
     total: number,
 }
 
-export type MonthlyBreakdown = {
-    year: number
-    month: number,
-    income: CategoryTotal[],
-    expenditure: CategoryTotal[],
-    netProfit: number,
-}
-
 export type FinancialPeriod = {
     year: number;
     month: number;
-    categories: Record<TransactionCategory, number>; // All categories with their values
+    categories: Record<TransactionCategory, number>;
     totals: {
-        income: number;      // Pre-calculated total income
-        expenses: number;    // Pre-calculated total expenses
-        netProfit: number;   // Pre-calculated net profit
+        income: number;
+        expenses: number;
+        netProfit: number;
     };
 }
