@@ -15,7 +15,7 @@ export function TopExpenseCategoriesCard({className, data}: TopExpenseCategories
         <Card className={cn("", className)}>
             <CardHeader className="pb-4 flex flex-row items-center justify-between">
                 <CardTitle className="">Top Expense Categories</CardTitle>
-                <ArrowLink to="/transactions" />
+                <ArrowLink to="/analytics" />
             </CardHeader>
             <CardContent className="flex flex-col gap-8 pt-4 pb-10 text-sm">
                 {data.length > 0 ? data.map((barData, index) => (

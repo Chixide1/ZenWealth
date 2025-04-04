@@ -298,7 +298,7 @@ export function ExpensesRoseChart({ data, className }: ExpensesCoxcombChartProps
         : undefined;
 
     return (
-        <Card className={cn("bg-offblack w-full h-auto", className)}>
+        <Card id="TopExpensesRoseChart" className={cn("bg-offblack w-full h-auto", className)}>
             <CardHeader className="pb-0 flex-row justify-between">
                 <CardTitle className="">Top Expenses Rose</CardTitle>
                 <DateFilterButton initialDateRange={initialDateRange} onDateRangeChange={handleDateRangeChange} className="!mt-0"/>
