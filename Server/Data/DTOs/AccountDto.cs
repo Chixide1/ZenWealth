@@ -10,12 +10,12 @@ public class AccountDto
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>
 	/// </summary>
-	public double CurrentBalance { get; init; }
+	public decimal CurrentBalance { get; init; }
 	
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>
 	/// </summary>
-	public double AvailableBalance { get; init; }
+	public decimal AvailableBalance { get; init; }
 
 	/// <summary>
 	/// <para>The last 2-4 alphanumeric characters of an account's official account number. Note that the mask may be non-unique between an Item's accounts, and it may also not match the mask that the bank displays to the user.</para>

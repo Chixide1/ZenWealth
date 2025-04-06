@@ -78,7 +78,9 @@ export function BudgetGauge({ spent = 0, limit = 100, segments = 60, className }
                     />
                 </div>
                 <CardDescription className="w-full flex flex-col items-center justify-center">
-                    <p className={`text-2xl font-bold ${percentage > 100 ? "text-red-500" : "text-secondary"}`}>{percentage.toFixed(2)}%</p>
+                    <p className={`text-2xl font-bold ${percentage > 100 ? "text-red-500" : "text-secondary"}`}>
+                        {percentage ? percentage?.toFixed(2) : 0.00}%
+                    </p>
                     <p className="text-lg text-neutral-400 mt-5 md:mt-auto">You have spent</p>
                     <p className="text-neutral-400 text-lg">
                         <span className="text-primary">{currencyParser.format(spent)} </span>

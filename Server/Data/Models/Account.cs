@@ -46,12 +46,14 @@ public class Account
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>
 	/// </summary>
-	public double CurrentBalance { get; set; }
+	[Precision(18, 2)] 
+	public decimal CurrentBalance { get; set; }
 	
 	/// <summary>
 	/// <para>A set of fields describing the balance for an account. Balance information may be cached unless the balance object was returned by <c>/accounts/balance/get</c>.</para>
 	/// </summary>
-	public double AvailableBalance { get; set; }
+	[Precision(18, 2)] 
+	public decimal AvailableBalance { get; set; }
 
 	/// <summary>
 	/// <para>The last 2-4 alphanumeric characters of an account's official account number. Note that the mask may be non-unique between an Item's accounts, and it may also not match the mask that the bank displays to the user.</para>

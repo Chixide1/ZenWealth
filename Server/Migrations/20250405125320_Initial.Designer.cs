@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250312105547_Initial")]
+    [Migration("20250405125320_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -166,11 +166,13 @@ namespace Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("AvailableBalance")
-                        .HasColumnType("float");
+                    b.Property<decimal>("AvailableBalance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("CurrentBalance")
-                        .HasColumnType("float");
+                    b.Property<decimal>("CurrentBalance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
@@ -286,6 +288,7 @@ namespace Server.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Category")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("CategoryIconUrl")

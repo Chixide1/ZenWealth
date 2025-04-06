@@ -1,4 +1,5 @@
 using Going.Plaid;
+using Serilog;
 using Server.Extensions;
 using Server.Services;
 using Server.Utils;
@@ -21,11 +22,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddPlaid(builder.Configuration.GetSection("Plaid"));
 builder.Services.AddSingleton<PlaidClient>();
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseSerilogRequestLogging();
 app.AddEnvironmentConfiguration();
 app.UseHttpsRedirection();
 app.UseExceptionHandler();

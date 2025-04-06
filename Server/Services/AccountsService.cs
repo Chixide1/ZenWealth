@@ -71,7 +71,19 @@ public class AccountsService(
             {
                 if (existingAccounts.TryGetValue(account.AccountId, out var entity))
                 {
-                    entity.CurrentBalance = (double?)account.Balances.Current ?? 0.00;
+                    var currentBalance = account.Balances.Current;
+
+                    if (currentBalance == null)
+                    {
+                        logger.LogWarning(
+                            "Unable to update account {PlaidAccountId} for user {UserId} of item {ItemId}",
+                            account.AccountId, userId, item.Id
+                        );
+                        
+                        continue;
+                    }
+                    
+                    entity.CurrentBalance = (decimal)currentBalance;
 
                     logger.LogInformation(
                         "Updated account {PlaidAccountId} for user {UserId} of item {ItemId}",
@@ -87,8 +99,8 @@ public class AccountsService(
                         UserId = item.UserId,
                         Name = account.Name,
                         Type = account.Type.ToString(),
-                        CurrentBalance = (double?)account.Balances.Current ?? 0.00,
-                        AvailableBalance = (double?)account.Balances.Available ?? 0.00,
+                        CurrentBalance = account.Balances.Current ?? 0,
+                        AvailableBalance = account.Balances.Available ?? 0,
                         Mask = account.Mask,
                         Subtype = account.Subtype.ToString(),
                         OfficialName = account.OfficialName,
