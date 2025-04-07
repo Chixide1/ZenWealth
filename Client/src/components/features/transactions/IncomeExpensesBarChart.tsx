@@ -38,7 +38,7 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
                                 dataKey={`income_${category}`}
                                 name={`income_${category}`}
                                 stackId="income"
-                                fill={debitColors[index % chartColors.length]}
+                                fill={debitColors[index % debitColors.length]}
                             />
                         ))}
 
@@ -49,7 +49,7 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
                                 dataKey={`expense_${category}`}
                                 name={`expense_${category}`}
                                 stackId="expense"
-                                fill={chartColors[index % debitColors.length]}
+                                fill={chartColors[index % chartColors.length]}
                             />
                         ))}
 

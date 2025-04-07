@@ -43,6 +43,7 @@
     --debit-chart-3: 188 94% 43%;
     --debit-chart-4: 173 80% 40%;
     --debit-chart-5: 330 84% 60%;
+    --debit-chart-6: 216 12% 84%;
   }
 }
 
@@ -87,16 +88,16 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --chart-6: 25 34% 28%;
-    --chart-7: 26 36% 34%;
-    --chart-8: 28 40% 40%;
-    --chart-9: 31 41% 48%;
-    --chart-10: 35 43% 53%;
-    --chart-11: 359 2% 90%;
-    --chart-12: 240 1% 74%;
-    --chart-13: 240 1% 58%;
-    --chart-14: 240 1% 42%;
-    --chart-15: 240 2% 26%;
+    --chart-6: 115 68% 67%;
+    --chart-7: 165 100% 38%;
+    --chart-8: 89 76% 60%;
+    --chart-9: 122 56% 55%;
+    --chart-10: 159 100% 29%;
+    --chart-11: 64 30% 64%;
+    --chart-12: 65 65% 88%;
+    --chart-13: 37 29% 64%;
+    --chart-14: 26 100% 81%;
+    --chart-15: 17 52% 48%;
     --radius: 0.5rem;
     --sidebar-background: var(--offblack);
     --sidebar-foreground: var(--charcoal);

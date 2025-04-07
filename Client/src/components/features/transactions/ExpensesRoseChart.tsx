@@ -8,7 +8,7 @@ import { useAtom } from "jotai";
 import { categoryTotalsParamsAtom} from "@/lib/atoms.ts";
 import { DateRange } from "react-day-picker";
 
-type ExpensesCoxcombChartProps = {
+type ExpensesRoseChartProps = {
     data: CategoryTotal[],
     className?: string;
 }
@@ -34,16 +34,6 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
     const maxRadius = Math.min(fixedDimensions.width, fixedDimensions.height) * 0.4; // 40% of the smaller dimension
     const startAngleMargin = 1;
     const endAngleMargin = 1;
-
-    // Define color palette to match the image
-    const colorPalette = [
-        "#4169E1", // Royal Blue
-        "#1E3A8A", // Dark Blue
-        "#06B6D4", // Light Cyan
-        "#14B8A6", // Teal
-        "#EC4899", // Pink
-        "#D1D5DB"  // Light Gray
-    ];
 
     // Calculate angle for each segment based on number of categories
     const angle = 360 / data.length;
@@ -160,7 +150,7 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
                     return (
                         <Sector
                             key={`sector-${index}-${animationKey}`}
-                            fill={colorPalette[index % colorPalette.length]}
+                            fill={debitColors[index % debitColors.length]}
                             fillOpacity={isActive ? 1 : 0.9}
                             innerRadius={10}
                             outerRadius={isActive ? radius + 5 : radius}
@@ -192,7 +182,7 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
                         left: calculateTooltipX(activeIndex)
                     }}
                 >
-                    <div className="bg-transparent px-2 m-2 border-l-4 text-nowrap text-sm" style={{borderColor: colorPalette[activeIndex]}}>
+                    <div className="bg-transparent px-2 m-2 border-l-4 text-nowrap text-sm" style={{borderColor: debitColors[activeIndex]}}>
                         <p className="font-bold">{data[activeIndex].category.replace(/_/g, " ")}</p>
                         <p className="">{currencyParser.format(data[activeIndex].total)}</p>
                         <p className="text-xs text-neutral-dimension">
@@ -245,7 +235,7 @@ function ExpensesTable({ data }: { data: CategoryTotal[] }) {
     );
 }
 
-export function ExpensesRoseChart({ data, className }: ExpensesCoxcombChartProps) {
+export function ExpensesRoseChart({ data, className }: ExpensesRoseChartProps) {
     const [date, setDate] = useAtom(categoryTotalsParamsAtom);
     const dataRef = useRef<CategoryTotal[]>(data);
 

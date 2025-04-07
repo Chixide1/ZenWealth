@@ -17,7 +17,7 @@ public class AuthController(
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        var response = new AuthController.AuthResponse();
+        var response = new AuthResponse();
 
         var user = new User { UserName = dto.Username, Email = dto.Email };
         var result = await userManager.CreateAsync(user, dto.Password);
@@ -34,7 +34,7 @@ public class AuthController(
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
-        var response = new AuthController.AuthResponse();
+        var response = new AuthResponse();
         
         var result = await signInManager.PasswordSignInAsync(
             dto.Username,
@@ -73,7 +73,24 @@ public class AuthController(
     
     [HttpGet]
     [Authorize]
-    [ProducesResponseType(type: typeof(AuthController.HasItemsResponse), statusCode: 200)]
+    [ProducesResponseType(type: typeof(HasItemsResponse), statusCode: 200)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ItemsStatus()
+    {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        
+        var result = await itemsService.CheckItemExistsAsync(user.Id);
+        return Ok(new HasItemsResponse(result));
+    }
+    
+    [HttpGet]
+    [Authorize]
+    [ProducesResponseType(type: typeof(UserDetailsResponse), statusCode: 200)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Details()
     {
@@ -84,14 +101,56 @@ public class AuthController(
             return Unauthorized();
         }
         
-        var result = await itemsService.CheckItemExistsAsync(user.Id);
-        return Ok(new AuthController.HasItemsResponse(result, user.UserName!));
+        var result = await itemsService.GetItemsAsync(user.Id);
+        return Ok(new UserDetailsResponse(user.UserName!, user.Email!, result));
     }
-
-    private class  AuthResponse
+    
+    [HttpDelete]
+    [Authorize]
+    [ProducesResponseType(type: typeof(DeleteUserResponse), statusCode: 200)]
+    [ProducesResponseType(type: typeof(DeleteUserResponse), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteUser()
     {
-        public List<IdentityError> Errors { get; } = [];
-    }
+        var user = await userManager.GetUserAsync(User);
 
-    public record HasItemsResponse(bool HasItems, string UserName);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var items = await itemsService.GetItemsAsync(user.Id);
+        
+        foreach (var item in items)
+        {
+            var status = await itemsService.DeleteItemAsync(user.Id, item.Id);
+
+            if (!status)
+            {
+                return StatusCode(500, "unable to delete item");
+            }
+        }
+        
+        var result = await userManager.DeleteAsync(user);
+
+        return result.Succeeded ?
+            Ok(new DeleteUserResponse(Success: true, Array.Empty<IdentityError>() )) :
+            StatusCode(500, new DeleteUserResponse(false, result.Errors));
+    }
+}
+
+public record DeleteUserResponse(bool Success, IEnumerable<IdentityError> Errors)
+{
+    public override string ToString()
+    {
+        return $"{{ Success = {Success}, Errors = {Errors} }}";
+    }
+}
+
+public record HasItemsResponse(bool HasItems);
+
+public record UserDetailsResponse(string UserName, string Email, IEnumerable<InstitutionDto> Institutions);
+
+internal class AuthResponse
+{
+    public List<IdentityError> Errors { get; } = [];
 }

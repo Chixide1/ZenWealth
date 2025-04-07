@@ -24,7 +24,8 @@ public static class ServiceExtensions
             {
                 policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
                     .AllowAnyHeader()
-                    .AllowCredentials();
+                    .AllowCredentials()
+                    .AllowAnyMethod();
             });
         });
     }

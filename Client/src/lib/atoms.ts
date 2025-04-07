@@ -1,5 +1,5 @@
 ﻿import type {
-    Account, Budget, CategoryTotal, FinancialPeriod,
+    Account, Budget, CategoryTotal, FinancialPeriod, Institution,
     MinMaxAmount,
     MonthlySummary,
     RecentTransactions,
@@ -271,5 +271,22 @@ export const financialPeriodsAtom = atomWithQuery(() => ({
         );
 
         return response ? response.data : [];
+    },
+}));
+
+type UserDetails = {
+    userName: string,
+    email: string,
+    institutions: Institution[],
+}
+
+export const userDetailsAtom = atomWithQuery(() => ({
+    queryKey: ["userDetails"],
+    queryFn: async () => {
+        const response = await api<UserDetails>("Auth/Details").catch(
+            (e: AxiosError<UserDetails>) => console.error(e),
+        );
+
+        return response ? response.data : {userName: "", email: "", institutions: []};
     },
 }));

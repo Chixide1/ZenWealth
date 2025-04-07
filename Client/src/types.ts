@@ -98,3 +98,8 @@ export type FinancialPeriod = {
         netProfit: number;
     };
 }
+
+export type Institution = {
+    id: number,
+    name: string,
+}

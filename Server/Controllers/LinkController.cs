@@ -16,7 +16,7 @@ public class LinkController(
     UserManager<User> userManager) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(LinkController.GetLinkTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetLinkTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetLinkToken()
@@ -63,10 +63,10 @@ public class LinkController(
         
         return Ok(new { result.AddedTransactions });
     }
-    
+
     [HttpDelete("{itemId:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(type: typeof(DeleteItemResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(type: typeof(DeleteItemResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> DeleteItem(int itemId)
     {
@@ -81,13 +81,21 @@ public class LinkController(
         
         if (!success)
         {
-            return NotFound(new { Error = "Item not found or could not be deleted" });
+            return NotFound(new DeleteItemResponse(false, "Item not found or could not be deleted"));
         }
         
-        return Ok(new { Success = true });
+        return Ok(new DeleteItemResponse(Success: true));
     }
-
-    public record GetLinkTokenResponse(string Value);
-
-    public record ExchangePublicTokenResponse(string PublicToken, string InstitutionName);
 }
+
+public record DeleteItemResponse(bool Success, string? Error = null)
+{
+    public override string ToString()
+    {
+        return $"{{ Success = {Success}, Error = {Error} }}";
+    }
+}
+
+public record GetLinkTokenResponse(string Value);
+
+public record ExchangePublicTokenResponse(string PublicToken, string InstitutionName);

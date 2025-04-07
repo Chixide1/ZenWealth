@@ -8,8 +8,7 @@ import { Toaster } from "@/components/ui/toaster.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 
 type UserDetailsResponse = {
-    hasItems: boolean | null;
-    userName: string;
+    hasItems: boolean | null,
 };
 
 export const Route = createFileRoute("/_layout")({
@@ -33,7 +32,7 @@ function Layout() {
     
     return (
         <main className="w-full h-screen flex flex-col overflow-hidden min-w-[350px]">
-            <AppTopbar username={userDetails.userName} />
+            <AppTopbar />
             <ScrollArea className="w-full h-full max-w-screen-[1700px] mx-auto">
                 <Outlet />
             </ScrollArea>
@@ -44,7 +43,7 @@ function Layout() {
 
 async function fetchUserDetails() {
     try {
-        const response: AxiosResponse<UserDetailsResponse> = await api("/Auth/Details");
+        const response: AxiosResponse<UserDetailsResponse> = await api("/Auth/ItemsStatus");
 
         if (!response) {
             throw new Error();
