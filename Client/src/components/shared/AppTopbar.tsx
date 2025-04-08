@@ -56,7 +56,7 @@ export default function AppTopbar() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     
     return (
-        <header className="z-10 flex items-center justify-between gap-3 py-4 px-4 w-full text-sm">
+        <header className="z-10 flex items-center justify-between gap-3 p-4 w-full text-sm">
             <Link className="flex items-center mr-16" to="/">
                 <Logo className="w-7 h-auto" iconProps={{className: "h-7 md:h-8"}} textProps={{ className: "hidden" }} />
             </Link>
