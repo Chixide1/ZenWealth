@@ -58,9 +58,9 @@ export const chartConfig = {
     }
 } satisfies ChartConfig;
 
-export const debitColors = Array.from({ length: 15 }, (_, i) => `hsl(var(--debit-chart-${i + 1}))`);
+export const debitColors = Array.from({ length: 6 }, (_, i) => `hsl(var(--debit-chart-${i + 1}))`);
 export const chartColors = Array.from({ length: 15 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
-export const creditColors = Array.from({ length: 15 }, (_, i) => `var(--credit-chart-${i + 1})`);
+export const creditColors = Array.from({ length: 5 }, (_, i) => `var(--credit-chart-${i + 1})`);
 
 export function addColors<T>(items: T[], colors: string[]){
     return items.map((item, i) => ({...item, fill: colors[i % colors.length]}));
