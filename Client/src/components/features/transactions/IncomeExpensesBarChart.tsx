@@ -1,4 +1,4 @@
-import { ComposedChart, Legend, XAxis, YAxis, CartesianGrid, Bar, Line, Tooltip, ResponsiveContainer } from "recharts";
+import { ComposedChart, Legend, XAxis, YAxis, CartesianGrid, Bar, Line, Tooltip, ResponsiveContainer, TooltipProps, LegendProps } from "recharts";
 import {FinancialPeriod} from "@/types.ts";
 import {cn, currencyParser, chartColors, categories} from "@/lib/utils.ts";
 import { format } from "date-fns";
@@ -79,14 +79,15 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
     );
 }
 
+
 // Custom tooltip component to group income and expenses
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (!active || !payload || !payload.length) return null;
     
     // Group items by income and expense
-    const incomeItems = payload.filter((item: any) => item.name.startsWith('income_'));
-    const expenseItems = payload.filter((item: any) => item.name.startsWith('expense_'));
-    const netProfit = payload.find((item: any) => item.name === 'netProfit');
+    const incomeItems = payload.filter((item) => item.name?.startsWith('income_'));
+    const expenseItems = payload.filter((item) => item.name?.startsWith('expense_'));
+    const netProfit = payload.find((item) => item.name === 'netProfit');
     
     return (
         <div className="p-2 text-sm bg-charcoal/90 rounded-md backdrop-blur-xl border border-neutral-700 max-h-[75%] overflow-auto">
@@ -96,17 +97,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             {incomeItems.length > 0 && (
                 <div className="mb-2">
                     <p className="font-semibold underline">Income</p>
-                    {incomeItems.map((item: any, index: number) => {
+                    {incomeItems.map((item, index) => {
                         if (item.value === 0) return null;
-                        const categoryName = item.name.replace("income_", "").replace(/_/g, " ");
+                        const categoryName = item.name?.replace("income_", "").replace(/_/g, " ");
                         // Get category base name to look up in color map
-                        const category = item.name.replace("income_", "");
+                        const category = item.name?.replace("income_", "") ?? "";
                         const color = categoryColorMap[category] || item.color;
                         
                         return (
                             <div key={`income-${index}`} className="flex justify-between">
                                 <span style={{ color }}>{categoryName}</span>
-                                <span className="ml-4">{currencyParser.format(item.value)}</span>
+                                <span className="ml-4">{currencyParser.format(item.value ?? 0)}</span>
                             </div>
                         );
                     })}
@@ -117,17 +118,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             {expenseItems.length > 0 && (
                 <div className="mb-2">
                     <p className="font-semibold underline">Expenses</p>
-                    {expenseItems.map((item: any, index: number) => {
+                    {expenseItems.map((item, index: number) => {
                         if (item.value === 0) return null;
-                        const categoryName = item.name.replace("expense_", "").replace(/_/g, " ");
+                        const categoryName = item.name?.replace("expense_", "").replace(/_/g, " ");
                         // Get category base name to look up in color map
-                        const category = item.name.replace("expense_", "");
-                        const color = categoryColorMap[category] || item.color;
+                        const category = item.name?.replace("expense_", "");
+                        const color = categoryColorMap[category ?? ""] || item.color;
                         
                         return (
                             <div key={`expense-${index}`} className="flex justify-between">
                                 <span style={{ color }}>{categoryName}</span>
-                                <span className="ml-4">{currencyParser.format(item.value)}</span>
+                                <span className="ml-4">{currencyParser.format(item.value ?? 0)}</span>
                             </div>
                         );
                     })}
@@ -139,7 +140,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                 <div className="mt-2 pt-2 border-t border-neutral-600">
                     <div className="flex justify-between font-bold">
                         <span style={{ color: netProfit.color }}>Net Profit</span>
-                        <span className="ml-4">{currencyParser.format(netProfit.value)}</span>
+                        <span className="ml-4">{currencyParser.format(netProfit.value ?? 0)}</span>
                     </div>
                 </div>
             )}
@@ -148,7 +149,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 // Custom legend component to display unique categories
-const CustomLegend = (props: any) => {
+const CustomLegend = (props: LegendProps & {categoryColorMap: Record<string, string>}) => {
     const { payload, categoryColorMap } = props;
     if (!payload) return null;
     
@@ -156,8 +157,8 @@ const CustomLegend = (props: any) => {
     const uniqueCategories = new Map();
     
     // Process the payload to extract unique categories
-    payload.forEach((entry: any) => {
-        const name = entry.value;
+    payload.forEach((entry) => {
+        const name = entry.value as string;
         
         // Skip "income_" and "expense_" prefixes for the same category
         let categoryKey = name;

@@ -58,40 +58,9 @@ export const chartConfig = {
     }
 } satisfies ChartConfig;
 
-export const debitColors = [
-    "hsl(var(--debit-chart-1))",
-    "hsl(var(--debit-chart-2))",
-    "hsl(var(--debit-chart-3))",
-    "hsl(var(--debit-chart-4))",
-    "hsl(var(--debit-chart-5))",
-    "hsl(var(--debit-chart-6))",
-];
-
-export const chartColors = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
-    "hsl(var(--chart-6))",
-    "hsl(var(--chart-7))",
-    "hsl(var(--chart-8))",
-    "hsl(var(--chart-9))",
-    "hsl(var(--chart-10))",
-    "hsl(var(--chart-11))",
-    "hsl(var(--chart-12))",
-    "hsl(var(--chart-13))",
-    "hsl(var(--chart-14))",
-    "hsl(var(--chart-15))",
-];
-
-export const creditColors = [
-    "var(--credit-chart-1)",
-    "var(--credit-chart-2)",
-    "var(--credit-chart-3)",
-    "var(--credit-chart-4)",
-    "var(--credit-chart-5)",
-];
+export const debitColors = Array.from({ length: 15 }, (_, i) => `hsl(var(--debit-chart-${i + 1}))`);
+export const chartColors = Array.from({ length: 15 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
+export const creditColors = Array.from({ length: 15 }, (_, i) => `var(--credit-chart-${i + 1})`);
 
 export function addColors<T>(items: T[], colors: string[]){
     return items.map((item, i) => ({...item, fill: colors[i % colors.length]}));
