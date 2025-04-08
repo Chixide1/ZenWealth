@@ -133,7 +133,6 @@ function AccountSection() {
     const handleDeleteBank = async (id: number) => {
         setIsLoading(true);
         const response = await api.delete<DeleteItemResponse>(`/Link/${id}`);
-        setIsLoading(false);
 
         if(response.status === 200) {
             toast({title: "Disconnect Status", description: "Successfully removed the account!"});
@@ -141,8 +140,14 @@ function AccountSection() {
         else {
             toast({title: "Unable to remove connected account", description: response.data.error, variant: "destructive"});
         }
-        
-        queryClient.refetchQueries();
+
+        if(institutions.length === 1){
+            window.location.reload();
+            return;
+        }
+
+        await queryClient.refetchQueries();
+        setIsLoading(false);
     };
 
     const handleDeleteUser = async () => {

@@ -22,8 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddPlaid(builder.Configuration.GetSection("Plaid"));
 builder.Services.AddSingleton<PlaidClient>();
-builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration));
+builder.Host.UseSerilogLogging();
 
 var app = builder.Build();
 
