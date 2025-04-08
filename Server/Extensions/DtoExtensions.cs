@@ -1,3 +1,6 @@
+using Server.Data.Models;
+using Server.Data.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace Server.Extensions;
 
