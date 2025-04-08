@@ -1,9 +1,16 @@
 import { ComposedChart, Legend, XAxis, YAxis, CartesianGrid, Bar, Line, Tooltip, ResponsiveContainer } from "recharts";
 import {FinancialPeriod} from "@/types.ts";
-import {cn, debitColors, currencyParser, chartColors, categories} from "@/lib/utils.ts";
+import {cn, currencyParser, chartColors, categories} from "@/lib/utils.ts";
 import { format } from "date-fns";
 import {useIsMobile} from "@/hooks/use-mobile.tsx";
 import { TransactionCategory } from "@/lib/utils.ts";
+
+// Create a mapping of categories to consistent colors
+const categoryColorMap: Record<string, string> = {};
+categories.forEach((category, index) => {
+    // Use chartColors for all categories to keep them consistent
+    categoryColorMap[category] = chartColors[index % chartColors.length];
+});
 
 type IncomeExpensesBarChartProps = {
     className?: string,
@@ -25,31 +32,31 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
                         />
                         <YAxis stroke={"grey"} tickFormatter={(value: number) => currencyParser.format(value)}/>
                         <Tooltip
-                            formatter={tooltipFormatter}
+                            content={<CustomTooltip />}
                             wrapperClassName="!bg-charcoal/90 max-h-64 !p-4 overflow-y-auto backdrop-blur-xl rounded-md !border-neutral-700"
                             wrapperStyle={{pointerEvents: "auto"}}
                         />
                         <CartesianGrid className="stroke-white/30 " strokeDasharray="3 3" />
 
                         {/* Stacked income values */}
-                        {categories.map((category, index) => (
+                        {categories.map((category) => (
                             <Bar
                                 key={`MonthlyBreakdownChartBar::income_${category}`}
                                 dataKey={`income_${category}`}
                                 name={`income_${category}`}
                                 stackId="income"
-                                fill={debitColors[index % debitColors.length]}
+                                fill={categoryColorMap[category]} // Use consistent color from map
                             />
                         ))}
 
                         {/* Stacked expense values */}
-                        {categories.map((category, index) => (
+                        {categories.map((category) => (
                             <Bar
                                 key={`MonthlyBreakdownChartBar::expense_${category}`}
                                 dataKey={`expense_${category}`}
                                 name={`expense_${category}`}
                                 stackId="expense"
-                                fill={chartColors[index % chartColors.length]}
+                                fill={categoryColorMap[category]} // Use consistent color from map
                             />
                         ))}
 
@@ -64,13 +71,136 @@ export function IncomeExpensesBarChart({data, className}: IncomeExpensesBarChart
                             name="netProfit"
                         />
 
-                        {!isMobile && <Legend formatter={legendFormatter}/>}
+                        {!isMobile && <Legend content={<CustomLegend categoryColorMap={categoryColorMap} />} />}
                     </ComposedChart>
                 </ResponsiveContainer>
             </div>
         </div>
     );
 }
+
+// Custom tooltip component to group income and expenses
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    
+    // Group items by income and expense
+    const incomeItems = payload.filter((item: any) => item.name.startsWith('income_'));
+    const expenseItems = payload.filter((item: any) => item.name.startsWith('expense_'));
+    const netProfit = payload.find((item: any) => item.name === 'netProfit');
+    
+    return (
+        <div className="p-2 text-sm bg-charcoal/90 rounded-md backdrop-blur-xl border border-neutral-700 max-h-[75%] overflow-auto">
+            <p className="font-bold mb-2">{label}</p>
+            
+            {/* Income section */}
+            {incomeItems.length > 0 && (
+                <div className="mb-2">
+                    <p className="font-semibold underline">Income</p>
+                    {incomeItems.map((item: any, index: number) => {
+                        if (item.value === 0) return null;
+                        const categoryName = item.name.replace("income_", "").replace(/_/g, " ");
+                        // Get category base name to look up in color map
+                        const category = item.name.replace("income_", "");
+                        const color = categoryColorMap[category] || item.color;
+                        
+                        return (
+                            <div key={`income-${index}`} className="flex justify-between">
+                                <span style={{ color }}>{categoryName}</span>
+                                <span className="ml-4">{currencyParser.format(item.value)}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+            
+            {/* Expense section */}
+            {expenseItems.length > 0 && (
+                <div className="mb-2">
+                    <p className="font-semibold underline">Expenses</p>
+                    {expenseItems.map((item: any, index: number) => {
+                        if (item.value === 0) return null;
+                        const categoryName = item.name.replace("expense_", "").replace(/_/g, " ");
+                        // Get category base name to look up in color map
+                        const category = item.name.replace("expense_", "");
+                        const color = categoryColorMap[category] || item.color;
+                        
+                        return (
+                            <div key={`expense-${index}`} className="flex justify-between">
+                                <span style={{ color }}>{categoryName}</span>
+                                <span className="ml-4">{currencyParser.format(item.value)}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+            
+            {/* Net profit section */}
+            {netProfit && (
+                <div className="mt-2 pt-2 border-t border-neutral-600">
+                    <div className="flex justify-between font-bold">
+                        <span style={{ color: netProfit.color }}>Net Profit</span>
+                        <span className="ml-4">{currencyParser.format(netProfit.value)}</span>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Custom legend component to display unique categories
+const CustomLegend = (props: any) => {
+    const { payload, categoryColorMap } = props;
+    if (!payload) return null;
+    
+    // Create a map to store unique categories
+    const uniqueCategories = new Map();
+    
+    // Process the payload to extract unique categories
+    payload.forEach((entry: any) => {
+        const name = entry.value;
+        
+        // Skip "income_" and "expense_" prefixes for the same category
+        let categoryKey = name;
+        let displayName = name;
+        
+        if (name === "netProfit") {
+            categoryKey = "netProfit";
+            displayName = "NET PROFIT";
+        } else if (name.startsWith("income_") || name.startsWith("expense_")) {
+            // Extract the actual category name
+            categoryKey = name.replace(/^(income_|expense_)/, "");
+            displayName = categoryKey.replace(/_/g, " ");
+        }
+        
+        // Only add if we haven't seen this category yet
+        if (!uniqueCategories.has(categoryKey)) {
+            // Use the consistent color from the map for this category
+            const color = categoryKey === "netProfit" 
+                ? entry.color 
+                : categoryColorMap[categoryKey] || entry.color;
+                
+            uniqueCategories.set(categoryKey, {
+                displayName,
+                color,
+                type: entry.type
+            });
+        }
+    });
+    
+    return (
+        <ul className="flex flex-wrap justify-center gap-2 mt-2 bg-charcoal/90 p-4 rounded-md backdrop-blur-xl border border-neutral-700">
+            {Array.from(uniqueCategories.entries()).map(([key, value]) => (
+                <li key={key} className="flex items-center">
+                    <span 
+                        className="inline-block w-3 h-3 mr-1"
+                        style={{ backgroundColor: value.color }}
+                    />
+                    <span style={{color: value.color}}>{value.displayName}</span>
+                </li>
+            ))}
+        </ul>
+    );
+};
 
 type TransformedPeriod = {
     year: number;
@@ -105,33 +235,4 @@ function prepareData(data: FinancialPeriod[]){
 
         return transformedPeriod;
     });
-}
-
-function tooltipFormatter(value: number, name: string) {
-    // Format the value as currency
-    const formattedValue = currencyParser.format(value);
-
-    // Clean up the category name by removing the prefix and formatting
-    let cleanName = name;
-
-    if (cleanName === "netProfit") {
-        cleanName = "Net Profit";
-    } else if (cleanName.startsWith("expense_")) {
-        cleanName = cleanName.replace("expense_", "").replace(/_/g, " ");
-    } else if (cleanName.startsWith("income_")) {
-        cleanName = cleanName.replace("income_", "").replace(/_/g, " ");
-    }
-
-    return [formattedValue, cleanName];
-}
-
-function legendFormatter(value: string) {
-    if (value === "netProfit") {
-        return "Net Profit".toUpperCase();
-    } else if (value.startsWith("expense_")) {
-        return value.replace("expense_", "").replace(/_/g, " ");
-    } else if (value.startsWith("income_")) {
-        return value.replace("income_", "").replace(/_/g, " ");
-    }
-    return value;
 }
