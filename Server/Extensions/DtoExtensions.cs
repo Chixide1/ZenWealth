@@ -9,10 +9,7 @@ public static class DtoExtensions
     /// <summary>
     /// Convert Transactions into Transaction Data Transfer Object
     /// </summary>
-    /// <remarks>
-    /// This extension method selects only the necessary fields from the table through LINQ to be returned to the frontend 
-    /// </remarks>
-    /// <param name="transaction">The Transaction IQueryable</param>
+    /// <param name="transaction">The Transaction IQueryable to be transformed.</param>
     public static IQueryable<TransactionDto> ToTransactionDto(this IQueryable<Transaction> transaction)
     {
         var transactionDto = transaction

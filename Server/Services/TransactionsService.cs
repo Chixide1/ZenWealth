@@ -7,12 +7,6 @@ using Server.Extensions;
 
 namespace Server.Services;
 
-/// <summary>
-/// The Service where the business logic for transactions is implemented.
-/// </summary>
-/// <remarks>
-/// Also used as the Data Access Layer and Plaid API wrapper.
-/// </remarks>
 public class TransactionsService(
     AppDbContext context,
     PlaidClient client,

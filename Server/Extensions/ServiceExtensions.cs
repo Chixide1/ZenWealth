@@ -17,10 +17,6 @@ public static class ServiceExtensions
     /// <summary>
     /// Configures CORS for the application.
     /// </summary>
-    /// <remarks>
-    /// This extension method adds the "Dev" CORS policy to the application.
-    /// This policy allows requests from any origin, with any method, and with any header.
-    /// </remarks>
     /// <param name="services">The service collection to add the CORS policy to.</param>
     public static void ConfigureCors(this IServiceCollection services)
     {
@@ -39,11 +35,6 @@ public static class ServiceExtensions
     /// <summary>
     /// Configures the database context for the application.
     /// </summary>
-    /// <remarks>
-    /// This extension method adds the application's database context to the service collection,
-    /// using SQL Server as the database provider. It retrieves the connection string from the configuration 
-    /// and enables sensitive data logging for debugging purposes.
-    /// </remarks>
     /// <param name="services">The service collection to add the database context to.</param>
     /// <param name="configuration">The application configuration used to retrieve the connection string.</param>
     public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -60,9 +51,6 @@ public static class ServiceExtensions
     /// </summary>
     /// <param name="services">The IServiceCollection to add the identity services to.</param>
     /// <remarks>
-    /// This extension method adds identity API endpoints for the User entity and configures the identity options.
-    /// It requires users to confirm their email before signing in and enforces unique emails for user accounts.
-    /// </remarks>
     public static void ConfigureIdentity(this IServiceCollection services)
     {
         services.AddIdentityApiEndpoints<User>()
@@ -76,12 +64,8 @@ public static class ServiceExtensions
     }
 
     /// <summary>
-    /// Adds services for development, if the app is running in a development environment.
+    /// Adds extra services based on the environment.
     /// </summary>
-    /// <remarks>
-    /// This extension method adds Swagger and Swagger UI to the request pipeline if the app is running in a development environment, 
-    /// and enables CORS for the "Dev" policy.
-    /// </remarks>
     /// <param name="app">The web application to add the development services to.</param>
     public static void AddEnvironmentConfiguration(this WebApplication app)
     {
@@ -93,6 +77,11 @@ public static class ServiceExtensions
         }
     }
 
+    /// <summary>
+    /// Adds Azure Communication Services email client and configuration.
+    /// </summary>
+    /// <param name="services">The IServiceCollection to add the identity services to.</param>
+    /// /// <param name="configuration">The config where the email client values should be pulled from.</param>
     public static void ConfigureEmail(this IServiceCollection services, IConfiguration configuration)
     {
         // Add Azure client

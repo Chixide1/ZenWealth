@@ -5,6 +5,9 @@ using Item = Server.Data.Models.Item;
 
 namespace Server.Services;
 
+/// <summary>
+/// Service used for item management.
+/// </summary>
 public interface IItemsService
 {
     /// <summary>

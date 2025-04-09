@@ -13,10 +13,6 @@ using Transaction = Server.Data.Models.Transaction;
 
 namespace Server.Services;
 
-/// <summary>
-/// The Service where the business logic for Items is implemented.
-/// Also used as the Data Access Layer.
-/// </summary>
 public class ItemsService(
     AppDbContext context,
     ILogger<ItemsService> logger,

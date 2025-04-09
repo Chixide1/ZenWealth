@@ -12,7 +12,6 @@ namespace Server.Controllers;
 [Route("[controller]")]
 [Produces("application/json")]
 public class AccountsController(
-    ILogger<TransactionsController> logger,
     IAccountsService accountsService,
     UserManager<User> userManager) : ControllerBase
 {

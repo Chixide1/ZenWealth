@@ -6,13 +6,6 @@ using System.Threading.Tasks;
 
 namespace Server.Services;
 
-public interface IEmailService
-{
-    Task SendEmailAsync(string email, string subject, string htmlMessage);
-    Task SendPasswordResetEmailAsync(string email, string callbackUrl);
-    Task SendEmailConfirmationAsync(string email, string callbackUrl);
-}
-
 public class AzureCommunicationEmailService(EmailClient emailClient, IOptions<EmailOptions> options, ILogger<AzureCommunicationEmailService> logger) : IEmailService
 {
     private readonly EmailOptions _emailOptions = options.Value;

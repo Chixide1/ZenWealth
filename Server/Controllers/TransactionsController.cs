@@ -12,7 +12,6 @@ namespace Server.Controllers;
 [Produces("application/json")]
 [Route("[controller]")]
 public class TransactionsController(
-    ILogger<TransactionsController> logger,
     ITransactionsService transactionsService,
     IItemsService itemsService,
     UserManager<User> userManager) : ControllerBase
