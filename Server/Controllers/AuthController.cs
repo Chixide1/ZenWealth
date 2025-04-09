@@ -1,22 +1,29 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Server.Data.DTOs;
 using Server.Data.Models;
 using Server.Services;
+using System.ComponentModel.DataAnnotations;
+using System.Web;
 
 namespace Server.Controllers;
 
 [Route("[controller]/[action]")]
 [ApiController]
-public class AuthController(
-    UserManager<User> userManager,
-    SignInManager<User> signInManager,
-    IItemsService itemsService) : ControllerBase
+public class AuthController(UserManager<User> userManager,
+    IEmailService emailService,
+    IOptions<EmailOptions> emailOptions,
+    SignInManager<User> signInManager) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var response = new AuthResponse();
 
         var user = new User { UserName = dto.Username, Email = dto.Email };
@@ -27,7 +34,18 @@ public class AuthController(
             response.Errors.AddRange(result.Errors);
             return BadRequest(response);
         }
-        
+
+        // Generate email confirmation token
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        // URL encode the token as it may contain special characters
+        token = HttpUtility.UrlEncode(token);
+
+        // Create confirmation link with token
+        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/confirm-email?email={user.Email}&token={token}";
+
+        await emailService.SendEmailConfirmationAsync(user.Email, callbackUrl);
+
         return Ok(response);
     }
 
@@ -68,89 +86,162 @@ public class AuthController(
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
-        return Ok("User logged out successfully");
+        return Ok(new { message = "User logged out successfully" });
     }
-    
-    [HttpGet]
-    [Authorize]
-    [ProducesResponseType(type: typeof(HasItemsResponse), statusCode: 200)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ItemsStatus()
-    {
-        var user = await userManager.GetUserAsync(User);
 
-        if (user == null)
-        {
-            return Unauthorized();
-        }
-        
-        var result = await itemsService.CheckItemExistsAsync(user.Id);
-        return Ok(new HasItemsResponse(result));
-    }
-    
-    [HttpGet]
-    [Authorize]
-    [ProducesResponseType(type: typeof(UserDetailsResponse), statusCode: 200)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Details()
+    [HttpPost]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model)
     {
-        var user = await userManager.GetUserAsync(User);
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        if (user == null)
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
         {
-            return Unauthorized();
-        }
-        
-        var result = await itemsService.GetItemsAsync(user.Id);
-        return Ok(new UserDetailsResponse(user.UserName!, user.Email!, result));
-    }
-    
-    [HttpDelete]
-    [Authorize]
-    [ProducesResponseType(type: typeof(DeleteUserResponse), statusCode: 200)]
-    [ProducesResponseType(type: typeof(DeleteUserResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteUser()
-    {
-        var user = await userManager.GetUserAsync(User);
-
-        if (user == null)
-        {
-            return Unauthorized();
+            // Don't reveal that the user does not exist or is not confirmed
+            return Ok(new { message = "If your email is registered, you will receive a password reset link." });
         }
 
-        var items = await itemsService.GetItemsAsync(user.Id);
-        
-        foreach (var item in items)
-        {
-            var status = await itemsService.DeleteItemAsync(user.Id, item.Id);
+        // Generate password reset token
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
-            if (!status)
+        // URL encode the token as it may contain special characters
+        token = HttpUtility.UrlEncode(token);
+
+        // Create reset link with token (to be used by your frontend)
+        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/reset-password?email={user.Email}&token={token}";
+
+        await emailService.SendPasswordResetEmailAsync(model.Email, callbackUrl);
+
+        return Ok(new { message = "If your email is registered, you will receive a password reset link." });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            // Don't reveal that the user does not exist
+            return Ok(new { message = "Password has been reset." });
+        }
+
+        // Decode token if it was encoded on the client side
+        var token = HttpUtility.UrlDecode(model.Token);
+
+        var result = await userManager.ResetPasswordAsync(user, token, model.NewPassword);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
             {
-                return StatusCode(500, "unable to delete item");
+                ModelState.AddModelError(string.Empty, error.Description);
             }
+            return BadRequest(ModelState);
         }
-        
-        var result = await userManager.DeleteAsync(user);
 
-        return result.Succeeded ?
-            Ok(new DeleteUserResponse(Success: true, Array.Empty<IdentityError>() )) :
-            StatusCode(500, new DeleteUserResponse(false, result.Errors));
+        return Ok(new { message = "Password has been reset successfully." });
     }
-}
 
-public record DeleteUserResponse(bool Success, IEnumerable<IdentityError> Errors)
-{
-    public override string ToString()
+    [HttpPost]
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest model)
     {
-        return $"{{ Success = {Success}, Errors = {Errors} }}";
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        // Decode token if it was encoded on the client side
+        var token = HttpUtility.UrlDecode(model.Token);
+
+        var result = await userManager.ConfirmEmailAsync(user, token);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return BadRequest(ModelState);
+        }
+
+        return Ok(new { message = "Thank you for confirming your email." });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationRequest model)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            // Don't reveal that the user does not exist
+            return Ok(new { message = "If your email is registered, you will receive a confirmation link." });
+        }
+
+        if (await userManager.IsEmailConfirmedAsync(user))
+        {
+            return BadRequest(new { message = "Email is already confirmed." });
+        }
+
+        // Generate email confirmation token
+        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        // URL encode the token as it may contain special characters
+        token = HttpUtility.UrlEncode(token);
+
+        // Create confirmation link with token
+        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/confirm-email?email={user.Email}&token={token}";
+
+        await emailService.SendEmailConfirmationAsync(model.Email, callbackUrl);
+
+        return Ok(new { message = "Confirmation email sent. Please check your email." });
     }
 }
-
-public record HasItemsResponse(bool HasItems);
-
-public record UserDetailsResponse(string UserName, string Email, IEnumerable<InstitutionDto> Institutions);
 
 internal class AuthResponse
 {
     public List<IdentityError> Errors { get; } = [];
+}
+
+// Request Models
+public class ForgotPasswordRequest
+{
+    [EmailAddress]
+    public required string Email { get; set; }
+}
+
+public class ResetPasswordRequest
+{
+    [EmailAddress]
+    public required string Email { get; set; }
+
+    public required string Token { get; set; }
+
+    [StringLength(100, MinimumLength = 6)]
+    public required string NewPassword { get; set; }
+
+    [Compare("NewPassword")]
+    public required string ConfirmPassword { get; set; }
+}
+
+public class ConfirmEmailRequest
+{
+    [EmailAddress]
+    public required string Email { get; set; }
+
+    public required string Token { get; set; }
+}
+
+public class ResendConfirmationRequest
+{
+    [EmailAddress]
+    public required string Email { get; set; }
 }

@@ -22,6 +22,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddPlaid(builder.Configuration.GetSection("Plaid"));
 builder.Services.AddSingleton<PlaidClient>();
+builder.Services.ConfigureEmail(builder.Configuration);
+
 builder.Host.UseSerilogLogging();
 
 var app = builder.Build();

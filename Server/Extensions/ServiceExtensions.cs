@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Server.Data;
 using Server.Data.DTOs;
 using Server.Data.Models;
+using Server.Services;
 using System;
 
 namespace Server.Extensions;
@@ -89,5 +91,20 @@ public static class ServiceExtensions
             app.UseSwaggerUI();
             app.UseCors("Dev");
         }
+    }
+
+    public static void ConfigureEmail(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Add Azure client
+        services.AddAzureClients(azureBuilder =>
+        {
+            azureBuilder.AddEmailClient(configuration.GetConnectionString("AzureCommunicationServices"));
+        });
+
+        // Configure email options
+        services.Configure<EmailOptions>(configuration.GetSection("EmailSettings"));
+
+        // Register the email service
+        services.AddScoped<IEmailService, AzureCommunicationEmailService>();
     }
 }
