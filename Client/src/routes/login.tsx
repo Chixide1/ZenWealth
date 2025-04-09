@@ -1,8 +1,11 @@
 ﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { LoginForm } from "@/components/features/identity/LoginForm.tsx";
 import Logo from "@/components/shared/Logo.tsx";
+import api from "@/lib/api";
+import { redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute("/login")({
+    beforeLoad: checkAuth,
     component: LoginPage,
 });
 
@@ -28,4 +31,10 @@ function LoginPage() {
             </p>
         </main>
     );
+}
+
+async function checkAuth(){
+    const response = await api.get("/User");
+
+    if (response.status != 401) throw redirect({ to: "/" });
 }

@@ -283,7 +283,7 @@ type UserDetails = {
 export const userDetailsAtom = atomWithQuery(() => ({
     queryKey: ["userDetails"],
     queryFn: async () => {
-        const response = await api<UserDetails>("Auth/Details").catch(
+        const response = await api<UserDetails>("User").catch(
             (e: AxiosError<UserDetails>) => console.error(e),
         );
 

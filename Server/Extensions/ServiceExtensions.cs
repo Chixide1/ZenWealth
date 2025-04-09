@@ -58,7 +58,7 @@ public static class ServiceExtensions
 
         services.Configure<IdentityOptions>(options =>
         {
-            // options.SignIn.RequireConfirmedEmail = true;
+            options.SignIn.RequireConfirmedEmail = true;
             options.User.RequireUniqueEmail = true;
         });
     }

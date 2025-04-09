@@ -152,7 +152,7 @@ function AccountSection() {
 
     const handleDeleteUser = async () => {
         setIsLoading(true);
-        const response = await api.delete<DeleteUserResponse>("/Auth/DeleteUser");
+        const response = await api.delete<DeleteUserResponse>("/User");
         setIsLoading(false);
 
         if(response.status === 200) {

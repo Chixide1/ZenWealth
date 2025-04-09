@@ -41,7 +41,7 @@ function Layout() {
 
 async function fetchUserDetails() {
     try {
-        const response: AxiosResponse<UserDetailsResponse> = await api("/Auth/ItemsStatus");
+        const response: AxiosResponse<UserDetailsResponse> = await api("/User/ItemsStatus");
 
         if (!response) {
             throw new Error();

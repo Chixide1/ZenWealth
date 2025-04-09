@@ -8,9 +8,16 @@ import {Avatar, AvatarFallback} from "@/components/ui/avatar.tsx";
 import { useState } from "react";
 import {userDetailsAtom} from "@/lib/atoms.ts";
 import { useAtom } from "jotai";
-import { ChevronDown, LogOut, Settings } from "lucide-react";
+import { ChevronDown, LogOut, Settings, UserPlus } from "lucide-react";
 import api from "@/lib/api.ts";
 import Loading from "@/components/shared/Loading.tsx";
+import { redirect, useNavigate } from "@tanstack/react-router";
+
+type UserDropdownMenuItem = {
+    icon: React.ReactNode,
+    text: string,
+    onSelect: () => void
+}
 
 type UserDropdownMenuProps = {
     dialogStateSetter:  React.Dispatch<React.SetStateAction<boolean>>,
@@ -19,6 +26,28 @@ type UserDropdownMenuProps = {
 export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
     const [{data: userDetails}] = useAtom(userDetailsAtom);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const UserDropdownMenuItems: UserDropdownMenuItem[] = [
+        {
+            icon: <LogOut />,
+            text: "Sign Out",
+            onSelect: handleSignOut,
+        },
+        {
+            icon: <Settings />,
+            text: "Settings",
+            onSelect: () => {
+                setIsDropdownOpen(false);
+                dialogStateSetter(true);
+            },
+        },
+        {
+            icon: <UserPlus />,
+            text: "Register",
+            onSelect: () => { navigate({ to: "/register" })},
+        }
+    ];
 
     return (
         <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
@@ -34,23 +63,16 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
                 </> : <Loading className="w-6 h-auto" />)}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-neutral-700 text-primary border-neutral-600">
-                <DropdownMenuItem
-                    onClick={handleSignOut}
-                    className="cursor-pointer focus:text-secondary transition-colors duration-300 focus:bg-background"
-                >
-                    <LogOut />
-                    <span>Sign Out</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    className="cursor-pointer focus:text-secondary transition-colors duration-300 focus:bg-background"
-                    onSelect={() => {
-                        setIsDropdownOpen(false);
-                        dialogStateSetter(true);
-                    }}
-                >
-                    <Settings />
-                    <span>Settings</span>
-                </DropdownMenuItem>
+                {(UserDropdownMenuItems.map(item => (
+                    <DropdownMenuItem
+                        key={item.text}
+                        className="cursor-pointer focus:text-secondary transition-colors duration-300 focus:bg-background"
+                        onSelect={item.onSelect}
+                    >
+                        {item.icon}
+                        <span>{item.text}</span>
+                    </DropdownMenuItem>
+                )))}
             </DropdownMenuContent>
         </DropdownMenu>
     );

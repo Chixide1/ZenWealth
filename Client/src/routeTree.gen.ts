@@ -13,6 +13,8 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
+import { Route as ForgotPasswordImport } from './routes/forgotPassword'
+import { Route as ConfirmAccountImport } from './routes/confirmAccount'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutTransactionsImport } from './routes/_layout/transactions'
@@ -31,6 +33,18 @@ const RegisterRoute = RegisterImport.update({
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ForgotPasswordRoute = ForgotPasswordImport.update({
+  id: '/forgotPassword',
+  path: '/forgotPassword',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ConfirmAccountRoute = ConfirmAccountImport.update({
+  id: '/confirmAccount',
+  path: '/confirmAccount',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -78,6 +92,20 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof LayoutImport
+      parentRoute: typeof rootRoute
+    }
+    '/confirmAccount': {
+      id: '/confirmAccount'
+      path: '/confirmAccount'
+      fullPath: '/confirmAccount'
+      preLoaderRoute: typeof ConfirmAccountImport
+      parentRoute: typeof rootRoute
+    }
+    '/forgotPassword': {
+      id: '/forgotPassword'
+      path: '/forgotPassword'
+      fullPath: '/forgotPassword'
+      preLoaderRoute: typeof ForgotPasswordImport
       parentRoute: typeof rootRoute
     }
     '/login': {
@@ -155,6 +183,8 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
+  '/confirmAccount': typeof ConfirmAccountRoute
+  '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/accounts': typeof LayoutAccountsRoute
@@ -165,6 +195,8 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/confirmAccount': typeof ConfirmAccountRoute
+  '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/accounts': typeof LayoutAccountsRoute
@@ -177,6 +209,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/confirmAccount': typeof ConfirmAccountRoute
+  '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/_layout/accounts': typeof LayoutAccountsRoute
@@ -190,6 +224,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
+    | '/confirmAccount'
+    | '/forgotPassword'
     | '/login'
     | '/register'
     | '/accounts'
@@ -199,6 +235,8 @@ export interface FileRouteTypes {
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/confirmAccount'
+    | '/forgotPassword'
     | '/login'
     | '/register'
     | '/accounts'
@@ -209,6 +247,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_layout'
+    | '/confirmAccount'
+    | '/forgotPassword'
     | '/login'
     | '/register'
     | '/_layout/accounts'
@@ -221,12 +261,16 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
+  ConfirmAccountRoute: typeof ConfirmAccountRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
+  ConfirmAccountRoute: ConfirmAccountRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
 }
@@ -242,6 +286,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_layout",
+        "/confirmAccount",
+        "/forgotPassword",
         "/login",
         "/register"
       ]
@@ -255,6 +301,12 @@ export const routeTree = rootRoute
         "/_layout/transactions",
         "/_layout/"
       ]
+    },
+    "/confirmAccount": {
+      "filePath": "confirmAccount.tsx"
+    },
+    "/forgotPassword": {
+      "filePath": "forgotPassword.tsx"
     },
     "/login": {
       "filePath": "login.tsx"
