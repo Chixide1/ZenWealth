@@ -7,10 +7,10 @@ import {useIsMobile} from "@/hooks/use-mobile.tsx";
 import {TransactionsCard} from "@/components/features/transactions/TransactionsCard.tsx";
 
 export const Route = createFileRoute("/_layout/transactions")({
-    component: TransactionsPage,
+    component: RouteComponent,
 });
 
-function TransactionsPage() {
+function RouteComponent() {
     const [{data, isLoading}] = useAtom(transactionsAtom);
     const [{pageIndex}] = useAtom(transactionsPaginationAtom);
     const isMobile = useIsMobile();

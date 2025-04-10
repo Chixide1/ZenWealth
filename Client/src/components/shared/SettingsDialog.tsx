@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -242,44 +240,44 @@ function AccountSection() {
 }
 
 // Placeholder components for other sections
-function SecuritySection() {
-    return (
-        <>
-            <DialogHeader className="p-6 pb-2">
-                <DialogTitle>Security</DialogTitle>
-                <DialogDescription>
-                    Manage your account security and authentication methods.
-                </DialogDescription>
-            </DialogHeader>
-            <ScrollArea className="flex-1 p-6 pt-2">
-                <div className="space-y-6">
-                    <p>Security settings will appear here.</p>
-                </div>
-            </ScrollArea>
-            <DialogFooter className="p-6 pt-2">
-                <Button type="submit">Save changes</Button>
-            </DialogFooter>
-        </>
-    );
-}
-
-function HelpSection() {
-    return (
-        <>
-            <DialogHeader className="p-6 pb-2">
-                <DialogTitle>Help & Support</DialogTitle>
-                <DialogDescription>
-                    Find resources and get support for any questions you have.
-                </DialogDescription>
-            </DialogHeader>
-            <ScrollArea className="flex-1 p-6 pt-2">
-                <div className="space-y-6">
-                    <p>Help resources will appear here.</p>
-                </div>
-            </ScrollArea>
-            <DialogFooter className="p-6 pt-2">
-                <Button>Contact Support</Button>
-            </DialogFooter>
-        </>
-    );
-}
+// function SecuritySection() {
+//     return (
+//         <>
+//             <DialogHeader className="p-6 pb-2">
+//                 <DialogTitle>Security</DialogTitle>
+//                 <DialogDescription>
+//                     Manage your account security and authentication methods.
+//                 </DialogDescription>
+//             </DialogHeader>
+//             <ScrollArea className="flex-1 p-6 pt-2">
+//                 <div className="space-y-6">
+//                     <p>Security settings will appear here.</p>
+//                 </div>
+//             </ScrollArea>
+//             <DialogFooter className="p-6 pt-2">
+//                 <Button type="submit">Save changes</Button>
+//             </DialogFooter>
+//         </>
+//     );
+// }
+//
+// function HelpSection() {
+//     return (
+//         <>
+//             <DialogHeader className="p-6 pb-2">
+//                 <DialogTitle>Help & Support</DialogTitle>
+//                 <DialogDescription>
+//                     Find resources and get support for any questions you have.
+//                 </DialogDescription>
+//             </DialogHeader>
+//             <ScrollArea className="flex-1 p-6 pt-2">
+//                 <div className="space-y-6">
+//                     <p>Help resources will appear here.</p>
+//                 </div>
+//             </ScrollArea>
+//             <DialogFooter className="p-6 pt-2">
+//                 <Button>Contact Support</Button>
+//             </DialogFooter>
+//         </>
+//     );
+// }

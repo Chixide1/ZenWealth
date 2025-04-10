@@ -18,10 +18,10 @@ import LiabilitiesTreeMap from "@/components/features/accounts/LiabilitiesTreeMa
 import {MonthlyAccountsWidget} from "@/components/features/accounts/MonthlyAccountsWidget.tsx";
 
 export const Route = createFileRoute("/_layout/")({
-    component: DashboardPage,
+    component: RouteComponent,
 });
 
-function DashboardPage() {
+function RouteComponent() {
     const [{data: accounts}] = useAtom(accountsAtom);
     const [{data: monthlySummaryData}]  = useAtom(monthlySummaryDataAtom);
     const [{data: recentTransactions}]  = useAtom(recentTransactionsAtom);

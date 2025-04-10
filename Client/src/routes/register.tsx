@@ -3,10 +3,10 @@ import { RegisterForm } from "@/components/features/identity/RegisterForm.tsx";
 import Logo from "@/components/shared/Logo.tsx";
 
 export const Route = createFileRoute("/register")({
-    component: RegisterPage,
+    component: RouteComponent,
 });
 
-function RegisterPage() {
+function RouteComponent() {
     return (
         <main className="h-screen w-full flex flex-col items-center justify-center">
             <div className="flex items-center my-auto">

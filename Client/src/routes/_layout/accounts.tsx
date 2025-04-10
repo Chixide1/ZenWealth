@@ -7,10 +7,10 @@ import {groupBy} from "@/lib/utils.ts";
 import {AccountsAccordion} from "@/components/features/accounts/AccountsAccordion.tsx";
 
 export const Route = createFileRoute("/_layout/accounts")({
-    component: AccountsPage,
+    component: RouteComponent,
 });
 
-function AccountsPage() {
+function RouteComponent() {
     const [{data}] = useAtom(accountsAtom);
     const accounts = data ?? [];
     

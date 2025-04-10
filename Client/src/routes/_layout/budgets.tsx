@@ -7,10 +7,10 @@ import {budgetsAtom} from "@/lib/atoms.ts";
 import { getAllBudgets} from "@/lib/utils.ts";
 
 export const Route = createFileRoute("/_layout/budgets")({
-    component: BudgetsPage,
+    component: RouteComponent,
 });
 
-function BudgetsPage() {
+function RouteComponent() {
     "use no memo" //eslint-disable-line
     
     const [{data}] = useAtom(budgetsAtom);

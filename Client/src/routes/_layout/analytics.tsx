@@ -5,10 +5,10 @@ import {categoryTotalsAtom, financialPeriodsAtom} from "@/lib/atoms.ts";
 import {IncomeExpensesOverviewCard} from "@/components/features/transactions/IncomeExpensesOverviewCard";
 
 export const Route = createFileRoute("/_layout/analytics")({
-    component: AnalyticsPage,
+    component: RouteComponent,
 });
 
-function AnalyticsPage() {
+function RouteComponent() {
     const [{data: categoryTotals}] = useAtom(categoryTotalsAtom);
     const [{data: financialPeriods}] = useAtom(financialPeriodsAtom);
     

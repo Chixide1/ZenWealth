@@ -7,16 +7,12 @@ import { ScrollArea } from "@/components/ui/scroll-area.tsx";
 import { Toaster } from "@/components/ui/toaster.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 
-type UserDetailsResponse = {
-    hasItems: boolean | null,
-};
-
 export const Route = createFileRoute("/_layout")({
-    component: Layout,
-    loader: fetchUserDetails,
+    component: LayoutComponent,
+    loader: fetchUserDetailsLoader,
 });
 
-function Layout() {
+function LayoutComponent() {
     const queryClient = useQueryClient();
     const userDetails = useLoaderData({ from: Route.id });
 
@@ -39,16 +35,11 @@ function Layout() {
     );
 }
 
-async function fetchUserDetails() {
-    try {
-        const response: AxiosResponse<UserDetailsResponse> = await api("/User/ItemsStatus");
+type UserDetailsResponse = {
+    hasItems: boolean | null,
+};
 
-        if (!response) {
-            throw new Error();
-        }
-        return response.data;
-    } catch (e) {
-        console.error(e);
-        throw new Error("Couldn't contact the Server", { cause: e });
-    }
+async function fetchUserDetailsLoader() {
+    const response: AxiosResponse<UserDetailsResponse> = await api("/User/ItemsStatus");
+    return response.data;
 }

@@ -2,7 +2,7 @@
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Lock, Loader2, UserRound } from "lucide-react";
-import { useNavigate } from "@tanstack/react-router";
+import {Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import {useToast} from "@/hooks/use-toast.ts";
 import { Label } from "@/components/ui/label";
@@ -123,7 +123,7 @@ export function LoginForm() {
                         Remember Me
                     </Label>
                 </div>
-                <a href="#" className="text-secondary font-normal">Forgot Password?</a>
+                <Link to="/forgotPassword" className="text-secondary font-normal">Forgot Password?</Link>
             </div>
             <Button
                 type="submit"

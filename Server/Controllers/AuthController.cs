@@ -42,7 +42,7 @@ public class AuthController(UserManager<User> userManager,
         token = HttpUtility.UrlEncode(token);
 
         // Create confirmation link with token
-        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/confirm-email?email={user.Email}&token={token}";
+        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/confirmEmail?email={user.Email}&token={token}";
 
         await emailService.SendEmailConfirmationAsync(user.Email, callbackUrl);
 
@@ -109,7 +109,7 @@ public class AuthController(UserManager<User> userManager,
         token = HttpUtility.UrlEncode(token);
 
         // Create reset link with token (to be used by your frontend)
-        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/reset-password?email={user.Email}&token={token}";
+        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/resetPassword?email={user.Email}&token={token}";
 
         await emailService.SendPasswordResetEmailAsync(model.Email, callbackUrl);
 
@@ -129,10 +129,10 @@ public class AuthController(UserManager<User> userManager,
             return Ok(new { message = "Password has been reset." });
         }
 
-        // Decode token if it was encoded on the client side
-        var token = HttpUtility.UrlDecode(model.Token);
+        // // Decode token if it was encoded on the client side
+        // var token = HttpUtility.UrlDecode(model.Token);
 
-        var result = await userManager.ResetPasswordAsync(user, token, model.NewPassword);
+        var result = await userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
         if (!result.Succeeded)
         {
             foreach (var error in result.Errors)
@@ -157,20 +157,15 @@ public class AuthController(UserManager<User> userManager,
             return NotFound(new { message = "User not found." });
         }
 
-        // Decode token if it was encoded on the client side
-        var token = HttpUtility.UrlDecode(model.Token);
-
-        var result = await userManager.ConfirmEmailAsync(user, token);
-        if (!result.Succeeded)
+        var result = await userManager.ConfirmEmailAsync(user, model.Token);
+        if (result.Succeeded) return Ok(new { message = "Thank you for confirming your email." });
+        
+        foreach (var error in result.Errors)
         {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-            return BadRequest(ModelState);
+            ModelState.AddModelError(error.Code, error.Description);
         }
+        return BadRequest(new { Errors = ModelState});
 
-        return Ok(new { message = "Thank you for confirming your email." });
     }
 
     [HttpPost]
@@ -198,7 +193,7 @@ public class AuthController(UserManager<User> userManager,
         token = HttpUtility.UrlEncode(token);
 
         // Create confirmation link with token
-        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/confirm-email?email={user.Email}&token={token}";
+        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/confirmEmail?email={user.Email}&token={token}";
 
         await emailService.SendEmailConfirmationAsync(model.Email, callbackUrl);
 

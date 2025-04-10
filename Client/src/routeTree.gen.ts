@@ -11,10 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ResetPasswordImport } from './routes/resetPassword'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
 import { Route as ForgotPasswordImport } from './routes/forgotPassword'
-import { Route as ConfirmAccountImport } from './routes/confirmAccount'
+import { Route as ConfirmEmailImport } from './routes/confirmEmail'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as LayoutTransactionsImport } from './routes/_layout/transactions'
@@ -23,6 +24,12 @@ import { Route as LayoutAnalyticsImport } from './routes/_layout/analytics'
 import { Route as LayoutAccountsImport } from './routes/_layout/accounts'
 
 // Create/Update Routes
+
+const ResetPasswordRoute = ResetPasswordImport.update({
+  id: '/resetPassword',
+  path: '/resetPassword',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const RegisterRoute = RegisterImport.update({
   id: '/register',
@@ -42,9 +49,9 @@ const ForgotPasswordRoute = ForgotPasswordImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ConfirmAccountRoute = ConfirmAccountImport.update({
-  id: '/confirmAccount',
-  path: '/confirmAccount',
+const ConfirmEmailRoute = ConfirmEmailImport.update({
+  id: '/confirmEmail',
+  path: '/confirmEmail',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -94,11 +101,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
-    '/confirmAccount': {
-      id: '/confirmAccount'
-      path: '/confirmAccount'
-      fullPath: '/confirmAccount'
-      preLoaderRoute: typeof ConfirmAccountImport
+    '/confirmEmail': {
+      id: '/confirmEmail'
+      path: '/confirmEmail'
+      fullPath: '/confirmEmail'
+      preLoaderRoute: typeof ConfirmEmailImport
       parentRoute: typeof rootRoute
     }
     '/forgotPassword': {
@@ -120,6 +127,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
+    '/resetPassword': {
+      id: '/resetPassword'
+      path: '/resetPassword'
+      fullPath: '/resetPassword'
+      preLoaderRoute: typeof ResetPasswordImport
       parentRoute: typeof rootRoute
     }
     '/_layout/accounts': {
@@ -183,10 +197,11 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
-  '/confirmAccount': typeof ConfirmAccountRoute
+  '/confirmEmail': typeof ConfirmEmailRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/resetPassword': typeof ResetPasswordRoute
   '/accounts': typeof LayoutAccountsRoute
   '/analytics': typeof LayoutAnalyticsRoute
   '/budgets': typeof LayoutBudgetsRoute
@@ -195,10 +210,11 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
-  '/confirmAccount': typeof ConfirmAccountRoute
+  '/confirmEmail': typeof ConfirmEmailRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/resetPassword': typeof ResetPasswordRoute
   '/accounts': typeof LayoutAccountsRoute
   '/analytics': typeof LayoutAnalyticsRoute
   '/budgets': typeof LayoutBudgetsRoute
@@ -209,10 +225,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
-  '/confirmAccount': typeof ConfirmAccountRoute
+  '/confirmEmail': typeof ConfirmEmailRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/resetPassword': typeof ResetPasswordRoute
   '/_layout/accounts': typeof LayoutAccountsRoute
   '/_layout/analytics': typeof LayoutAnalyticsRoute
   '/_layout/budgets': typeof LayoutBudgetsRoute
@@ -224,10 +241,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/confirmAccount'
+    | '/confirmEmail'
     | '/forgotPassword'
     | '/login'
     | '/register'
+    | '/resetPassword'
     | '/accounts'
     | '/analytics'
     | '/budgets'
@@ -235,10 +253,11 @@ export interface FileRouteTypes {
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/confirmAccount'
+    | '/confirmEmail'
     | '/forgotPassword'
     | '/login'
     | '/register'
+    | '/resetPassword'
     | '/accounts'
     | '/analytics'
     | '/budgets'
@@ -247,10 +266,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_layout'
-    | '/confirmAccount'
+    | '/confirmEmail'
     | '/forgotPassword'
     | '/login'
     | '/register'
+    | '/resetPassword'
     | '/_layout/accounts'
     | '/_layout/analytics'
     | '/_layout/budgets'
@@ -261,18 +281,20 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
-  ConfirmAccountRoute: typeof ConfirmAccountRoute
+  ConfirmEmailRoute: typeof ConfirmEmailRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
-  ConfirmAccountRoute: ConfirmAccountRoute,
+  ConfirmEmailRoute: ConfirmEmailRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 
 export const routeTree = rootRoute
@@ -286,10 +308,11 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_layout",
-        "/confirmAccount",
+        "/confirmEmail",
         "/forgotPassword",
         "/login",
-        "/register"
+        "/register",
+        "/resetPassword"
       ]
     },
     "/_layout": {
@@ -302,8 +325,8 @@ export const routeTree = rootRoute
         "/_layout/"
       ]
     },
-    "/confirmAccount": {
-      "filePath": "confirmAccount.tsx"
+    "/confirmEmail": {
+      "filePath": "confirmEmail.tsx"
     },
     "/forgotPassword": {
       "filePath": "forgotPassword.tsx"
@@ -313,6 +336,9 @@ export const routeTree = rootRoute
     },
     "/register": {
       "filePath": "register.tsx"
+    },
+    "/resetPassword": {
+      "filePath": "resetPassword.tsx"
     },
     "/_layout/accounts": {
       "filePath": "_layout/accounts.tsx",
