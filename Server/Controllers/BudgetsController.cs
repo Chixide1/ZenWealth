@@ -13,7 +13,6 @@ namespace Server.Controllers;
 [Route("[controller]")]
 [Produces("application/json")]
 public class BudgetsController(
-    ILogger<BudgetsController> logger,
     IBudgetsService budgetsService,
     UserManager<User> userManager
 ) : ControllerBase

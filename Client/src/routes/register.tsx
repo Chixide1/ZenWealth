@@ -1,6 +1,7 @@
 ﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { RegisterForm } from "@/components/features/identity/RegisterForm.tsx";
 import Logo from "@/components/shared/Logo.tsx";
+import { LoginLink } from "@/components/shared/LoginLink";
 
 export const Route = createFileRoute("/register")({
     component: RouteComponent,
@@ -8,8 +9,8 @@ export const Route = createFileRoute("/register")({
 
 function RouteComponent() {
     return (
-        <main className="h-screen w-full flex flex-col items-center justify-center">
-            <div className="flex items-center my-auto">
+        <main className="h-screen w-full flex flex-col items-center justify-center pb-20">
+            <div className="flex items-center mb-6 mt-auto">
                 <Logo className="mr-1"/>
             </div>
             <div className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] sm:pt-4 sm:pb-6 flex flex-col items-center">
@@ -19,12 +20,7 @@ function RouteComponent() {
                 </p>
                 <RegisterForm />
             </div>
-            <p className="text-sm text-primary my-auto">
-                Have an account?
-                <Link to={"/login"} className="text-secondary ms-1">
-                    Login
-                </Link>
-            </p>
+            <LoginLink className="mt-6 mb-auto" />
         </main>
     );
 }

@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { IdentityInput, IdentityInputConfig } from "@/components/features/identity/IdentityInput";
 import { camelCaseToSentence } from "@/lib/utils";
 import api from "@/lib/api";
+import { LoginLink } from "@/components/shared/LoginLink";
 
 export const Route = createFileRoute("/forgotPassword")({
     component: RouteComponent,
@@ -119,7 +120,6 @@ function RouteComponent() {
                             <Button
                                 type="submit"
                                 variant="secondary"
-                                disabled={isSubmitting}
                                 className="mt-6 w-full  font-medium flex items-center justify-center"
                                 isLoading={isSubmitting}
                                 loadingText="Sending..."
@@ -127,20 +127,10 @@ function RouteComponent() {
                                 Send Reset Link
                             </Button>
                         </form>
-
-                        <div className="text-center !mt-4">
-                            <Link
-                                to="/login"
-                                preload={false}
-                                className="text-secondary hover:underline"
-                            >
-                                Back to Login
-                            </Link>
-                        </div>
                     </div>
                 )}
             </div>
-            <Toaster />
+            <LoginLink className="mt-6 text-base" />
         </div>
     );
 }

@@ -1,4 +1,4 @@
-﻿import React, {Dispatch, SetStateAction, useState } from "react";
+﻿import React, {Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -16,6 +16,7 @@ import { useAtom } from "jotai";
 import api from "@/lib/api.ts";
 import {toast} from "@/hooks/use-toast.ts";
 import { useQueryClient } from "@tanstack/react-query";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 
 // ==================== TYPES ====================
@@ -24,7 +25,7 @@ type SettingsSidebarItem = {
     label: string,
     title: string,
     content: React.ReactElement
-    icon?: React.ReactNode,
+    Icon?: React.ComponentType<React.ComponentProps<"svg">>,
 };
 
 type SettingsDialogProps = {
@@ -40,7 +41,7 @@ const settingsSections: SettingsSidebarItem[] = [
         label: "Account",
         title: "Account Settings",
         content: <AccountSection />,
-        icon: <UserRoundPen /> 
+        Icon: UserRoundPen
     },
     // { id: "security", label: "Security" },
     // { id: "help", label: "Help & Support" },
@@ -48,15 +49,20 @@ const settingsSections: SettingsSidebarItem[] = [
 
 // ==================== COMPONENT ====================
 export function SettingsDialog({ className, isOpen, setIsOpen }: SettingsDialogProps) {
-    const [activeSection, setActiveSection] = useState<SettingsSidebarItem>(settingsSections[0]);
+    const [activeSection, setActiveSection] = useState<string>(settingsSections[0].id);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className={cn(
-                "max-w-[90%] sm:max-w-[85%] p-0 backdrop-blur-sm border-neutral-700 bg-charcoal/90 rounded-md",
+                "max-w-[90%] sm:max-w-[85%] min-h-[80%] p-0 backdrop-blur-sm border-neutral-700 bg-charcoal/90 rounded-md",
                 className
             )}>
-                <div className="flex divide-x divide-neutral-800">
+                <Tabs 
+                    defaultValue={settingsSections[0].id} 
+                    value={activeSection} 
+                    onValueChange={setActiveSection}
+                    className="flex divide-x divide-neutral-800"
+                >
                     {/* Sidebar */}
                     <aside className="w-fit md:w-40 flex flex-col">
                         <div className="p-4 md:p-3 font-medium text-base border-b border-neutral-700 inline-flex gap-2 items-center justify-center md:justify-start">
@@ -64,43 +70,35 @@ export function SettingsDialog({ className, isOpen, setIsOpen }: SettingsDialogP
                             <h2 className="hidden md:inline">Settings</h2>
                         </div>
                         <ScrollArea className="flex-1">
-                            <div className="p-2">
+                            <TabsList className="flex flex-col bg-transparent p-2 h-auto">
                                 {settingsSections.map((section) => (
-                                    <Button
+                                    <TabsTrigger
                                         key={section.id}
-                                        variant="ghost"
-                                        title={section.label}
-                                        className={cn(
-                                            "w-full md:justify-start text-left p-2 gap-2 items-center",
-                                            activeSection.id === section.id
-                                                ? "bg-background"
-                                                : ""
-                                        )}
-                                        onClick={() => {
-                                            setActiveSection(settingsSections.find(section => 
-                                                section.id === section.id) ?? settingsSections[0]);
-                                        }}
+                                        value={section.id}
+                                        className={"w-full md:justify-start text-left p-2 gap-2 items-center rounded-sm !bg-background data-[state=active]:bg-inherit text-primary data-[state=active]:text-secondary duration-300 transition-colors"}
                                     >
-                                        {section.icon && (
-                                            <span>{section.icon}</span>
-                                        )}
+                                        {section.Icon && <section.Icon className="h-auto w-[1.25em]" />}
                                         <span className="hidden md:inline">{section.label}</span>
-                                    </Button>
+                                    </TabsTrigger>
                                 ))}
-                            </div>
+                            </TabsList>
                         </ScrollArea>
                     </aside>
 
                     {/* Content */}
                     <div className="flex-1 w-full !border-l !border-neutral-700">
-                        <DialogHeader className="p-3 border-b border-neutral-700">
-                            <DialogTitle className="text-base font-medium">{activeSection.title}</DialogTitle>
-                        </DialogHeader>
-                        <ScrollArea className="flex-1 h-[70vh]">
-                            {activeSection.content}
-                        </ScrollArea>
+                        {settingsSections.map((section) => (
+                            <TabsContent key={section.id} value={section.id} className="mt-0 h-full flex flex-col">
+                                <DialogHeader className="p-3 border-b border-neutral-700">
+                                    <DialogTitle className="text-base font-medium">{section.title}</DialogTitle>
+                                </DialogHeader>
+                                <ScrollArea className="flex-1 h-[70vh]">
+                                    {section.content}
+                                </ScrollArea>
+                            </TabsContent>
+                        ))}
                     </div>
-                </div>
+                </Tabs>
             </DialogContent>
         </Dialog>
     );
@@ -128,6 +126,16 @@ function AccountSection() {
     const institutions = data?.institutions ?? [];
     const queryClient = useQueryClient();
 
+    useEffect(() => {
+        const refreshStatus = async () => {
+            if(institutions.length === 0){
+                window.location.reload();
+                return;
+            }
+        }
+        refreshStatus();
+    }, [institutions.length]);
+
     const handleDeleteBank = async (id: number) => {
         setIsLoading(true);
         const response = await api.delete<DeleteItemResponse>(`/Link/${id}`);
@@ -139,12 +147,7 @@ function AccountSection() {
             toast({title: "Unable to remove connected account", description: response.data.error, variant: "destructive"});
         }
 
-        if(institutions.length === 1){
-            window.location.reload();
-            return;
-        }
-
-        await queryClient.refetchQueries();
+        queryClient.refetchQueries();
         setIsLoading(false);
     };
 
@@ -164,7 +167,7 @@ function AccountSection() {
     };
     
     return (
-        <section className="p-4 space-y-6">
+        <section className="p-4 space-y-6 max-w-full">
             {/* Connected Banking Institutions */}
             <div>
                 <h3 className="text-lg font-medium mb-3">Connected Banking Institutions</h3>
@@ -180,7 +183,7 @@ function AccountSection() {
                                             size="sm"
                                             className="h-8 text-red-500 hover:text-red-400 hover:bg-red-950/30"
                                             onClick={() => handleDeleteBank(bank.id)}
-                                            isLoading={isLoading}
+                                            disabled={isLoading}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                             <span>Disconnect</span>
@@ -196,7 +199,7 @@ function AccountSection() {
             </div>
 
             {/* Danger Zone */}
-            <div>
+            <div className="">
                 <h3 className="text-lg font-medium mb-3 text-red-500">Danger Zone</h3>
 
                 {showDeleteConfirm ? (
@@ -205,16 +208,16 @@ function AccountSection() {
                         <AlertTitle>Warning: This action cannot be undone</AlertTitle>
                         <AlertDescription className="mt-2">
                             <p className="mb-4">Deleting your account will permanently remove all your data, preferences, and connected banking institutions. Are you absolutely sure you want to proceed?</p>
-                            <div className="flex gap-3">
+                            <div className="flex gap-3 flex-wrap items-center justify-center md:justify-normal">
                                 <Button
                                     variant="destructive"
                                     onClick={handleDeleteUser}
-                                    isLoading={isLoading}
+                                    disabled={isLoading}
                                 >
                                     Permanently Delete Account
                                 </Button>
                                 <Button
-                                    isLoading={isLoading}
+                                    disabled={isLoading}
                                     variant="outline"
                                     className="border-neutral-600"
                                     onClick={() => setShowDeleteConfirm(false)}
@@ -230,7 +233,7 @@ function AccountSection() {
                         variant="destructive"
                         onClick={() => setShowDeleteConfirm(true)}
                     >
-                        <Trash2 />
+                        <Trash2 className="mr-2" />
                         Delete Account
                     </Button>
                 )}
@@ -238,46 +241,3 @@ function AccountSection() {
         </section>
     );
 }
-
-// Placeholder components for other sections
-// function SecuritySection() {
-//     return (
-//         <>
-//             <DialogHeader className="p-6 pb-2">
-//                 <DialogTitle>Security</DialogTitle>
-//                 <DialogDescription>
-//                     Manage your account security and authentication methods.
-//                 </DialogDescription>
-//             </DialogHeader>
-//             <ScrollArea className="flex-1 p-6 pt-2">
-//                 <div className="space-y-6">
-//                     <p>Security settings will appear here.</p>
-//                 </div>
-//             </ScrollArea>
-//             <DialogFooter className="p-6 pt-2">
-//                 <Button type="submit">Save changes</Button>
-//             </DialogFooter>
-//         </>
-//     );
-// }
-//
-// function HelpSection() {
-//     return (
-//         <>
-//             <DialogHeader className="p-6 pb-2">
-//                 <DialogTitle>Help & Support</DialogTitle>
-//                 <DialogDescription>
-//                     Find resources and get support for any questions you have.
-//                 </DialogDescription>
-//             </DialogHeader>
-//             <ScrollArea className="flex-1 p-6 pt-2">
-//                 <div className="space-y-6">
-//                     <p>Help resources will appear here.</p>
-//                 </div>
-//             </ScrollArea>
-//             <DialogFooter className="p-6 pt-2">
-//                 <Button>Contact Support</Button>
-//             </DialogFooter>
-//         </>
-//     );
-// }

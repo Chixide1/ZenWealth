@@ -8,9 +8,7 @@ using Server.Extensions;
 namespace Server.Services;
 
 public class TransactionsService(
-    AppDbContext context,
-    PlaidClient client,
-    ILogger<TransactionsService> logger
+    AppDbContext context
 ) : ITransactionsService
 {
     public async Task<List<TransactionDto>> GetTransactionsAsync(string userId,

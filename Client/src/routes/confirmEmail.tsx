@@ -3,8 +3,9 @@ import { z } from "zod";
 import { useState, useEffect } from "react";
 import api from "@/lib/api.ts";
 import {AlertTriangle, MailCheck, X } from "lucide-react";
-import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert.tsx";
+import {AlertDescription, AlertTitle} from "@/components/ui/alert.tsx";
 import Loading from "@/components/shared/Loading.tsx";
+import { LoginLink } from "@/components/shared/LoginLink";
 
 export const Route = createFileRoute("/confirmEmail")({
     component: RouteComponent,
@@ -88,13 +89,11 @@ function RouteComponent() {
                             <Link to="/forgotPassword" className="inline-block px-6 py-2 bg-secondary text-black rounded-md hover:bg-secondary/80">
                                 Resend Verification Email
                             </Link>
-                            {/*<a href="/contact-support" className="block px-6 py-2 bg-accent text-black rounded-md hover:bg-accent/80">*/}
-                            {/*    Contact Support*/}
-                            {/*</a>*/}
                         </div>
                     </div>
                 )}
             </div>
+            <LoginLink className="mt-6 text-base" />
         </div>
     );
 }

@@ -142,6 +142,13 @@ public class AuthController(UserManager<User> userManager,
             return BadRequest(ModelState);
         }
 
+        // Mark email as confirmed since user has proven access to it
+        if (!user.EmailConfirmed)
+        {
+            user.EmailConfirmed = true;
+            await userManager.UpdateAsync(user);
+        }
+        
         return Ok(new { message = "Password has been reset successfully." });
     }
 
