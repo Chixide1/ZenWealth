@@ -3,6 +3,7 @@ import ColumnSortingButton from "@/components/features/transactions/ColumnSortin
 import { Transaction } from "@/types";
 import {useAtom } from "jotai";
 import {transactionsPaginationAtom, transactionsParamsAtom} from "@/lib/atoms.ts";
+import { currencyParser } from "@/lib/utils";
 
 const columnHelper = createColumnHelper<Transaction>();
 
@@ -70,11 +71,7 @@ export const transactionColumns = [
         },
         cell: ({row}) => {
             const amount = row.getValue<number>("amount");
-            const formatted = new Intl.NumberFormat(["en-US", "en-GB"], {
-                style: "currency",
-                currency: row.original.isoCurrencyCode,
-                currencyDisplay: "symbol",
-            }).format(amount);
+            const formatted = currencyParser.format(amount);
 
             return <div className="">{formatted}</div>;
         },

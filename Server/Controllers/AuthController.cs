@@ -8,6 +8,7 @@ using Server.Data.Models;
 using Server.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
+using Server.Utils;
 
 namespace Server.Controllers;
 
@@ -148,7 +149,6 @@ public class AuthController(UserManager<User> userManager,
             user.EmailConfirmed = true;
             await userManager.UpdateAsync(user);
         }
-        
         return Ok(new { message = "Password has been reset successfully." });
     }
 
@@ -175,37 +175,141 @@ public class AuthController(UserManager<User> userManager,
 
     }
 
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> EnableMfa()
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        // Check if 2FA is already enabled
+        if (await userManager.GetTwoFactorEnabledAsync(user))
+        {
+            return BadRequest(new { message = "Two-factor authentication is already enabled." });
+        }
+
+        // Generate the authenticator key and QR code URL
+        var unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
+        if (string.IsNullOrEmpty(unformattedKey))
+        {
+            await userManager.ResetAuthenticatorKeyAsync(user);
+            unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
+        }
+
+        var formattedKey = MFAUtil.FormatAuthenticatorKey(unformattedKey);
+        var qrCodeUrl = MFAUtil.GenerateQrCodeUri(user.Email, unformattedKey);
+        var qrCodeBytes = MFAUtil.GenerateQrCodeImage(qrCodeUrl);
+
+        return Ok(new
+        {
+            sharedKey = formattedKey,
+            authenticatorUri = qrCodeUrl,
+            qrCode = Convert.ToBase64String(qrCodeBytes)
+        });
+    }
+
+    [Authorize]
     [HttpPost]
-    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationRequest model)
+    public async Task<IActionResult> VerifyMfaCode([FromBody] VerifyMfaRequest model)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var user = await userManager.FindByEmailAsync(model.Email);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            // Don't reveal that the user does not exist
-            return Ok(new { message = "If your email is registered, you will receive a confirmation link." });
+            return NotFound(new { message = "User not found." });
         }
 
-        if (await userManager.IsEmailConfirmedAsync(user))
+        // Verify the code and enable 2FA if successful
+        var isTokenValid = await userManager.VerifyTwoFactorTokenAsync(
+            user, userManager.Options.Tokens.AuthenticatorTokenProvider, model.Code);
+
+        if (!isTokenValid)
         {
-            return BadRequest(new { message = "Email is already confirmed." });
+            return BadRequest(new { message = "Verification code is invalid." });
         }
 
-        // Generate email confirmation token
-        var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        await userManager.SetTwoFactorEnabledAsync(user, true);
+        
+        // Generate recovery codes
+        var recoveryCodes = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
 
-        // URL encode the token as it may contain special characters
-        token = HttpUtility.UrlEncode(token);
-
-        // Create confirmation link with token
-        var callbackUrl = $"{emailOptions.Value.FrontendBaseUrl}/confirmEmail?email={user.Email}&token={token}";
-
-        await emailService.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-        return Ok(new { message = "Confirmation email sent. Please check your email." });
+        return Ok(new { 
+            success = true, 
+            message = "Two-factor authentication has been enabled.",
+            recoveryCodes = recoveryCodes
+        });
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetMfaStatus()
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        var isMfaEnabled = await userManager.GetTwoFactorEnabledAsync(user);
+        
+        return Ok(new { 
+            enabled = isMfaEnabled
+        });
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> DisableMfa()
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found." });
+        }
+
+        var result = await userManager.SetTwoFactorEnabledAsync(user, false);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { 
+                errors = result.Errors.Select(e => new { code = e.Code, description = e.Description }) 
+            });
+        }
+
+        return Ok(new { success = true, message = "Two-factor authentication has been disabled." });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> LoginWithMfa([FromBody] LoginMfaDto model)
+    {
+        // Get user from sign-in manager session
+        var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+        if (user == null)
+        {
+            return NotFound(new { message = "Unable to load two-factor authentication user." });
+        }
+
+        var authenticatorCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
+
+        var result = await signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, model.RememberMe, model.RememberMachine);
+
+        if (result.Succeeded)
+        {
+            return Ok(new { success = true });
+        }
+        
+        if (result.IsLockedOut)
+        {
+            return BadRequest(new { message = "User account locked out." });
+        }
+        
+        return BadRequest(new { message = "Invalid authenticator code." });
+    }
+
 }
 
 internal class AuthResponse
@@ -246,4 +350,22 @@ public class ResendConfirmationRequest
 {
     [EmailAddress]
     public required string Email { get; set; }
+}
+
+public class VerifyMfaRequest
+{
+    [Required]
+    [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+    [DataType(DataType.Text)]
+    public required string Code { get; set; }
+}
+
+public class LoginMfaDto
+{
+    [Required]
+    public required string Code { get; set; }
+
+    public bool RememberMe { get; set; }
+
+    public bool RememberMachine { get; set; }
 }
