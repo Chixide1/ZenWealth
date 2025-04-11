@@ -2,16 +2,17 @@
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Lock, Loader2, UserRound } from "lucide-react";
-import {Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import {useToast} from "@/hooks/use-toast.ts";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast.ts";
 import { Label } from "@/components/ui/label";
-import {Checkbox} from "@/components/ui/checkbox.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {Toaster} from "@/components/ui/toaster.tsx";
-import {IdentityInput, IdentityInputConfig} from "@/components/features/identity/IdentityInput.tsx";
-import {camelCaseToSentence} from "@/lib/utils.ts";
+import { Checkbox } from "@/components/ui/checkbox.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Toaster } from "@/components/ui/toaster.tsx";
+import { IdentityInput, IdentityInputConfig } from "@/components/features/identity/IdentityInput.tsx";
+import { camelCaseToSentence } from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
+import { MFAVerificationForm } from "./MFAVerificationForm.tsx";
 
 const formSchema = z.object({
     username: z.string().min(1, "Username cannot be empty"),
@@ -24,11 +25,13 @@ type FormSchemaVals = z.infer<typeof formSchema>
 export function LoginForm() {
     const { toast } = useToast();
     const navigate = useNavigate();
+    const [requiresMfa, setRequiresMfa] = useState(false);
     const {
         control,
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
+        getValues
     } = useForm<FormSchemaVals>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -55,14 +58,21 @@ export function LoginForm() {
             })
             .catch(error => {
                 console.error("Login error:", error);
-                toast({
-                    title: "Login Error",
-                    description: "Failed to log in. Please check your credentials and try again.",
-                    variant: "destructive"
-                });
+
+                // Check if MFA is required
+                if (error.response?.data?.errors?.some((e: any) => e.code === "MFA Required")) {
+                    console.debug("%cMFA required", "color: #bada55");
+                    setRequiresMfa(true);
+                } else {
+                    toast({
+                        title: "Login Error",
+                        description: "Failed to log in. Please check your credentials and try again.",
+                        variant: "destructive"
+                    });
+                }
             });
     }
-    
+
     useEffect(() => {
         if (errors) {
             Object.keys(errors).forEach((key) => {
@@ -80,7 +90,7 @@ export function LoginForm() {
         {
             id: "loginFormEmail",
             type: "username",
-            register: {...register("username")},
+            register: { ...register("username") },
             icon: UserRound,
             label: "Username",
             autocomplete: "username"
@@ -88,18 +98,28 @@ export function LoginForm() {
         {
             id: "loginFormPassword",
             type: "password",
-            register: {...register("password")},
+            register: { ...register("password") },
             icon: Lock,
             label: "Password",
             autocomplete: "current-password"
         },
     ];
 
+    // If MFA is required, show the MFA form instead
+    if (requiresMfa) {
+        return (
+            <MFAVerificationForm
+                onCancel={() => setRequiresMfa(false)}
+                rememberMe={getValues().rememberMe}
+            />
+        );
+    }
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center px-9 w-full sm:w-9/12 text-sm">
             <fieldset className="overflow-hidden rounded-md w-full text-primary">
                 {inputs.map((input) => (
-                    <IdentityInput {...input} key={input.id}/>
+                    <IdentityInput {...input} key={input.id} />
                 ))}
             </fieldset>
             <div className="flex items-center justify-between w-full mt-6 sm:mt-3">

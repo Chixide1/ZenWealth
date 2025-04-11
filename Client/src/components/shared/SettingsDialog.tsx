@@ -154,7 +154,7 @@ function AccountSection() {
                 window.location.reload();
                 return;
             }
-        }
+        };
         refreshStatus();
     }, [institutions.length]);
 
@@ -279,7 +279,7 @@ function SecuritySection() {
     const fetchMfaStatus = async () => {
         setIsLoading(true);
         try {
-            const response = await api.get<MfaStatus>('/Auth/GetMfaStatus');
+            const response = await api.get<MfaStatus>("/Auth/GetMfaStatus");
             if (response.status === 200) {
                 setMfaStatus(response.data);
             }
@@ -297,7 +297,7 @@ function SecuritySection() {
     const setupMfa = async () => {
         setIsLoading(true);
         try {
-            const response = await api.get<MfaSetupData>('/Auth/EnableMfa');
+            const response = await api.get<MfaSetupData>("/Auth/EnableMfa");
             if (response.status === 200) {
                 setSetupData(response.data);
             }
@@ -324,7 +324,7 @@ function SecuritySection() {
         
         setIsLoading(true);
         try {
-            const response = await api.post<MfaVerifyResponse>('/Auth/VerifyMfaCode', {
+            const response = await api.post<MfaVerifyResponse>("/Auth/VerifyMfaCode", {
                 code: verificationCode
             });
             
@@ -352,7 +352,7 @@ function SecuritySection() {
     const disableMfa = async () => {
         setIsLoading(true);
         try {
-            const response = await api.post('/Auth/DisableMfa');
+            const response = await api.post("/Auth/DisableMfa");
             if (response.status === 200) {
                 toast({
                     title: "Success",
@@ -372,7 +372,7 @@ function SecuritySection() {
     };
     
     const copyRecoveryCodes = () => {
-        navigator.clipboard.writeText(recoveryCodes.join('\n'))
+        navigator.clipboard.writeText(recoveryCodes.join("\n"))
             .then(() => {
                 toast({
                     title: "Success",
@@ -482,21 +482,21 @@ function SecuritySection() {
             {showRecoveryCodes && (
                 <div className="mt-6">
                     <h3 className="text-lg font-medium mb-3">Recovery Codes</h3>
-                    <Alert className="bg-yellow-950/30 border-yellow-800">
-                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                    <Alert className="bg-yellow-950/30 border-yellow-500 text-primary">
+                        <AlertTriangle className="h-4 w-4 !text-yellow-500" />
                         <AlertTitle className="text-yellow-500">Save these recovery codes</AlertTitle>
                         <AlertDescription className="mt-2">
                             <p className="mb-4 text-sm">
                                 Keep these recovery codes in a secure location. Each code can only be used once if you lose access to your authenticator device.
                             </p>
-                            <div className="bg-neutral-800 p-3 rounded-md font-mono text-sm mb-3">
+                            <div className=" p-3 rounded-md font-mono text-sm mb-3">
                                 {recoveryCodes.map((code, index) => (
                                     <div key={index} className="mb-1">{code}</div>
                                 ))}
                             </div>
                             <Button 
                                 variant="outline" 
-                                className="border-neutral-600 text-sm" 
+                                className="border-neutral-500 text-sm" 
                                 size="sm"
                                 onClick={copyRecoveryCodes}
                             >
