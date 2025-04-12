@@ -110,7 +110,7 @@ export function SettingsDialog({ className, isOpen, setIsOpen }: SettingsDialogP
                     {/* Content */}
                     <div className="flex-1 w-full !border-l !border-neutral-700">
                         {settingsSections.map((section) => (
-                            <TabsContent key={section.id} value={section.id} className="mt-0 flex flex-col">
+                            <TabsContent key={section.id} value={section.id} className="mt-0 flex flex-col focus-visible:ring-0 focus-visible:ring-offset-0">
                                 <DialogHeader className="p-3 border-b border-neutral-700">
                                     <DialogTitle className="text-base font-medium">{section.title}</DialogTitle>
                                 </DialogHeader>
@@ -144,13 +144,14 @@ type DeleteUserResponse = {
 function AccountSection() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isModified, setIsModified] = useState(false);
     const [{data}] = useAtom(userDetailsAtom);
     const institutions = data?.institutions ?? [];
     const queryClient = useQueryClient();
 
     useEffect(() => {
         const refreshStatus = async () => {
-            if(institutions.length === 0){
+            if(isModified && institutions.length === 0){
                 window.location.reload();
                 return;
             }
@@ -164,6 +165,7 @@ function AccountSection() {
 
         if(response.status === 200) {
             toast({title: "Disconnect Status", description: "Successfully removed the account!"});
+            setIsModified(true);
         }
         else {
             toast({title: "Unable to remove connected account", description: response.data.error, variant: "destructive"});
@@ -205,7 +207,7 @@ function AccountSection() {
                                             size="sm"
                                             className="h-8 text-red-500 hover:text-red-400 hover:bg-red-950/30"
                                             onClick={() => handleDeleteBank(bank.id)}
-                                            disabled={isLoading}
+                                            isLoading={isLoading}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                             <span>Disconnect</span>
@@ -234,7 +236,7 @@ function AccountSection() {
                                 <Button
                                     variant="destructive"
                                     onClick={handleDeleteUser}
-                                    disabled={isLoading}
+                                    isLoading={isLoading}
                                 >
                                     Permanently Delete Account
                                 </Button>
@@ -458,6 +460,7 @@ function SecuritySection() {
                                         />
                                         <Button 
                                             onClick={verifyMfaCode}
+                                            variant="accent"
                                             disabled={isLoading || verificationCode.length !== 6}
                                         >
                                             Verify
