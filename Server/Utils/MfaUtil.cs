@@ -4,7 +4,7 @@ using QRCoder;
 
 namespace Server.Utils;
 
-public static class MFAUtil
+public static class MfaUtil
 {
     public static string FormatAuthenticatorKey(string unformattedKey)
     {
@@ -27,7 +27,6 @@ public static class MFAUtil
 
     public static string GenerateQrCodeUri(string email, string unformattedKey)
     {
-        // Replace "Finapp" with your application name
         return string.Format(
             "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6",
             UrlEncoder.Default.Encode("ZenWealth"),

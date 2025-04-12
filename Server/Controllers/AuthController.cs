@@ -199,9 +199,9 @@ public class AuthController(UserManager<User> userManager,
             unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
         }
 
-        var formattedKey = MFAUtil.FormatAuthenticatorKey(unformattedKey);
-        var qrCodeUrl = MFAUtil.GenerateQrCodeUri(user.Email, unformattedKey);
-        var qrCodeBytes = MFAUtil.GenerateQrCodeImage(qrCodeUrl);
+        var formattedKey = MfaUtil.FormatAuthenticatorKey(unformattedKey!);
+        var qrCodeUrl = MfaUtil.GenerateQrCodeUri(user.Email!, unformattedKey!);
+        var qrCodeBytes = MfaUtil.GenerateQrCodeImage(qrCodeUrl);
 
         return Ok(new
         {
@@ -241,7 +241,7 @@ public class AuthController(UserManager<User> userManager,
         return Ok(new { 
             success = true, 
             message = "Two-factor authentication has been enabled.",
-            recoveryCodes = recoveryCodes
+            recoveryCodes
         });
     }
 

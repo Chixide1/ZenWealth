@@ -76,7 +76,7 @@ export function SettingsDialog({ className, isOpen, setIsOpen }: SettingsDialogP
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className={cn(
-                "max-w-[90%] sm:max-w-[85%] min-h-[80%] p-0 backdrop-blur-sm border-neutral-700 bg-charcoal/90 rounded-md",
+                "max-w-[90%] sm:max-w-[85%] min-h-[80%] p-0 backdrop-blur-md border-neutral-700 bg-charcoal/90 rounded-md",
                 className
             )}>
                 <Tabs 
@@ -114,7 +114,7 @@ export function SettingsDialog({ className, isOpen, setIsOpen }: SettingsDialogP
                                 <DialogHeader className="p-3 border-b border-neutral-700">
                                     <DialogTitle className="text-base font-medium">{section.title}</DialogTitle>
                                 </DialogHeader>
-                                <ScrollArea className="flex-1 h-[70vh]">
+                                <ScrollArea className="h-[70vh]">
                                     <section.Content />
                                 </ScrollArea>
                             </TabsContent>
@@ -283,7 +283,7 @@ function SecuritySection() {
             if (response.status === 200) {
                 setMfaStatus(response.data);
             }
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to fetch MFA status",
@@ -301,7 +301,7 @@ function SecuritySection() {
             if (response.status === 200) {
                 setSetupData(response.data);
             }
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to setup MFA",
@@ -338,7 +338,7 @@ function SecuritySection() {
                 setRecoveryCodes(response.data.recoveryCodes);
                 setShowRecoveryCodes(true);
             }
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Invalid verification code",
@@ -360,7 +360,7 @@ function SecuritySection() {
                 });
                 setMfaStatus({ enabled: false });
             }
-        } catch (error) {
+        } catch {
             toast({
                 title: "Error",
                 description: "Failed to disable MFA",
@@ -406,7 +406,7 @@ function SecuritySection() {
                             <Button
                                 variant="outline"
                                 onClick={disableMfa}
-                                disabled={isLoading}
+                                isLoading={isLoading}
                                 className="border-neutral-600"
                             >
                                 Disable Two-Factor Authentication
@@ -422,7 +422,8 @@ function SecuritySection() {
                         {!setupData ? (
                             <Button
                                 onClick={setupMfa}
-                                disabled={isLoading}
+                                isLoading={isLoading}
+                                loadingText="Getting MFA Status..."
                             >
                                 Set up two-factor authentication
                             </Button>

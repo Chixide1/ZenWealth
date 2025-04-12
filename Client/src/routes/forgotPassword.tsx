@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Mail, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { IdentityInput, IdentityInputConfig } from "@/components/features/identity/IdentityInput";
 import { camelCaseToSentence } from "@/lib/utils";

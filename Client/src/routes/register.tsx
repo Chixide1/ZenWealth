@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { RegisterForm } from "@/components/features/identity/RegisterForm.tsx";
 import Logo from "@/components/shared/Logo.tsx";
 import { LoginLink } from "@/components/shared/LoginLink";
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/register")({
 
 function RouteComponent() {
     return (
-        <main className="h-screen w-full flex flex-col items-center justify-center pb-20">
+        <main className="h-screen w-full flex flex-col items-center justify-center">
             <div className="flex items-center mb-6 mt-auto">
                 <Logo className="mr-1"/>
             </div>
