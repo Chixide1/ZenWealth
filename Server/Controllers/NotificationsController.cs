@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Going.Plaid;
-using Going.Plaid.Entity;
-using Going.Plaid.Webhook;
 using Server.Services;
 
 namespace Server.Controllers;

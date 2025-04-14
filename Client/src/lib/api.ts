@@ -13,10 +13,13 @@ const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response.status === 401 || 
+        if ((error.response && error.response.status === 401) ||
             error.code === "ECONNABORTED"
         ) {
-            router.navigate({ to: "/login" });
+            // Don't redirect if already on login page
+            if (window.location.pathname !== "/login") {
+                router.navigate({ to: "/login" });
+            }
             return Promise.reject(error);
         } else {
             return Promise.reject(error);
