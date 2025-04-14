@@ -11,14 +11,14 @@ namespace Server.Services;
 public interface IItemsService
 {
     /// <summary>
-    /// Adds a new item to the database for the given user.
+    /// Checks if an Item exists for the specified user
     /// </summary>
-    /// <param name="accessToken">The access token for the item.</param>
-    /// <param name="userId">The user ID of the user that the item belongs to.</param>
-    /// <param name="institutionName">The institution name</param>
-    Task CreateItemAsync(string accessToken, string userId, string institutionName);
-    
     Task<bool> CheckItemExistsAsync(string userId);
+
+    /// <summary>
+    /// Updates an item through the Item ID
+    /// </summary>
+    Task<int> UpdateItemByIdAsync(string plaidItemId);
     
     /// <summary>
     /// Asynchronously adds all new transactions for a specified user.

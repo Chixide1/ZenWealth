@@ -1,17 +1,18 @@
+import { scan } from "react-scan";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import "./main.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import Loading from "./components/shared/Loading";
 import { Provider } from "jotai";
 import { queryClientAtom } from "jotai-tanstack-query";
 import { useHydrateAtoms } from "jotai/utils";
-// import { persistQueryClient} from "@tanstack/react-query-persist-client";
 import { StrictMode } from "react";
 import {NotFoundPage} from "@/components/shared/NotFoundPage.tsx";
 import {ErrorPage} from "@/components/shared/ErrorPage.tsx";
+// import { persistQueryClient} from "@tanstack/react-query-persist-client";
+// import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -21,6 +22,11 @@ const queryClient = new QueryClient({
         },
 
     },
+});
+
+scan({
+    enabled: true,
+    showToolbar: true,
 });
 
 // Set up a Router instance

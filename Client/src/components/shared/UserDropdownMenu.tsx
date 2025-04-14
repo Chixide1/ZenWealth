@@ -11,7 +11,7 @@ import { useAtom } from "jotai";
 import { ChevronDown, LogOut, Settings, UserPlus } from "lucide-react";
 import api from "@/lib/api.ts";
 import Loading from "@/components/shared/Loading.tsx";
-import { redirect, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 
 type UserDropdownMenuItem = {
     icon: React.ReactNode,
@@ -27,6 +27,8 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
     const [{data: userDetails}] = useAtom(userDetailsAtom);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
+    
+    console.log(userDetails);
 
     const UserDropdownMenuItems: UserDropdownMenuItem[] = [
         {
@@ -45,20 +47,23 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
         {
             icon: <UserPlus />,
             text: "Register",
-            onSelect: () => { navigate({ to: "/register" })},
+            onSelect: () => { navigate({ to: "/register" });},
         }
     ];
 
     return (
         <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger className="max-h-10 cursor-pointer group inline-flex items-center gap-1 bg-background rounded-full md:p-1 md:border border-background focus:outline-none">
-                {(userDetails? <>
+                {(userDetails ? <>
                     <Avatar className="w-10 h-10 md:w-6 md:h-6">
                         <AvatarFallback className="text-black text-lg">
-                            {userDetails?.userName[0].toUpperCase()}
+                            {userDetails.userName ? userDetails.userName[0].toUpperCase() : "U"}
                         </AvatarFallback>
                     </Avatar>
-                    <span>{userDetails?.userName.slice(0, 1).toUpperCase() + userDetails?.userName.slice(1)}</span>
+                    <span>{userDetails.userName ?
+                        (userDetails.userName[0].toUpperCase() + userDetails.userName.slice(1)) :
+                        "User"
+                    }</span>
                     <ChevronDown className="h-auto w-4 mr-1 group-data-[state=open]:rotate-180 duration-300 transition-transform"/>
                 </> : <Loading className="w-6 h-auto" />)}
             </DropdownMenuTrigger>

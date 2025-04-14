@@ -16,22 +16,10 @@ namespace Server.Services;
 public class ItemsService(
     AppDbContext context,
     ILogger<ItemsService> logger,
-    PlaidClient client
+    PlaidClient client,
+    IConfiguration config
 ) : IItemsService
 {
-    public async Task CreateItemAsync(string accessToken, string userId, string institutionName)
-    {
-        context.Items.Add(new Item()
-        {
-            AccessToken = accessToken,
-            UserId = userId,
-            InstitutionName = institutionName
-        });
-        
-        await context.SaveChangesAsync();
-        logger.LogInformation("Added item for user {UserId}", userId);
-    }
-    
     public async Task<bool> CheckItemExistsAsync(string userId)
     {
         var result = await context.Items.AnyAsync(i => i.UserId == userId);
@@ -57,123 +45,54 @@ public class ItemsService(
     public async Task<int> UpdateItemsAsync(string userId)
     {
         var updatedCount = 0;
-        var items = context.Items.Where(i => i.UserId == userId).ToList();
+        var items = await context.Items
+            .Where(i => i.UserId == userId)
+            .AsNoTracking()
+            .ToListAsync();
 
         foreach (var item in items)
         {
-            logger.LogInformation("updating item {item} for institution {institution} and user {user}", item.Id, item.InstitutionName, userId);
-            
-            if (item.LastFetched != null && DateTime.Now.AddDays(-1) < item.LastFetched)
+            if (ShouldSkipItemUpdate(item))
             {
-                logger.LogInformation("Skipping item {ItemId} for user {UserId} as it was recently fetched", item.Id, userId);
+                logger.LogInformation("Skipping item {ItemId} for user {UserId} as it was recently fetched", 
+                    item.Id, userId);
                 continue;
             }
 
-            var hasMore = true;
-
-            while (hasMore)
+            try
             {
-                var request = new TransactionsSyncRequest()
-                {
-                    AccessToken = item.AccessToken,
-                    Cursor = item.Cursor
-                };
-                
-                var data = await client.TransactionsSyncAsync(request);
-                
-                item.Cursor = string.IsNullOrEmpty(data.NextCursor) ? null : data.NextCursor;
-                item.LastFetched =  string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
-                hasMore = data.HasMore;
-                await context.SaveChangesAsync();
-
-                logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
-                    data.Added.Count, item.Id, userId
-                );
-
-                var accounts = new List<Account>();
-                
-                foreach (var account in data.Accounts)
-                {
-                    if (context.Accounts.Any(a => a.PlaidAccountId == account.AccountId))
-                    {
-                        logger.LogInformation(
-                            "Skipping account {PlaidAccountId} for item {ItemId} and user {UserId} as it already exists",
-                            account.AccountId, item.Id, userId
-                        );
-                        continue;
-                    }
-
-                    accounts.Add(new Account
-                    {
-                        PlaidAccountId = account.AccountId,
-                        ItemId = item.Id,
-                        UserId = userId,
-                        Name = account.Name,
-                        Type = account.Type.ToString(),
-                        CurrentBalance = account.Balances.Current ?? 0,
-                        AvailableBalance = account.Balances.Available ?? 0,
-                        Mask = account.Mask,
-                        Subtype = account.Subtype.ToString(),
-                        OfficialName = account.OfficialName,
-                    });
-                }
-                
-                await context.BulkInsertOrUpdateAsync(accounts);
-                
-                var sortedTransactions = data.Added.OrderBy(t => t.Date);
-                var transactions = new List<Transaction>();
-                
-                foreach (var transaction in sortedTransactions)
-                {
-                    if (context.Transactions.Any(t => t.PlaidTransactionId == transaction.TransactionId))
-                    {
-                        logger.LogInformation(
-                            "Skipping transaction {PlaidTransactionId} for item {ItemId} and user {UserId} as it already exists",
-                            transaction.TransactionId, item.Id, userId
-                        );
-                        continue;
-                    }
-
-                    var account = await context.Accounts.FirstOrDefaultAsync(a => a.PlaidAccountId == transaction.AccountId);
-
-                    if (account == null)
-                    {
-                        logger.LogInformation(
-                            "Skipping transaction {PlaidTransactionId} for item {ItemId} and user {UserId} as the account does not exist",
-                            transaction.TransactionId, item.Id, userId
-                        );
-                        
-                        continue;
-                    }
-
-                    transactions.Add(new Transaction()
-                    {
-                        PlaidTransactionId = transaction.TransactionId!,
-                        AccountId = account.Id,
-                        UserId = userId,
-                        Name = transaction.Name ?? "",
-                        Amount = transaction.Amount ?? new decimal(0.00),
-                        Date = transaction.Date ?? new DateOnly(),
-                        Datetime = transaction.Datetime,
-                        Website = transaction.Website,
-                        Category = transaction.PersonalFinanceCategory?.Primary ?? "OTHER",
-                        CategoryIconUrl = transaction.PersonalFinanceCategoryIconUrl,
-                        IsoCurrencyCode = transaction.IsoCurrencyCode ?? transaction.UnofficialCurrencyCode,
-                        LogoUrl = transaction.LogoUrl,
-                        MerchantName = transaction.MerchantName,
-                        PaymentChannel = transaction.PaymentChannel.ToString(),
-                        TransactionCode = transaction.TransactionCode == null
-                            ? null
-                            : transaction.TransactionCode.ToString(),
-                    });
-                }
-
-                await context.BulkInsertOrUpdateAsync(transactions);
-                updatedCount += transactions.Count;
+                var transactionsAdded = await UpdateSingleItemAsync(item.Id, userId);
+                updatedCount += transactionsAdded;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to update item {ItemId} for user {UserId}", item.Id, userId);
+                // Continue with other items instead of failing the entire batch
             }
         }
 
         return updatedCount;
+    }
+    
+    public async Task<int> UpdateItemByIdAsync(string plaidItemId)
+    {
+        var item = await context.Items.FirstOrDefaultAsync(i => i.PlaidItemId == plaidItemId);
+
+        if (item == null)
+        {
+            logger.LogWarning("Item {ItemId} not found", plaidItemId);
+            return 0;
+        }
+
+        try
+        {
+            return await UpdateSingleItemAsync(item.Id, item.UserId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating item {ItemId} for user {UserId}", plaidItemId, item.UserId);
+            throw;
+        }
     }
     
     public async Task<bool> DeleteItemAsync(string userId, int itemId)
@@ -219,7 +138,7 @@ public class ItemsService(
                 return ItemTokenExchangeResult.Failure(response.Error);
             }
 
-            await CreateItemAsync(response.AccessToken, userId, institutionName);
+            await CreateItemAsync(response.AccessToken, userId, institutionName, response.ItemId);
 
             // Wait briefly before updating items to ensure the item is created
             await Task.Delay(1000);
@@ -245,6 +164,8 @@ public class ItemsService(
     
     public async Task<LinkTokenResult> CreateLinkTokenAsync(string userId)
     {
+        var webhookUrl = config["Plaid:WebhookUrl"];
+        
         try
         {
             var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest
@@ -256,7 +177,8 @@ public class ItemsService(
                 ClientName = "ZenWealth",
                 Products = [Products.Transactions],
                 Language = Language.English,
-                CountryCodes = [CountryCode.Gb]
+                CountryCodes = [CountryCode.Gb],
+                Webhook = webhookUrl
             });
 
             if (response.Error != null)
@@ -277,5 +199,218 @@ public class ItemsService(
             logger.LogError(ex, "Exception while creating link token for user {UserId}", userId);
             return LinkTokenResult.Failure("An unexpected error occurred while creating the link token");
         }
+    }
+    
+    private async Task CreateItemAsync(string accessToken, string userId, string institutionName, string itemId)
+    {
+        context.Items.Add(new Item()
+        {
+            AccessToken = accessToken,
+            UserId = userId,
+            InstitutionName = institutionName,
+            PlaidItemId = itemId
+        });
+        
+        await context.SaveChangesAsync();
+        logger.LogInformation("Added item for user {UserId}", userId);
+    }
+
+    // Core update method that both public methods will use
+    private async Task<int> UpdateSingleItemAsync(int itemId, string userId)
+    {
+        var updatedCount = 0;
+        var item = await context.Items
+            .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+
+        if (item == null)
+        {
+            logger.LogWarning("Item {ItemId} not found for user {UserId}", itemId, userId);
+            return 0;
+        }
+
+        logger.LogInformation("Updating item {item} for institution {institution} and user {user}", 
+            item.Id, item.InstitutionName, userId);
+
+        var hasMore = true;
+
+        while (hasMore)
+        {
+            // Using a transaction to ensure data consistency
+            await using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var request = new TransactionsSyncRequest()
+                {
+                    AccessToken = item.AccessToken,
+                    Cursor = item.Cursor
+                };
+                
+                var data = await client.TransactionsSyncAsync(request);
+                
+                item.Cursor = string.IsNullOrEmpty(data.NextCursor) ? null : data.NextCursor;
+                item.LastFetched = string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
+                hasMore = data.HasMore;
+                await context.SaveChangesAsync();
+
+                logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
+                    data.Added.Count, item.Id, userId
+                );
+
+                // Process accounts
+                await ProcessAccountsAsync(data.Accounts, item.Id, userId);
+                
+                // Process transactions
+                var addedCount = await ProcessTransactionsAsync(data.Added, userId);
+                updatedCount += addedCount;
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                logger.LogError(ex, "Error processing transactions for item {ItemId} and user {UserId}", 
+                    item.Id, userId);
+                throw;
+            }
+        }
+
+        return updatedCount;
+    }
+
+    private async Task ProcessAccountsAsync(IReadOnlyList<Going.Plaid.Entity.Account> accounts, int itemId, string userId)
+    {
+        if (accounts.Count == 0)
+        {
+            return;
+        }
+
+        // Get all existing account IDs in one query
+        var existingAccountIds = (await context.Accounts
+            .Where(a => a.ItemId == itemId)
+            .Select(a => a.PlaidAccountId)
+            .ToListAsync())
+            .ToHashSet();
+
+        var newAccounts = new List<Account>();
+        
+        foreach (var account in accounts)
+        {
+            if (existingAccountIds.Contains(account.AccountId))
+            {
+                logger.LogInformation(
+                    "Skipping account {PlaidAccountId} for item {ItemId} and user {UserId} as it already exists",
+                    account.AccountId, itemId, userId
+                );
+                continue;
+            }
+
+            newAccounts.Add(new Account
+            {
+                PlaidAccountId = account.AccountId,
+                ItemId = itemId,
+                UserId = userId,
+                Name = account.Name,
+                Type = account.Type.ToString(),
+                CurrentBalance = account.Balances.Current ?? 0,
+                AvailableBalance = account.Balances.Available ?? 0,
+                Mask = account.Mask,
+                Subtype = account.Subtype.ToString(),
+                OfficialName = account.OfficialName,
+            });
+        }
+        
+        if (newAccounts.Count > 0)
+        {
+            await context.BulkInsertAsync(newAccounts);
+            logger.LogInformation("Added {AccountCount} new accounts for item {ItemId} and user {UserId}",
+                newAccounts.Count, itemId, userId);
+        }
+    }
+
+    private async Task<int> ProcessTransactionsAsync(IReadOnlyList<Going.Plaid.Entity.Transaction> transactions, string userId)
+    {
+        if (transactions.Count == 0)
+        {
+            return 0;
+        }
+
+        var sortedTransactions = transactions.OrderBy(t => t.Date).ToList();
+        
+        // Get all transaction IDs in one query
+        var transactionIds = sortedTransactions
+            .Select(t => t.TransactionId)
+            .Where(id => id != null)
+            .ToList();
+        
+        var existingTransactionIds = (await context.Transactions
+            .Where(t => transactionIds.Contains(t.PlaidTransactionId))
+            .Select(t => t.PlaidTransactionId)
+            .ToListAsync())
+            .ToHashSet();
+
+        // Get account mapping in one query
+        var accountIds = sortedTransactions
+            .Select(t => t.AccountId)
+            .Distinct()
+            .ToList();
+        
+        var accountMapping = await context.Accounts
+            .Where(a => accountIds.Contains(a.PlaidAccountId))
+            .Select(a => new { a.PlaidAccountId, a.Id })
+            .ToDictionaryAsync(a => a.PlaidAccountId, a => a.Id);
+
+        var newTransactions = new List<Transaction>();
+        
+        foreach (var transaction in sortedTransactions)
+        {
+            if (transaction.TransactionId == null || existingTransactionIds.Contains(transaction.TransactionId))
+            {
+                continue;
+            }
+
+            if (!accountMapping.TryGetValue(transaction.AccountId, out var accountId))
+            {
+                logger.LogInformation(
+                    "Skipping transaction {PlaidTransactionId} for user {UserId} as the account does not exist",
+                    transaction.TransactionId, userId
+                );
+                continue;
+            }
+
+            newTransactions.Add(new Transaction()
+            {
+                PlaidTransactionId = transaction.TransactionId,
+                AccountId = accountId,
+                UserId = userId,
+                Name = transaction.Name ?? "",
+                Amount = transaction.Amount ?? new decimal(0.00),
+                Date = transaction.Date ?? new DateOnly(),
+                Datetime = transaction.Datetime,
+                Website = transaction.Website,
+                Category = transaction.PersonalFinanceCategory?.Primary ?? "OTHER",
+                CategoryIconUrl = transaction.PersonalFinanceCategoryIconUrl,
+                IsoCurrencyCode = transaction.IsoCurrencyCode ?? transaction.UnofficialCurrencyCode,
+                LogoUrl = transaction.LogoUrl,
+                MerchantName = transaction.MerchantName,
+                PaymentChannel = transaction.PaymentChannel.ToString(),
+                TransactionCode = transaction.TransactionCode == null
+                    ? null
+                    : transaction.TransactionCode.ToString(),
+            });
+        }
+
+        if (newTransactions.Count > 0)
+        {
+            await context.BulkInsertAsync(newTransactions);
+            logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
+                newTransactions.Count, userId);
+        }
+
+        return newTransactions.Count;
+    }
+    
+    private static bool ShouldSkipItemUpdate(Item item)
+    {
+        return item.LastFetched != null && DateTime.Now.AddDays(-1) < item.LastFetched;
     }
 }

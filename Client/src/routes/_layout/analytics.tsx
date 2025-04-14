@@ -15,8 +15,8 @@ function RouteComponent() {
     // console.log(monthlyBreakdowns);
     return (
         <section className="px-4 pb-8 space-y-6 w-dvw">
-            <ExpensesRoseChart className="" data={categoryTotals ?? []} />
             <IncomeExpensesOverviewCard data={financialPeriods ?? []} />
+            <ExpensesRoseChart className="" data={categoryTotals ?? []} />
         </section>
     );
 }

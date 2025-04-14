@@ -287,6 +287,6 @@ export const userDetailsAtom = atomWithQuery(() => ({
             (e: AxiosError<UserDetails>) => console.error(e),
         );
 
-        return response ? response.data : {userName: "", email: "", institutions: []};
+        return response ? response.data : {userName: "user", email: "", institutions: []};
     },
 }));

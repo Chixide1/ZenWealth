@@ -15,6 +15,12 @@ public class Item
     /// </summary>
     [Column(TypeName = "nvarchar(450)")]
     public required string UserId { get; init; }
+    
+    /// <summary>
+    /// <para>The Plaid Item ID</para>
+    /// </summary>
+    [Column(TypeName = "varchar(150)")]
+    public required string PlaidItemId { get; init; }
 
     /// <summary>
     /// <para>The associated User's Navigation</para>
