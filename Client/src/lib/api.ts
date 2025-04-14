@@ -10,20 +10,38 @@ const api = axios.create({
     withCredentials: true,
 });
 
+// Flag to keep track of authentication state
+let isAuthenticated = false;
+
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if ((error.response && error.response.status === 401) ||
-            error.code === "ECONNABORTED"
-        ) {
-            // Don't redirect if already on login page
-            if (window.location.pathname !== "/login") {
-                router.navigate({ to: "/login" });
+    (response) => {
+        // If we get a successful response
+        if (response.status === 200) {
+            // Check if this is an authentication response
+            if (response.config.url?.includes("/Auth/Login") ||
+                response.config.url?.includes("/Auth/LoginWithMfa") ||
+                response.config.url?.includes("/User")) {
+
+                isAuthenticated = true;
+
+                // If we're on the login page, redirect to root
+                if (window.location.pathname.includes("/login")) {
+                    router.navigate({ to: "/" });
+                }
             }
-            return Promise.reject(error);
-        } else {
-            return Promise.reject(error);
         }
+        return response;
+    },
+    (error) => {
+        // If we get a 401 error and we're not on the login page
+        if (error.response?.status === 401 &&
+            !window.location.pathname.includes("/login")) {
+
+            isAuthenticated = false;
+            router.navigate({ to: "/login" });
+        }
+
+        return Promise.reject(error);
     }
 );
 
