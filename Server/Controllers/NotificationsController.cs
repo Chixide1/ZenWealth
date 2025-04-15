@@ -1,35 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
+using Going.Plaid.Entity;
 using Server.Services;
+using Server.Utils;
 
 namespace Server.Controllers;
 
 [ApiController]
+[Route("[controller]")]
 public class NotificationsController(ILogger<NotificationsController> logger, IItemsService itemsService) : ControllerBase
 {
-    [Route("[controller]")]
     [HttpPost]
-    public async Task<IActionResult> PlaidWebhook(SyncUpdatesAvailableWebhookDto webhookData)
+    public async Task<IActionResult> PlaidWebhook(PlaidWebhookDto webhookData)
     {
-        var updatedCount = 0;
-        
-        logger.LogInformation($"Received Plaid webhook: Type={webhookData.WebhookType}, Code={webhookData.WebhookCode}");
+        logger.LogInformation("Received Plaid webhook: Type={WebhookType}, Code={WebhookCode}",
+            webhookData.WebhookType, webhookData.WebhookCode);
 
-        try
+        var webhookCodeEnum = PlaidUtil.ParseWebhookCode(webhookData.WebhookCode);
+        
+        switch (webhookCodeEnum)
         {
-            updatedCount = await itemsService.UpdateItemByIdAsync(webhookData.ItemId);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to update item with id={ItemId}", webhookData.ItemId);
+            case WebhookCode.SyncUpdatesAvailable:
+                logger.LogInformation("Received Plaid sync updates available");
+                await itemsService.UpdateItemByIdAsync(webhookData.ItemId);
+                break;
+            default:
+                logger.LogWarning("Unknown webhook code: {WebhookCode}", webhookData.WebhookCode);
+                break;
         }
         
-        logger.LogInformation("Updated {transactionCount} transactions for item {itemId}", updatedCount, webhookData.ItemId);
         return Ok();
     }
 }
 
-public class SyncUpdatesAvailableWebhookDto
+public class PlaidWebhookDto
 {
     /// <summary>
     /// The general category of the webhook.

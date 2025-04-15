@@ -3,7 +3,7 @@
 namespace Server.Utils;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
-public enum Categories
+public enum ExpenseCategories
 {
         BANK_FEES,
         HOME_IMPROVEMENT,

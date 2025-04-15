@@ -51,7 +51,7 @@ public class BudgetsController(
 
         foreach (var budget in budgets)
         {
-            var validCategory = Enum.TryParse<Categories>(budget.Category, true, out _);
+            var validCategory = Enum.TryParse<ExpenseCategories>(budget.Category, true, out _);
 
             if (budget.Day < 1 || budget.Day > 28)
             {
