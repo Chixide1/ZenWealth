@@ -37,11 +37,11 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
             <Table>
                 <TableHeader>
                     <TableRow className="border-neutral-700">
-                        <TableHead className="text-neutral-300 rounded-lg">
+                        <TableHead className="text-primary rounded-lg">
                             <div className="bg-neutral-700/70 rounded-md p-3">Category</div>
                         </TableHead>
                         {data.map((period) => (
-                            <TableHead key={`${period.year}-${period.month}`} className="text-right rounded-md text-neutral-300">
+                            <TableHead key={`${period.year}-${period.month}`} className="text-right rounded-md text-primary">
                                 <div className="bg-neutral-700/70 rounded-md p-3 text-nowrap">{getMonthName(period.month)} {period.year}</div>
                             </TableHead>
                         ))}
@@ -72,13 +72,13 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                                             style={{ "--data-length": data.length } as React.CSSProperties}>
                                             {incomeCategories.map((category) => (
                                                 <Fragment key={category}>
-                                                    <div title={category.replace(/_/g, " ")} className="text-ellipsis overflow-hidden md:pl-8 py-4 border-t border-neutral-800 text-neutral-400">
+                                                    <div title={category.replace(/_/g, " ")} className="text-ellipsis overflow-hidden md:pl-8 py-4 border-t border-neutral-800 text-neutral-300">
                                                         {category.replace(/_/g, " ")}
                                                     </div>
                                                     {data.map((period) => (
                                                         <div 
                                                             key={`${period.year}-${period.month}-${category}`} 
-                                                            className="text-right p-4 pr-2 border-t border-neutral-800 text-neutral-400"
+                                                            className="text-right p-4 pr-2 border-t border-neutral-800 text-neutral-300"
                                                         >
                                                             {formatIncome(period.categories[category])}
                                                         </div>
@@ -117,13 +117,13 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                                             {expenseCategories.length > 0 ? (
                                                 expenseCategories.map((category) => (
                                                     <Fragment key={category}>
-                                                        <div title={category.replace(/_/g, " ")} className="text-ellipsis overflow-hidden md:pl-8 py-4 border-t  border-neutral-800 text-neutral-400">
+                                                        <div title={category.replace(/_/g, " ")} className="text-ellipsis overflow-hidden md:pl-8 py-4 border-t  border-neutral-800 text-neutral-300">
                                                             {category.replace(/_/g, " ")}
                                                         </div>
                                                         {data.map((period) => (
                                                             <div 
                                                                 key={`${period.year}-${period.month}-${category}`} 
-                                                                className="text-right p-4 pr-2 border-t border-neutral-800 text-neutral-400"
+                                                                className="text-right p-4 pr-2 border-t border-neutral-800 text-neutral-300"
                                                             >
                                                                 {formatExpense(period.categories[category])}
                                                             </div>
@@ -131,7 +131,7 @@ export function IncomeExpensesTable({ className, data }: IncomeExpensesTableProp
                                                     </Fragment>
                                                 ))
                                             ) : (
-                                                <div className="md:pl-8 py-4 border-b border-neutral-800 text-neutral-400 col-span-full">
+                                                <div className="md:pl-8 py-4 border-b border-neutral-800 text-neutral-300 col-span-full">
                                                     No expense categories found
                                                 </div>
                                             )}

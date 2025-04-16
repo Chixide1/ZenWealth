@@ -18,6 +18,7 @@ import {toast} from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { ReauthenticateButton } from "@/components/features/link/ReauthenticateButton";
 
 // ==================== TYPES ====================
 type SettingsSidebarItem = {
@@ -202,16 +203,22 @@ function AccountSection() {
                                 <CardHeader className="py-3 px-4">
                                     <div className="flex justify-between items-center">
                                         <CardTitle className="text-sm font-medium">{bank.name}</CardTitle>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-8 text-red-500 hover:text-red-400 hover:bg-red-950/30"
-                                            onClick={() => handleDeleteBank(bank.id)}
-                                            isLoading={isLoading}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                            <span>Disconnect</span>
-                                        </Button>
+                                        <div className="flex sm:gap-2">
+                                            <ReauthenticateButton 
+                                                bank={bank} 
+                                                // onSuccess={() => queryClient.refetchQueries()}
+                                            />
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 text-red-500 hover:text-red-400 hover:bg-red-950/30"
+                                                onClick={() => handleDeleteBank(bank.id)}
+                                                isLoading={isLoading}
+                                            >
+                                                <Trash2 className="h-4 w-4 mr-1" />
+                                                <span className="hidden sm:inline">Disconnect</span>
+                                            </Button>
+                                        </div>
                                     </div>
                                 </CardHeader>
                             </Card>

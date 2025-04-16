@@ -27,8 +27,6 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
     const [{data: userDetails}] = useAtom(userDetailsAtom);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
-    
-    console.log(userDetails);
 
     const UserDropdownMenuItems: UserDropdownMenuItem[] = [
         {

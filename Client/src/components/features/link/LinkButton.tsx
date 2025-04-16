@@ -54,15 +54,11 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
             onClick={() => open()}
             className={cn("rounded-full flex items-center justify-center", className)}
             variant={"secondary"}
-            disabled={!linkToken}
+            isLoading={!linkToken}
+            loadingText="Fetching..."
             {...props}
         >
-            {!linkToken ?
-                <Fragment>
-                    <Loading className="text-black" fullScreen={false} />
-                    <span className="hidden md:inline mr-0.5">Fetching</span>
-                </Fragment> :
-                children}
+            {children}
         </Button>
     );
 }

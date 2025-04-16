@@ -214,6 +214,57 @@ public class ItemsService(
         logger.LogInformation("Added item for user {UserId}", userId);
     }
 
+     public async Task<LinkTokenResult> CreateUpdateLinkTokenAsync(string userId, int itemId)
+    {
+        try
+        {
+            // Find the item and ensure it belongs to the user
+            var item = await context.Items
+                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+                
+            if (item == null)
+            {
+                logger.LogWarning("Item {ItemId} not found for user {UserId}", itemId, userId);
+                return LinkTokenResult.Failure($"Item with ID {itemId} not found");
+            }
+            
+            var webhookUrl = config["Plaid:WebhookUrl"];
+            
+            var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest
+            {
+                User = new LinkTokenCreateRequestUser
+                {
+                    ClientUserId = userId
+                },
+                ClientName = "ZenWealth",
+                AccessToken = item.AccessToken,
+                Language = Language.English,
+                CountryCodes = [CountryCode.Gb],
+                Webhook = webhookUrl
+            });
+
+            if (response.Error != null)
+            {
+                logger.LogError("Error creating update link token: {ErrorType} - {ErrorCode}: {ErrorMessage}",
+                    response.Error.ErrorType, response.Error.ErrorCode, response.Error.ErrorMessage);
+                
+                return LinkTokenResult.Failure(
+                    $"Unable to create update link token: {response.Error.ErrorMessage}", 
+                    response.Error);
+            }
+
+            logger.LogInformation("Successfully created update link token for user {UserId} and item {ItemId}", 
+                userId, itemId);
+            return LinkTokenResult.Success(response.LinkToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception while creating update link token for user {UserId} and item {ItemId}", 
+                userId, itemId);
+            return LinkTokenResult.Failure("An unexpected error occurred while creating the update link token");
+        }
+    }
+
     // Core update method that both public methods will use
     private async Task<int> UpdateSingleItemAsync(int itemId, string userId)
     {

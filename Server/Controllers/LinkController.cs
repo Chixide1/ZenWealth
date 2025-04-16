@@ -40,6 +40,37 @@ public class LinkController(
         return Ok(new GetLinkTokenResponse(result.LinkToken!));
     }
 
+    [HttpGet("update/{itemId:int}")]
+    [ProducesResponseType(typeof(GetLinkTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetUpdateLinkToken(int itemId)
+    {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        
+        var result = await itemsService.CreateUpdateLinkTokenAsync(user.Id, itemId);
+        
+        if (!result.IsSuccess)
+        {
+            if (result.ErrorMessage?.Contains("not found") == true)
+            {
+                return NotFound(new { Error = result.ErrorMessage });
+            }
+            
+            logger.LogError("Failed to get update link token: {ErrorMessage}", result.ErrorMessage);
+            return BadRequest(new { Error = result.ErrorMessage });
+        }
+        
+        logger.LogInformation("Successfully obtained update link token for user {UserId} and item {ItemId}", user.Id, itemId);
+        return Ok(new GetLinkTokenResponse(result.LinkToken!));
+    }
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

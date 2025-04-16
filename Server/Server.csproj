@@ -8,7 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Communication.Email" Version="1.0.1" />
-    <PackageReference Include="Going.Plaid" Version="6.31.3" />
+	  <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+	  <PackageReference Include="Going.Plaid" Version="6.31.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">

@@ -56,6 +56,14 @@ public interface IItemsService
     /// <param name="userId">The ID of the user</param>
     /// <returns>A result containing success status, link token, and any errors</returns>
     Task<LinkTokenResult> CreateLinkTokenAsync(string userId);
+
+    /// <summary>
+    /// Creates a link token which will be used to update the provided item for the given user
+    /// </summary>
+    /// <param name="userId">The ID of the user</param>
+    /// <param name="itemId">The ID of the item</param>
+    /// <returns>A result containing success status, link token, and any errors</returns>
+    Task<LinkTokenResult> CreateUpdateLinkTokenAsync(string userId, int itemId);
 }
 
 /// <summary>
