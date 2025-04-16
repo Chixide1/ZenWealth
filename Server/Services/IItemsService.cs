@@ -48,15 +48,13 @@ public interface IItemsService
     /// <param name="itemId">The ID of the item to delete.</param>
     /// <returns>True if the item was deleted, false otherwise.</returns>
     Task<bool> DeleteItemAsync(string userId, int itemId);
-    
+
     /// <summary>
     /// Exchanges a public token for an access token and creates a new item for the user
     /// </summary>
-    /// <param name="publicToken">The public token to exchange</param>
-    /// <param name="institutionName">The name of the institution</param>
-    /// <param name="userId">The ID of the user</param>
     /// <returns>A result containing success status, any errors, and the number of added transactions</returns>
-    Task<ItemTokenExchangeResult> ExchangePublicTokenAsync(string publicToken, string institutionName, string userId);
+    Task<ItemTokenExchangeResult> ExchangePublicTokenAsync(string publicToken, string institutionName,
+        string institutionId, string userId);
     
     /// <summary>
     /// Creates a link token for the given user

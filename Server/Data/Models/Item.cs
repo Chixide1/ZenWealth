@@ -51,6 +51,11 @@ public class Item
     public required string InstitutionName { get; init; }
     
     /// <summary>
+    /// <para>The Institution ID which can be used for comparison</para>
+    /// </summary>
+    public required string InstitutionId { get; init; }
+    
+    /// <summary>
     /// <para>Navigation property for Accounts associated with this Item</para>
     /// </summary>
     public List<Account> Accounts { get; } = [];

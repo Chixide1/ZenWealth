@@ -105,6 +105,7 @@ public class LinkController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> ExchangePublicToken([FromBody] ExchangePublicTokenResponse data)
     {
         var user = await userManager.GetUserAsync(User);
@@ -113,15 +114,28 @@ public class LinkController(
         {
             return Unauthorized();
         }
-        
-        var result = await itemsService.ExchangePublicTokenAsync(data.PublicToken, data.InstitutionName, user.Id);
-        
+    
+        var result = await itemsService.ExchangePublicTokenAsync(data.PublicToken, data.InstitutionName, data.institutionId, user.Id);
+    
         if (!result.IsSuccess)
         {
             logger.LogError("Failed to exchange public token: {ErrorMessage}", result.Error?.ErrorMessage);
-            return BadRequest(new { Error = result.Error?.ErrorMessage ?? "Failed to exchange public token" });
-        }
         
+            // Handle the specific duplicate institution error
+            if (result.Error?.ErrorCode == "INSTITUTION_ALREADY_LINKED")
+            {
+                return Conflict(new { 
+                    Error = result.Error.ErrorMessage,
+                    ErrorCode = result.Error.ErrorCode
+                });
+            }
+        
+            return BadRequest(new { 
+                Error = result.Error?.ErrorMessage ?? "Failed to exchange public token",
+                ErrorCode = result.Error?.ErrorCode
+            });
+        }
+    
         return Ok(new { result.AddedTransactions });
     }
 
@@ -159,6 +173,6 @@ public record DeleteItemResponse(bool Success, string? Error = null)
 
 public record GetLinkTokenResponse(string Value);
 
-public record ExchangePublicTokenResponse(string PublicToken, string InstitutionName);
+public record ExchangePublicTokenResponse(string PublicToken, string InstitutionName, string institutionId);
 
 public record ReauthenticateItemRequest(string PublicToken);

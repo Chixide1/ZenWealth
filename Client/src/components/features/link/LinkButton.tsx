@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
 import { useQueryClient } from "@tanstack/react-query";
 import {toast} from "@/hooks/use-toast.ts";
+import {AxiosError} from "axios";
 
 type LinkButtonProps = ButtonProps & {
     className?: string
@@ -33,21 +34,43 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
     const { open, ready } = usePlaidLink({
         token: linkToken,
         onSuccess: async (publicToken, metadata) => {
-            setLinkToken("");
-            await api.post("/Link",
-                { publicToken: publicToken, institutionName: metadata.institution?.name }
-            );
-            queryClient.invalidateQueries();
-            
-            if(reload){
-                location.reload();
+            try {
+                setLinkToken("");
+                await api.post("/Link", {
+                    publicToken: publicToken,
+                    institutionName: metadata.institution?.name,
+                    institutionId: metadata.institution?.institution_id
+                });
+
+                queryClient.invalidateQueries();
+
+                if(reload){
+                    location.reload();
+                }
+
+                toast({
+                    title: "Success",
+                    description: "Bank connection added successfully"
+                });
+                GetLinkToken();
+            } catch (error: AxiosError) {
+                // Handle duplicate institution error
+                if (error.response?.status === 409) {
+                    toast({
+                        title: "Duplicate Connection",
+                        description: error.response.data.Error ?? "This institution is already connected to your account",
+                        variant: "destructive"
+                    });
+                } else {
+                    toast({
+                        title: "Error",
+                        description: "Failed to add bank connection",
+                        variant: "destructive"
+                    });
+                }
+                console.error(error);
+                GetLinkToken();
             }
-            
-            toast({
-                title: "Success",
-                description: "Bank connection added successfully"
-            });
-            GetLinkToken();
         },
         onExit: (error) => {
             setLinkToken("");
@@ -59,7 +82,7 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
                 });
                 console.error(error);
             }
-            
+
             GetLinkToken();
         },
     });
@@ -67,7 +90,7 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
     useEffect(() => {
         GetLinkToken();
     }, []);
-    
+
     return (
         <Button
             onClick={() => open()}
@@ -81,4 +104,3 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
         </Button>
     );
 }
-

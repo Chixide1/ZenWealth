@@ -122,31 +122,46 @@ public class ItemsService(
         return true;
     }
     
-    public async Task<ItemTokenExchangeResult> ExchangePublicTokenAsync(string publicToken, string institutionName, string userId)
+    public async Task<ItemTokenExchangeResult> ExchangePublicTokenAsync(string publicToken, string institutionName, string institutionId, string userId)
     {
         try
         {
+            // Check if this institution is already linked for this user
+            var existingItem = await context.Items
+                .FirstOrDefaultAsync(i => i.UserId == userId && i.InstitutionId == institutionId);
+                
+            if (existingItem != null)
+            {
+                logger.LogWarning("User {UserId} attempted to add duplicate institution {InstitutionId}", userId, institutionId);
+                return ItemTokenExchangeResult.Failure(new PlaidError
+                {
+                    ErrorType = "DUPLICATE_ITEM",
+                    ErrorCode = "INSTITUTION_ALREADY_LINKED",
+                    ErrorMessage = $"Institution '{institutionName}' is already linked to your account."
+                });
+            }
+    
             var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
             {
                 PublicToken = publicToken
             });
-
+    
             if (response.Error != null)
             {
                 logger.LogError("Error exchanging public token: {ErrorMessage}", response.Error.ErrorMessage);
                 return ItemTokenExchangeResult.Failure(response.Error);
             }
-
-            await CreateItemAsync(response.AccessToken, userId, institutionName, response.ItemId);
-
+    
+            await CreateItemAsync(response.AccessToken, userId, institutionName, response.ItemId, institutionId);
+    
             // Wait briefly before updating items to ensure the item is created
             await Task.Delay(1000);
-
+    
             var addedTransactions = await UpdateItemsAsync(userId);
             
             logger.LogInformation("Successfully exchanged public token for user {UserId} with {AddedTransactions} transactions", 
                 userId, addedTransactions);
-                
+                    
             return ItemTokenExchangeResult.Success(addedTransactions);
         }
         catch (Exception ex)
@@ -200,18 +215,19 @@ public class ItemsService(
         }
     }
     
-    private async Task CreateItemAsync(string accessToken, string userId, string institutionName, string itemId)
+    private async Task CreateItemAsync(string accessToken, string userId, string institutionName, string itemId, string institutionId)
     {
         context.Items.Add(new Item()
         {
             AccessToken = accessToken,
             UserId = userId,
             InstitutionName = institutionName,
+            InstitutionId = institutionId,
             PlaidItemId = itemId
         });
         
         await context.SaveChangesAsync();
-        logger.LogInformation("Added item for user {UserId}", userId);
+        logger.LogInformation("Added item for user {UserId} for institution {institutionId}", userId, institutionId);
     }
 
      public async Task<LinkTokenResult> CreateUpdateLinkTokenAsync(string userId, int itemId)
