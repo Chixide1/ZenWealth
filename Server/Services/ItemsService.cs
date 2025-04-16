@@ -265,6 +265,63 @@ public class ItemsService(
         }
     }
 
+public async Task<ItemTokenExchangeResult> ExchangePublicTokenForReauthAsync(string publicToken, int itemId, string userId)
+{
+    try
+    {
+        // Find the item to ensure it exists and belongs to the user
+        var item = await context.Items
+            .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+            
+        if (item == null)
+        {
+            logger.LogWarning("Item {ItemId} not found for user {UserId} during reauthentication", itemId, userId);
+            return ItemTokenExchangeResult.Failure(new PlaidError
+            {
+                ErrorType = "INVALID_REQUEST",
+                ErrorCode = "ITEM_NOT_FOUND",
+                ErrorMessage = $"Item with ID {itemId} not found"
+            });
+        }
+        
+        // Exchange the public token for a new access token
+        var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
+        {
+            PublicToken = publicToken
+        });
+
+        if (response.Error != null)
+        {
+            logger.LogError("Error exchanging public token for reauth: {ErrorMessage}", response.Error.ErrorMessage);
+            return ItemTokenExchangeResult.Failure(response.Error);
+        }
+        
+        // Update the item with the new access token and reset cursor to force a fresh sync
+        item.AccessToken = response.AccessToken;
+        item.Cursor = null; // Reset cursor to ensure a fresh data sync
+        item.LastFetched = null; // Reset last fetched to ensure immediate sync
+        await context.SaveChangesAsync();
+        
+        // Perform an immediate sync to get fresh data
+        var addedTransactions = await UpdateSingleItemAsync(item.Id, userId);
+        
+        logger.LogInformation("Successfully reauthenticated and updated item {ItemId} for user {UserId} with {AddedTransactions} transactions", 
+            itemId, userId, addedTransactions);
+                
+        return ItemTokenExchangeResult.Success(addedTransactions);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Exception while reauthenticating item {ItemId} for user {UserId}", itemId, userId);
+        return ItemTokenExchangeResult.Failure(new PlaidError
+        {
+            ErrorType = "API_ERROR",
+            ErrorCode = "INTERNAL_SERVER_ERROR",
+            ErrorMessage = "An unexpected error occurred while processing your request."
+        });
+    }
+}
+
     // Core update method that both public methods will use
     private async Task<int> UpdateSingleItemAsync(int itemId, string userId)
     {
@@ -417,7 +474,7 @@ public class ItemsService(
             continue;
         }
 
-        if (!accountMapping.TryGetValue(transaction.AccountId, out var accountId))
+        if (!accountMapping.TryGetValue(transaction.AccountId ?? string.Empty, out var accountId))
         {
             logger.LogInformation(
                 "Skipping transaction {PlaidTransactionId} for user {UserId} as the account does not exist",
@@ -448,15 +505,13 @@ public class ItemsService(
         });
     }
 
-    if (newTransactions.Count > 0)
-    {
-        // Replace bulk insert with standard AddRange and SaveChanges
-        context.Transactions.AddRange(newTransactions);
-        await context.SaveChangesAsync();
+    if (newTransactions.Count <= 0) return newTransactions.Count;
+
+    context.Transactions.AddRange(newTransactions);
+    await context.SaveChangesAsync();
         
-        logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
-            newTransactions.Count, userId);
-    }
+    logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
+        newTransactions.Count, userId);
 
     return newTransactions.Count;
 }

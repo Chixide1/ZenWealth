@@ -40,7 +40,7 @@ public class LinkController(
         return Ok(new GetLinkTokenResponse(result.LinkToken!));
     }
 
-    [HttpGet("update/{itemId:int}")]
+    [HttpGet("{itemId:int}")]
     [ProducesResponseType(typeof(GetLinkTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -69,6 +69,36 @@ public class LinkController(
         
         logger.LogInformation("Successfully obtained update link token for user {UserId} and item {ItemId}", user.Id, itemId);
         return Ok(new GetLinkTokenResponse(result.LinkToken!));
+    }
+    
+    [HttpPut("{itemId:int}")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateItemReauthentication(int itemId, [FromBody] ReauthenticateItemRequest request)
+    {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+        
+        var result = await itemsService.ExchangePublicTokenForReauthAsync(request.PublicToken, itemId, user.Id);
+        
+        if (!result.IsSuccess)
+        {
+            logger.LogError("Failed to update item authentication for item {ItemId} & user {UserId}: {ErrorMessage}",
+                itemId, user.Id, result.Error?.ErrorMessage);
+                
+            return BadRequest(new { 
+                message = $"Failed to update authentication for item {itemId}",
+                error = result.Error?.ErrorMessage
+            });
+        }
+        
+        logger.LogInformation("Successfully updated authentication for user {UserId} and item {ItemId}", user.Id, itemId);
+        return Ok(new { success = true });
     }
 
     [HttpPost]
@@ -130,3 +160,5 @@ public record DeleteItemResponse(bool Success, string? Error = null)
 public record GetLinkTokenResponse(string Value);
 
 public record ExchangePublicTokenResponse(string PublicToken, string InstitutionName);
+
+public record ReauthenticateItemRequest(string PublicToken);

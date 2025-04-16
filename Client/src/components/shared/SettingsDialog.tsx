@@ -172,7 +172,7 @@ function AccountSection() {
             toast({title: "Unable to remove connected account", description: response.data.error, variant: "destructive"});
         }
 
-        queryClient.refetchQueries();
+        queryClient.invalidateQueries();
         setIsLoading(false);
     };
 
@@ -204,10 +204,7 @@ function AccountSection() {
                                     <div className="flex justify-between items-center">
                                         <CardTitle className="text-sm font-medium">{bank.name}</CardTitle>
                                         <div className="flex sm:gap-2">
-                                            <ReauthenticateButton 
-                                                bank={bank} 
-                                                // onSuccess={() => queryClient.refetchQueries()}
-                                            />
+                                            <ReauthenticateButton bank={bank}/>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"

@@ -30,7 +30,15 @@ public interface IItemsService
     /// It fetches updates using a cursor to track which updates have already been seen.
     /// </remarks>
     Task<int> UpdateItemsAsync(string userId);
+
+    /// <summary>
+    /// Update the access token for the specified user's item
+    /// </summary>
+    Task<ItemTokenExchangeResult> ExchangePublicTokenForReauthAsync(string publicToken, int itemId, string userId);
     
+    /// <summary>
+    /// Get all the institutions for a specified user
+    /// </summary>
     Task<IEnumerable<InstitutionDto>> GetItemsAsync(string userId);
     
     /// <summary>

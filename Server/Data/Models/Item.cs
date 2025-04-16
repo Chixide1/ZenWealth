@@ -31,7 +31,7 @@ public class Item
     /// <para>The token which allows interaction with the user's bank to retrieve transaction information</para>
     /// </summary>
     [Column(TypeName = "varchar(100)")]
-    public required string AccessToken { get; init; }
+    public required string AccessToken { get; set; }
 
     /// <summary>
     /// <para>Cursor used for fetching any future updates after the latest update provided in this response. The cursor obtained after all pages have been pulled (indicated by <c>has_more</c> being <c>false</c>) will be valid for at least 1 year. This cursor should be persisted for later calls. If transactions are not yet available, this will be an empty string.</para>

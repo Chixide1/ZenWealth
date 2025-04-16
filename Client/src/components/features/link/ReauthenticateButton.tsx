@@ -12,57 +12,16 @@ type GetLinkTokenResponse = {
 };
 
 // ReauthenticateButton component
-export function ReauthenticateButton({ bank, onSuccess }: { bank: Institution, onSuccess?: () => void }) {
-    const [isLoading, setIsLoading] = useState(false);
+export function ReauthenticateButton({ bank }: { bank: Institution }) {
     const [linkToken, setLinkToken] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const queryClient = useQueryClient();
 
-    const { open, ready } = usePlaidLink({
-        token: linkToken,
-        onSuccess: (public_token, metadata) => {
-            toast({
-                title: "Success",
-                description: "Bank connection updated successfully"
-            });
-            queryClient.refetchQueries();
-            if (onSuccess) onSuccess();
-            setLinkToken(""); // Reset token after success
-        },
-        onExit: (err, metadata) => {
-            if (err) {
-                toast({
-                    title: "Error",
-                    description: "There was an issue updating your bank connection",
-                    variant: "destructive"
-                });
-            }
-            setLinkToken("");
-        }
-    });
-
-    // Effect to open Plaid when token is set and link is ready
-    useEffect(() => {
-        if (linkToken && ready) {
-            console.log("Opening Plaid Link with token:", linkToken);
-            open();
-        }
-    }, [linkToken, ready, open]);
-
-    const handleReauthenticate = async () => {
+    const getUpdateLinkToken = async () => {
         setIsLoading(true);
         try {
-            const response = await api.get<GetLinkTokenResponse>(`/Link/update/${bank.id}`);
-            if (response.status === 200) {
-                console.log("Link token received:", response.data.value);
-                setLinkToken(response.data.value);
-                // The useEffect will handle opening once token is set and ready is true
-            } else {
-                toast({
-                    title: "Error",
-                    description: "Failed to generate update link",
-                    variant: "destructive"
-                });
-            }
+            const response = await api.get<GetLinkTokenResponse>(`/Link/${bank.id}`);
+            setLinkToken(response.data.value);
         } catch (error) {
             toast({
                 title: "Error",
@@ -75,19 +34,67 @@ export function ReauthenticateButton({ bank, onSuccess }: { bank: Institution, o
         }
     };
 
+    const { open, ready } = usePlaidLink({
+        token: linkToken,
+        onSuccess: async (public_token) => {
+            try {
+                // Exchange the public token for a new access token and update the item
+                await api.put(`/Link/${bank.id}`, { publicToken: public_token });
+
+                toast({
+                    title: "Success",
+                    description: "Bank connection updated successfully"
+                });
+
+                // Refresh data after successful reauthentication
+                queryClient.invalidateQueries();
+            } catch (error) {
+                console.error("Error updating bank connection:", error);
+                toast({
+                    title: "Error",
+                    description: "Failed to update bank connection",
+                    variant: "destructive"
+                });
+            } finally {
+                // Reset the link token
+                setLinkToken("");
+            }
+        },
+        onExit: (err) => {
+            setLinkToken("");
+            if (err) {
+                toast({
+                    title: "Error",
+                    description: "There was an issue updating your bank connection",
+                    variant: "destructive"
+                });
+            }
+            getUpdateLinkToken();
+        }
+    });
+
+    // Effect to supply update token on mount
+    useEffect(() => {
+        getUpdateLinkToken();
+    }, []);
+
+    // Determine if the button should be in loading state
+    const buttonLoading = isLoading || (!ready && linkToken !== "");
+
     return (
         <Button
             variant="ghost"
             size="sm"
             className="h-8 text-amber-500 hover:text-amber-400 hover:bg-amber-950/30 border-amber-800"
-            onClick={handleReauthenticate}
-            disabled={isLoading}
+            onClick={() => {
+                if (ready && linkToken) {
+                    open();
+                }
+            }}
+            isLoading={buttonLoading}
+            loadingText="Loading..."
         >
-            {isLoading ? (
-                <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
-            ) : (
-                <RefreshCw className="h-4 w-4 mr-1" />
-            )}
+            <RefreshCw className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">Reauthenticate</span>
         </Button>
     );
