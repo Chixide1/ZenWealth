@@ -19,46 +19,46 @@ export function ReauthenticateButton({ bank }: { bank: Institution }) {
 
     const getUpdateLinkToken = async () => {
         setIsLoading(true);
-        try {
-            const response = await api.get<GetLinkTokenResponse>(`/Link/${bank.id}`);
-            setLinkToken(response.data.value);
-        } catch (error) {
-            toast({
-                title: "Error",
-                description: "Unable to initiate reauthentication",
-                variant: "destructive"
+
+        await api.get<GetLinkTokenResponse>(`/Link/${bank.id}`)
+            .then((response) => {
+                setLinkToken(response.data.value);
+            })
+            .catch((error) => {
+                toast({
+                    title: "Error",
+                    description: "Unable to initiate reauthentication",
+                    variant: "destructive"
+                });
+                console.error("Reauthentication error:", error);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
-            console.error("Reauthentication error:", error);
-        } finally {
-            setIsLoading(false);
-        }
     };
 
     const { open, ready } = usePlaidLink({
         token: linkToken,
         onSuccess: async (public_token) => {
-            try {
-                // Exchange the public token for a new access token and update the item
-                await api.put(`/Link/${bank.id}`, { publicToken: public_token });
-
-                toast({
-                    title: "Success",
-                    description: "Bank connection updated successfully"
-                });
-
-                // Refresh data after successful reauthentication
-                queryClient.invalidateQueries();
-            } catch (error) {
-                console.error("Error updating bank connection:", error);
-                toast({
-                    title: "Error",
-                    description: "Failed to update bank connection",
-                    variant: "destructive"
-                });
-            } finally {
-                // Reset the link token
-                setLinkToken("");
-            }
+            setLinkToken("");
+            
+            await api.put(`/Link/${bank.id}`, { publicToken: public_token })
+                .then(() => {
+                    toast({
+                        title: "Success",
+                        description: "Bank connection updated successfully"
+                    });
+                    queryClient.invalidateQueries();
+                })
+                .catch((error) => {
+                    console.error("Error updating bank connection:", error);
+                    toast({
+                        title: "Error",
+                        description: "Failed to update bank connection",
+                        variant: "destructive"
+                    });
+                })
+                .finally(() => getUpdateLinkToken());
         },
         onExit: (err) => {
             setLinkToken("");

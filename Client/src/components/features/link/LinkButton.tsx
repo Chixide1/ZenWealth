@@ -18,30 +18,28 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
     const queryClient = useQueryClient();
 
     const GetLinkToken = async () => {
-        try {
-            const response = await api<{value: string}>("/link");
-            setLinkToken(response.data.value);
-        } catch (error) {
-            toast({
-                title: "Error",
-                description: "Failed to obtain link token",
-                variant: "destructive"
+        await api<{value: string}>("/link")
+            .then(response => setLinkToken(response.data.value))
+            .catch((error: AxiosError) => {
+                toast({
+                    title: "Error",
+                    description: "Unable to open the Plaid Link, please refresh then try again",
+                    variant: "destructive"
+                });
+                console.error(error);
             });
-            console.error(error);
-        }
     };
 
     const { open, ready } = usePlaidLink({
         token: linkToken,
         onSuccess: async (publicToken, metadata) => {
-            try {
-                setLinkToken("");
-                await api.post("/Link", {
-                    publicToken: publicToken,
-                    institutionName: metadata.institution?.name,
-                    institutionId: metadata.institution?.institution_id
-                });
-
+            setLinkToken("");
+            
+            await api.post("/Link", {
+                publicToken: publicToken,
+                institutionName: metadata.institution?.name ?? "",
+                institutionId: metadata.institution?.institution_id ?? "",
+            }).then(() => {
                 queryClient.invalidateQueries();
 
                 if(reload){
@@ -52,13 +50,11 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
                     title: "Success",
                     description: "Bank connection added successfully"
                 });
-                GetLinkToken();
-            } catch (error: AxiosError) {
-                // Handle duplicate institution error
+            }).catch((error: AxiosError) => {
                 if (error.response?.status === 409) {
                     toast({
                         title: "Duplicate Connection",
-                        description: error.response.data.Error ?? "This institution is already connected to your account",
+                        description: "This institution is already connected to your account",
                         variant: "destructive"
                     });
                 } else {
@@ -68,9 +64,7 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
                         variant: "destructive"
                     });
                 }
-                console.error(error);
-                GetLinkToken();
-            }
+            }).finally(() => GetLinkToken());
         },
         onExit: (error) => {
             setLinkToken("");
@@ -82,7 +76,6 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
                 });
                 console.error(error);
             }
-
             GetLinkToken();
         },
     });
