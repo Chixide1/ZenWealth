@@ -39,10 +39,13 @@ export function ReauthenticateButton({ bank }: { bank: Institution }) {
 
     const { open, ready } = usePlaidLink({
         token: linkToken,
-        onSuccess: async (public_token) => {
+        onSuccess: async (public_token, metadata) => {
             setLinkToken("");
             
-            await api.put(`/Link/${bank.id}`, { publicToken: public_token })
+            await api.put(`/Link/${bank.id}`, {
+                publicToken: public_token,
+                accounts: metadata.accounts,
+            })
                 .then(() => {
                     toast({
                         title: "Success",

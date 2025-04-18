@@ -1,6 +1,7 @@
 ﻿using Going.Plaid.Entity;
 using Server.Data.DTOs;
 using Server.Data.Models;
+using Account = Going.Plaid.Entity.Account;
 using Item = Server.Data.Models.Item;
 
 namespace Server.Services;
@@ -34,7 +35,7 @@ public interface IItemsService
     /// <summary>
     /// Update the access token for the specified user's item
     /// </summary>
-    Task<ItemTokenExchangeResult> ExchangePublicTokenForReauthAsync(string publicToken, int itemId, string userId);
+    Task<ItemTokenExchangeResult> ExchangePublicTokenForReauthAsync(ReauthParams reauthParams);
     
     /// <summary>
     /// Get all the institutions for a specified user
@@ -104,3 +105,8 @@ public class LinkTokenResult
     public static LinkTokenResult Failure(string errorMessage, PlaidError? plaidError = null) => 
         new() { IsSuccess = false, ErrorMessage = errorMessage, PlaidError = plaidError };
 }
+
+/// <summary>
+/// Parameters required for exchanging public tokens after an item update
+/// </summary>
+public record ReauthParams(string PublicToken, int ItemId, string UserId, List<LinkSessionSuccessMetadataAccount> Accounts);

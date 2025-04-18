@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
-    DialogContent,
+    DialogContent, DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -114,6 +114,7 @@ export function SettingsDialog({ className, isOpen, setIsOpen }: SettingsDialogP
                             <TabsContent key={section.id} value={section.id} className="mt-0 flex flex-col focus-visible:ring-0 focus-visible:ring-offset-0">
                                 <DialogHeader className="p-3 border-b border-neutral-700">
                                     <DialogTitle className="text-base font-medium">{section.title}</DialogTitle>
+                                    <DialogDescription className="sr-only">{`The settings dialog section for ${section.title}`}</DialogDescription>
                                 </DialogHeader>
                                 <ScrollArea className="h-[70vh]">
                                     <section.Content />

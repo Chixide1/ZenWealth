@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Going.Plaid.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Server.Data.Models;
 using Server.Services;
+using Account = Going.Plaid.Entity.Account;
 
 namespace Server.Controllers;
 
@@ -75,7 +77,7 @@ public class LinkController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateItemReauthentication(int itemId, [FromBody] ReauthenticateItemRequest request)
+    public async Task<IActionResult> UpdateItemReauthentication(int itemId, [FromBody] UpdateItemReauthenticationRequest request)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -84,7 +86,14 @@ public class LinkController(
             return Unauthorized();
         }
         
-        var result = await itemsService.ExchangePublicTokenForReauthAsync(request.PublicToken, itemId, user.Id);
+        var result = await itemsService.ExchangePublicTokenForReauthAsync(new ReauthParams
+        (
+            PublicToken: request.PublicToken,
+            ItemId: itemId,
+            UserId: user.Id,
+            Accounts: request.Accounts
+            
+        ));
         
         if (!result.IsSuccess)
         {
@@ -106,7 +115,7 @@ public class LinkController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> ExchangePublicToken([FromBody] ExchangePublicTokenResponse data)
+    public async Task<IActionResult> ExchangePublicToken([FromBody] ExchangePublicTokenRequest data)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -115,7 +124,7 @@ public class LinkController(
             return Unauthorized();
         }
     
-        var result = await itemsService.ExchangePublicTokenAsync(data.PublicToken, data.InstitutionName, data.institutionId, user.Id);
+        var result = await itemsService.ExchangePublicTokenAsync(data.PublicToken, data.InstitutionName, data.InstitutionId, user.Id);
     
         if (!result.IsSuccess)
         {
@@ -173,6 +182,6 @@ public record DeleteItemResponse(bool Success, string? Error = null)
 
 public record GetLinkTokenResponse(string Value);
 
-public record ExchangePublicTokenResponse(string PublicToken, string InstitutionName, string institutionId);
+public record ExchangePublicTokenRequest(string PublicToken, string InstitutionName, string InstitutionId);
 
-public record ReauthenticateItemRequest(string PublicToken);
+public record UpdateItemReauthenticationRequest(string PublicToken, List<LinkSessionSuccessMetadataAccount> Accounts);
