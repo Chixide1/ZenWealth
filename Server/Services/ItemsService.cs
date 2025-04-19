@@ -601,6 +601,24 @@ public class ItemsService(
     
         return newTransactions.Count;
     }
+
+    public async Task<bool> DeleteItemByPlaidItemIdAsync(string plaidItemId)
+    {
+        var item = await context.Items.FirstOrDefaultAsync(i => i.PlaidItemId == plaidItemId);
+
+        if (item == null)
+        {
+            logger.LogWarning("Unable to find item with the Plaid Identifier {PlaidItemId}", plaidItemId);
+            return false;
+        }
+        
+        context.Items.Remove(item);
+        await context.SaveChangesAsync();
+        
+        logger.LogInformation("Deleted item {ItemId} for user {UserId} for institution {InstitutionName}",
+            item.Id, item.UserId, item.InstitutionName);
+        return true;
+    }
     
     private static bool ShouldSkipItemUpdate(Item item)
     {

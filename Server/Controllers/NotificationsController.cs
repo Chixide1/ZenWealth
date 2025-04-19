@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Going.Plaid;
 using Going.Plaid.Entity;
+using Going.Plaid.Webhook;
 using Server.Services;
 using Server.Utils;
 using Environment = Going.Plaid.Environment;
@@ -17,10 +18,10 @@ public class NotificationsController(
     IEmailService emailService) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> PlaidWebhook(PlaidWebhookDto webhookData)
+    public async Task<IActionResult> PlaidWebhook(WebhookBase webhookData)
     {
-        logger.LogInformation("Received Plaid webhook: {@webhook}",
-            new {Type = webhookData.WebhookType, Code = webhookData.WebhookCode, Item = webhookData.ItemId});
+        logger.LogInformation("Received Plaid webhook: {@Webhook}",
+            new {Type = webhookData.WebhookType, Code = webhookData.WebhookCode});
         
         switch (webhookData.WebhookType)
         {
@@ -31,161 +32,117 @@ public class NotificationsController(
                 await HandleItemWebhook(webhookData);
                 break;
             default:
-                logger.LogWarning("Unknown webhook Type: {WebhookType}", webhookData.WebhookType);
+                logger.LogWarning("Unprocessed webhook Type: {WebhookType}", webhookData.WebhookType);
                 break;
         }
         
         return Ok();
     }
 
-    private async Task HandleTransactionWebhook(PlaidWebhookDto webhookData)
+    private async Task HandleTransactionWebhook(WebhookBase webhookData)
     {
-        try
+        switch (webhookData)
         {
-            logger.LogInformation("Processing transactions webhook: {WebhookCode} for item {ItemId}", 
-                webhookData.WebhookCode, webhookData.ItemId);
+            case SyncUpdatesAvailableWebhook webhook:
+                var transactionsAdded = await itemsService.UpdateItemByPlaidIdAsync(webhook.ItemId);
+                logger.LogInformation("Updated item {PlaidItemId} with {TransactionsAdded} new transactions", 
+                    webhook.ItemId, transactionsAdded);
+                break;
                 
-            switch (webhookData.WebhookCode)
-            {
-                case WebhookCode.SyncUpdatesAvailable:
-                    var transactionsAdded = await itemsService.UpdateItemByPlaidIdAsync(webhookData.ItemId);
-                    logger.LogInformation("Updated item {ItemId} with {TransactionsAdded} new transactions", 
-                        webhookData.ItemId, transactionsAdded);
-                    break;
-                    
-                case WebhookCode.TransactionsRemoved:
-                    // Handle removed transactions if needed
-                    logger.LogInformation("Received transactions removed webhook for item {ItemId}", webhookData.ItemId);
-                    logger.LogInformation("Updated item {ItemId}", 
-                        webhookData.ItemId);
-                    break;
-                    
-                case WebhookCode.InitialUpdate:
-                    logger.LogInformation("Initial update complete for item {ItemId}", webhookData.ItemId);
-                    await itemsService.UpdateItemByPlaidIdAsync(webhookData.ItemId);
-                    break;
-                    
-                case WebhookCode.HistoricalUpdate:
-                    logger.LogInformation("Historical update complete for item {ItemId}", webhookData.ItemId);
-                    await itemsService.UpdateItemByPlaidIdAsync(webhookData.ItemId);
-                    break;
-                    
-                case WebhookCode.DefaultUpdate:
-                    logger.LogInformation("Default update triggered for item {ItemId}", webhookData.ItemId);
-                    await itemsService.UpdateItemByPlaidIdAsync(webhookData.ItemId);
-                    break;
-                    
-                default:
-                    logger.LogWarning("Unhandled transactions webhook code: {WebhookCode} for item {ItemId}", 
-                        webhookData.WebhookCode, webhookData.ItemId);
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error processing transactions webhook {WebhookCode} for item {ItemId}", 
-                webhookData.WebhookCode, webhookData.ItemId);
-            // Consider whether to rethrow or swallow the exception based on your error handling strategy
+            case TransactionsRemovedWebhook webhook:
+                // Handle removed transactions if needed
+                logger.LogInformation("Received transactions removed webhook for item {PlaidItemId}", webhook.ItemId);
+                logger.LogInformation("Updated item {PlaidItemId}", 
+                    webhook.ItemId);
+                break;
+                
+            case InitialUpdateWebhook webhook:
+                logger.LogInformation("Initial update complete for item {PlaidItemId}", webhook.ItemId);
+                await itemsService.UpdateItemByPlaidIdAsync(webhook.ItemId);
+                break;
+                
+            case HistoricalUpdateWebhook webhook:
+                logger.LogInformation("Historical update complete for item {PlaidItemId}", webhook.ItemId);
+                await itemsService.UpdateItemByPlaidIdAsync(webhook.ItemId);
+                break;
+                
+            case DefaultUpdateWebhook webhook:
+                logger.LogInformation("Default update triggered for item {PlaidItemId}", webhook.ItemId);
+                await itemsService.UpdateItemByPlaidIdAsync(webhook.ItemId);
+                break;
+                
+            default:
+                logger.LogWarning("Unhandled transactions webhook code: {WebhookCode}", webhookData.WebhookCode);
+                break;
         }
     }
     
-    private async Task HandleItemWebhook(PlaidWebhookDto webhookData)
+    private async Task HandleItemWebhook(WebhookBase webhookData)
     {
-        try
+        switch (webhookData)
         {
-            logger.LogInformation("Processing item webhook: {WebhookCode} for item {ItemId}", 
-                webhookData.WebhookCode, webhookData.ItemId);
+            case ItemErrorWebhook webhook:
+                // Find the item and associated user to send them an email
+                var item = await itemsService.GetItemDetailsByPlaidIdAsync(webhook.ItemId);
                 
-            switch (webhookData.WebhookCode)
-            {
-                case WebhookCode.Error:
-                    // Find the item and associated user to send them an email
-                    var item = await itemsService.GetItemDetailsByPlaidIdAsync(webhookData.ItemId);
+                logger.LogWarning("Item Webhook Error for Item {PlaidItemId} with error: {@Error}", webhook.ItemId, webhook.Error);
+                
+                if (item != null)
+                {
+                    var errorMessage = $"We've encountered an issue with your connected account '{item.InstitutionName}'. Please reconnect it through the app to restore access to your financial data.";
                     
-                    if (item != null)
-                    {
-                        var errorMessage = $"We've encountered an issue with your connected account '{item.InstitutionName}'. Please reconnect it through the app to restore access to your financial data.";
+                    await emailService.SendEmailAsync(
+                        item.UserEmail, 
+                        "Action Required: ZenWealth Account Connection Issue", 
+                        errorMessage);
                         
-                        await emailService.SendEmailAsync(
-                            item.UserEmail, 
-                            "Action Required: ZenWealth Account Connection Issue", 
-                            errorMessage);
-                            
-                        logger.LogInformation("Sent reconnection email to user for item {ItemId} ({InstitutionName})", 
-                            webhookData.ItemId, item.InstitutionName);
-                    }
-                    else
-                    {
-                        logger.LogWarning("Item {ItemId} not found when processing error webhook", webhookData.ItemId);
-                    }
-                    break;
+                    logger.LogInformation("Sent reconnection email to user for item {PlaidItemId} ({InstitutionName})", 
+                        webhook.ItemId, item.InstitutionName);
+                }
+                else
+                {
+                    logger.LogWarning("Item {PlaidItemId} not found when processing error webhook", webhook.ItemId);
+                }
+                break;
+                
+            case PendingExpirationWebhook webhook:
+                // Find the item and associated user to send them an email about pending expiration
+                logger.LogWarning("Item {PlaidItemId} is about to expire at {ItemExpirationTime}", webhook.ItemId, webhook.ConsentExpirationTime);
+                
+                var expiringItem = await itemsService.GetItemDetailsByPlaidIdAsync(webhook.ItemId);
+                
+                if (expiringItem != null)
+                {
+                    var expirationMessage = $"Your connection to '{expiringItem.InstitutionName}' will expire soon. Please reconnect your account through the app to maintain access to your financial data.";
                     
-                case WebhookCode.PendingExpiration:
-                    // Find the item and associated user to send them an email about pending expiration
-                    var expiringItem = await itemsService.GetItemDetailsByPlaidIdAsync(webhookData.ItemId);
-                    if (expiringItem != null)
-                    {
-                        var expirationMessage = $"Your connection to '{expiringItem.InstitutionName}' will expire soon. Please reconnect your account through the app to maintain access to your financial data.";
+                    await emailService.SendEmailAsync(
+                        expiringItem.UserEmail, 
+                        "Action Required: ZenWealth Account Connection Expiring", 
+                        expirationMessage);
                         
-                        await emailService.SendEmailAsync(
-                            expiringItem.UserEmail, 
-                            "Action Required: ZenWealth Account Connection Expiring", 
-                            expirationMessage);
-                            
-                        logger.LogInformation("Sent expiration email to user for item {ItemId} ({InstitutionName})", 
-                            webhookData.ItemId, expiringItem.InstitutionName);
-                    }
-                    break;
-                    
-                case WebhookCode.UserPermissionRevoked:
-                    logger.LogInformation("User permission revoked for item {ItemId}", webhookData.ItemId);
-                    // Handle permission revocation - perhaps delete the item from your database
-                    break;
-                    
-                case WebhookCode.NewAccountsAvailable:
-                    logger.LogInformation("New accounts available for item {ItemId}", webhookData.ItemId);
-                    await accountsService.UpdateAccountsByPlaidItemIdAsync(webhookData.ItemId);
-                    break;
-                    
-                case WebhookCode.WebhookUpdateAcknowledged:
-                    logger.LogInformation("Webhook update acknowledged for item {ItemId}", webhookData.ItemId);
-                    break;
-                    
-                default:
-                    logger.LogWarning("Unhandled item webhook code: {WebhookCode} for item {ItemId}", 
-                        webhookData.WebhookCode, webhookData.ItemId);
-                    break;
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error processing item webhook {WebhookCode} for item {ItemId}", 
-                webhookData.WebhookCode, webhookData.ItemId);
+                    logger.LogInformation("Sent expiration email to user for item {PlaidItemId} ({InstitutionName})", 
+                        webhook.ItemId, expiringItem.InstitutionName);
+                }
+                break;
+                
+            case UserPermissionRevokedWebhook webhook:
+                logger.LogInformation("User permission revoked for item {PlaidItemId}", webhook.ItemId);
+                await itemsService.DeleteItemByPlaidItemIdAsync(webhook.ItemId);
+                break;
+                
+            case NewAccountsAvailableWebhook webhook:
+                logger.LogInformation("New accounts available for item {PlaidItemId}", webhook.ItemId);
+                await accountsService.UpdateAccountsByPlaidItemIdAsync(webhook.ItemId ?? "");
+                break;
+                
+            case WebhookUpdateAcknowledgedWebhook webhook:
+                logger.LogInformation("The Webhook URL for item {PlaidItemId} has been changed to {WebhookUrl}",
+                    webhook.ItemId, webhook.NewWebhookUrl);
+                break;
+                
+            default:
+                logger.LogWarning("Unhandled item webhook code: {WebhookCode}", webhookData.WebhookCode);
+                break;
         }
     }
-}
-
-public class PlaidWebhookDto
-{
-    /// <summary>
-    /// The general category of the webhook.
-    /// </summary>
-    [JsonPropertyName("webhook_type")]
-    public required WebhookType WebhookType { get; set; }
-
-    /// <summary>
-    /// The specific payload of the webhook.
-    /// </summary>
-    [JsonPropertyName("webhook_code")]
-    public required WebhookCode WebhookCode { get; set; }
-
-    /// <summary>
-    /// The environment from which this webhook was sent.
-    /// </summary>
-    [JsonPropertyName("environment")]
-    public Environment Environment { get; set; }
-    
-    [JsonPropertyName("item_id")]
-    public required string ItemId { get; set; }
-    
 }

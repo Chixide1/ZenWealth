@@ -76,6 +76,11 @@ public interface IItemsService
     /// <param name="itemId">The ID of the item</param>
     /// <returns>A result containing success status, link token, and any errors</returns>
     Task<LinkTokenResult> CreateUpdateLinkTokenAsync(string userId, int itemId);
+
+    /// <summary>
+    /// Removes an Item using its Plaid ID
+    /// </summary>
+    Task<bool> DeleteItemByPlaidItemIdAsync(string plaidItemId);
 }
 
 /// <summary>
