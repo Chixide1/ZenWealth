@@ -5,6 +5,7 @@ using Going.Plaid.Entity;
 using Going.Plaid.Webhook;
 using Microsoft.Extensions.Options;
 using Server.Services;
+using Server.Services.Interfaces;
 using Server.Utils;
 using Environment = Going.Plaid.Environment;
 

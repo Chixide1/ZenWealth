@@ -1,6 +1,7 @@
 ﻿using Going.Plaid.Entity;
-using Server.Data.DTOs;
+using Server.Data.Models.Dtos;
 using Server.Services;
+using Server.Services.Interfaces;
 
 namespace Server.Controllers;
 

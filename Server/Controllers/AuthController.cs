@@ -3,13 +3,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Server.Data.DTOs;
 using Server.Data.Models;
 using Server.Services;
-using System.ComponentModel.DataAnnotations;
 using System.Web;
+using Server.Data.Models.Requests;
+using Server.Data.Models.Responses;
+using Server.Services.Implementations;
+using Server.Services.Interfaces;
 using Server.Utils;
 using Server.Utils.Helpers;
+using ForgotPasswordRequest = Server.Data.Models.Requests.ForgotPasswordRequest;
+using LoginRequest = Server.Data.Models.Requests.LoginRequest;
+using RegisterRequest = Server.Data.Models.Requests.RegisterRequest;
+using ResetPasswordRequest = Server.Data.Models.Requests.ResetPasswordRequest;
 
 namespace Server.Controllers;
 
@@ -21,15 +27,15 @@ public class AuthController(UserManager<User> userManager,
     SignInManager<User> signInManager) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
         var response = new AuthResponse();
 
-        var user = new User { UserName = dto.Username, Email = dto.Email };
-        var result = await userManager.CreateAsync(user, dto.Password);
+        var user = new User { UserName = request.Username, Email = request.Email };
+        var result = await userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
         {
@@ -52,14 +58,14 @@ public class AuthController(UserManager<User> userManager,
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var response = new AuthResponse();
         
         var result = await signInManager.PasswordSignInAsync(
-            dto.Username,
-            dto.Password,
-            dto.RememberMe,
+            request.Username,
+            request.Password,
+            request.RememberMe,
             lockoutOnFailure: false
         );
         
@@ -285,7 +291,7 @@ public class AuthController(UserManager<User> userManager,
     }
 
     [HttpPost]
-    public async Task<IActionResult> LoginWithMfa([FromBody] LoginMfaDto model)
+    public async Task<IActionResult> LoginWithMfa([FromBody] LoginMfaRequest model)
     {
         // Get user from sign-in manager session
         var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
@@ -311,62 +317,4 @@ public class AuthController(UserManager<User> userManager,
         return BadRequest(new { message = "Invalid authenticator code." });
     }
 
-}
-
-internal class AuthResponse
-{
-    public List<IdentityError> Errors { get; } = [];
-}
-
-// Request Models
-public class ForgotPasswordRequest
-{
-    [EmailAddress]
-    public required string Email { get; set; }
-}
-
-public class ResetPasswordRequest
-{
-    [EmailAddress]
-    public required string Email { get; set; }
-
-    public required string Token { get; set; }
-
-    [StringLength(100, MinimumLength = 6)]
-    public required string NewPassword { get; set; }
-
-    [Compare("NewPassword")]
-    public required string ConfirmPassword { get; set; }
-}
-
-public class ConfirmEmailRequest
-{
-    [EmailAddress]
-    public required string Email { get; set; }
-
-    public required string Token { get; set; }
-}
-
-public class ResendConfirmationRequest
-{
-    [EmailAddress]
-    public required string Email { get; set; }
-}
-
-public class VerifyMfaRequest
-{
-    [Required]
-    [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-    [DataType(DataType.Text)]
-    public required string Code { get; set; }
-}
-
-public class LoginMfaDto
-{
-    [Required]
-    public required string Code { get; set; }
-
-    public bool RememberMe { get; set; }
-
-    public bool RememberMachine { get; set; }
 }

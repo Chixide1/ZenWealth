@@ -1,9 +1,12 @@
-﻿using Going.Plaid.Entity;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Server.Data.Models;
+using Server.Data.Models.Params;
+using Server.Data.Models.Requests;
+using Server.Data.Models.Responses;
 using Server.Services;
+using Server.Services.Interfaces;
 using Account = Going.Plaid.Entity.Account;
 
 namespace Server.Controllers;
@@ -77,7 +80,7 @@ public class LinkController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdateItemReauthentication(int itemId, [FromBody] UpdateItemReauthenticationRequest request)
+    public async Task<IActionResult> UpdateItemReauthentication(int itemId, [FromBody] UpdateItemReauthRequest request)
     {
         var user = await userManager.GetUserAsync(User);
 
@@ -171,17 +174,3 @@ public class LinkController(
         return Ok(new DeleteItemResponse(Success: true));
     }
 }
-
-public record DeleteItemResponse(bool Success, string? Error = null)
-{
-    public override string ToString()
-    {
-        return $"{{ Success = {Success}, Error = {Error} }}";
-    }
-}
-
-public record GetLinkTokenResponse(string Value);
-
-public record ExchangePublicTokenRequest(string PublicToken, string InstitutionName, string InstitutionId);
-
-public record UpdateItemReauthenticationRequest(string PublicToken, List<LinkSessionSuccessMetadataAccount> Accounts);
