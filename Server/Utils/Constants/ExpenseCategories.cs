@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Server.Utils;
+namespace Server.Utils.Constants;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public enum ExpenseCategories

@@ -1,8 +1,9 @@
 using Going.Plaid;
 using Serilog;
-using Server.Extensions;
 using Server.Services;
 using Server.Utils;
+using Server.Utils.Extensions;
+using Server.Utils.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 

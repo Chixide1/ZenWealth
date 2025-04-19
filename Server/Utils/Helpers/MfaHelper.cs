@@ -2,9 +2,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using QRCoder;
 
-namespace Server.Utils;
+namespace Server.Utils.Helpers;
 
-public static class MfaUtil
+public static class MfaHelper
 {
     public static string FormatAuthenticatorKey(string unformattedKey)
     {

@@ -2,7 +2,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 
-namespace Server.Extensions;
+namespace Server.Utils.Extensions;
 
 public static class HostExtensions
 {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Server.Data.DTOs;
 using Server.Data.Models;
-using Server.Extensions;
+using Server.Utils.Extensions;
 
 namespace Server.Services;
 

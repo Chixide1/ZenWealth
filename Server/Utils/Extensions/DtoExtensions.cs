@@ -1,8 +1,8 @@
-using Server.Data.Models;
-using Server.Data.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Server.Data.DTOs;
+using Server.Data.Models;
 
-namespace Server.Extensions;
+namespace Server.Utils.Extensions;
 
 public static class DtoExtensions
 {

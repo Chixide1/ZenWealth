@@ -9,6 +9,7 @@ using Server.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using Server.Utils;
+using Server.Utils.Helpers;
 
 namespace Server.Controllers;
 
@@ -199,9 +200,9 @@ public class AuthController(UserManager<User> userManager,
             unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
         }
 
-        var formattedKey = MfaUtil.FormatAuthenticatorKey(unformattedKey!);
-        var qrCodeUrl = MfaUtil.GenerateQrCodeUri(user.Email!, unformattedKey!);
-        var qrCodeBytes = MfaUtil.GenerateQrCodeImage(qrCodeUrl);
+        var formattedKey = MfaHelper.FormatAuthenticatorKey(unformattedKey!);
+        var qrCodeUrl = MfaHelper.GenerateQrCodeUri(user.Email!, unformattedKey!);
+        var qrCodeBytes = MfaHelper.GenerateQrCodeImage(qrCodeUrl);
 
         return Ok(new
         {

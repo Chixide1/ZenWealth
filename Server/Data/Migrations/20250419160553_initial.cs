@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Server.Migrations
+namespace Server.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -185,10 +185,12 @@ namespace Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PlaidItemId = table.Column<string>(type: "varchar(150)", nullable: false),
                     AccessToken = table.Column<string>(type: "varchar(100)", nullable: false),
                     Cursor = table.Column<string>(type: "varchar(255)", nullable: true),
                     LastFetched = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    InstitutionName = table.Column<string>(type: "varchar(255)", nullable: false)
+                    InstitutionName = table.Column<string>(type: "varchar(255)", nullable: false),
+                    InstitutionId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -1,19 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Going.Plaid.Converters;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
-using Serilog;
-using Serilog.Events;
-using Serilog.Formatting.Compact;
 using Server.Data;
-using Server.Data.DTOs;
 using Server.Data.Models;
 using Server.Services;
-using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Going.Plaid.Converters;
 
-namespace Server.Extensions;
+namespace Server.Utils.Extensions;
 
 public static class ServiceExtensions
 {

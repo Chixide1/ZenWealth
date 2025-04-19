@@ -1,6 +1,0 @@
-# @ReactApp1.Server_HostAddress = http://localhost:5133/
-###
-# GET {{ReactApp1.Server_HostAddress}}
-# Accept: application/json
-
-###

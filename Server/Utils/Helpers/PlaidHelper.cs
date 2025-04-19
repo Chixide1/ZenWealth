@@ -2,9 +2,9 @@
 using System.Runtime.Serialization;
 using Going.Plaid.Entity;
 
-namespace Server.Utils;
+namespace Server.Utils.Helpers;
 
-public static class PlaidUtil
+public static class PlaidHelper
 {
     // Add this helper method in your controller or create a utility class
     public static WebhookCode ParseWebhookCode(string code)
