@@ -6,6 +6,7 @@ using Going.Plaid.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Server.Data.DTOs;
+using Server.Data.Models;
 using Account = Server.Data.Models.Account;
 using Item = Server.Data.Models.Item;
 using Transaction = Server.Data.Models.Transaction;
@@ -73,7 +74,7 @@ public class ItemsService(
         return updatedCount;
     }
     
-    public async Task<int> UpdateItemByIdAsync(string plaidItemId)
+    public async Task<int> UpdateItemByPlaidIdAsync(string plaidItemId)
     {
         var item = await context.Items.FirstOrDefaultAsync(i => i.PlaidItemId == plaidItemId);
 
@@ -192,7 +193,22 @@ public class ItemsService(
                 Products = [Products.Transactions],
                 Language = Language.English,
                 CountryCodes = [CountryCode.Gb],
-                Webhook = webhookUrl
+                Webhook = webhookUrl,
+                AccountFilters = new LinkTokenAccountFilters
+                {
+                    Depository = new DepositoryFilter
+                    {
+                        AccountSubtypes = [DepositoryAccountSubtype.All]
+                    },
+                    Credit = new CreditFilter
+                    {
+                        AccountSubtypes = [CreditAccountSubtype.All]
+                    },
+                    Other = new OtherFilter
+                    {
+                        AccountSubtypes = [OtherAccountSubtype.All]
+                    }
+                }
             });
 
             if (response.Error != null)
@@ -256,7 +272,26 @@ public class ItemsService(
                 AccessToken = item.AccessToken,
                 Language = Language.English,
                 CountryCodes = [CountryCode.Gb],
-                Webhook = webhookUrl
+                Webhook = webhookUrl,
+                AccountFilters = new LinkTokenAccountFilters
+                {
+                    Depository = new DepositoryFilter
+                    {
+                        AccountSubtypes = [DepositoryAccountSubtype.All]
+                    },
+                    Credit = new CreditFilter
+                    {
+                        AccountSubtypes = [CreditAccountSubtype.All]
+                    },
+                    Other = new OtherFilter
+                    {
+                        AccountSubtypes = [OtherAccountSubtype.All]
+                    }
+                },
+                Update = new LinkTokenCreateRequestUpdate
+                {
+                    AccountSelectionEnabled = true
+                }
             });
 
             if (response.Error != null)
@@ -323,12 +358,16 @@ public class ItemsService(
             // Use ExceptBy to find accounts to remove
             var newAccountKeys = accounts.Select(a => new { a.Name, a.Mask });
             var accountsToRemove = item.Accounts
-                .ExceptBy(newAccountKeys, a => new { a.Name, a.Mask })
+                .ExceptBy(newAccountKeys, a => new { a.Name, a.Mask }!)
                 .ToList();
     
             // Remove obsolete accounts
             context.Accounts.RemoveRange(accountsToRemove);
             await context.SaveChangesAsync();
+            
+            // Log removed accounts
+            logger.LogInformation("Removed accounts {@RemovedAccountIds} for item {ItemId} for user {UserId}",
+                accountsToRemove.Select(a => new {a.Id, a.Name}), itemId, userId);
             
             // Sync fresh data
             var addedTransactions = await UpdateSingleItemAsync(item.Id, userId);
@@ -459,88 +498,109 @@ public class ItemsService(
         }
     }
 
+    // Add this implementation to ItemsService class
+    public async Task<ItemDetailsDto?> GetItemDetailsByPlaidIdAsync(string plaidItemId)
+    {
+        return await context.Items
+            .Where(i => i.PlaidItemId == plaidItemId)
+            .Join(
+                context.Users,
+                item => item.UserId,
+                user => user.Id,
+                (item, user) => new ItemDetailsDto
+                {
+                    Id = item.Id,
+                    PlaidItemId = item.PlaidItemId,
+                    InstitutionName = item.InstitutionName,
+                    UserEmail = user.Email ?? "",
+                    UserId = item.UserId
+                }
+            )
+            .FirstOrDefaultAsync();
+    }
+    
     private async Task<int> ProcessTransactionsAsync(IReadOnlyList<Going.Plaid.Entity.Transaction> transactions, string userId)
-{
-    if (transactions.Count == 0)
     {
-        return 0;
-    }
-
-    var sortedTransactions = transactions.OrderBy(t => t.Date).ToList();
-    
-    // Get all transaction IDs in one query
-    var transactionIds = sortedTransactions
-        .Select(t => t.TransactionId)
-        .Where(id => id != null)
-        .ToList();
-    
-    var existingTransactionIds = (await context.Transactions
-        .Where(t => transactionIds.Contains(t.PlaidTransactionId))
-        .Select(t => t.PlaidTransactionId)
-        .ToListAsync())
-        .ToHashSet();
-
-    // Get account mapping in one query
-    var accountIds = sortedTransactions
-        .Select(t => t.AccountId)
-        .Distinct()
-        .ToList();
-    
-    var accountMapping = await context.Accounts
-        .Where(a => accountIds.Contains(a.PlaidAccountId))
-        .Select(a => new { a.PlaidAccountId, a.Id })
-        .ToDictionaryAsync(a => a.PlaidAccountId, a => a.Id);
-
-    var newTransactions = new List<Transaction>();
-    
-    foreach (var transaction in sortedTransactions)
-    {
-        if (transaction.TransactionId == null || existingTransactionIds.Contains(transaction.TransactionId))
+        if (transactions.Count == 0)
         {
-            continue;
+            return 0;
         }
-
-        if (!accountMapping.TryGetValue(transaction.AccountId ?? string.Empty, out var accountId))
-        {
-            logger.LogInformation(
-                "Skipping transaction {PlaidTransactionId} for user {UserId} as the account does not exist",
-                transaction.TransactionId, userId
-            );
-            continue;
-        }
-
-        newTransactions.Add(new Transaction()
-        {
-            PlaidTransactionId = transaction.TransactionId,
-            AccountId = accountId,
-            UserId = userId,
-            Name = transaction.Name ?? "",
-            Amount = transaction.Amount ?? new decimal(0.00),
-            Date = transaction.Date ?? new DateOnly(),
-            Datetime = transaction.Datetime,
-            Website = transaction.Website,
-            Category = transaction.PersonalFinanceCategory?.Primary ?? "OTHER",
-            CategoryIconUrl = transaction.PersonalFinanceCategoryIconUrl,
-            IsoCurrencyCode = transaction.IsoCurrencyCode ?? transaction.UnofficialCurrencyCode,
-            LogoUrl = transaction.LogoUrl,
-            MerchantName = transaction.MerchantName,
-            PaymentChannel = transaction.PaymentChannel.ToString(),
-            TransactionCode = transaction.TransactionCode == null
-                ? null
-                : transaction.TransactionCode.ToString(),
-        });
-    }
-
-    if (newTransactions.Count <= 0) return newTransactions.Count;
-
-    context.Transactions.AddRange(newTransactions);
-    await context.SaveChangesAsync();
+    
+        var sortedTransactions = transactions.OrderBy(t => t.Date).ToList();
         
-    logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
-        newTransactions.Count, userId);
-
-    return newTransactions.Count;
-}
+        // Get all transaction IDs in one query
+        var transactionIds = sortedTransactions
+            .Select(t => t.TransactionId)
+            .Where(id => id != null)
+            .ToList();
+        
+        var existingTransactionIds = (await context.Transactions
+            .Where(t => transactionIds.Contains(t.PlaidTransactionId))
+            .Select(t => t.PlaidTransactionId)
+            .ToListAsync())
+            .ToHashSet();
+    
+        // Get account mapping in one query
+        var accountIds = sortedTransactions
+            .Select(t => t.AccountId)
+            .Distinct()
+            .ToList();
+        
+        var accountMapping = await context.Accounts
+            .Where(a => accountIds.Contains(a.PlaidAccountId))
+            .Select(a => new { a.PlaidAccountId, a.Id })
+            .ToDictionaryAsync(a => a.PlaidAccountId, a => a.Id);
+    
+        var newTransactions = new List<Transaction>();
+        
+        foreach (var transaction in sortedTransactions)
+        {
+            if (transaction.TransactionId == null || existingTransactionIds.Contains(transaction.TransactionId))
+            {
+                continue;
+            }
+    
+            if (!accountMapping.TryGetValue(transaction.AccountId ?? string.Empty, out var accountId))
+            {
+                logger.LogInformation(
+                    "Skipping transaction {PlaidTransactionId} for user {UserId} as the account does not exist",
+                    transaction.TransactionId, userId
+                );
+                continue;
+            }
+    
+            newTransactions.Add(new Transaction()
+            {
+                PlaidTransactionId = transaction.TransactionId,
+                AccountId = accountId,
+                UserId = userId,
+                Name = transaction.Name ?? "",
+                Amount = transaction.Amount ?? new decimal(0.00),
+                Date = transaction.Date ?? new DateOnly(),
+                Datetime = transaction.Datetime,
+                Website = transaction.Website,
+                Category = transaction.PersonalFinanceCategory?.Primary ?? "OTHER",
+                CategoryIconUrl = transaction.PersonalFinanceCategoryIconUrl,
+                IsoCurrencyCode = transaction.IsoCurrencyCode ?? transaction.UnofficialCurrencyCode,
+                LogoUrl = transaction.LogoUrl,
+                MerchantName = transaction.MerchantName,
+                PaymentChannel = transaction.PaymentChannel.ToString(),
+                TransactionCode = transaction.TransactionCode == null
+                    ? null
+                    : transaction.TransactionCode.ToString(),
+            });
+        }
+    
+        if (newTransactions.Count <= 0) return newTransactions.Count;
+    
+        context.Transactions.AddRange(newTransactions);
+        await context.SaveChangesAsync();
+            
+        logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
+            newTransactions.Count, userId);
+    
+        return newTransactions.Count;
+    }
     
     private static bool ShouldSkipItemUpdate(Item item)
     {

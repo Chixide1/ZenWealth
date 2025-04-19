@@ -78,6 +78,7 @@ export function LinkButton({ children, className, reload = false, ...props }: Li
             }
             GetLinkToken();
         },
+        oauthRedirectUri: window.location.href,
     });
 
     useEffect(() => {

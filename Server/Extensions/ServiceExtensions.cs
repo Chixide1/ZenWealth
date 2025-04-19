@@ -9,6 +9,9 @@ using Server.Data.DTOs;
 using Server.Data.Models;
 using Server.Services;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Going.Plaid.Converters;
 
 namespace Server.Extensions;
 
@@ -30,6 +33,24 @@ public static class ServiceExtensions
                     .AllowAnyMethod();
             });
         });
+    }
+    
+    /// <summary>
+    /// Adds Controllers and configures how the received json should be serialised & deserialized
+    /// </summary>
+    /// <param name="services">The service collection to add the Controller to.</param>
+    public static void ConfigureControllers(this IServiceCollection services)
+    {
+        services.AddControllers().AddJsonOptions(options =>
+            options.JsonSerializerOptions.AddPlaidConverters());
+        
+        // Alternate way to convert Enums to string
+        // services.AddControllers().AddJsonOptions(options =>
+        // {
+        //     options.JsonSerializerOptions.Converters.Add(
+        //         new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper));
+        //     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        // });
     }
 
     /// <summary>

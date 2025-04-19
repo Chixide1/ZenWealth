@@ -11,7 +11,7 @@ builder.Services.ConfigureIdentity();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();
 builder.Services.ConfigureCors();
-builder.Services.AddControllers();
+builder.Services.ConfigureControllers();
 builder.Services.AddScoped<IItemsService, ItemsService>();
 builder.Services.AddScoped<IAccountsService, AccountsService>();
 builder.Services.AddScoped<ITransactionsService, TransactionsService>();

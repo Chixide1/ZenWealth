@@ -17,9 +17,14 @@ public interface IItemsService
     Task<bool> CheckItemExistsAsync(string userId);
 
     /// <summary>
+    /// Gets an item & user using the plaid item id
+    /// </summary>
+    Task<ItemDetailsDto?> GetItemDetailsByPlaidIdAsync(string plaidItemId);
+    
+    /// <summary>
     /// Updates an item through the Item ID
     /// </summary>
-    Task<int> UpdateItemByIdAsync(string plaidItemId);
+    Task<int> UpdateItemByPlaidIdAsync(string plaidItemId);
     
     /// <summary>
     /// Asynchronously adds all new transactions for a specified user.
@@ -110,3 +115,12 @@ public class LinkTokenResult
 /// Parameters required for exchanging public tokens after an item update
 /// </summary>
 public record ReauthParams(string PublicToken, int ItemId, string UserId, List<LinkSessionSuccessMetadataAccount> Accounts);
+
+public class ItemDetailsDto
+{
+    public int Id { get; set; }
+    public string PlaidItemId { get; set; } = string.Empty;
+    public string InstitutionName { get; set; } = string.Empty;
+    public string UserEmail { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
+}

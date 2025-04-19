@@ -73,7 +73,8 @@ export function ReauthenticateButton({ bank }: { bank: Institution }) {
                 });
             }
             getUpdateLinkToken();
-        }
+        },
+        oauthRedirectUri: window.location.href,
     });
 
     // Effect to supply update token on mount
