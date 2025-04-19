@@ -5,6 +5,8 @@
 /// </summary>
 public interface IEmailService
 {
+    public EmailOptions Options { get; }
+    
     /// <summary>
     /// Sends an email to the specified address with the specified subject and HTML message.
     /// </summary>

@@ -8,7 +8,7 @@ namespace Server.Services;
 
 public class AzureCommunicationEmailService(EmailClient emailClient, IOptions<EmailOptions> options, ILogger<AzureCommunicationEmailService> logger) : IEmailService
 {
-    private readonly EmailOptions _emailOptions = options.Value;
+    public EmailOptions Options => options.Value;
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
@@ -18,7 +18,7 @@ public class AzureCommunicationEmailService(EmailClient emailClient, IOptions<Em
         };
 
         var emailMessage = new EmailMessage(
-            senderAddress: _emailOptions.SenderEmail,
+            senderAddress: Options.SenderEmail,
             recipientAddress: email,
             content: emailContent);
 

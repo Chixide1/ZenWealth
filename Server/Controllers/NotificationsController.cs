@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Webhook;
+using Microsoft.Extensions.Options;
 using Server.Services;
 using Server.Utils;
 using Environment = Going.Plaid.Environment;
@@ -122,6 +123,30 @@ public class NotificationsController(
                         
                     logger.LogInformation("Sent expiration email to user for item {PlaidItemId} ({InstitutionName})", 
                         webhook.ItemId, expiringItem.InstitutionName);
+                }
+                break;
+            
+            case PendingDisconnectWebhook webhook:
+                // Find the item and associated user to send them an email about pending expiration
+                logger.LogWarning("Item {PlaidItemId} is about to expire because of {DisconnectReason}", webhook.ItemId, webhook.Reason);
+                
+                var disconnectedItem = await itemsService.GetItemDetailsByPlaidIdAsync(webhook.ItemId);
+                
+                if (disconnectedItem != null)
+                {
+                    var expirationMessage = $@"
+                        <p>Your connection to '{disconnectedItem.InstitutionName}' will expire soon.</p> 
+                        <p>Please reconnect your account through the <a href='{emailService.Options.FrontendBaseUrl}'>ZenWealth App</a> 
+                        to maintain access to your financial data.</p>
+                    ";
+                    
+                    await emailService.SendEmailAsync(
+                        disconnectedItem.UserEmail, 
+                        "Action Required: ZenWealth Account Connection Expiring", 
+                        expirationMessage);
+                        
+                    logger.LogInformation("Sent Disconnection email to user for item {PlaidItemId} ({InstitutionName})", 
+                        webhook.ItemId, disconnectedItem.InstitutionName);
                 }
                 break;
                 
