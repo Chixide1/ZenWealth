@@ -5,7 +5,10 @@ using Server.Services.Interfaces;
 
 namespace Server.Services.Implementations;
 
-public class AzureCommunicationEmailService(EmailClient emailClient, IOptions<EmailOptions> options, ILogger<AzureCommunicationEmailService> logger) : IEmailService
+public class AzureCommunicationEmailService(
+    EmailClient emailClient,
+    IOptions<EmailOptions> options,
+    ILogger<AzureCommunicationEmailService> logger) : IEmailService
 {
     public EmailOptions Options => options.Value;
 
@@ -22,7 +25,7 @@ public class AzureCommunicationEmailService(EmailClient emailClient, IOptions<Em
             content: emailContent);
 
         await emailClient.SendAsync(WaitUntil.Completed, emailMessage);
-        logger.LogInformation("Email sent to {Email} with subject {Subject}", email, subject);
+        logger.LogInformation("Email sent to {Email} with subject {EmailSubject}", email, subject);
     }
 
     public async Task SendPasswordResetEmailAsync(string email, string callbackUrl)
@@ -52,6 +55,6 @@ public class AzureCommunicationEmailService(EmailClient emailClient, IOptions<Em
 
 public class EmailOptions
 {
-    public string SenderEmail { get; set; } = string.Empty;
-    public string FrontendBaseUrl { get; set; } = string.Empty;
+    public string SenderEmail { get; init; } = string.Empty;
+    public string FrontendBaseUrl { get; init; } = string.Empty;
 }

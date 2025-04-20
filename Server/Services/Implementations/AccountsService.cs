@@ -25,7 +25,6 @@ public class AccountsService(
     
     public async Task<int> UpdateAccountsByPlaidItemIdAsync(string plaidItemId)
     {
-        // Find the item in the database
         var item = await itemRepository.GetByPlaidIdAsync(plaidItemId);
 
         if (item == null)
@@ -69,7 +68,7 @@ public class AccountsService(
             }
         }
 
-        logger.LogInformation("Completed account update for user {UserId}, processed {Count} accounts", 
+        logger.LogInformation("Completed account update for user {UserId}, processed {AccountCount} accounts", 
             userId, totalProcessed);
     }
 
@@ -84,24 +83,34 @@ public class AccountsService(
             AccessToken = item.AccessToken
         });
 
-        int updatedCount = 0;
-        int addedCount = 0;
+        var updatedCount = 0;
+        var addedCount = 0;
 
         foreach (var account in data.Accounts)
         {
             if (existingAccounts.TryGetValue(account.AccountId, out var entity))
             {
-                // Update existing account
-                var currentBalance = account.Balances.Current;
-                
-                if (currentBalance != null)
+                var oldBalance = new
                 {
-                    entity.CurrentBalance = (decimal)currentBalance;
-                    entity.AvailableBalance = account.Balances.Available ?? entity.AvailableBalance;
+                    Current = (decimal?)entity.CurrentBalance,
+                    Available = entity.AvailableBalance
+                };
+
+                var newBalance = new
+                {
+                    account.Balances.Current,
+                    Available = account.Balances.Available ?? entity.AvailableBalance
+                };
+                
+                // Update existing account
+                if (newBalance.Current != null)
+                {
+                    entity.CurrentBalance = (decimal)newBalance.Current;
+                    entity.AvailableBalance = newBalance.Available;
                     
                     logger.LogInformation(
-                        "Updated account {PlaidAccountId} (balance: {Balance}) for item {ItemId}",
-                        account.AccountId, currentBalance, item.Id
+                        "Updated account {PlaidAccountId} (balance: {@Balance} to {@Balance}) for item {ItemId}",
+                        account.AccountId, oldBalance, newBalance, item.Id
                     );
                     
                     updatedCount++;
@@ -144,7 +153,7 @@ public class AccountsService(
         await accountRepository.SaveChangesAsync();
         
         logger.LogInformation(
-            "Successfully processed accounts for item {ItemId}: {UpdatedCount} updated, {AddedCount} added",
+            "Successfully processed accounts for item {ItemId}: {AccountCount} updated, {AddedCount} added",
             item.Id, updatedCount, addedCount
         );
         

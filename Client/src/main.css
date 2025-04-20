@@ -83,21 +83,48 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 0 0% 3.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --chart-6: 115 68% 67%;
-    --chart-7: 165 100% 38%;
-    --chart-8: 89 76% 60%;
-    --chart-9: 122 56% 55%;
-    --chart-10: 159 100% 29%;
-    --chart-11: 64 30% 64%;
-    --chart-12: 65 65% 88%;
-    --chart-13: 37 29% 64%;
-    --chart-14: 26 100% 81%;
-    --chart-15: 17 52% 48%;
+    
+    /* Sky Blue */
+    --chart-1: 195 100% 75%;
+    /* Coral */
+    --chart-2: 16 100% 75%;
+    /* Mint Green */
+    --chart-3: 142 56% 75%;
+    /* Soft Purple */
+    --chart-4: 270 70% 75%;
+    /* Amber */
+    --chart-5: 45 100% 65%;
+    /* Teal */
+    --chart-6: 180 75% 40%;
+    /* Salmon */
+    --chart-7: 6 100% 80%;
+    /* Periwinkle */
+    --chart-8: 225 73% 75%;
+    /* Olive */
+    --chart-9: 80 60% 45%;
+    /* Rose */
+    --chart-10: 330 80% 70%;
+    /* Steel Blue */
+    --chart-11: 210 50% 60%;
+    /* Marigold */
+    --chart-12: 35 85% 65%;
+    /* Sage */
+    --chart-13: 120 25% 65%;
+    /* Mulberry */
+    --chart-14: 300 45% 50%;
+    /* Cerulean */
+    --chart-15: 195 65% 45%;
+    /* Golden Yellow */
+    --chart-16: 154 74% 65%;
+    /* Dusty Rose */
+    --chart-17: 350 40% 65%;
+    /* Forest Green */
+    --chart-18: 140 45% 40%;
+    /* Slate Blue */
+    --chart-19: 230 40% 55%;
+    /* Burnt Orange */
+    --chart-20: 25 75% 55%;
+    
     --radius: 0.5rem;
     --sidebar-background: var(--offblack);
     --sidebar-foreground: var(--charcoal);

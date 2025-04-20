@@ -32,10 +32,10 @@ public class BudgetRepository(AppDbContext context) : IBudgetRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteBudgetAsync(Budget budget)
+    public async Task DeleteBudgetAsync(Budget budget)
     {
         context.Budgets.Remove(budget);
-        return Task.CompletedTask;
+        await context.SaveChangesAsync();
     }
 
     public async Task SaveChangesAsync()

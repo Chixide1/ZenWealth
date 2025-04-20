@@ -3,8 +3,10 @@ using Going.Plaid.Entity;
 using Going.Plaid.Item;
 using Going.Plaid.Link;
 using Going.Plaid.Transactions;
+using PlaidAccount = Going.Plaid.Entity.Account;
+using PlaidTransaction = Going.Plaid.Entity.Transaction;
 using Server.Data.Models.Dtos;
-using Server.Data.Models.Params;
+using Server.Data.Models.Requests;
 using Server.Data.Models.Responses;
 using Server.Data.Repositories.Interfaces;
 using Server.Services.Interfaces;
@@ -32,7 +34,17 @@ public class ItemsService(
 
     public async Task<ItemDetailsDto?> GetItemDetailsByPlaidIdAsync(string plaidItemId)
     {
-        return await itemRepository.GetItemDetailsByPlaidIdAsync(plaidItemId);
+        var itemDetails = await itemRepository.GetItemDetailsByPlaidIdAsync(plaidItemId);
+
+        if (itemDetails == null)
+        {
+            logger.LogWarning("Unable to retrieve item details using Plaid Item ID: {PlaidItemId}", plaidItemId);
+            return null;
+        }
+        
+        logger.LogInformation("Retrieved item details for user {UserId} with (Plaid Item ID: {PlaidItemId})",
+            itemDetails.UserId, plaidItemId);
+        return itemDetails;
     }
     
     public async Task<int> UpdateItemByPlaidIdAsync(string plaidItemId)
@@ -41,7 +53,7 @@ public class ItemsService(
 
         if (item == null)
         {
-            logger.LogWarning("Item {ItemId} not found", plaidItemId);
+            logger.LogWarning("Item {PlaidItemId} not found", plaidItemId);
             return 0;
         }
 
@@ -51,7 +63,7 @@ public class ItemsService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error updating item {ItemId} for user {UserId}", plaidItemId, item.UserId);
+            logger.LogError(ex, "Error updating item {PlaidItemId} for user {UserId}", plaidItemId, item.UserId);
             throw;
         }
     }
@@ -60,6 +72,7 @@ public class ItemsService(
     {
         var updatedCount = 0;
         var items = await itemRepository.GetItemsForUpdateAsync(userId);
+        logger.LogInformation("Retrieved {ItemCount} items for user {UserId}", items.Count, userId);
 
         foreach (var item in items)
         {
@@ -73,6 +86,9 @@ public class ItemsService(
             try
             {
                 var transactionsAdded = await UpdateSingleItemAsync(item.Id, userId);
+                logger.LogInformation("Added {TransactionCount} transactions for item {ItemId} for user {UserId}", 
+                    transactionsAdded, item.Id, userId);
+                
                 updatedCount += transactionsAdded;
             }
             catch (Exception ex)
@@ -85,9 +101,10 @@ public class ItemsService(
         return updatedCount;
     }
 
-    public async Task<ItemTokenExchangeResponse> ExchangePublicTokenForReauthAsync(ReauthParams reauthParams)
+    public async Task<ItemTokenExchangeResponse> ExchangePublicTokenForReauthAsync(
+        int itemId, string userId, UpdateItemReauthRequest request)
     {
-        var (publicToken, itemId, userId, accounts) = reauthParams;
+        var (publicToken, accounts) = request;
         
         try
         {
@@ -116,11 +133,6 @@ public class ItemsService(
                 logger.LogError("Token exchange failed: {ErrorMessage}", response.Error.ErrorMessage);
                 return ItemTokenExchangeResponse.Failure(response.Error);
             }
-            
-            // Update item
-            item.AccessToken = response.AccessToken;
-            item.Cursor = null;
-            item.LastFetched = null;
     
             // Use ExceptBy to find accounts to remove
             var newAccountKeys = accounts.Select(a => new { a.Name, a.Mask });
@@ -130,13 +142,17 @@ public class ItemsService(
     
             // Remove obsolete accounts
             await accountRepository.RemoveRangeAsync(accountsToRemove);
-            
-            // Update the item
-            await itemRepository.UpdateAsync(item);
-            
-            // Log removed accounts
             logger.LogInformation("Removed accounts {@RemovedAccountIds} for item {ItemId} for user {UserId}",
                 accountsToRemove.Select(a => new {a.Id, a.Name}), itemId, userId);
+            
+            // Update the item
+            item.AccessToken = response.AccessToken;
+            item.Cursor = null;
+            item.LastFetched = null;
+            
+            await itemRepository.UpdateAsync(item);
+            logger.LogInformation("The item {ItemId} for user {UserId} has been updated with a new Access Token",
+                item.Id, userId);
             
             // Sync fresh data
             var addedTransactions = await UpdateSingleItemAsync(item.Id, userId);
@@ -156,9 +172,13 @@ public class ItemsService(
         }
     }
     
-    public async Task<IEnumerable<InstitutionDto>> GetItemsAsync(string userId)
+    public async Task<List<InstitutionDto>> GetItemsAsync(string userId)
     {
-        return await itemRepository.GetItemsForUserAsync(userId);
+        var institutions = await itemRepository.GetInstitutionsForUserAsync(userId);
+        logger.LogInformation("Retrieved {InstitutionsCount} institutions for user {UserId}",
+            institutions.Count, userId);
+        
+        return institutions;
     }
     
     public async Task<bool> DeleteItemAsync(string userId, int itemId)
@@ -167,8 +187,12 @@ public class ItemsService(
 
         if (item == null)
         {
+            logger.LogWarning("Unable to find item {ItemId} for user {UserId}",
+                itemId, userId);
             return false;
         }
+        
+        logger.LogInformation("Retrieved item {ItemId} for user {UserId}", itemId, userId);
 
         var response = await client.ItemRemoveAsync(new ItemRemoveRequest
         {
@@ -177,23 +201,26 @@ public class ItemsService(
 
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogWarning("Unable to delete item {itemId} for user {UserId}: {Error}", itemId, userId, response.Error);
+            logger.LogWarning("Unable to remove the item {itemId} from Plaid for user {UserId}: {Error}",
+                itemId, userId, response.Error);
             return false;
         }
         
         await itemRepository.DeleteAsync(item);
-        
         logger.LogInformation("Deleted item {ItemId} for user {UserId}", itemId, userId);
             
         return true;
     }
     
-    public async Task<ItemTokenExchangeResponse> ExchangePublicTokenAsync(string publicToken, string institutionName, string institutionId, string userId)
+    public async Task<ItemTokenExchangeResponse> ExchangePublicTokenAsync(string publicToken,
+        string institutionName, string institutionId, string userId)
     {
         try
         {
             // Check if this institution is already linked for this user
-            var items = await itemRepository.GetItemsForUserAsync(userId);
+            var items = await itemRepository.GetInstitutionsForUserAsync(userId);
+            logger.LogInformation("Fetched {ItemCount} items for user {UserId}", items.Count, userId);
+            
             var existingItem = items.FirstOrDefault(i => i.Name == institutionName);
                 
             if (existingItem != null)
@@ -219,6 +246,8 @@ public class ItemsService(
             }
     
             await CreateItemAsync(response.AccessToken, userId, institutionName, response.ItemId, institutionId);
+            logger.LogInformation("Created an item for user {UserId} with Plaid Id {PlaidItemId}",
+                userId, response.ItemId);
     
             // Wait briefly before updating items to ensure the item is created
             await Task.Delay(1000);
@@ -245,6 +274,10 @@ public class ItemsService(
     public async Task<LinkTokenResponse> CreateLinkTokenAsync(string userId)
     {
         var webhookUrl = config["Plaid:WebhookUrl"];
+        if (string.IsNullOrEmpty(webhookUrl))
+        {
+            logger.LogWarning("Plaid:WebhookUrl is empty");
+        }
         
         try
         {
@@ -309,7 +342,13 @@ public class ItemsService(
                 return LinkTokenResponse.Failure($"Item with ID {itemId} not found");
             }
             
+            logger.LogInformation("Retrieved item {ItemId} for user {UserId}", itemId, userId);
+            
             var webhookUrl = config["Plaid:WebhookUrl"];
+            if (string.IsNullOrEmpty(webhookUrl))
+            {
+                logger.LogWarning("Plaid:WebhookUrl is empty");
+            }
             
             var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest
             {
@@ -375,14 +414,18 @@ public class ItemsService(
             return false;
         }
         
-        await itemRepository.DeleteAsync(item);
+        logger.LogInformation("Retrieved item {ItemId} using {PlaidItemId} for user {UserId}",
+            item.Id, plaidItemId, item.UserId);
         
+        await itemRepository.DeleteAsync(item);
         logger.LogInformation("Deleted item {ItemId} for user {UserId} for institution {InstitutionName}",
             item.Id, item.UserId, item.InstitutionName);
+        
         return true;
     }
     
-    private async Task CreateItemAsync(string accessToken, string userId, string institutionName, string itemId, string institutionId)
+    private async Task CreateItemAsync(string accessToken, string userId,
+        string institutionName, string itemId, string institutionId)
     {
         var item = new Item
         {
@@ -409,9 +452,8 @@ public class ItemsService(
             return 0;
         }
 
-        logger.LogInformation("Updating item {item} for institution {institution} and user {user}", 
-            item.Id, item.InstitutionName, userId);
-
+        logger.LogInformation("Retrieved item {ItemId} for user {UserId}", itemId, userId);
+        
         var hasMore = true;
 
         while (hasMore)
@@ -425,16 +467,17 @@ public class ItemsService(
                 };
                 
                 var data = await client.TransactionsSyncAsync(request);
+                logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
+                    data.Added.Count, item.Id, userId
+                );
                 
                 item.Cursor = string.IsNullOrEmpty(data.NextCursor) ? null : data.NextCursor;
                 item.LastFetched = string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
                 hasMore = data.HasMore;
                 
                 await itemRepository.UpdateAsync(item);
-
-                logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
-                    data.Added.Count, item.Id, userId
-                );
+                logger.LogInformation("The item {ItemId} for user {UserId} has been updated with a new Cursor",
+                    item.Id, userId);
 
                 // Process accounts
                 await ProcessAccountsAsync(data.Accounts, item.Id, userId);
@@ -451,18 +494,23 @@ public class ItemsService(
             }
         }
 
+        logger.LogInformation("Updated item {ItemId} for institution {InstitutionId} and user {UserId}", 
+            item.Id, item.InstitutionId, userId);
         return updatedCount;
     }
 
-    private async Task ProcessAccountsAsync(IReadOnlyList<Going.Plaid.Entity.Account> accounts, int itemId, string userId)
+    private async Task ProcessAccountsAsync(IReadOnlyList<PlaidAccount> accounts, int itemId, string userId)
     {
         if (accounts.Count == 0)
         {
+            logger.LogWarning("No Accounts to add for item {ItemId} for user {UserId}", itemId, userId);
             return;
         }
 
         // Get all existing account IDs in one query
         var existingAccountIds = await accountRepository.GetExistingAccountIdsAsync(itemId);
+        logger.LogInformation("Retrieved {AccountCount} account IDs for item {ItemId} for user {UserId}",
+            accounts.Count, itemId, userId);
 
         var newAccounts = new List<Account>();
     
@@ -500,10 +548,11 @@ public class ItemsService(
         }
     }
 
-    private async Task<int> ProcessTransactionsAsync(IReadOnlyList<Going.Plaid.Entity.Transaction> transactions, string userId)
+    private async Task<int> ProcessTransactionsAsync(IReadOnlyList<PlaidTransaction> transactions, string userId)
     {
         if (transactions.Count == 0)
         {
+            logger.LogWarning("No Transactions to add for user {UserId}", userId);
             return 0;
         }
     
@@ -516,6 +565,8 @@ public class ItemsService(
             .ToList();
         
         var existingTransactionIds = await transactionRepository.GetExistingTransactionIdsAsync(transactionIds);
+        logger.LogInformation("Retrieved {TransactionCount} transactions IDs for user {UserId}",
+            existingTransactionIds.Count, userId);
     
         // Get account mapping in one query
         var accountIds = sortedTransactions
@@ -524,6 +575,8 @@ public class ItemsService(
             .ToList();
         
         var accountMapping = await accountRepository.GetAccountMappingAsync(accountIds);
+        logger.LogInformation("Retrieved a dictionary containing {AccountCount} accounts for user {UserId}",
+            accountMapping.Keys.Count, userId);
     
         var newTransactions = new List<Transaction>();
         
@@ -531,12 +584,16 @@ public class ItemsService(
         {
             if (transaction.TransactionId == null || existingTransactionIds.Contains(transaction.TransactionId))
             {
+                logger.LogWarning(
+                    "Skipping transaction {PlaidTransactionId} for user {UserId} as the Transaction already exists",
+                    transaction.TransactionId, userId
+                );
                 continue;
             }
     
             if (!accountMapping.TryGetValue(transaction.AccountId ?? string.Empty, out var accountId))
             {
-                logger.LogInformation(
+                logger.LogWarning(
                     "Skipping transaction {PlaidTransactionId} for user {UserId} as the account does not exist",
                     transaction.TransactionId, userId
                 );
@@ -568,7 +625,6 @@ public class ItemsService(
         if (newTransactions.Count <= 0) return newTransactions.Count;
     
         await transactionRepository.AddRangeAsync(newTransactions);
-            
         logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
             newTransactions.Count, userId);
     
@@ -577,6 +633,7 @@ public class ItemsService(
     
     private static bool ShouldSkipItemUpdate(Item item)
     {
-        return item.LastFetched != null && DateTime.Now.AddDays(-1) < item.LastFetched;
+        var skip = item.LastFetched != null && DateTime.Now.AddDays(-1) < item.LastFetched;
+        return skip;
     }
 }

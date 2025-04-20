@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { ReauthenticateButton } from "@/components/features/link/ReauthenticateButton";
+import Loading from "@/components/shared/Loading.tsx";
 
 // ==================== TYPES ====================
 type SettingsSidebarItem = {
@@ -273,7 +274,7 @@ function AccountSection() {
 
 function SecuritySection() {
     const [mfaStatus, setMfaStatus] = useState<MfaStatus | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [setupData, setSetupData] = useState<MfaSetupData | null>(null);
     const [verificationCode, setVerificationCode] = useState("");
     const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
@@ -400,7 +401,7 @@ function SecuritySection() {
             <div>
                 <h3 className="text-lg font-medium mb-3">Two-Factor Authentication</h3>
                 
-                {mfaStatus?.enabled ? (
+                {isLoading ? <Loading fullScreen={false} /> : mfaStatus?.enabled ? (
                     <>
                         <div className="mb-4">
                             <div className="flex items-center gap-2 text-green-500 mb-3">

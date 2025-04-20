@@ -1,5 +1,5 @@
 ﻿using Server.Data.Models.Dtos;
-using Server.Data.Models.Params;
+using Server.Data.Models.Requests;
 using Server.Data.Models.Responses;
 
 namespace Server.Services.Interfaces;
@@ -36,14 +36,15 @@ public interface IItemsService
     Task<int> UpdateItemsAsync(string userId);
 
     /// <summary>
-    /// Update the access token for the specified user's item
+    /// Updates the access token for the specified user's item
     /// </summary>
-    Task<ItemTokenExchangeResponse> ExchangePublicTokenForReauthAsync(ReauthParams reauthParams);
+    Task<ItemTokenExchangeResponse> ExchangePublicTokenForReauthAsync(
+        int itemId, string userId, UpdateItemReauthRequest request);
     
     /// <summary>
     /// Get all the institutions for a specified user
     /// </summary>
-    Task<IEnumerable<InstitutionDto>> GetItemsAsync(string userId);
+    Task<List<InstitutionDto>> GetItemsAsync(string userId);
     
     /// <summary>
     /// Deletes an item for a user.

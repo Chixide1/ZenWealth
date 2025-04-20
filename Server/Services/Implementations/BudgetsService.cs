@@ -1,5 +1,4 @@
 ﻿using Server.Data.Entities;
-using Server.Data.Models;
 using Server.Data.Models.Dtos;
 using Server.Data.Repositories.Interfaces;
 using Server.Services.Interfaces;
@@ -18,16 +17,19 @@ public class BudgetsService(
 
         if (existingBudget != null)
         {
+            logger.LogInformation("Retrieved budget {BudgetId} for user: {UserId}", 
+                budget.Id, budget.UserId);
+            
             existingBudget.Limit = budget.Limit;
             existingBudget.Day = budget.Day;
             
-            logger.LogInformation("Changed budget limit {limit} on {category} for user: {userId}", 
+            logger.LogInformation("Changed budget limit {BudgetLimit} on {BudgetCategory} for user: {UserId}", 
                 budget.Limit, budget.Category, budget.UserId);
         }
         else
         {
             await budgetRepository.AddBudgetAsync(budget);
-            logger.LogInformation("Added budget limit {limit} on {category} for user: {userId}", 
+            logger.LogInformation("Added budget limit {BudgetLimit} on {BudgetCategory} for user: {UserId}", 
                 budget.Limit, budget.Category, budget.UserId);
         }
             
@@ -38,40 +40,39 @@ public class BudgetsService(
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
         var userBudgets = await budgetRepository.GetBudgetsByUserIdAsync(userId);
-        var result = new List<BudgetDto>();
+        
+        logger.LogInformation("Retrieved budgets {BudgetCount} for user {UserId}", userBudgets.Count, userId);
     
-        foreach (var budget in userBudgets)
+        var budgetDate = new DateOnly(currentDate.Year, currentDate.Month, userBudgets[0].Day);
+        // If budget day is after current day, use previous month
+        if (budgetDate > currentDate)
         {
-            // Calculate the start date for this specific budget
-            var budgetDate = new DateOnly(currentDate.Year, currentDate.Month, budget.Day);
-        
-            // If budget day is after current day, use previous month
-            if (budgetDate > currentDate)
-            {
-                budgetDate = budgetDate.AddMonths(-1);
-            }
-        
-            // Sum transactions for this category since the budget start date
-            var transactions = await transactionRepository.GetTransactionsByCategoryAsync(
-                userId, 
-                budgetDate, 
-                null, 
-                0);
-                
-            var spent = transactions
-                .FirstOrDefault(t => t.Category == budget.Category)?.Total ?? 0;
-        
-            result.Add(new BudgetDto
-            {
-                Category = budget.Category,
-                Day = budget.Day,
-                Limit = budget.Limit,
-                Spent = spent,
-                Remaining = budget.Limit - spent
-            });
+            budgetDate = budgetDate.AddMonths(-1);
         }
+        
+        // Sum transactions for this category since the budget start date
+        var categoryTotals = await transactionRepository.GetTransactionsByCategoryAsync(
+            userId, budgetDate, null, 0
+        );
+        
+        logger.LogInformation("Retrieved category totals for user {UserId} from {BudgetStartDate}",
+            userId, budgetDate);
+
+        var budgets = userBudgets.Select(b => new BudgetDto
+        {
+            Category = b.Category,
+            Day = b.Day,
+            Limit = b.Limit,
+            Spent = GetSpentAmount(b.Category),
+            Remaining = b.Limit - GetSpentAmount(b.Category)
+        }).ToList();
     
-        return result;
+        return budgets;
+
+        decimal GetSpentAmount(string category)
+        {
+            return categoryTotals.FirstOrDefault(t => t.Category == category)?.Total ?? 0;
+        }
     }
 
     public async Task DeleteBudgetAsync(string category, string userId)
@@ -81,8 +82,7 @@ public class BudgetsService(
         if (budget != null)
         {
             await budgetRepository.DeleteBudgetAsync(budget);
-            logger.LogInformation("Deleted budget category {category} for user: {userId}", category, userId);
-            await budgetRepository.SaveChangesAsync();
+            logger.LogInformation("Deleted budget category {BudgetCategory} for user: {UserId}", category, userId);
         }
     }
 }

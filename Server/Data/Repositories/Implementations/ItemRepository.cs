@@ -6,14 +6,14 @@ using Server.Data.Repositories.Interfaces;
 
 namespace Server.Data.Repositories.Implementations;
 
-public class ItemRepository(AppDbContext context, ILogger<ItemRepository> logger) : IItemRepository
+public class ItemRepository(AppDbContext context) : IItemRepository
 {
     public async Task<bool> ExistsForUserAsync(string userId)
     {
         return await context.Items.AnyAsync(i => i.UserId == userId);
     }
 
-    public async Task<IEnumerable<InstitutionDto>> GetItemsForUserAsync(string userId)
+    public async Task<List<InstitutionDto>> GetInstitutionsForUserAsync(string userId)
     {
         return await context.Items
             .Where(i => i.UserId == userId)
@@ -79,11 +79,10 @@ public class ItemRepository(AppDbContext context, ILogger<ItemRepository> logger
         return item;
     }
 
-    public async Task<Item> UpdateAsync(Item item)
+    public async Task UpdateAsync(Item item)
     {
         context.Items.Update(item);
         await context.SaveChangesAsync();
-        return item;
     }
 
     public async Task<bool> DeleteAsync(Item item)

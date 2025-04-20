@@ -7,6 +7,9 @@ namespace Server.Services.Interfaces;
 /// </summary>
 public interface IEmailService
 {
+    /// <summary>
+    /// Contains the Frontend URL & the Email Service Sender Address
+    /// </summary>
     public EmailOptions Options { get; }
     
     /// <summary>

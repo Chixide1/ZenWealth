@@ -17,7 +17,7 @@ public interface IItemRepository
     /// <summary>
     /// Gets all items for a specified user
     /// </summary>
-    Task<IEnumerable<InstitutionDto>> GetItemsForUserAsync(string userId);
+    Task<List<InstitutionDto>> GetInstitutionsForUserAsync(string userId);
     
     /// <summary>
     /// Gets an item by its Plaid Item ID
@@ -52,7 +52,7 @@ public interface IItemRepository
     /// <summary>
     /// Updates an existing item
     /// </summary>
-    Task<Item> UpdateAsync(Item item);
+    Task UpdateAsync(Item item);
     
     /// <summary>
     /// Deletes an item

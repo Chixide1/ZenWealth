@@ -2,13 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Server.Data.Entities;
-using Server.Data.Models;
-using Server.Data.Models.Params;
 using Server.Data.Models.Requests;
 using Server.Data.Models.Responses;
-using Server.Services;
 using Server.Services.Interfaces;
-using Account = Going.Plaid.Entity.Account;
 
 namespace Server.Controllers;
 
@@ -90,14 +86,8 @@ public class LinkController(
             return Unauthorized();
         }
         
-        var result = await itemsService.ExchangePublicTokenForReauthAsync(new ReauthParams
-        (
-            PublicToken: request.PublicToken,
-            ItemId: itemId,
-            UserId: user.Id,
-            Accounts: request.Accounts
-            
-        ));
+        var result = await itemsService.ExchangePublicTokenForReauthAsync(itemId, user.Id,
+            new UpdateItemReauthRequest(request.PublicToken, request.Accounts));
         
         if (!result.IsSuccess)
         {
@@ -128,7 +118,8 @@ public class LinkController(
             return Unauthorized();
         }
     
-        var result = await itemsService.ExchangePublicTokenAsync(data.PublicToken, data.InstitutionName, data.InstitutionId, user.Id);
+        var result = await itemsService.ExchangePublicTokenAsync(data.PublicToken,
+            data.InstitutionName, data.InstitutionId, user.Id);
     
         if (!result.IsSuccess)
         {
