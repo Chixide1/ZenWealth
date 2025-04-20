@@ -1,48 +1,42 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Server.Data;
-using Server.Data.Models;
+﻿using Server.Data.Models;
 using Server.Data.Models.Dtos;
+using Server.Data.Repositories.Interfaces;
 using Server.Services.Interfaces;
 
 namespace Server.Services.Implementations;
 
 public class BudgetsService(
-    AppDbContext context,
-    ILogger<BudgetsService> logger
+    ILogger<BudgetsService> logger,
+    IBudgetRepository budgetRepository,
+    ITransactionRepository transactionRepository
 ): IBudgetsService
 {
     public async Task AddBudgetAsync(Budget budget)
     {
-        var prevBudget = await context.Budgets
-            .Where((b) => b.UserId == budget.UserId && b.Category == budget.Category)
-            .ToListAsync();
+        var existingBudget = await budgetRepository.GetBudgetByUserIdAndCategoryAsync(budget.UserId, budget.Category);
 
-        if (prevBudget.Any())
+        if (existingBudget != null)
         {
-            prevBudget.First().Limit = budget.Limit;
-            prevBudget.First().Day = budget.Day;
+            existingBudget.Limit = budget.Limit;
+            existingBudget.Day = budget.Day;
             
-            logger.LogInformation("Changed budget limit {limit} on {category} for user: {userId}", budget.Limit, budget.Category, budget.UserId);
+            logger.LogInformation("Changed budget limit {limit} on {category} for user: {userId}", 
+                budget.Limit, budget.Category, budget.UserId);
         }
         else
         {
-            context.Budgets.Add(budget);
-            logger.LogInformation("Added budget limit {limit} on {category} for user: {userId}", budget.Limit, budget.Category, budget.UserId);
+            await budgetRepository.AddBudgetAsync(budget);
+            logger.LogInformation("Added budget limit {limit} on {category} for user: {userId}", 
+                budget.Limit, budget.Category, budget.UserId);
         }
             
-        await context.SaveChangesAsync();
+        await budgetRepository.SaveChangesAsync();
     }
 
     public async Task<List<BudgetDto>> GetBudgetsAsync(string userId)
     {
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
-    
-        // First, get all budgets for this user
-        var userBudgets = await context.Budgets
-            .AsNoTracking()
-            .Where(b => b.UserId == userId)
-            .ToListAsync();
-    
+        var userBudgets = await budgetRepository.GetBudgetsByUserIdAsync(userId);
         var result = new List<BudgetDto>();
     
         foreach (var budget in userBudgets)
@@ -57,11 +51,14 @@ public class BudgetsService(
             }
         
             // Sum transactions for this category since the budget start date
-            var spent = await context.Transactions
-                .Where(t => t.UserId == userId && 
-                            t.Category == budget.Category && 
-                            t.Date >= budgetDate)
-                .SumAsync(t => t.Amount);
+            var transactions = await transactionRepository.GetTransactionsByCategoryAsync(
+                userId, 
+                budgetDate, 
+                null, 
+                0);
+                
+            var spent = transactions
+                .FirstOrDefault(t => t.Category == budget.Category)?.Total ?? 0;
         
             result.Add(new BudgetDto
             {
@@ -78,16 +75,13 @@ public class BudgetsService(
 
     public async Task DeleteBudgetAsync(string category, string userId)
     {
-        var budgets = context.Budgets
-            .Where(b => b.Category == category.ToUpper() && b.UserId == userId)
-            .ToList();
+        var budget = await budgetRepository.GetBudgetByUserIdAndCategoryAsync(userId, category.ToUpper());
         
-        foreach (var budget in budgets)
+        if (budget != null)
         {
-            Console.WriteLine(budget.Category + " - " + "Tried to delete");
-            context.Budgets.Remove(budget);
+            await budgetRepository.DeleteBudgetAsync(budget);
             logger.LogInformation("Deleted budget category {category} for user: {userId}", category, userId);
-            await context.SaveChangesAsync();
+            await budgetRepository.SaveChangesAsync();
         }
     }
 }

@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Server.Data;
 using Server.Data.Models;
+using Server.Data.Repositories.Implementations;
+using Server.Data.Repositories.Interfaces;
 using Server.Services;
 using Server.Services.Implementations;
 using Server.Services.Interfaces;
@@ -13,9 +15,30 @@ namespace Server.Utils.Extensions;
 public static class ServiceExtensions
 {
     /// <summary>
+    /// Register Repositories for dependency injection
+    /// </summary>
+    public static void AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<IBudgetRepository, BudgetRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<IItemRepository, ItemRepository>();
+    }
+    
+    /// <summary>
+    /// Register Services for dependency injection
+    /// </summary>
+    public static void AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAccountsService, AccountsService>();
+        services.AddScoped<IBudgetsService, BudgetsService>();
+        services.AddScoped<ITransactionsService, TransactionsService>();
+        services.AddScoped<IItemsService, ItemsService>();
+    }
+    
+    /// <summary>
     /// Configures CORS for the application.
     /// </summary>
-    /// <param name="services">The service collection to add the CORS policy to.</param>
     public static void ConfigureCors(this IServiceCollection services)
     {
         services.AddCors(options =>
@@ -33,7 +56,6 @@ public static class ServiceExtensions
     /// <summary>
     /// Adds Controllers and configures how the received json should be serialised & deserialized
     /// </summary>
-    /// <param name="services">The service collection to add the Controller to.</param>
     public static void ConfigureControllers(this IServiceCollection services)
     {
         services.AddControllers().AddJsonOptions(options =>
@@ -65,8 +87,6 @@ public static class ServiceExtensions
     /// <summary>
     /// Configures identity services for the application.
     /// </summary>
-    /// <param name="services">The IServiceCollection to add the identity services to.</param>
-    /// <remarks>
     public static void ConfigureIdentity(this IServiceCollection services)
     {
         services.AddIdentityApiEndpoints<User>()

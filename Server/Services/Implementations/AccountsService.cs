@@ -1,9 +1,8 @@
 ﻿using Going.Plaid;
 using Going.Plaid.Accounts;
-using Microsoft.EntityFrameworkCore;
-using Server.Data;
 using Server.Data.Models;
 using Server.Data.Models.Dtos;
+using Server.Data.Repositories.Interfaces;
 using Server.Services.Interfaces;
 
 namespace Server.Services.Implementations;
@@ -11,25 +10,13 @@ namespace Server.Services.Implementations;
 public class AccountsService(
     ILogger<AccountsService> logger,
     PlaidClient client,
-    AppDbContext context) : IAccountsService
+    IAccountRepository accountRepository,
+    IItemRepository itemRepository) : IAccountsService
 {
     public async Task<List<AccountDto>> GetAccountsAsync(string userId)
     {
-        var accounts = await context.Accounts
-            .Where(a => a.UserId == userId && a.Type != "Loan")
-            .Select(a => new AccountDto()
-            {
-                Id = a.Id,
-                CurrentBalance = a.CurrentBalance,
-                AvailableBalance = a.AvailableBalance,
-                Name = a.Name,
-                OfficialName = a.OfficialName ?? "",
-                Mask = a.Mask ?? "",
-                Subtype = a.Subtype ?? "",
-                Type = a.Type
-            })
-            .ToListAsync();
-
+        var accounts = await accountRepository.GetAccountsByUserIdAsync(userId);
+        
         logger.LogInformation("Retrieved {AccountCount} accounts for user {UserId}", accounts.Count, userId);
 
         return accounts;
@@ -38,8 +25,7 @@ public class AccountsService(
     public async Task<int> UpdateAccountsByPlaidItemIdAsync(string plaidItemId)
     {
         // Find the item in the database
-        var item = await context.Items
-            .FirstOrDefaultAsync(i => i.PlaidItemId == plaidItemId);
+        var item = await itemRepository.GetByPlaidIdAsync(plaidItemId);
 
         if (item == null)
         {
@@ -66,11 +52,7 @@ public class AccountsService(
     
     public async Task UpdateAccountsAsync(string userId)
     {
-        logger.LogInformation("Starting account update for user {UserId}", userId);
-
-        var items = await context.Items
-            .Where(i => i.UserId == userId && i.LastFetched != null && DateTime.Now.AddDays(-1) < i.LastFetched)
-            .ToListAsync();
+        var items = await itemRepository.GetItemsForUpdateAsync(userId);
 
         int totalProcessed = 0;
         foreach (var item in items)
@@ -93,9 +75,7 @@ public class AccountsService(
     private async Task<int> ProcessAccountsForItemAsync(Item item)
     {
         // Get existing accounts to check which ones need to be updated vs. created
-        var existingAccounts = await context.Accounts
-            .Where(a => a.ItemId == item.Id)
-            .ToDictionaryAsync(a => a.PlaidAccountId, a => a);
+        var existingAccounts = await accountRepository.GetAccountsByItemIdAsync(item.Id);
 
         // Get latest account data from Plaid
         var data = await client.AccountsGetAsync(new AccountsGetRequest
@@ -136,7 +116,7 @@ public class AccountsService(
             else
             {
                 // Add new account
-                context.Accounts.Add(new Account
+                await accountRepository.AddAccountAsync(new Account
                 {
                     PlaidAccountId = account.AccountId,
                     ItemId = item.Id,
@@ -160,7 +140,7 @@ public class AccountsService(
         }
 
         // Persist changes to database
-        await context.SaveChangesAsync();
+        await accountRepository.SaveChangesAsync();
         
         logger.LogInformation(
             "Successfully processed accounts for item {ItemId}: {UpdatedCount} updated, {AddedCount} added",

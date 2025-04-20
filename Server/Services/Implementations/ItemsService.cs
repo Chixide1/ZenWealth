@@ -3,11 +3,10 @@ using Going.Plaid.Entity;
 using Going.Plaid.Item;
 using Going.Plaid.Link;
 using Going.Plaid.Transactions;
-using Microsoft.EntityFrameworkCore;
-using Server.Data;
 using Server.Data.Models.Dtos;
 using Server.Data.Models.Params;
 using Server.Data.Models.Responses;
+using Server.Data.Repositories.Interfaces;
 using Server.Services.Interfaces;
 using Account = Server.Data.Models.Account;
 using Item = Server.Data.Models.Item;
@@ -16,41 +15,49 @@ using Transaction = Server.Data.Models.Transaction;
 namespace Server.Services.Implementations;
 
 public class ItemsService(
-    AppDbContext context,
+    IItemRepository itemRepository,
     ILogger<ItemsService> logger,
     PlaidClient client,
-    IConfiguration config
-) : IItemsService
+    IConfiguration config) : IItemsService
 {
     public async Task<bool> CheckItemExistsAsync(string userId)
     {
-        var result = await context.Items.AnyAsync(i => i.UserId == userId);
+        var result = await itemRepository.ExistsForUserAsync(userId);
         logger.LogInformation("Checked if user {UserId} has an item", userId);
         
         return result;
     }
 
-    public async Task<IEnumerable<InstitutionDto>> GetItemsAsync(string userId)
+    public async Task<ItemDetailsDto?> GetItemDetailsByPlaidIdAsync(string plaidItemId)
     {
-        var items = await context.Items
-            .Where(i => i.UserId == userId)
-            .Select(i => new InstitutionDto
-            {
-                Id = i.Id,
-                Name = i.InstitutionName,
-            })
-            .ToListAsync();
-        
-        return items;
+        return await itemRepository.GetItemDetailsByPlaidIdAsync(plaidItemId);
+    }
+    
+    public async Task<int> UpdateItemByPlaidIdAsync(string plaidItemId)
+    {
+        var item = await itemRepository.GetByPlaidIdAsync(plaidItemId);
+
+        if (item == null)
+        {
+            logger.LogWarning("Item {ItemId} not found", plaidItemId);
+            return 0;
+        }
+
+        try
+        {
+            return await UpdateSingleItemAsync(item.Id, item.UserId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating item {ItemId} for user {UserId}", plaidItemId, item.UserId);
+            throw;
+        }
     }
     
     public async Task<int> UpdateItemsAsync(string userId)
     {
         var updatedCount = 0;
-        var items = await context.Items
-            .Where(i => i.UserId == userId)
-            .AsNoTracking()
-            .ToListAsync();
+        var items = await itemRepository.GetItemsForUpdateAsync(userId);
 
         foreach (var item in items)
         {
@@ -75,31 +82,86 @@ public class ItemsService(
 
         return updatedCount;
     }
-    
-    public async Task<int> UpdateItemByPlaidIdAsync(string plaidItemId)
+
+    public async Task<ItemTokenExchangeResponse> ExchangePublicTokenForReauthAsync(ReauthParams reauthParams)
     {
-        var item = await context.Items.FirstOrDefaultAsync(i => i.PlaidItemId == plaidItemId);
-
-        if (item == null)
-        {
-            logger.LogWarning("Item {ItemId} not found", plaidItemId);
-            return 0;
-        }
-
+        var (publicToken, itemId, userId, accounts) = reauthParams;
+        
         try
         {
-            return await UpdateSingleItemAsync(item.Id, item.UserId);
+            // Find the item with its accounts
+            var item = await itemRepository.GetWithAccountsByIdAndUserIdAsync(itemId, userId);
+    
+            if (item == null)
+            {
+                logger.LogWarning("Item {ItemId} not found for user {UserId}", itemId, userId);
+                return ItemTokenExchangeResponse.Failure(new PlaidError
+                {
+                    ErrorType = "INVALID_REQUEST",
+                    ErrorCode = "ITEM_NOT_FOUND",
+                    ErrorMessage = $"Item with ID {itemId} not found"
+                });
+            }
+            
+            // Exchange public token
+            var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
+            {
+                PublicToken = publicToken
+            });
+    
+            if (response.Error != null)
+            {
+                logger.LogError("Token exchange failed: {ErrorMessage}", response.Error.ErrorMessage);
+                return ItemTokenExchangeResponse.Failure(response.Error);
+            }
+            
+            // Update item
+            item.AccessToken = response.AccessToken;
+            item.Cursor = null;
+            item.LastFetched = null;
+    
+            // Use ExceptBy to find accounts to remove
+            var newAccountKeys = accounts.Select(a => new { a.Name, a.Mask });
+            var accountsToRemove = item.Accounts
+                .ExceptBy(newAccountKeys, a => new { a.Name, a.Mask }!)
+                .ToList();
+    
+            // Remove obsolete accounts
+            await itemRepository.RemoveAccountsAsync(accountsToRemove);
+            
+            // Update the item
+            await itemRepository.UpdateAsync(item);
+            
+            // Log removed accounts
+            logger.LogInformation("Removed accounts {@RemovedAccountIds} for item {ItemId} for user {UserId}",
+                accountsToRemove.Select(a => new {a.Id, a.Name}), itemId, userId);
+            
+            // Sync fresh data
+            var addedTransactions = await UpdateSingleItemAsync(item.Id, userId);
+            
+            logger.LogInformation("Reauthentication successful for item {ItemId}", itemId);
+            return ItemTokenExchangeResponse.Success(addedTransactions);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error updating item {ItemId} for user {UserId}", plaidItemId, item.UserId);
-            throw;
+            logger.LogError(ex, "Reauthentication failed for item {ItemId}", itemId);
+            return ItemTokenExchangeResponse.Failure(new PlaidError
+            {
+                ErrorType = "API_ERROR",
+                ErrorCode = "INTERNAL_SERVER_ERROR",
+                ErrorMessage = "An unexpected error occurred"
+            });
         }
+    }
+    
+    public async Task<IEnumerable<InstitutionDto>> GetItemsAsync(string userId)
+    {
+        return await itemRepository.GetItemsForUserAsync(userId);
     }
     
     public async Task<bool> DeleteItemAsync(string userId, int itemId)
     {
-        var item = await context.Items.SingleOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+        var item = await itemRepository.GetByIdAndUserIdAsync(itemId, userId);
 
         if (item == null)
         {
@@ -117,8 +179,7 @@ public class ItemsService(
             return false;
         }
         
-        context.Items.Remove(item);
-        await context.SaveChangesAsync();
+        await itemRepository.DeleteAsync(item);
         
         logger.LogInformation("Deleted item {ItemId} for user {UserId}", itemId, userId);
             
@@ -130,8 +191,8 @@ public class ItemsService(
         try
         {
             // Check if this institution is already linked for this user
-            var existingItem = await context.Items
-                .FirstOrDefaultAsync(i => i.UserId == userId && i.InstitutionId == institutionId);
+            var items = await itemRepository.GetItemsForUserAsync(userId);
+            var existingItem = items.FirstOrDefault(i => i.Name == institutionName);
                 
             if (existingItem != null)
             {
@@ -233,28 +294,12 @@ public class ItemsService(
         }
     }
     
-    private async Task CreateItemAsync(string accessToken, string userId, string institutionName, string itemId, string institutionId)
-    {
-        context.Items.Add(new Item()
-        {
-            AccessToken = accessToken,
-            UserId = userId,
-            InstitutionName = institutionName,
-            InstitutionId = institutionId,
-            PlaidItemId = itemId
-        });
-        
-        await context.SaveChangesAsync();
-        logger.LogInformation("Added item for user {UserId} for institution {InstitutionId}", userId, institutionId);
-    }
-
-     public async Task<LinkTokenResponse> CreateUpdateLinkTokenAsync(string userId, int itemId)
+    public async Task<LinkTokenResponse> CreateUpdateLinkTokenAsync(string userId, int itemId)
     {
         try
         {
             // Find the item and ensure it belongs to the user
-            var item = await context.Items
-                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+            var item = await itemRepository.GetByIdAndUserIdAsync(itemId, userId);
                 
             if (item == null)
             {
@@ -318,83 +363,43 @@ public class ItemsService(
         }
     }
 
-    public async Task<ItemTokenExchangeResponse> ExchangePublicTokenForReauthAsync(ReauthParams reauthParams)
+    public async Task<bool> DeleteItemByPlaidItemIdAsync(string plaidItemId)
     {
-        var (publicToken, itemId, userId, accounts) = reauthParams;
+        var item = await itemRepository.GetByPlaidIdAsync(plaidItemId);
+
+        if (item == null)
+        {
+            logger.LogWarning("Unable to find item with the Plaid Identifier {PlaidItemId}", plaidItemId);
+            return false;
+        }
         
-        try
+        await itemRepository.DeleteAsync(item);
+        
+        logger.LogInformation("Deleted item {ItemId} for user {UserId} for institution {InstitutionName}",
+            item.Id, item.UserId, item.InstitutionName);
+        return true;
+    }
+    
+    private async Task CreateItemAsync(string accessToken, string userId, string institutionName, string itemId, string institutionId)
+    {
+        var item = new Item
         {
-            // Find the item with its accounts
-            var item = await context.Items
-                .Include(i => i.Accounts) // Include accounts for comparison
-                .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
-    
-            if (item == null)
-            {
-                logger.LogWarning("Item {ItemId} not found for user {UserId}", itemId, userId);
-                return ItemTokenExchangeResponse.Failure(new PlaidError
-                {
-                    ErrorType = "INVALID_REQUEST",
-                    ErrorCode = "ITEM_NOT_FOUND",
-                    ErrorMessage = $"Item with ID {itemId} not found"
-                });
-            }
-            
-            // Exchange public token
-            var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
-            {
-                PublicToken = publicToken
-            });
-    
-            if (response.Error != null)
-            {
-                logger.LogError("Token exchange failed: {ErrorMessage}", response.Error.ErrorMessage);
-                return ItemTokenExchangeResponse.Failure(response.Error);
-            }
-            
-            // Update item
-            item.AccessToken = response.AccessToken;
-            item.Cursor = null;
-            item.LastFetched = null;
-    
-            // Use ExceptBy to find accounts to remove
-            var newAccountKeys = accounts.Select(a => new { a.Name, a.Mask });
-            var accountsToRemove = item.Accounts
-                .ExceptBy(newAccountKeys, a => new { a.Name, a.Mask }!)
-                .ToList();
-    
-            // Remove obsolete accounts
-            context.Accounts.RemoveRange(accountsToRemove);
-            await context.SaveChangesAsync();
-            
-            // Log removed accounts
-            logger.LogInformation("Removed accounts {@RemovedAccountIds} for item {ItemId} for user {UserId}",
-                accountsToRemove.Select(a => new {a.Id, a.Name}), itemId, userId);
-            
-            // Sync fresh data
-            var addedTransactions = await UpdateSingleItemAsync(item.Id, userId);
-            
-            logger.LogInformation("Reauthentication successful for item {ItemId}", itemId);
-            return ItemTokenExchangeResponse.Success(addedTransactions);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Reauthentication failed for item {ItemId}", itemId);
-            return ItemTokenExchangeResponse.Failure(new PlaidError
-            {
-                ErrorType = "API_ERROR",
-                ErrorCode = "INTERNAL_SERVER_ERROR",
-                ErrorMessage = "An unexpected error occurred"
-            });
-        }
+            AccessToken = accessToken,
+            UserId = userId,
+            InstitutionName = institutionName,
+            InstitutionId = institutionId,
+            PlaidItemId = itemId
+        };
+        
+        await itemRepository.CreateAsync(item);
+        logger.LogInformation("Added item for user {UserId} for institution {InstitutionId}", userId, institutionId);
     }
 
     // Core update method that both public methods will use
     private async Task<int> UpdateSingleItemAsync(int itemId, string userId)
     {
         var updatedCount = 0;
-        var item = await context.Items
-            .FirstOrDefaultAsync(i => i.Id == itemId && i.UserId == userId);
+        var item = await itemRepository.GetByIdAndUserIdAsync(itemId, userId);
 
         if (item == null)
         {
@@ -409,7 +414,6 @@ public class ItemsService(
 
         while (hasMore)
         {
-            // Using a transaction to ensure data consistency
             try
             {
                 var request = new TransactionsSyncRequest()
@@ -423,7 +427,8 @@ public class ItemsService(
                 item.Cursor = string.IsNullOrEmpty(data.NextCursor) ? null : data.NextCursor;
                 item.LastFetched = string.IsNullOrEmpty(item.Cursor) ? null : DateTime.Now;
                 hasMore = data.HasMore;
-                await context.SaveChangesAsync();
+                
+                await itemRepository.UpdateAsync(item);
 
                 logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
                     data.Added.Count, item.Id, userId
@@ -455,11 +460,7 @@ public class ItemsService(
         }
 
         // Get all existing account IDs in one query
-        var existingAccountIds = (await context.Accounts
-                .Where(a => a.ItemId == itemId)
-                .Select(a => a.PlaidAccountId)
-                .ToListAsync())
-            .ToHashSet();
+        var existingAccountIds = await itemRepository.GetExistingAccountIdsAsync(itemId);
 
         var newAccounts = new List<Account>();
     
@@ -491,36 +492,12 @@ public class ItemsService(
     
         if (newAccounts.Count > 0)
         {
-            // Replace bulk insert with standard AddRange and SaveChanges
-            context.Accounts.AddRange(newAccounts);
-            await context.SaveChangesAsync();
-        
+            await itemRepository.AddAccountsAsync(newAccounts);
             logger.LogInformation("Added {AccountCount} new accounts for item {ItemId} and user {UserId}",
                 newAccounts.Count, itemId, userId);
         }
     }
 
-    // Add this implementation to ItemsService class
-    public async Task<ItemDetailsDto?> GetItemDetailsByPlaidIdAsync(string plaidItemId)
-    {
-        return await context.Items
-            .Where(i => i.PlaidItemId == plaidItemId)
-            .Join(
-                context.Users,
-                item => item.UserId,
-                user => user.Id,
-                (item, user) => new ItemDetailsDto
-                {
-                    Id = item.Id,
-                    PlaidItemId = item.PlaidItemId,
-                    InstitutionName = item.InstitutionName,
-                    UserEmail = user.Email ?? "",
-                    UserId = item.UserId
-                }
-            )
-            .FirstOrDefaultAsync();
-    }
-    
     private async Task<int> ProcessTransactionsAsync(IReadOnlyList<Going.Plaid.Entity.Transaction> transactions, string userId)
     {
         if (transactions.Count == 0)
@@ -536,11 +513,7 @@ public class ItemsService(
             .Where(id => id != null)
             .ToList();
         
-        var existingTransactionIds = (await context.Transactions
-            .Where(t => transactionIds.Contains(t.PlaidTransactionId))
-            .Select(t => t.PlaidTransactionId)
-            .ToListAsync())
-            .ToHashSet();
+        var existingTransactionIds = await itemRepository.GetExistingTransactionIdsAsync(transactionIds);
     
         // Get account mapping in one query
         var accountIds = sortedTransactions
@@ -548,10 +521,7 @@ public class ItemsService(
             .Distinct()
             .ToList();
         
-        var accountMapping = await context.Accounts
-            .Where(a => accountIds.Contains(a.PlaidAccountId))
-            .Select(a => new { a.PlaidAccountId, a.Id })
-            .ToDictionaryAsync(a => a.PlaidAccountId, a => a.Id);
+        var accountMapping = await itemRepository.GetAccountMappingAsync(accountIds);
     
         var newTransactions = new List<Transaction>();
         
@@ -595,31 +565,12 @@ public class ItemsService(
     
         if (newTransactions.Count <= 0) return newTransactions.Count;
     
-        context.Transactions.AddRange(newTransactions);
-        await context.SaveChangesAsync();
+        await itemRepository.AddTransactionsAsync(newTransactions);
             
         logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
             newTransactions.Count, userId);
     
         return newTransactions.Count;
-    }
-
-    public async Task<bool> DeleteItemByPlaidItemIdAsync(string plaidItemId)
-    {
-        var item = await context.Items.FirstOrDefaultAsync(i => i.PlaidItemId == plaidItemId);
-
-        if (item == null)
-        {
-            logger.LogWarning("Unable to find item with the Plaid Identifier {PlaidItemId}", plaidItemId);
-            return false;
-        }
-        
-        context.Items.Remove(item);
-        await context.SaveChangesAsync();
-        
-        logger.LogInformation("Deleted item {ItemId} for user {UserId} for institution {InstitutionName}",
-            item.Id, item.UserId, item.InstitutionName);
-        return true;
     }
     
     private static bool ShouldSkipItemUpdate(Item item)
