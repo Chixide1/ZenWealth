@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Server.Data.Models;
 using Server.Services;
 using System.Web;
+using Server.Data.Entities;
 using Server.Data.Models.Requests;
 using Server.Data.Models.Responses;
 using Server.Services.Implementations;

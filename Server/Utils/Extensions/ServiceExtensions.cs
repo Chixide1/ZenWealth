@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Server.Data;
+using Server.Data.Entities;
 using Server.Data.Models;
 using Server.Data.Repositories.Implementations;
 using Server.Data.Repositories.Interfaces;

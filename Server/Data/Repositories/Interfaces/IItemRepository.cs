@@ -1,3 +1,4 @@
+using Server.Data.Entities;
 using Server.Data.Models;
 using Server.Data.Models.Dtos;
 
@@ -57,36 +58,6 @@ public interface IItemRepository
     /// Deletes an item
     /// </summary>
     Task<bool> DeleteAsync(Item item);
-    
-    /// <summary>
-    /// Gets all existing accounts for an item
-    /// </summary>
-    Task<HashSet<string>> GetExistingAccountIdsAsync(int itemId);
-    
-    /// <summary>
-    /// Gets account mapping by Plaid Account IDs
-    /// </summary>
-    Task<Dictionary<string, int>> GetAccountMappingAsync(List<string?> accountIds);
-    
-    /// <summary>
-    /// Gets existing transaction IDs
-    /// </summary>
-    Task<HashSet<string>> GetExistingTransactionIdsAsync(List<string?> transactionIds);
-    
-    /// <summary>
-    /// Adds multiple accounts
-    /// </summary>
-    Task AddAccountsAsync(List<Account> accounts);
-    
-    /// <summary>
-    /// Adds multiple transactions
-    /// </summary>
-    Task AddTransactionsAsync(List<Transaction> transactions);
-    
-    /// <summary>
-    /// Removes multiple accounts
-    /// </summary>
-    Task RemoveAccountsAsync(List<Account> accounts);
     
     /// <summary>
     /// Saves all changes to the database

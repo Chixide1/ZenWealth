@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Server.Data.Entities;
 using Server.Data.Models;
 using Server.Data.Repositories.Interfaces;
 

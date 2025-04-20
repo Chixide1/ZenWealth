@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Server.Data.Entities;
+using Server.Data.Models;
 using Server.Data.Models.Dtos;
 using Server.Data.Models.Requests;
 using Server.Data.Repositories.Interfaces;
@@ -90,6 +92,25 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
         return await query.ToListAsync();
     }
 
+    public async Task<HashSet<string>> GetExistingTransactionIdsAsync(List<string?> transactionIds)
+    {
+        var existingIds = await context.Transactions
+            .Where(t => transactionIds.Contains(t.PlaidTransactionId))
+            .Select(t => t.PlaidTransactionId)
+            .ToListAsync();
+            
+        return existingIds.ToHashSet();
+    }
+
+    public async Task AddRangeAsync(List<Transaction> transactions)
+    {
+        if (transactions.Count > 0)
+        {
+            context.Transactions.AddRange(transactions);
+            await context.SaveChangesAsync();
+        }
+    }
+    
     public async Task<List<MonthlySummaryDto>> GetMonthlyIncomeAndOutcomeAsync(string userId)
     {
         return await context.Database.SqlQuery<MonthlySummaryDto>(

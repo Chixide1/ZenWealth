@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Server.Data.Entities;
 using Server.Data.Models;
 using Server.Data.Models.Dtos;
 using Server.Data.Repositories.Interfaces;
@@ -90,67 +91,6 @@ public class ItemRepository(AppDbContext context, ILogger<ItemRepository> logger
         context.Items.Remove(item);
         await context.SaveChangesAsync();
         return true;
-    }
-
-    public async Task<HashSet<string>> GetExistingAccountIdsAsync(int itemId)
-    {
-        var existingIds = await context.Accounts
-            .Where(a => a.ItemId == itemId)
-            .Select(a => a.PlaidAccountId)
-            .ToListAsync();
-            
-        return existingIds.ToHashSet();
-    }
-
-    public async Task<Dictionary<string, int>> GetAccountMappingAsync(List<string?> accountIds)
-    {
-        var mapping = await context.Accounts
-            .Where(a => accountIds.Contains(a.PlaidAccountId))
-            .Select(a => new { a.PlaidAccountId, a.Id })
-            .ToDictionaryAsync(a => a.PlaidAccountId, a => a.Id);
-            
-        return mapping;
-    }
-
-    public async Task<HashSet<string>> GetExistingTransactionIdsAsync(List<string?> transactionIds)
-    {
-        var existingIds = await context.Transactions
-            .Where(t => transactionIds.Contains(t.PlaidTransactionId))
-            .Select(t => t.PlaidTransactionId)
-            .ToListAsync();
-            
-        return existingIds.ToHashSet();
-    }
-
-    public async Task AddAccountsAsync(List<Account> accounts)
-    {
-        if (accounts.Count > 0)
-        {
-            context.Accounts.AddRange(accounts);
-            await context.SaveChangesAsync();
-            logger.LogInformation("Added {AccountCount} new accounts", accounts.Count);
-        }
-    }
-
-    public async Task AddTransactionsAsync(List<Transaction> transactions)
-    {
-        if (transactions.Count > 0)
-        {
-            context.Transactions.AddRange(transactions);
-            await context.SaveChangesAsync();
-            logger.LogInformation("Added {TransactionCount} new transactions", transactions.Count);
-        }
-    }
-
-    public async Task RemoveAccountsAsync(List<Account> accounts)
-    {
-        if (accounts.Count > 0)
-        {
-            context.Accounts.RemoveRange(accounts);
-            await context.SaveChangesAsync();
-            logger.LogInformation("Removed {RemovedAccountCount} accounts", 
-                accounts.Select(a => new {a.Id, a.Name}).ToList());
-        }
     }
 
     public async Task SaveChangesAsync()

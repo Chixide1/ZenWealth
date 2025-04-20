@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Server.Data.Models;
+namespace Server.Data.Entities;
 
 [Index(nameof(Name))]
 [Index(nameof(Category))]

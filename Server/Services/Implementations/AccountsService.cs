@@ -1,5 +1,6 @@
 ﻿using Going.Plaid;
 using Going.Plaid.Accounts;
+using Server.Data.Entities;
 using Server.Data.Models;
 using Server.Data.Models.Dtos;
 using Server.Data.Repositories.Interfaces;
@@ -116,7 +117,7 @@ public class AccountsService(
             else
             {
                 // Add new account
-                await accountRepository.AddAccountAsync(new Account
+                await accountRepository.AddAsync(new Account
                 {
                     PlaidAccountId = account.AccountId,
                     ItemId = item.Id,

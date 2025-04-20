@@ -8,14 +8,16 @@ using Server.Data.Models.Params;
 using Server.Data.Models.Responses;
 using Server.Data.Repositories.Interfaces;
 using Server.Services.Interfaces;
-using Account = Server.Data.Models.Account;
-using Item = Server.Data.Models.Item;
-using Transaction = Server.Data.Models.Transaction;
+using Account = Server.Data.Entities.Account;
+using Item = Server.Data.Entities.Item;
+using Transaction = Server.Data.Entities.Transaction;
 
 namespace Server.Services.Implementations;
 
 public class ItemsService(
     IItemRepository itemRepository,
+    IAccountRepository accountRepository,
+    ITransactionRepository transactionRepository,
     ILogger<ItemsService> logger,
     PlaidClient client,
     IConfiguration config) : IItemsService
@@ -127,7 +129,7 @@ public class ItemsService(
                 .ToList();
     
             // Remove obsolete accounts
-            await itemRepository.RemoveAccountsAsync(accountsToRemove);
+            await accountRepository.RemoveRangeAsync(accountsToRemove);
             
             // Update the item
             await itemRepository.UpdateAsync(item);
@@ -460,7 +462,7 @@ public class ItemsService(
         }
 
         // Get all existing account IDs in one query
-        var existingAccountIds = await itemRepository.GetExistingAccountIdsAsync(itemId);
+        var existingAccountIds = await accountRepository.GetExistingAccountIdsAsync(itemId);
 
         var newAccounts = new List<Account>();
     
@@ -492,7 +494,7 @@ public class ItemsService(
     
         if (newAccounts.Count > 0)
         {
-            await itemRepository.AddAccountsAsync(newAccounts);
+            await accountRepository.AddRangeAsync(newAccounts);
             logger.LogInformation("Added {AccountCount} new accounts for item {ItemId} and user {UserId}",
                 newAccounts.Count, itemId, userId);
         }
@@ -513,7 +515,7 @@ public class ItemsService(
             .Where(id => id != null)
             .ToList();
         
-        var existingTransactionIds = await itemRepository.GetExistingTransactionIdsAsync(transactionIds);
+        var existingTransactionIds = await transactionRepository.GetExistingTransactionIdsAsync(transactionIds);
     
         // Get account mapping in one query
         var accountIds = sortedTransactions
@@ -521,7 +523,7 @@ public class ItemsService(
             .Distinct()
             .ToList();
         
-        var accountMapping = await itemRepository.GetAccountMappingAsync(accountIds);
+        var accountMapping = await accountRepository.GetAccountMappingAsync(accountIds);
     
         var newTransactions = new List<Transaction>();
         
@@ -565,7 +567,7 @@ public class ItemsService(
     
         if (newTransactions.Count <= 0) return newTransactions.Count;
     
-        await itemRepository.AddTransactionsAsync(newTransactions);
+        await transactionRepository.AddRangeAsync(newTransactions);
             
         logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
             newTransactions.Count, userId);

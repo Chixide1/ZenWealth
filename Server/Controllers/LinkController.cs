@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Server.Data.Entities;
 using Server.Data.Models;
 using Server.Data.Models.Params;
 using Server.Data.Models.Requests;

@@ -1,4 +1,5 @@
-﻿using Server.Data.Models;
+﻿using Server.Data.Entities;
+using Server.Data.Models;
 using Server.Data.Models.Dtos;
 
 namespace Server.Services.Interfaces;

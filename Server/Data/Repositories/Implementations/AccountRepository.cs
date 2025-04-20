@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Server.Data.Entities;
 using Server.Data.Models;
 using Server.Data.Models.Dtos;
 using Server.Data.Repositories.Interfaces;
@@ -38,11 +39,50 @@ public class AccountRepository(AppDbContext context) : IAccountRepository
             .FirstOrDefaultAsync(a => a.PlaidAccountId == plaidAccountId);
     }
 
-    public async Task AddAccountAsync(Account account)
+    public async Task AddAsync(Account account)
     {
         await context.Accounts.AddAsync(account);
+        await context.SaveChangesAsync();
+    }
+    
+    public async Task AddRangeAsync(List<Account> accounts)
+    {
+        if (accounts.Count > 0)
+        {
+            await context.Accounts.AddRangeAsync(accounts);
+            await context.SaveChangesAsync();
+        }
+    }
+    
+    public async Task<HashSet<string>> GetExistingAccountIdsAsync(int itemId)
+    {
+        var existingIds = await context.Accounts
+            .Where(a => a.ItemId == itemId)
+            .Select(a => a.PlaidAccountId)
+            .ToListAsync();
+            
+        return existingIds.ToHashSet();
     }
 
+    public async Task<Dictionary<string, int>> GetAccountMappingAsync(List<string?> accountIds)
+    {
+        var mapping = await context.Accounts
+            .Where(a => accountIds.Contains(a.PlaidAccountId))
+            .Select(a => new { a.PlaidAccountId, a.Id })
+            .ToDictionaryAsync(a => a.PlaidAccountId, a => a.Id);
+            
+        return mapping;
+    }
+    
+    public async Task RemoveRangeAsync(List<Account> accounts)
+    {
+        if (accounts.Count > 0)
+        {
+            context.Accounts.RemoveRange(accounts);
+            await context.SaveChangesAsync();
+        }
+    }
+    
     public Task UpdateAccountAsync(Account account)
     {
         context.Accounts.Update(account);

@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
 
-namespace Server.Data.Models;
+namespace Server.Data.Entities;
 
 public class Item
 {

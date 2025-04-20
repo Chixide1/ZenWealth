@@ -1,4 +1,5 @@
 ﻿using Going.Plaid.Entity;
+using Server.Data.Entities;
 using Server.Data.Models.Dtos;
 using Server.Services;
 using Server.Services.Interfaces;
