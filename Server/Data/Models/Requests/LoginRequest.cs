@@ -1,8 +1,13 @@
-﻿namespace Server.Data.Models.Requests;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Server.Data.Models.Requests;
 
 public class LoginRequest
 {
-    public required string Username { get; set; }
-    public required string Password { get; set; }
-    public bool RememberMe { get; set; }
+    [Required(ErrorMessage = "Username is required")]
+    public required string Username { get; init; }
+    
+    [Required(ErrorMessage = "Password is required")]
+    public required string Password { get; init; }
+    public bool RememberMe { get; init; }
 }

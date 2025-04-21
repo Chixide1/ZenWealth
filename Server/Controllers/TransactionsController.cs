@@ -18,7 +18,8 @@ namespace Server.Controllers;
 public class TransactionsController(
     ITransactionsService transactionsService,
     IItemsService itemsService,
-    UserManager<User> userManager) : ControllerBase
+    UserManager<User> userManager,
+    ILogger<TransactionsController> logger) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(GetAllUserTransactionsResponse), StatusCodes.Status200OK)]
@@ -28,11 +29,13 @@ public class TransactionsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve user transactions - user is unauthorized");
             return Unauthorized();
         }
 
         if (request.PageSize is < 10 or > 50)
         {
+            logger.LogWarning("Unable to retrieve user transactions - The page size must be between 10 and 50");
             return BadRequest();
         }
         
@@ -42,6 +45,8 @@ public class TransactionsController(
 
         if (request.Sort is not null && request.Sort.Contains("amount", StringComparison.CurrentCultureIgnoreCase))
         {
+            logger.LogInformation("Returning transactions sorted by amount for user {UserId}",
+                user.Id);
             return Ok(new GetAllUserTransactionsResponseAmount
             (
                 Transactions: transactions.Count >= request.PageSize ? transactions[..request.PageSize] : transactions,
@@ -50,6 +55,8 @@ public class TransactionsController(
             ));
         }
         
+        logger.LogInformation("Returning transactions sorted by date for user {UserId}",
+            user.Id);
         return Ok(new GetAllUserTransactionsResponse
         (
             Transactions: transactions.Count >= request.PageSize ? transactions[..request.PageSize] : transactions,
@@ -66,6 +73,7 @@ public class TransactionsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to sync transactions - user is unauthorized");
             return Unauthorized();
         }
 
@@ -82,6 +90,7 @@ public class TransactionsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve the min & max transaction amounts - user is unauthorized");
             return Unauthorized();
         }
 
@@ -102,15 +111,12 @@ public class TransactionsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve user transactions - user is unauthorized");
             return Unauthorized();
         }
 
         var categoryTotals = await transactionsService.GetTransactionsByCategoryAsync(
-            userId: user.Id,
-            beginDate: beginDate,
-            endDate: endDate,
-            count: count
-        );
+            userId: user.Id, beginDate: beginDate, endDate: endDate, count: count);
         
         return Ok(categoryTotals);
     }
@@ -123,6 +129,7 @@ public class TransactionsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve financial periods - user is unauthorized");
             return Unauthorized();
         }
 

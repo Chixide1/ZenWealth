@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Server.Data.Entities;
 using Server.Data.Models;
-using Server.Data.Models.Dtos;
+using Server.Data.Models.Responses;
 using Server.Services;
 using Server.Services.Interfaces;
 
@@ -13,7 +13,7 @@ namespace Server.Controllers;
 [Route("[controller]")]
 [ApiController]
 public class UserController(UserManager<User> userManager,
-    IItemsService itemsService) : Controller
+    IItemsService itemsService, ILogger<UserController> logger) : Controller
 {
     [HttpGet]
     [ProducesResponseType(type: typeof(UserDetailsResponse), statusCode: 200)]
@@ -24,6 +24,7 @@ public class UserController(UserManager<User> userManager,
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve user details - user is unauthorized");
             return Unauthorized();
         }
 
@@ -40,6 +41,7 @@ public class UserController(UserManager<User> userManager,
 
         if (user == null)
         {
+            logger.LogWarning("Unable to delete user - user is unauthorized");
             return Unauthorized();
         }
 
@@ -51,6 +53,7 @@ public class UserController(UserManager<User> userManager,
 
             if (!status)
             {
+                logger.LogWarning("Unable to delete item for user {UserId} during account deletion", user.Id);
                 return StatusCode(500, "unable to delete item");
             }
         }
@@ -71,6 +74,7 @@ public class UserController(UserManager<User> userManager,
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve item status - user is unauthorized");
             return Unauthorized();
         }
 
@@ -78,15 +82,3 @@ public class UserController(UserManager<User> userManager,
         return Ok(new HasItemsResponse(result));
     }
 }
-
-public record DeleteUserResponse(bool Success, IEnumerable<IdentityError> Errors)
-{
-    public override string ToString()
-    {
-        return $"{{ Success = {Success}, Errors = {Errors} }}";
-    }
-}
-
-public record HasItemsResponse(bool HasItems);
-
-public record UserDetailsResponse(string UserName, string Email, IEnumerable<InstitutionDto> Institutions);

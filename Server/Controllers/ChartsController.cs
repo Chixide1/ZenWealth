@@ -29,6 +29,7 @@ public class ChartsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve monthly summaries - user is unauthorized");
             return Unauthorized();
         }
 
@@ -38,9 +39,11 @@ public class ChartsController(
         {
             monthlySummary.Month = monthlySummary.Month[..3];
             monthlySummary.Income = Math.Abs(monthlySummary.Income);
+            
+            logger.LogInformation("Changed income negatives & shortened months for monthly summaries for user {UserId}",
+                user.Id);
         }
-
-        logger.LogInformation("Retrieved MonthlySummary for user {UserId}", user.Id);
+        
         return Ok(results);
     }
     
@@ -52,11 +55,11 @@ public class ChartsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve recent transactions - user is unauthorized");
             return Unauthorized();
         }
 
         var results = await transactionsService.GetRecentTransactions(user.Id);
-        logger.LogInformation("Retrieved RecentTransactions for user {UserId}", user.Id);
 
         return Ok(results);
     }
@@ -69,11 +72,11 @@ public class ChartsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve top expense categories - user is unauthorized");
             return Unauthorized();
         }
 
         var results = await transactionsService.GetTopExpenseCategories(user.Id);
-        logger.LogInformation("Retrieved Top Expense Categories for user {UserId}", user.Id);
 
         return Ok(results);
     }

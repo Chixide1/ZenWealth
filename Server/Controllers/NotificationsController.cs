@@ -52,8 +52,8 @@ public class NotificationsController(
                 break;
                 
             case TransactionsRemovedWebhook webhook:
-                // Handle removed transactions if needed
                 logger.LogInformation("Received transactions removed webhook for item {PlaidItemId}", webhook.ItemId);
+                await itemsService.UpdateItemByPlaidIdAsync(webhook.ItemId);
                 logger.LogInformation("Updated item {PlaidItemId}", 
                     webhook.ItemId);
                 break;

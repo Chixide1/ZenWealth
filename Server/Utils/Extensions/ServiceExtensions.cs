@@ -5,6 +5,7 @@ using Microsoft.Extensions.Azure;
 using Server.Data;
 using Server.Data.Entities;
 using Server.Data.Models;
+using Server.Data.Models.Dtos;
 using Server.Data.Repositories.Implementations;
 using Server.Data.Repositories.Interfaces;
 using Server.Services;
@@ -50,6 +51,14 @@ public static class ServiceExtensions
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyMethod();
+            });
+            
+            options.AddPolicy("Prod", policy =>
+            {
+                policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                    .WithHeaders()
+                    .AllowCredentials()
+                    .WithHeaders("GET", "POST", "PUT", "DELETE");
             });
         });
     }
@@ -111,7 +120,10 @@ public static class ServiceExtensions
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseCors("Dev");
+            return;
         }
+
+        app.UseCors("Prod");
     }
 
     /// <summary>

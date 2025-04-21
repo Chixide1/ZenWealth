@@ -1,13 +1,16 @@
 ﻿using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Options;
+using Server.Data.Models.Dtos;
 using Server.Services.Interfaces;
+using Server.Utils.Helpers;
 
 namespace Server.Services.Implementations;
 
 public class AzureCommunicationEmailService(
     EmailClient emailClient,
     IOptions<EmailOptions> options,
+    IHostEnvironment env,
     ILogger<AzureCommunicationEmailService> logger) : IEmailService
 {
     public EmailOptions Options => options.Value;
@@ -25,12 +28,9 @@ public class AzureCommunicationEmailService(
             content: emailContent);
 
         await emailClient.SendAsync(WaitUntil.Completed, emailMessage);
-        logger.LogInformation(
-            "Email sent to {Email} with subject {EmailSubject}", 
-            MaskEmail(email), 
-            subject
-        );
-        logger.LogDebug("Full email sent to {Email} with subject {EmailSubject}", email, subject);
+        
+        logger.LogInformation("Email sent to {Email} with subject {EmailSubject}",
+            env.IsDevelopment() ? email : HashHelper.HashEmail(email), subject);
     }
 
     public async Task SendPasswordResetEmailAsync(string email, string callbackUrl)
@@ -42,7 +42,9 @@ public class AzureCommunicationEmailService(
         ";
 
         await SendEmailAsync(email, subject, message);
-        logger.LogInformation("Password reset email sent to {Email}", MaskEmail(email));
+
+        logger.LogInformation("Password reset email sent to {Email}",
+            env.IsDevelopment() ? email : HashHelper.HashEmail(email));
     }
 
     public async Task SendEmailConfirmationAsync(string email, string callbackUrl)
@@ -54,29 +56,7 @@ public class AzureCommunicationEmailService(
         ";
 
         await SendEmailAsync(email, subject, message);
-        logger.LogInformation("Email confirmation sent to {Email}", MaskEmail(email));
+        logger.LogInformation("Email confirmation sent to {Email}",
+            env.IsDevelopment() ? email : HashHelper.HashEmail(email));
     }
-
-    // Mask email helper
-    private static string MaskEmail(string email)
-    {
-        if (string.IsNullOrEmpty(email) || !email.Contains('@'))
-            return "***@***";
-
-        var parts = email.Split('@');
-        var localPart = parts[0];
-        var domain = parts[1];
-
-        var maskedLocal = localPart.Length > 2 
-            ? $"{localPart[0]}***{localPart[^1]}"
-            : "***";
-
-        return $"{maskedLocal}@{domain}";
-    }
-}
-
-public class EmailOptions
-{
-    public string SenderEmail { get; init; } = string.Empty;
-    public string FrontendBaseUrl { get; init; } = string.Empty;
 }

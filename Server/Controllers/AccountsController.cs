@@ -15,7 +15,8 @@ namespace Server.Controllers;
 [Produces("application/json")]
 public class AccountsController(
     IAccountsService accountsService,
-    UserManager<User> userManager) : ControllerBase
+    UserManager<User> userManager,
+    ILogger<AccountsController> logger) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(List<AccountDto>), StatusCodes.Status200OK )]
@@ -25,11 +26,14 @@ public class AccountsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve user accounts - user is unauthorized");
             return Unauthorized();
         }
 
+        logger.LogDebug("Starting accounts update for user {UserId}", user.Id);
         await accountsService.UpdateAccountsAsync(user.Id);
         
+        logger.LogDebug("Retrieving accounts for user {UserId}", user.Id);
         var accounts = await accountsService.GetAccountsAsync(user.Id);
             
         return Ok(accounts);

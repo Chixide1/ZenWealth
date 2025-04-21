@@ -27,6 +27,7 @@ public class LinkController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve link token - user is unauthorized");
             return Unauthorized();
         }
         
@@ -38,7 +39,6 @@ public class LinkController(
             return BadRequest(new { Error = result.ErrorMessage });
         }
         
-        logger.LogInformation("Successfully obtained link token for user {UserId}", user.Id);
         return Ok(new GetLinkTokenResponse(result.LinkToken!));
     }
 
@@ -53,6 +53,7 @@ public class LinkController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to retrieve update link token - user is unauthorized");
             return Unauthorized();
         }
         
@@ -62,6 +63,8 @@ public class LinkController(
         {
             if (result.ErrorMessage?.Contains("not found") == true)
             {
+                logger.LogWarning("Unable to retrieve link token from Plaid due to not found error: {Error}",
+                    result.ErrorMessage);
                 return NotFound(new { Error = result.ErrorMessage });
             }
             
@@ -69,7 +72,6 @@ public class LinkController(
             return BadRequest(new { Error = result.ErrorMessage });
         }
         
-        logger.LogInformation("Successfully obtained update link token for user {UserId} and item {ItemId}", user.Id, itemId);
         return Ok(new GetLinkTokenResponse(result.LinkToken!));
     }
     
@@ -83,6 +85,7 @@ public class LinkController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to reauthenticate item - user is unauthorized");
             return Unauthorized();
         }
         
@@ -100,7 +103,6 @@ public class LinkController(
             });
         }
         
-        logger.LogInformation("Successfully updated authentication for user {UserId} and item {ItemId}", user.Id, itemId);
         return Ok(new { success = true });
     }
 
@@ -115,6 +117,7 @@ public class LinkController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to exchange public token - user is unauthorized");
             return Unauthorized();
         }
     
@@ -128,6 +131,7 @@ public class LinkController(
             // Handle the specific duplicate institution error
             if (result.Error?.ErrorCode == "INSTITUTION_ALREADY_LINKED")
             {
+                logger.LogWarning("Unable to update item because institution is already linked");
                 return Conflict(new { 
                     Error = result.Error.ErrorMessage,
                     ErrorCode = result.Error.ErrorCode
@@ -153,6 +157,7 @@ public class LinkController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to delete item - user is unauthorized");
             return Unauthorized();
         }
         
@@ -160,6 +165,7 @@ public class LinkController(
         
         if (!success)
         {
+            logger.LogWarning("Unable to delete item - Item not found or could not be deleted");
             return NotFound(new DeleteItemResponse(false, "Item not found or could not be deleted"));
         }
         

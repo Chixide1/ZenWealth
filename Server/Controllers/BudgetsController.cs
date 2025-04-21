@@ -17,8 +17,8 @@ namespace Server.Controllers;
 [Produces("application/json")]
 public class BudgetsController(
     IBudgetsService budgetsService,
-    UserManager<User> userManager
-) : ControllerBase
+    UserManager<User> userManager,
+    ILogger<BudgetsController> logger) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<BudgetDto>))]
@@ -44,11 +44,13 @@ public class BudgetsController(
 
         if (user == null)
         {
+            logger.LogWarning("Unable to update budgets - user is unauthorized");
             return Unauthorized();
         }
 
         if (budgets.Any(b => b.Day != budgets[0].Day))
         {
+            logger.LogWarning("User {UserId} attempted to submit budgets with inconsistent days", user.Id);
             return BadRequest("All days should be the same");
         }
 
@@ -56,13 +58,19 @@ public class BudgetsController(
         {
             var validCategory = Enum.TryParse<ExpenseCategories>(budget.Category, true, out _);
 
-            if (budget.Day < 1 || budget.Day > 28)
+            if (budget.Day is < 1 or > 28)
             {
+                logger.LogWarning("User {UserId} attempted to submit budget with invalid day: {Day}", 
+                    user.Id, budget.Day);
+                
                 return BadRequest("All of the budget days must be between 1 and 28");
             }
 
             if (validCategory == false)
             {
+                logger.LogWarning("User {UserId} attempted to submit budget with invalid category: {Category}", 
+                    user.Id, budget.Category);
+                
                 return BadRequest("There is an invalid category in one of the budgets");
             }
 
