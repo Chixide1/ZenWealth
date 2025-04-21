@@ -12,8 +12,8 @@ using Server.Data;
 namespace Server.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250419160553_initial")]
-    partial class initial
+    [Migration("20250421000116_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,7 +158,7 @@ namespace Server.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Account", b =>
+            modelBuilder.Entity("Server.Data.Entities.Account", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,7 +210,7 @@ namespace Server.Data.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Budget", b =>
+            modelBuilder.Entity("Server.Data.Entities.Budget", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -239,7 +239,7 @@ namespace Server.Data.Migrations
                     b.ToTable("Budgets");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Item", b =>
+            modelBuilder.Entity("Server.Data.Entities.Item", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -280,7 +280,7 @@ namespace Server.Data.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Transaction", b =>
+            modelBuilder.Entity("Server.Data.Entities.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -363,7 +363,7 @@ namespace Server.Data.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.User", b =>
+            modelBuilder.Entity("Server.Data.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -439,7 +439,7 @@ namespace Server.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Server.Data.Models.User", null)
+                    b.HasOne("Server.Data.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -448,7 +448,7 @@ namespace Server.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Server.Data.Models.User", null)
+                    b.HasOne("Server.Data.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -463,7 +463,7 @@ namespace Server.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Server.Data.Models.User", null)
+                    b.HasOne("Server.Data.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -472,22 +472,22 @@ namespace Server.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Server.Data.Models.User", null)
+                    b.HasOne("Server.Data.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Account", b =>
+            modelBuilder.Entity("Server.Data.Entities.Account", b =>
                 {
-                    b.HasOne("Server.Data.Models.Item", "Item")
+                    b.HasOne("Server.Data.Entities.Item", "Item")
                         .WithMany("Accounts")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Server.Data.Models.User", "User")
+                    b.HasOne("Server.Data.Entities.User", "User")
                         .WithMany("Accounts")
                         .HasForeignKey("UserId");
 
@@ -496,9 +496,9 @@ namespace Server.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Budget", b =>
+            modelBuilder.Entity("Server.Data.Entities.Budget", b =>
                 {
-                    b.HasOne("Server.Data.Models.User", "User")
+                    b.HasOne("Server.Data.Entities.User", "User")
                         .WithMany("Budgets")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -507,9 +507,9 @@ namespace Server.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Item", b =>
+            modelBuilder.Entity("Server.Data.Entities.Item", b =>
                 {
-                    b.HasOne("Server.Data.Models.User", "User")
+                    b.HasOne("Server.Data.Entities.User", "User")
                         .WithMany("Items")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -518,15 +518,15 @@ namespace Server.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Transaction", b =>
+            modelBuilder.Entity("Server.Data.Entities.Transaction", b =>
                 {
-                    b.HasOne("Server.Data.Models.Account", "Account")
+                    b.HasOne("Server.Data.Entities.Account", "Account")
                         .WithMany("Transactions")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Server.Data.Models.User", "User")
+                    b.HasOne("Server.Data.Entities.User", "User")
                         .WithMany("Transactions")
                         .HasForeignKey("UserId");
 
@@ -535,17 +535,17 @@ namespace Server.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Account", b =>
+            modelBuilder.Entity("Server.Data.Entities.Account", b =>
                 {
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.Item", b =>
+            modelBuilder.Entity("Server.Data.Entities.Item", b =>
                 {
                     b.Navigation("Accounts");
                 });
 
-            modelBuilder.Entity("Server.Data.Models.User", b =>
+            modelBuilder.Entity("Server.Data.Entities.User", b =>
                 {
                     b.Navigation("Accounts");
 

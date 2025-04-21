@@ -25,31 +25,53 @@ public class AzureCommunicationEmailService(
             content: emailContent);
 
         await emailClient.SendAsync(WaitUntil.Completed, emailMessage);
-        logger.LogInformation("Email sent to {Email} with subject {EmailSubject}", email, subject);
+        logger.LogInformation(
+            "Email sent to {Email} with subject {EmailSubject}", 
+            MaskEmail(email), 
+            subject
+        );
+        logger.LogDebug("Full email sent to {Email} with subject {EmailSubject}", email, subject);
     }
 
     public async Task SendPasswordResetEmailAsync(string email, string callbackUrl)
     {
-        string subject = "Reset your password";
-        string message = $@"
+        const string subject = "Reset your password";
+        var message = $@"
             <p>Please reset your password by <a href='{callbackUrl}'>clicking here</a>.</p>
             <p>If you did not request a password reset, please ignore this email.</p>
         ";
 
         await SendEmailAsync(email, subject, message);
-        logger.LogInformation("Password reset email sent to {Email}", email);
+        logger.LogInformation("Password reset email sent to {Email}", MaskEmail(email));
     }
 
     public async Task SendEmailConfirmationAsync(string email, string callbackUrl)
     {
-        string subject = "Confirm your email";
-        string message = $@"
+        const string subject = "Confirm your email";
+        var message = $@"
             <p>Please confirm your account by <a href='{callbackUrl}'>clicking here</a>.</p>
             <p>If you did not create this account, please ignore this email.</p>
         ";
 
         await SendEmailAsync(email, subject, message);
-        logger.LogInformation("Email confirmation sent to {Email}", email);
+        logger.LogInformation("Email confirmation sent to {Email}", MaskEmail(email));
+    }
+
+    // Mask email helper
+    private static string MaskEmail(string email)
+    {
+        if (string.IsNullOrEmpty(email) || !email.Contains('@'))
+            return "***@***";
+
+        var parts = email.Split('@');
+        var localPart = parts[0];
+        var domain = parts[1];
+
+        var maskedLocal = localPart.Length > 2 
+            ? $"{localPart[0]}***{localPart[^1]}"
+            : "***";
+
+        return $"{maskedLocal}@{domain}";
     }
 }
 
