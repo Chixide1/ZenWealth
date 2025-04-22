@@ -23,12 +23,12 @@ public interface ITransactionRepository
     /// <param name="transactionIds">List of transaction IDs to check</param>
     /// <returns>A HashSet of transaction IDs that already exist in the database</returns>
     Task<HashSet<string>> GetExistingTransactionIdsAsync(List<string?> transactionIds);
-    
+
     /// <summary>
     /// Adds multiple transactions to the Database
     /// </summary>
     /// <param name="transactions">The list of transactions to add</param>
-    Task AddRangeAsync(List<Transaction> transactions);
+    Task<int> AddRangeAsync(List<Transaction> transactions);
     
     /// <summary>
     /// Retrieves monthly income and expense summaries for a user
@@ -91,4 +91,7 @@ public interface ITransactionRepository
     /// <param name="userId">The ID of the user</param>
     /// <returns>A list of financial period DTOs with category breakdowns and totals</returns>
     Task<List<FinancialPeriodDto>> GetFinancialPeriodsAsync(string userId);
+    
+    Task<int> UpdateRangeAsync(List<Transaction> transactions);
+    Task<int> RemoveByPlaidIdsAsync(List<string> plaidTransactionIds);
 }

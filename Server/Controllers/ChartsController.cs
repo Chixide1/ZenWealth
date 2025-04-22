@@ -37,11 +37,11 @@ public class ChartsController(
         
         foreach (var monthlySummary in results)
         {
+            // Change the month to be its three letter abbreviation
             monthlySummary.Month = monthlySummary.Month[..3];
-            monthlySummary.Income = Math.Abs(monthlySummary.Income);
             
-            logger.LogInformation("Changed income negatives & shortened months for monthly summaries for user {UserId}",
-                user.Id);
+            // Make income positive for frontend
+            monthlySummary.Income = Math.Abs(monthlySummary.Income);
         }
         
         return Ok(results);

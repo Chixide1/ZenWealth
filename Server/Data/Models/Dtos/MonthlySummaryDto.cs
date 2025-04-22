@@ -2,7 +2,7 @@
 
 namespace Server.Data.Models.Dtos;
 
-public record MonthlySummaryDto
+public class MonthlySummaryDto
 {
     public required string Month { get; set; }
     

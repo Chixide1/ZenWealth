@@ -41,7 +41,7 @@ public class BudgetsService(
         var currentDate = DateOnly.FromDateTime(DateTime.Now);
         var userBudgets = await budgetRepository.GetBudgetsByUserIdAsync(userId);
         
-        logger.LogInformation("Retrieved budgets {BudgetCount} for user {UserId}", userBudgets.Count, userId);
+        logger.LogInformation("Retrieved {BudgetCount} budgets for user {UserId}", userBudgets.Count, userId);
     
         var budgetDate = new DateOnly(currentDate.Year, currentDate.Month, userBudgets[0].Day);
         // If budget day is after current day, use previous month

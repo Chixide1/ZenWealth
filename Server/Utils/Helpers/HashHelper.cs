@@ -8,7 +8,7 @@ public static class HashHelper
 {
     // Salt value to make hashes more secure and prevent rainbow table attacks
     // This should ideally be stored in configuration, not hardcoded
-    private static readonly string Salt = "YourSecureSaltValue"; 
+    // private static readonly string Salt = "YourSecureSaltValue"; 
 
     /// <summary>
     /// Creates a SHA256 hash of the input string with salt for logging purposes.
@@ -22,11 +22,11 @@ public static class HashHelper
         if (string.IsNullOrEmpty(input))
             return "empty_input";
 
-        // Add salt to input
-        var saltedInput = input + Salt;
+        // // Add salt to input
+        // var saltedInput = input + Salt;
 
         // Create SHA256 hash
-        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(saltedInput));
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
 
         // Convert to hex string
         var hashBuilder = new StringBuilder();

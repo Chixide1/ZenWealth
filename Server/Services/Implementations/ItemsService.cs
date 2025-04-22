@@ -445,17 +445,17 @@ public class ItemsService(
     {
         var updatedCount = 0;
         var item = await itemRepository.GetByIdAndUserIdAsync(itemId, userId);
-
+    
         if (item == null)
         {
             logger.LogWarning("Item {ItemId} not found for user {UserId}", itemId, userId);
             return 0;
         }
-
+    
         logger.LogInformation("Retrieved item {ItemId} for user {UserId}", itemId, userId);
         
         var hasMore = true;
-
+    
         while (hasMore)
         {
             try
@@ -467,8 +467,8 @@ public class ItemsService(
                 };
                 
                 var data = await client.TransactionsSyncAsync(request);
-                logger.LogInformation("Fetched {TransactionCount} transactions for item {ItemId} and user {UserId}",
-                    data.Added.Count, item.Id, userId
+                logger.LogInformation("Fetched {AddedCount} added, {ModifiedCount} modified, {RemovedCount} removed transactions for item {ItemId} and user {UserId}",
+                    data.Added.Count, data.Modified.Count, data.Removed.Count, item.Id, userId
                 );
                 
                 item.Cursor = string.IsNullOrEmpty(data.NextCursor) ? null : data.NextCursor;
@@ -478,13 +478,18 @@ public class ItemsService(
                 await itemRepository.UpdateAsync(item);
                 logger.LogInformation("The item {ItemId} for user {UserId} has been updated with a new Cursor",
                     item.Id, userId);
-
+    
                 // Process accounts
                 await ProcessAccountsAsync(data.Accounts, item.Id, userId);
                 
-                // Process transactions
+                // Process added and modified transactions
                 var addedCount = await ProcessTransactionsAsync(data.Added, userId);
-                updatedCount += addedCount;
+                var modifiedCount = await ProcessTransactionsAsync(data.Modified, userId, true);
+                
+                // Process removed transactions
+                await ProcessRemovedTransactionsAsync(data.Removed, userId);
+                
+                updatedCount += addedCount + modifiedCount;
             }
             catch (Exception ex)
             {
@@ -493,7 +498,7 @@ public class ItemsService(
                 throw;
             }
         }
-
+    
         logger.LogInformation("Updated item {ItemId} for institution {InstitutionId} and user {UserId}", 
             item.Id, item.InstitutionId, userId);
         return updatedCount;
@@ -548,11 +553,14 @@ public class ItemsService(
         }
     }
 
-    private async Task<int> ProcessTransactionsAsync(IReadOnlyList<PlaidTransaction> transactions, string userId)
+    private async Task<int> ProcessTransactionsAsync(IReadOnlyList<PlaidTransaction> transactions, string userId, bool isModified = false)
     {
         if (transactions.Count == 0)
         {
-            logger.LogWarning("No Transactions to add for user {UserId}", userId);
+            if (isModified)
+                logger.LogInformation("No transactions to modify for user {UserId}", userId);
+            else
+                logger.LogInformation("No transactions to add for user {UserId}", userId);
             return 0;
         }
     
@@ -579,14 +587,15 @@ public class ItemsService(
             accountMapping.Keys.Count, userId);
     
         var newTransactions = new List<Transaction>();
+        var modifiedTransactions = new List<Transaction>();
         
         foreach (var transaction in sortedTransactions)
         {
-            if (transaction.TransactionId == null || existingTransactionIds.Contains(transaction.TransactionId))
+            if (transaction.TransactionId == null)
             {
                 logger.LogWarning(
-                    "Skipping transaction {PlaidTransactionId} for user {UserId} as the Transaction already exists",
-                    transaction.TransactionId, userId
+                    "Skipping transaction with null ID for user {UserId}",
+                    userId
                 );
                 continue;
             }
@@ -600,7 +609,7 @@ public class ItemsService(
                 continue;
             }
     
-            newTransactions.Add(new Transaction()
+            var newTransaction = new Transaction
             {
                 PlaidTransactionId = transaction.TransactionId,
                 AccountId = accountId,
@@ -619,16 +628,68 @@ public class ItemsService(
                 TransactionCode = transaction.TransactionCode == null
                     ? null
                     : transaction.TransactionCode.ToString(),
-            });
+            };
+    
+            if (isModified && existingTransactionIds.Contains(transaction.TransactionId))
+            {
+                modifiedTransactions.Add(newTransaction);
+            }
+            else if (!isModified && !existingTransactionIds.Contains(transaction.TransactionId))
+            {
+                newTransactions.Add(newTransaction);
+            }
+            else
+            {
+                logger.LogWarning(
+                    "Skipping transaction {PlaidTransactionId} for user {UserId} as it doesn't match the expected state (exists: {Exists}, isModified: {IsModified})",
+                    transaction.TransactionId, userId, existingTransactionIds.Contains(transaction.TransactionId), isModified
+                );
+            }
         }
     
-        if (newTransactions.Count <= 0) return newTransactions.Count;
+        int count = 0;
+        
+        // Handle new transactions
+        if (newTransactions.Count > 0)
+        {
+            await transactionRepository.AddRangeAsync(newTransactions);
+            logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
+                newTransactions.Count, userId);
+            count += newTransactions.Count;
+        }
+        
+        // Handle modified transactions
+        if (modifiedTransactions.Count > 0)
+        {
+            await transactionRepository.UpdateRangeAsync(modifiedTransactions);
+            logger.LogInformation("Updated {TransactionCount} existing transactions for user {UserId}",
+                modifiedTransactions.Count, userId);
+            count += modifiedTransactions.Count;
+        }
     
-        await transactionRepository.AddRangeAsync(newTransactions);
-        logger.LogInformation("Added {TransactionCount} new transactions for user {UserId}",
-            newTransactions.Count, userId);
+        return count;
+    }
+    private async Task ProcessRemovedTransactionsAsync(IReadOnlyList<RemovedTransaction> removedTransactions, string userId)
+    {
+        if (removedTransactions.Count == 0)
+        {
+            logger.LogInformation("No transactions to remove for user {UserId}", userId);
+            return;
+        }
     
-        return newTransactions.Count;
+        var transactionIds = removedTransactions
+            .Select(t => t.TransactionId)
+            .ToList();
+    
+        if (transactionIds.Count == 0)
+        {
+            return;
+        }
+    
+        var removedCount = await transactionRepository.RemoveByPlaidIdsAsync(transactionIds);
+    
+        logger.LogInformation("Removed {TransactionCount} transactions for user {UserId}",
+            removedCount, userId);
     }
     
     private static bool ShouldSkipItemUpdate(Item item)

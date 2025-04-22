@@ -108,8 +108,8 @@ public class TransactionsService(
         var beginDate = new DateOnly(lastPeriod.Year, lastPeriod.Month, 1);
         
         logger.LogInformation("""
-                              Retrieved {FinancialPeriodsCount} financial periods for user {UserId}. 
-                              BeginDate: {BeginDate}, EndDate: {EndDate}
+                                  Retrieved {FinancialPeriodsCount} financial periods for user {UserId}. 
+                                  BeginDate: {BeginDate}, EndDate: {EndDate}
                               """, financialPeriods.Count, userId, beginDate, endDate);
         
         return financialPeriods;

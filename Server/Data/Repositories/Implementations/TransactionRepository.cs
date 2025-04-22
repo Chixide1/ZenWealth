@@ -102,13 +102,15 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
         return existingIds.ToHashSet();
     }
 
-    public async Task AddRangeAsync(List<Transaction> transactions)
+    public async Task<int> AddRangeAsync(List<Transaction> transactions)
     {
         if (transactions.Count > 0)
         {
             context.Transactions.AddRange(transactions);
-            await context.SaveChangesAsync();
+            return await context.SaveChangesAsync();
         }
+
+        return 0;
     }
     
     public async Task<List<MonthlySummaryDto>> GetMonthlyIncomeAndOutcomeAsync(string userId)
@@ -275,5 +277,54 @@ public class TransactionRepository(AppDbContext context) : ITransactionRepositor
         }
         
         return financialPeriods;
+    }
+    
+    public async Task<int> UpdateRangeAsync(List<Transaction> transactions)
+    {
+        if (transactions.Count == 0) return 0;
+    
+        foreach (var transaction in transactions)
+        {
+            var existingTransaction = await context.Transactions
+                .FirstOrDefaultAsync(t => t.PlaidTransactionId == transaction.PlaidTransactionId);
+        
+            if (existingTransaction != null)
+            {
+                // Update properties of the existing transaction
+                existingTransaction.Name = transaction.Name;
+                existingTransaction.Amount = transaction.Amount;
+                existingTransaction.Date = transaction.Date;
+                existingTransaction.Datetime = transaction.Datetime;
+                existingTransaction.Website = transaction.Website;
+                existingTransaction.Category = transaction.Category;
+                existingTransaction.CategoryIconUrl = transaction.CategoryIconUrl;
+                existingTransaction.IsoCurrencyCode = transaction.IsoCurrencyCode;
+                existingTransaction.LogoUrl = transaction.LogoUrl;
+                existingTransaction.MerchantName = transaction.MerchantName;
+                existingTransaction.PaymentChannel = transaction.PaymentChannel;
+                existingTransaction.TransactionCode = transaction.TransactionCode;
+            
+                // AccountId should usually not change, but we'll update it just in case
+                existingTransaction.AccountId = transaction.AccountId;
+            
+                // We don't update UserId or PlaidTransactionId as they are identifiers
+            }
+        }
+    
+        return await context.SaveChangesAsync();
+    }
+
+    public async Task<int> RemoveByPlaidIdsAsync(List<string> plaidTransactionIds)
+    {
+        if (plaidTransactionIds.Count == 0) return 0;
+    
+        var transactionsToRemove = await context.Transactions
+            .Where(t => plaidTransactionIds.Contains(t.PlaidTransactionId))
+            .ToListAsync();
+    
+        if (transactionsToRemove.Count == 0) return 0;
+    
+        context.Transactions.RemoveRange(transactionsToRemove);
+        return await context.SaveChangesAsync();
     }
 }

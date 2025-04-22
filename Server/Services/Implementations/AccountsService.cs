@@ -33,13 +33,10 @@ public class AccountsService(
             return 0;
         }
 
-        logger.LogInformation("Updating accounts for item {ItemId} (Plaid ID: {PlaidItemId}) for user {UserId}",
-            item.Id, plaidItemId, item.UserId);
-
         try
         {
             // Update accounts for the specific item
-            int processedCount = await ProcessAccountsForItemAsync(item);
+            var processedCount = await ProcessAccountsForItemAsync(item);
             return processedCount;
         }
         catch (Exception ex)
@@ -103,7 +100,8 @@ public class AccountsService(
                 };
                 
                 // Update existing account
-                if (newBalance.Current != null)
+                if (newBalance.Current != null && 
+                    (oldBalance.Current != newBalance.Current || newBalance.Available != oldBalance.Available))
                 {
                     entity.CurrentBalance = (decimal)newBalance.Current;
                     entity.AvailableBalance = newBalance.Available;
@@ -115,7 +113,7 @@ public class AccountsService(
                     
                     updatedCount++;
                 }
-                else
+                else if(newBalance.Current == null)
                 {
                     logger.LogWarning(
                         "Unable to update account {PlaidAccountId} for user {UserId} of item {ItemId} - missing balance data",
