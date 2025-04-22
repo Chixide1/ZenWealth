@@ -4,11 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Server.Data;
 using Server.Data.Entities;
-using Server.Data.Models;
 using Server.Data.Models.Dtos;
 using Server.Data.Repositories.Implementations;
 using Server.Data.Repositories.Interfaces;
-using Server.Services;
 using Server.Services.Implementations;
 using Server.Services.Interfaces;
 
@@ -48,17 +46,18 @@ public static class ServiceExtensions
             options.AddPolicy("Dev", policy =>
             {
                 policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-                    .AllowAnyMethod();
+                    .WithMethods("GET", "POST", "PUT", "DELETE")
+                    .WithHeaders("content-type")
+                    .AllowCredentials();
             });
             
             options.AddPolicy("Prod", policy =>
             {
-                policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
-                    .WithHeaders()
-                    .AllowCredentials()
-                    .WithHeaders("GET", "POST", "PUT", "DELETE");
+                policy.SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .WithOrigins("https://*.ckdoestech.com")
+                    .WithMethods("GET", "POST", "PUT", "DELETE")
+                    .WithHeaders("content-type")
+                    .AllowCredentials();
             });
         });
     }
@@ -70,14 +69,6 @@ public static class ServiceExtensions
     {
         services.AddControllers().AddJsonOptions(options =>
             options.JsonSerializerOptions.AddPlaidConverters());
-        
-        // Alternate way to convert Enums to string
-        // services.AddControllers().AddJsonOptions(options =>
-        // {
-        //     options.JsonSerializerOptions.Converters.Add(
-        //         new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper));
-        //     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-        // });
     }
 
     /// <summary>

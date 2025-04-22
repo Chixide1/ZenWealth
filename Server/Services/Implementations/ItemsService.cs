@@ -647,7 +647,7 @@ public class ItemsService(
             }
         }
     
-        int count = 0;
+        var count = 0;
         
         // Handle new transactions
         if (newTransactions.Count > 0)

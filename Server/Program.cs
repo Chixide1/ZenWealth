@@ -23,7 +23,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddPlaid(builder.Configuration.GetSection("Plaid"));
+builder.Services.AddPlaid(builder.Configuration);
 builder.Services.AddSingleton<PlaidClient>();
 builder.Services.ConfigureEmail(builder.Configuration);
 

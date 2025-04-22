@@ -158,7 +158,7 @@ public class NotificationsController(
                 
             case NewAccountsAvailableWebhook webhook:
                 logger.LogInformation("New accounts available for item {PlaidItemId}", webhook.ItemId);
-                await accountsService.UpdateAccountsByPlaidItemIdAsync(webhook.ItemId ?? "");
+                // await accountsService.UpdateAccountsByPlaidItemIdAsync(webhook.ItemId ?? "");
                 break;
                 
             case WebhookUpdateAcknowledgedWebhook webhook:
