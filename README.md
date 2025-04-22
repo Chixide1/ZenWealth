@@ -43,10 +43,9 @@ Manage connected banking institutions and account security settings.
 
 ## Technology Stack
 
-- **Backend**: C# with ASP.NET Core
-- **Frontend**: TypeScript with [Your UI Framework, e.g., React, Angular]
-- **Database**: [Your Database Technology, e.g., SQL Server, PostgreSQL]
-- **Authentication**: [Your Authentication Method]
+- **Backend**: C# with ASP.NET Core & Going.Plaid
+- **Frontend**: TypeScript with React, Shadcn & Tailwind CSS
+- **Database**: SQL Server
 - **External Services**: 
   - Plaid API for bank connections
   - Azure Communication Services for email notifications
@@ -92,7 +91,7 @@ Manage connected banking institutions and account security settings.
 
 ## Configuration
 
-Copy the `appsettings.example.json` file to `appsettings.json` and update the values:
+Copy the below json to `appsettings.json` and update the values:
 
 ```json
 {
