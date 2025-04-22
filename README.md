@@ -4,7 +4,7 @@ A comprehensive personal finance management application that provides insights o
 
 ## Overview
 
-ZenWealth is built with ASP.NET Core (backend) and TypeScript (frontend). The application enables users to:
+ZenWealth is built with ASP.NET Core (backend) and React (frontend). The application enables users to:
 
 - Track and visualize income vs expenses
 - Connect to banking institutions via Plaid
