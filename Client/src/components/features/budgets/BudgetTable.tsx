@@ -160,7 +160,7 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
                                         onValueChange={updateDayForAllBudgets}
                                         disabled={isSaving}
                                     >
-                                        <SelectTrigger className="p-0 text-xs" icon={false}>
+                                        <SelectTrigger asChild className="p-0 text-xs" icon={false}>
                                             <Button variant="accent" size="sm" className="[&_svg]:size-3 gap-1 px-2">
                                                 <FontAwesomeIcon icon={faCalendarDays} />
                                             </Button>

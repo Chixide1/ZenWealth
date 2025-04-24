@@ -24,11 +24,13 @@ const SelectTrigger = React.forwardRef<
         )}
         {...props}
     >
-        {children}
-        {icon && <SelectPrimitive.Icon asChild>
-            <ChevronDown
-                className="h-4 w-4 opacity-50 group-data-[state=open]:rotate-180 transition-transform duration-300"/>
-        </SelectPrimitive.Icon>}
+        <>
+            {children}
+            {icon && <SelectPrimitive.Icon asChild>
+                <ChevronDown
+                    className="h-4 w-4 opacity-50 group-data-[state=open]:rotate-180 transition-transform duration-300"/>
+            </SelectPrimitive.Icon>}
+        </>
     </SelectPrimitive.Trigger>
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;

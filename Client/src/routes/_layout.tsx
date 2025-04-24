@@ -4,7 +4,6 @@ import { AxiosResponse } from "axios";
 import api from "@/lib/api.ts";
 import AppTopbar from "@/components/shared/AppTopbar.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
-import { Toaster } from "@/components/ui/toaster.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_layout")({
@@ -30,7 +29,6 @@ function LayoutComponent() {
             <ScrollArea className="w-full h-full max-w-screen-[1700px] mx-auto">
                 <Outlet />
             </ScrollArea>
-            <Toaster />
         </main>
     );
 }

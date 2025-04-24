@@ -140,3 +140,8 @@ Copy the below json to `appsettings.json` and update the values:
 - **EmailSettings**:
   - `SenderEmail`: Email address used for sending notifications
   - `FrontendBaseUrl`: Base URL of your frontend application (for links in emails)
+
+## Environment Variables
+
+- `VITE_ASPNETCORE_URLS`: The Api URL which will be referenced by the frontend application.
+- `ASPNETCORE_ENVIRONMENT`: The enviroment which the Api should run under (e.g., "Development", "Production")

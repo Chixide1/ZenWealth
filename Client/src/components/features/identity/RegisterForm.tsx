@@ -7,7 +7,6 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import {useToast} from "@/hooks/use-toast.ts";
 import {Button} from "@/components/ui/button.tsx";
-import {Toaster} from "@/components/ui/toaster.tsx";
 import {IdentityInput, IdentityInputConfig} from "@/components/features/identity/IdentityInput.tsx";
 import {camelCaseToSentence} from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
@@ -63,6 +62,10 @@ export function RegisterForm(){
         )
             .then(() => {
                 navigate({ to: "/login" });
+                toast({
+                    title: "Register Status",
+                    description: "Successfully registered. Please log in to continue.",
+                });
             })
             .catch((error: AxiosError<RegisterApiResponse>) => {
                 if(error.status === 400 && error.response){
@@ -149,7 +152,6 @@ export function RegisterForm(){
                     "Register"
                 )}
             </Button>
-            <Toaster/>
         </form>
     );
 }

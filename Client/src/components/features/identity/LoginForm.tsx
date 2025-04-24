@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast.ts";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Toaster } from "@/components/ui/toaster.tsx";
 import { IdentityInput, IdentityInputConfig } from "@/components/features/identity/IdentityInput.tsx";
 import { camelCaseToSentence } from "@/lib/utils.ts";
 import api from "@/lib/api.ts";
@@ -160,7 +159,6 @@ export function LoginForm() {
                     "Continue"
                 )}
             </Button>
-            <Toaster />
         </form>
     );
 }

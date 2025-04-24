@@ -43,7 +43,8 @@ public class BudgetsService(
         
         logger.LogInformation("Retrieved {BudgetCount} budgets for user {UserId}", userBudgets.Count, userId);
     
-        var budgetDate = new DateOnly(currentDate.Year, currentDate.Month, userBudgets[0].Day);
+        var budgetDate = new DateOnly(currentDate.Year, currentDate.Month,
+            userBudgets.Count > 0 ? userBudgets[0].Day : 1);
         // If budget day is after current day, use previous month
         if (budgetDate > currentDate)
         {

@@ -45,7 +45,8 @@ public static class ServiceExtensions
         {
             options.AddPolicy("Dev", policy =>
             {
-                policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                policy.SetIsOriginAllowed(origin => 
+                        new Uri(origin).Host == "localhost" || new Uri(origin).Host == "127.0.0.1")
                     .WithMethods("GET", "POST", "PUT", "DELETE")
                     .WithHeaders("content-type")
                     .AllowCredentials();
@@ -80,8 +81,17 @@ public static class ServiceExtensions
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
-                .EnableSensitiveDataLogging();
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+            sqlServerOptions => 
+            {
+                sqlServerOptions.CommandTimeout(60);
+                sqlServerOptions.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: [-2] // SQL timeout error code
+                );
+            })
+            .EnableSensitiveDataLogging();
         });
     }
     
