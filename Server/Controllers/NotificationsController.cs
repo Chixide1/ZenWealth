@@ -16,7 +16,6 @@ namespace Server.Controllers;
 public class NotificationsController(
     ILogger<NotificationsController> logger,
     IItemsService itemsService,
-    IAccountsService accountsService,
     IEmailService emailService) : ControllerBase
 {
     [HttpPost]

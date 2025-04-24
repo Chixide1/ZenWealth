@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { useState, useEffect } from "react";
 import api from "@/lib/api.ts";
-import {AlertTriangle, MailCheck, X } from "lucide-react";
+import {AlertTriangle, MailCheck } from "lucide-react";
 import {AlertDescription, AlertTitle} from "@/components/ui/alert.tsx";
 import Loading from "@/components/shared/Loading.tsx";
 import { LoginLink } from "@/components/shared/LoginLink";
@@ -17,13 +17,13 @@ const confirmAccountSchema = z.object({
     token: z.string().catch(""),
 });
 
-type ConfirmAccountSchema = z.infer<typeof confirmAccountSchema>
+// type ConfirmAccountSchema = z.infer<typeof confirmAccountSchema>
 
 function RouteComponent() {
     const search = Route.useSearch();
     const [isVerified, setIsVerified] = useState<boolean | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const verifyEmailToken = async () => {

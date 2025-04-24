@@ -10,9 +10,6 @@ const api = axios.create({
     withCredentials: true,
 });
 
-// Flag to keep track of authentication state
-let isAuthenticated = false;
-
 api.interceptors.response.use(
     (response) => {
         // If we get a successful response
@@ -21,8 +18,6 @@ api.interceptors.response.use(
             if (response.config.url?.includes("/Auth/Login") ||
                 response.config.url?.includes("/Auth/LoginWithMfa") ||
                 response.config.url?.includes("/User")) {
-
-                isAuthenticated = true;
 
                 // If we're on the login page, redirect to root
                 if (window.location.pathname.includes("/login")) {
@@ -37,7 +32,6 @@ api.interceptors.response.use(
         if (error.response?.status === 401 &&
             !window.location.pathname.includes("/login")) {
 
-            isAuthenticated = false;
             router.navigate({ to: "/login" });
         }
 

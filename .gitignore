@@ -367,3 +367,7 @@ FodyWeavers.xsd
 .vscode/
 .vs/
 appsettings.*
+Server/dockerfile
+Client/dockerfile
+docker-compose.yml
+Client/nginx.conf

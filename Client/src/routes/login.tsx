@@ -35,11 +35,11 @@ function RouteComponent() {
 
 async function checkAuth(){
     try {
-        const response = await api.get("/User");
+        await api.get("/User");
         // If we get here without a 401 error, user is authenticated
         // Redirect them away from login page
         throw redirect({ to: "/" });
-    } catch (error) {
+    } catch {
         // If we got a 401, do nothing (stay on login page)
         // This prevents the redirect in the interceptor from firing
         return;

@@ -54,10 +54,11 @@ function Calendar({
                 ...classNames,
             }}
             components={{
-                IconLeft: ({ className, ...props }) => (
+                // @ts-expect-error Components for month arrows
+                IconLeft: ({ className, ...props }: { [p: string]: never}) => (
                     <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
                 ),
-                IconRight: ({ className, ...props }) => (
+                IconRight: ({ className, ...props }: { [p: string]: never }) => (
                     <ChevronRight className={cn("h-4 w-4", className)} {...props} />
                 ),
             }}
