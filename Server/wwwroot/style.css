@@ -1,0 +1,113 @@
+﻿:root {
+    /* Base Color Variables (HSL format) */
+    /* Electric Lime */
+    --accent: 68 99% 66%;
+    --text: 0 0% 88%;
+    --background: 0 0% 7%;
+    --container-bg: 0 0% 12%;
+    --h2: 199 92% 73%;
+    --subtitle: 200 14% 72%;
+    --status-bg: 210 24% 16%;
+    --status-border: 145 100% 45%;
+    --link: 207 90% 65%;
+    --link-hover: 207 90% 70%;
+    --footer: 0 0% 45%;
+    --version: 0 0% 62%;
+    --code-bg: 210 24% 16%;
+    --code: 170 50% 65%;
+
+    /* Opacity Control */
+    --opacity: 1; /* Global opacity default */
+    --shadow-opacity: 0.3;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: hsl(var(--text) / var(--opacity));
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: hsl(var(--background) / var(--opacity));
+}
+
+.container {
+    background-color: hsl(var(--container-bg) / var(--opacity));
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 4px 15px hsl(0 0% 0% / var(--shadow-opacity));
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: hsl(var(--accent) / var(--opacity));
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: hsl(var(--h2) / var(--opacity));
+}
+
+.subtitle {
+    color: hsl(var(--subtitle) / var(--opacity));
+    font-size: 18px;
+}
+
+.status {
+    display: inline-block;
+    background-color: hsl(var(--status-bg) / var(--opacity));
+    border-left: 4px solid hsl(var(--status-border) / var(--opacity));
+    padding: 10px 15px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-color: hsl(var(--status-border) / var(--opacity));
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.links {
+    margin-top: 30px;
+}
+
+.links a {
+    display: inline-block;
+    margin-right: 15px;
+    color: hsl(var(--link) / var(--opacity));
+    text-decoration: none;
+    padding: 8px 0;
+}
+
+.links a:hover {
+    text-decoration: underline;
+    color: hsl(var(--link-hover) / var(--opacity));
+}
+
+footer {
+    margin-top: 40px;
+    text-align: center;
+    color: hsl(var(--footer) / var(--opacity));
+    font-size: 14px;
+}
+
+.version {
+    font-family: monospace;
+    color: hsl(var(--version) / var(--opacity));
+}
+
+code {
+    background-color: hsl(var(--code-bg) / var(--opacity));
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: monospace;
+    color: hsl(var(--code) / var(--opacity));
+}
