@@ -4,7 +4,7 @@ services:
     container_name: Backend
     image: zenwealth-api:latest
     build:
-      context: ./server
+      context: ./Server
       dockerfile: Dockerfile
 #    ports:
 #      - "5133:8080"
@@ -15,7 +15,7 @@ services:
     container_name: Frontend
     image: zenwealth-spa:latest
     build:
-      context: ./client
+      context: ./Client
       dockerfile: Dockerfile
     depends_on:
       - backend
