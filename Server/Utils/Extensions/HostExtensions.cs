@@ -6,11 +6,20 @@ namespace Server.Utils.Extensions;
 
 public static class HostExtensions
 {
-    public static IHostBuilder UseSerilogLogging(this IHostBuilder hostBuilder)
+    public static void UseSerilogLogging(this IHostBuilder hostBuilder)
     {
-        hostBuilder.UseSerilog((context, services, configuration) =>
+        hostBuilder.UseSerilog((_, _, configuration) =>
         {
-            string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Log.json");
+            var appDataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "ZenWealth-Api-Logs"
+            );
+            Directory.CreateDirectory(appDataPath); // Create if missing
+
+            var logFilePath = Path.Combine(
+                appDataPath,
+                $"log-{DateTime.Now:dd-MM-yyyy}.json" // Daily rotating logs
+            );
 
             configuration
                 .MinimumLevel.Debug()
@@ -26,7 +35,5 @@ public static class HostExtensions
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("Application", "ZenWealth");
         });
-
-        return hostBuilder;
     }
 }

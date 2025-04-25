@@ -6,8 +6,6 @@ services:
     build:
       context: ./Server
       dockerfile: Dockerfile
-#    ports:
-#      - "5133:8080"
 
   frontend:
     container_name: Frontend
@@ -17,5 +15,3 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - backend
-#    ports:
-#      - "3000:80"

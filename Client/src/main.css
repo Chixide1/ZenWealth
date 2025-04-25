@@ -50,7 +50,7 @@
 /** Project Defaults */
 @layer base {
   body {
-    min-height: 100vh;
+    /*min-height: 100vh;*/
     min-width: 350px;
     background: 
             fixed
@@ -137,4 +137,3 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
-/*---break--- */

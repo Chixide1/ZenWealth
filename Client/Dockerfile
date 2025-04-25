@@ -31,7 +31,7 @@ RUN npm run build
 # Use the official NGINX image for production
 FROM nginx:stable-alpine AS production
 
-# copy nginx configuration in side conf.d folder
+# copy nginx configuration in side conf.d folder adn remove the default conf so their are no conflicts
 RUN rm -rf /etc/nginx/conf.d/default.conf
 COPY --from=build /usr/src/app/nginx /etc/nginx/conf.d
 

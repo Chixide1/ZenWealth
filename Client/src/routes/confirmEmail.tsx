@@ -60,7 +60,7 @@ function RouteComponent() {
     }, [search.email, search.token]);
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen w-full p-4">
+        <div className="flex flex-col items-center justify-center h-dvh w-full p-4">
             <div className="bg-background p-6 rounded-2xl border border-neutral-500">
                 {isLoading ? (
                     <div className="text-center">

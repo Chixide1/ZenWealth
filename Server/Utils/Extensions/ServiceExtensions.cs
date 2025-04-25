@@ -64,7 +64,7 @@ public static class ServiceExtensions
     }
     
     /// <summary>
-    /// Adds Controllers and configures how the received json should be serialised & deserialized
+    /// Adds Controllers and configures how the received JSON should be serialized & deserialized
     /// </summary>
     public static void ConfigureControllers(this IServiceCollection services)
     {
