@@ -51,6 +51,7 @@
 @layer base {
   body {
     min-height: 100vh;
+    min-width: 350px;
     background: 
             fixed
             radial-gradient(circle at 10% 120%, #5A2419 0%, #0C0610 50%, transparent),
