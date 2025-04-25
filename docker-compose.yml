@@ -1,0 +1,25 @@
+name: "zenwealth-stack"
+services:
+  backend:
+    container_name: Backend
+    image: zenwealth-api:latest
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5133:8080"
+#    environment:
+#      - ASPNETCORE_ENVIRONMENT=Development
+
+  frontend:
+    container_name: Frontend
+    image: zenwealth-spa:latest
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+#    environment:
+#      - VITE_ASPNETCORE_URLS=http://localhost:5133

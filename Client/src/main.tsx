@@ -1,4 +1,3 @@
-import { scan } from "react-scan";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
@@ -22,11 +21,6 @@ const queryClient = new QueryClient({
         },
 
     },
-});
-
-scan({
-    enabled: true,
-    showToolbar: true,
 });
 
 // Set up a Router instance
