@@ -12,7 +12,7 @@ export const Route = createFileRoute("/login")({
 function RouteComponent() {
     return (
         <main className="h-dvh w-full flex flex-col items-center justify-center">
-            <div className="flex items-center my-auto sm:mt-0 sm:mb-8">
+            <div className="flex items-center my-10 sm:mt-0 sm:mb-8">
                 <Logo />
             </div>
             <div
