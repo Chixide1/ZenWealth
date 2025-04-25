@@ -16,17 +16,17 @@ function RouteComponent() {
                 <Logo />
             </div>
             <div
-                className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] sm:mb-0 sm:py-8 flex flex-col items-center">
+                className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] sm:my-0 my-auto sm:py-8 flex flex-col items-center">
                 <h1 className="text-5xl sm:text-3xl font-semibold mb-2">Login</h1>
                 <p className="text-neutral-400 text-sm mb-11 sm:mb-6">
-          Welcome back, please login
+                    Welcome back, please login
                 </p>
                 <LoginForm />
             </div>
             <p className="sm:mt-8 text-sm text-primary mt-auto mb-14 sm:mb-0">
-        Don't have an account?
+                Don't have an account?
                 <Link to={"/register"} className="text-secondary ms-1">
-              Register
+                    Register
                 </Link>
             </p>
         </main>
