@@ -1,8 +1,10 @@
 ﻿import axios from "axios";
 import { router } from "@/main.tsx";
 
+const isDev = import.meta.env.DEV;
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_ASPNETCORE_URLS,
+    baseURL: isDev ? import.meta.env.VITE_ASPNETCORE_URLS : "https://api.zenwealth.ckdoestech.com",
     headers: {
         "Content-Type": "application/json",
     },

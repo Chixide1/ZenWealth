@@ -7,7 +7,7 @@
 # You can find the appropriate image on Docker Hub: https://hub.docker.com/_/node
 # In this example, we're using node:20-alpine3.20
 # run in termilnal commande line "node --version to get the version of your app"
-FROM node:20-alpine3.20 As build
+FROM node:20-alpine3.20 AS build
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -29,7 +29,7 @@ RUN npm run build
 ################################
 
 # Use the official NGINX image for production
-FROM nginx:stable-alpine as production
+FROM nginx:stable-alpine AS production
 
 # copy nginx configuration in side conf.d folder
 RUN rm -rf /etc/nginx/conf.d/default.conf
