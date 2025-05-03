@@ -11,7 +11,7 @@ export function LinkStart() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     return (
-        <div className="w-full h-screen flex flex-col items-center overflow-hidden">
+        <div className="w-full h-dvh flex flex-col items-center overflow-hidden">
             <header className="fixed w-full p-4 flex justify-between">
                 <Link className="flex items-center mr-16" to="/">
                     <Logo className="w-7 h-auto" iconProps={{className: "h-7 md:h-8"}} textProps={{ className: "hidden" }} />
