@@ -27,7 +27,7 @@ public class AzureCommunicationEmailService(
             recipientAddress: email,
             content: emailContent);
 
-        await emailClient.SendAsync(WaitUntil.Completed, emailMessage);
+        await emailClient.SendAsync(WaitUntil.Started, emailMessage);
         
         logger.LogInformation("Email sent to {Email} with subject {EmailSubject}",
             env.IsDevelopment() ? email : HashHelper.HashEmail(email), subject);

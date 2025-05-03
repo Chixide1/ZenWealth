@@ -163,10 +163,10 @@ public class AuthController(
             return BadRequest(ModelState);
 
         var user = await userManager.FindByEmailAsync(model.Email);
-        if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+        if (user == null)
         {
             // Don't reveal that the user does not exist or is not confirmed
-            logger.LogInformation("Password reset rejected - user not found or email not confirmed: {Email}", 
+            logger.LogInformation("Password reset rejected - email: {Email} not found", 
                 LogEmail(model.Email));
             return Ok(new { message = "If your email is registered, you will receive a password reset link." });
         }
@@ -204,13 +204,6 @@ public class AuthController(
                 LogEmail(model.Email));
             return Ok(new { message = "Password has been reset." });
         }
-
-        // Mark email as confirmed since user has proven access to it
-        if (!user.EmailConfirmed)
-        {
-            user.EmailConfirmed = true;
-            await userManager.UpdateAsync(user);
-        }
         
         var result = await userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
         if (!result.Succeeded)
@@ -222,6 +215,13 @@ public class AuthController(
                 ModelState.AddModelError(string.Empty, error.Description);
             }
             return BadRequest(ModelState);
+        }
+        
+        // Mark email as confirmed since user has proven access to it
+        if (!user.EmailConfirmed)
+        {
+            user.EmailConfirmed = true;
+            await userManager.UpdateAsync(user);
         }
 
         logger.LogInformation("Password reset successful for user {UserId} ({Email})", 
