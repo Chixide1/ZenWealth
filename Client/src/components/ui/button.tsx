@@ -53,7 +53,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 {isLoading ? (
                     <>
                         <Loader2 className="animate-spin" />
-                        {loadingText}
+                        <span className="hidden md:inline">{loadingText}</span>
                     </>
                 ) : (
                     children

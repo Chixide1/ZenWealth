@@ -205,6 +205,13 @@ public class AuthController(
             return Ok(new { message = "Password has been reset." });
         }
 
+        // Mark email as confirmed since user has proven access to it
+        if (!user.EmailConfirmed)
+        {
+            user.EmailConfirmed = true;
+            await userManager.UpdateAsync(user);
+        }
+        
         var result = await userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
         if (!result.Succeeded)
         {
@@ -219,13 +226,7 @@ public class AuthController(
 
         logger.LogInformation("Password reset successful for user {UserId} ({Email})", 
             user.Id, LogEmail(model.Email));
-
-        // Mark email as confirmed since user has proven access to it
-        if (!user.EmailConfirmed)
-        {
-            user.EmailConfirmed = true;
-            await userManager.UpdateAsync(user);
-        }
+        
         return Ok(new { message = "Password has been reset successfully." });
     }
 

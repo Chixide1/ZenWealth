@@ -28,7 +28,7 @@ export function TransactionsCard({className, transactionsData,}: TransactionsCar
         hour12: true
     });
 
-    const transactions = transactionsData?.transactions ?? [];
+    const transactions = transactionsData?.transactions;
 
     // Handler for date range changes
     const handleDateRangeChange = (range: DateRange | undefined) => {
@@ -59,7 +59,18 @@ export function TransactionsCard({className, transactionsData,}: TransactionsCar
             </CardHeader>
             <CardContent className="p-3 border-t border-neutral-500/30">
                 <ul className="flex flex-col gap-2">
-                    {transactions.length > 0 ? transactions.map((transaction) => (
+                    {!transactions ? Array.from({ length: pageSize })
+                        .map((_, i) => (
+                            <li className="flex items-center space-x-4" key={i + "::TransactionsCardSkeleton"}>
+                                <Skeleton className="h-12 w-12 rounded-full" />
+                                <div className="space-y-2 w-10/12">
+                                    <Skeleton className="h-4" />
+                                    <Skeleton className="h-4" />
+                                </div>
+                            </li>
+                        )) : transactions.length <= 0 ? (
+                        <div className="w-full text-neutral-400 text-center">No Results</div>
+                    ) : transactions.map((transaction) => (
                         <li
                             key={transaction.id + "::RecentTransactionsCard"}
                             className="flex gap-2 items-center text-sm"
@@ -81,16 +92,7 @@ export function TransactionsCard({className, transactionsData,}: TransactionsCar
                                 <p className="text-neutral-400 text-nowrap">{timeParser.format(new Date(transaction.datetime ?? transaction.date))}</p>
                             </div>
                         </li>
-                    )) : Array.from({ length: pageSize })
-                        .map((_, i) => (
-                            <li className="flex items-center space-x-4" key={i + "::TransactionsCardSkeleton"}>
-                                <Skeleton className="h-12 w-12 rounded-full" />
-                                <div className="space-y-2 w-10/12">
-                                    <Skeleton className="h-4" />
-                                    <Skeleton className="h-4" />
-                                </div>
-                            </li>
-                        ))}
+                    ))}
                 </ul>
             </CardContent>
             <CardFooter className="flex items-center justify-between p-3 border-t border-neutral-500/30">

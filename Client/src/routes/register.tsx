@@ -9,18 +9,18 @@ export const Route = createFileRoute("/register")({
 
 function RouteComponent() {
     return (
-        <main className="h-dvh w-full flex flex-col items-center justify-center">
-            <div className="flex items-center mb-6 mt-auto">
+        <main className="py-10 h-dvh w-full flex flex-col items-center justify-center">
+            <div className="flex items-center">
                 <Logo className="mr-1"/>
             </div>
-            <div className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] sm:pt-4 sm:pb-6 flex flex-col items-center">
+            <div className="my-auto text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] pb-10 sm:py-6 flex flex-col items-center">
                 <h2 className="text-5xl sm:text-3xl font-semibold mb-2">Register</h2>
-                <p className="text-neutral-400 text-sm mb-11 sm:mb-6">
+                <p className="text-neutral-400 text-sm mb-6">
                     Please Register Your Account
                 </p>
                 <RegisterForm />
             </div>
-            <LoginLink className="mt-6 mb-auto" />
+            <LoginLink className="" />
         </main>
     );
 }
