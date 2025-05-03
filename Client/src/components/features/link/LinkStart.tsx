@@ -19,7 +19,7 @@ export function LinkStart() {
                 <UserDropdownMenu dialogStateSetter={setIsDialogOpen} />
                 <SettingsDialog isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} />
             </header>
-            <Card className={"w-[26rem] my-auto border border-neutral-700 bg-primary/[0.125] rounded-2xl text-primary flex flex-col items-center justify-center"}>
+            <Card className={"md:w-[26rem] mx-10 my-auto border border-neutral-600 bg-primary/[0.125] rounded-2xl text-primary flex flex-col items-center justify-center"}>
                 <CardHeader className={"text-center"}>
                     <CardTitle className={"text-2xl"}>Connect Your Bank Account</CardTitle>
                     <CardDescription className={"text-neutral-400 text-lg"}>Securely link your accounts to get started with our financial services.</CardDescription>

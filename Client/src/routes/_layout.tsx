@@ -24,9 +24,9 @@ function LayoutComponent() {
     queryClient.prefetchQuery({queryKey: ["transactions"]});
     
     return (
-        <main className="w-full h-screen flex flex-col overflow-hidden min-w-[350px]">
+        <main className="w-full h-dvh flex flex-col overflow-hidden min-w-[350px]">
             <AppTopbar />
-            <ScrollArea className="w-full h-full max-w-screen-[1700px] mx-auto">
+            <ScrollArea className="w-full dvh max-w-screen-[1700px] mx-auto">
                 <Outlet />
             </ScrollArea>
         </main>

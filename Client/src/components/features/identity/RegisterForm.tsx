@@ -102,7 +102,7 @@ export function RegisterForm(){
             register: {...register("email")},
             icon: Mail,
             label: "Email",
-            autocomplete: "username"
+            autocomplete: "email"
         },
         {
             id: "registerFormUsername",
