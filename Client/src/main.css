@@ -62,7 +62,10 @@
 
 /** Utilities */
 @layer utilities {
-
+  .h-safe-screen {
+    height: 100vh;
+    height: 100dvh;
+  }
 }
 
 /** Shadcn Defaults */

@@ -11,7 +11,7 @@ export const Route = createFileRoute("/login")({
 
 function RouteComponent() {
     return (
-        <main className="h-dvh w-full flex flex-col items-center justify-center py-10">
+        <main className="h-safe-screen w-full flex flex-col items-center justify-center py-10">
             <div className="flex items-center">
                 <Logo />
             </div>

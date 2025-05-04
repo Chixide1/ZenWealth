@@ -4,7 +4,7 @@ import {Button} from "@/components/ui/button.tsx";
 export function NotFoundPage() {
     const router = useRouter();
     return (
-        <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-transparent">
+        <div className="relative flex h-safe-screen flex-col items-center justify-center overflow-hidden bg-transparent">
             {/* Grid background */}
             <div
                 className="absolute inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)]"

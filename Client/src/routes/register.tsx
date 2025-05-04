@@ -9,7 +9,7 @@ export const Route = createFileRoute("/register")({
 
 function RouteComponent() {
     return (
-        <main className="py-10 h-dvh w-full flex flex-col items-center justify-center">
+        <main className="py-10 h-safe-screen w-full flex flex-col items-center justify-center">
             <div className="flex items-center">
                 <Logo className="mr-1"/>
             </div>
