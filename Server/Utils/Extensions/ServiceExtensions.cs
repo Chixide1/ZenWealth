@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Scalar.AspNetCore;
 using Server.Data;
 using Server.Data.Entities;
 using Server.Data.Models.Dtos;
@@ -118,8 +119,8 @@ public static class ServiceExtensions
     {
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.MapOpenApi();
+            app.MapScalarApiReference();
             app.UseCors("Dev");
             return;
         }
