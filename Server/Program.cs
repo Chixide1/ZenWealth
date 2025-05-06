@@ -31,7 +31,7 @@ builder.Host.UseSerilogLogging();
 var app = builder.Build();
 
 app.UseDefaultFiles();
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseSerilogRequestLogging();
 app.AddEnvironmentConfiguration();
 app.UseHttpsRedirection();
