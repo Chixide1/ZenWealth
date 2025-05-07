@@ -1,6 +1,6 @@
 ﻿using Core.Models;
 
-namespace Core.Interfaces;
+namespace Core.Domain.Interfaces;
 
 /// <summary>
 /// Service used for sending emails.

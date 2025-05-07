@@ -1,7 +1,7 @@
-﻿using Core.Entities;
+﻿using Core.Domain.Entities;
 using Core.Models;
 
-namespace Core.Interfaces;
+namespace Core.Application.Interfaces;
 
 /// <summary>
 /// Service used for Budgets management.

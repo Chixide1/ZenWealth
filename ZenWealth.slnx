@@ -1,11 +1,18 @@
-﻿<Solution>
+<Solution>
+  <File Path="docker-compose.yaml" />
+  <Folder Name="/Solution Items/" Id="8ec462fd-d22e-90a8-e5ce-7e832ba40c5d">
+    <File Path="Directory.Build.targets" />
+    <File Path="docker-compose.yaml" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="Api\Api.csproj">
-    <BuildDependency Project="Client\Client.esproj" />
+    <BuildDependency Project="Web\Web.esproj" />
   </Project>
-  <Project Path="Core\Core.csproj" Type="Classic C#" />
-  <Project Path="Infrastructure\Infrastructure.csproj" Type="Classic C#" />
-  <Project Path="Web\Web.esproj" Type="{54A90642-561A-4BB1-A94E-469ADEE60C69}">
-    <Configuration Solution="Debug|Any CPU" Project="Debug|Any CPU|Deploy" />
-    <Configuration Solution="Release|Any CPU" Project="Release|Any CPU|Deploy" />
+  <Project Path="Core\Core.csproj" />
+  <Project Path="Infrastructure\Infrastructure.csproj" />
+  <Project Path="Tests/Tests.csproj" Id="f4b46d61-1408-4f5c-997e-4ea392ed93d2" />
+  <Project Path="Web\Web.esproj">
+    <Build />
+    <Deploy />
   </Project>
 </Solution>

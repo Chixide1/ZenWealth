@@ -1,5 +1,5 @@
-﻿using Core.Entities;
-using Core.Interfaces;
+﻿using Core.Domain.Interfaces;
+using Core.Domain.Entities;
 using Core.Models;
 using Infrastructure.ExternalServices;
 using Infrastructure.Persistence;

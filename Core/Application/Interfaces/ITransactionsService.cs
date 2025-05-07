@@ -1,7 +1,7 @@
 ﻿using Core.Dtos;
 using Core.Models;
 
-namespace Core.Interfaces;
+namespace Core.Application.Interfaces;
 
 /// <summary>
 /// Service for retreiving various different analytics on the user's transactions from the Database.

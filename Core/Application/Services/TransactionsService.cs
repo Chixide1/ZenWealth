@@ -1,11 +1,12 @@
-﻿using Core.Dtos;
-using Core.Interfaces;
+﻿using Core.Application.Interfaces;
+using Core.Domain.Interfaces;
+using Core.Dtos;
 using Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Services;
+namespace Core.Application.Services;
 
-public class TransactionsService(
+internal class TransactionsService(
     ITransactionRepository transactionRepository,
     ILogger<TransactionsService> logger) : ITransactionsService
 {

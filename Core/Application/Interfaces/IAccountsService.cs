@@ -1,6 +1,6 @@
 ﻿using Core.Models;
 
-namespace Core.Interfaces;
+namespace Core.Application.Interfaces;
 
 /// <summary>
 /// Service used for the Transactions associated accounts management.

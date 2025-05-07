@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core.Entities;
+namespace Core.Domain.Entities;
 
 public class Account
 

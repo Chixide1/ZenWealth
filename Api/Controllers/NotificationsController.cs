@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Serialization;
-using Core.Interfaces;
 using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Webhook;
 using Microsoft.Extensions.Options;
 using Environment = Going.Plaid.Environment;
+using Core.Application.Interfaces;
+using Core.Domain.Interfaces;
 
 namespace Api.Controllers;
 

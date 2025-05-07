@@ -1,11 +1,11 @@
-﻿using Core.Entities;
-using Core.Interfaces;
+﻿using Core.Domain.Entities;
+using Core.Domain.Interfaces;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories;
 
-public class AccountRepository(AppDbContext context) : IAccountRepository
+internal class AccountRepository(AppDbContext context) : IAccountRepository
 {
     public async Task<List<AccountDto>> GetAccountsByUserIdAsync(string userId)
     {

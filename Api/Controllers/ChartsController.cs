@@ -1,10 +1,10 @@
-﻿using Core.Entities;
-using Core.Interfaces;
-using Core.Models;
+﻿using Core.Models;
 using Going.Plaid.Entity;
 
 namespace Api.Controllers;
 
+using Core.Application.Interfaces;
+using Core.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

@@ -1,11 +1,11 @@
 ﻿using Api.Dtos.Requests;
 using Api.Dtos.Responses;
 using Core.Dtos;
-using Core.Entities;
-using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Core.Domain.Entities;
+using Core.Application.Interfaces;
 
 namespace Api.Controllers;
 

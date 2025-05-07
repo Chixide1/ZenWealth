@@ -5,9 +5,9 @@ using System.Web;
 using System.Security.Claims;
 using Api.Dtos.Requests;
 using Api.Dtos.Responses;
-using Core.Entities;
-using Core.Interfaces;
 using Core.Utils.Helpers;
+using Core.Domain.Entities;
+using Core.Domain.Interfaces;
 
 namespace Api.Controllers;
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Core.Entities;
+namespace Core.Domain.Entities;
 
 public class Budget
 {

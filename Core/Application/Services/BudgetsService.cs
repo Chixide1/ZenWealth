@@ -1,11 +1,12 @@
-﻿using Core.Entities;
-using Core.Interfaces;
+﻿using Core.Application.Interfaces;
+using Core.Domain.Entities;
+using Core.Domain.Interfaces;
 using Core.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Services;
+namespace Core.Application.Services;
 
-public class BudgetsService(
+internal class BudgetsService(
     ILogger<BudgetsService> logger,
     IBudgetRepository budgetRepository,
     ITransactionRepository transactionRepository

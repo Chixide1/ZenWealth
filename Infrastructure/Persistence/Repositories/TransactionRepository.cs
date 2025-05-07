@@ -1,6 +1,6 @@
-﻿using Core.Dtos;
-using Core.Entities;
-using Core.Interfaces;
+﻿using Core.Domain.Entities;
+using Core.Domain.Interfaces;
+using Core.Dtos;
 using Core.Models;
 using Core.Utils.Extensions;
 using Microsoft.EntityFrameworkCore;

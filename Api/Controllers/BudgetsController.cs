@@ -1,5 +1,5 @@
-﻿using Core.Entities;
-using Core.Interfaces;
+﻿using Core.Application.Interfaces;
+using Core.Domain.Entities;
 using Core.Models;
 using Core.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;

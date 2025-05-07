@@ -1,13 +1,14 @@
-﻿using Core.Entities;
-using Core.Interfaces;
+﻿using Core.Application.Interfaces;
+using Core.Domain.Entities;
+using Core.Domain.Interfaces;
 using Core.Models;
 using Going.Plaid;
 using Going.Plaid.Accounts;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Services;
+namespace Core.Application.Services;
 
-public class AccountsService(
+internal class AccountsService(
     ILogger<AccountsService> logger,
     PlaidClient client,
     IAccountRepository accountRepository,

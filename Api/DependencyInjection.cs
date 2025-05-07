@@ -1,4 +1,4 @@
-﻿using Core.Entities;
+﻿using Core.Domain.Entities;
 using Going.Plaid.Converters;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;

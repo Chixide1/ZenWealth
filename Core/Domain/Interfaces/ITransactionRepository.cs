@@ -1,8 +1,8 @@
-﻿using Core.Dtos;
-using Core.Entities;
+﻿using Core.Domain.Entities;
+using Core.Dtos;
 using Core.Models;
 
-namespace Core.Interfaces;
+namespace Core.Domain.Interfaces;
 
 /// <summary>
 /// Repository interface for managing transaction operations

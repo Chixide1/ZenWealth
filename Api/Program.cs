@@ -1,7 +1,7 @@
 using Api;
 using Api.Extensions;
 using Api.Middleware;
-using Core.Utils.Extensions;
+using Core;
 using Going.Plaid;
 using Infrastructure;
 using Serilog;

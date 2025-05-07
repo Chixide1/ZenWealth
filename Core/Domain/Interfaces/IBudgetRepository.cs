@@ -1,6 +1,6 @@
-﻿using Core.Entities;
+﻿using Core.Domain.Entities;
 
-namespace Core.Interfaces;
+namespace Core.Domain.Interfaces;
 
 /// <summary>
 /// Repository interface for managing budget operations

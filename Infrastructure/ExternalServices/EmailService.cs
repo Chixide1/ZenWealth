@@ -1,6 +1,6 @@
 ﻿using Azure;
 using Azure.Communication.Email;
-using Core.Interfaces;
+using Core.Domain.Interfaces;
 using Core.Models;
 using Core.Utils.Helpers;
 using Microsoft.Extensions.Hosting;

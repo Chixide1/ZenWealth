@@ -1,7 +1,7 @@
-using Core.Entities;
+using Core.Domain.Entities;
 using Core.Models;
 
-namespace Core.Interfaces;
+namespace Core.Domain.Interfaces;
 
 /// <summary>
 /// Repository for managing Item data access

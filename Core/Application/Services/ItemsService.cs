@@ -1,5 +1,6 @@
-﻿using Core.Dtos;
-using Core.Interfaces;
+﻿using Core.Application.Interfaces;
+using Core.Domain.Interfaces;
+using Core.Dtos;
 using Core.Models;
 using Going.Plaid;
 using Going.Plaid.Entity;
@@ -8,15 +9,15 @@ using Going.Plaid.Link;
 using Going.Plaid.Transactions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Account = Core.Entities.Account;
-using Item = Core.Entities.Item;
+using Account = Core.Domain.Entities.Account;
+using Item = Core.Domain.Entities.Item;
 using PlaidAccount = Going.Plaid.Entity.Account;
 using PlaidTransaction = Going.Plaid.Entity.Transaction;
-using Transaction = Core.Entities.Transaction;
+using Transaction = Core.Domain.Entities.Transaction;
 
-namespace Core.Services;
+namespace Core.Application.Services;
 
-public class ItemsService(
+internal class ItemsService(
     IItemRepository itemRepository,
     IAccountRepository accountRepository,
     ITransactionRepository transactionRepository,
@@ -679,7 +680,7 @@ public class ItemsService(
     
         var transactionIds = removedTransactions
             .Select(t => t.TransactionId)
-            .ToList<string>();
+            .ToList();
     
         if (transactionIds.Count == 0)
         {
