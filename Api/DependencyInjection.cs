@@ -3,11 +3,45 @@ using Going.Plaid.Converters;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 namespace Api;
 
 public static class DependencyInjection
 {
+    public static void UseSerilogLogging(this IHostBuilder hostBuilder)
+    {
+        hostBuilder.UseSerilog((_, _, configuration) =>
+        {
+            var appDataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "ZenWealth-Api-Logs"
+            );
+            Directory.CreateDirectory(appDataPath); // Create if missing
+
+            var logFilePath = Path.Combine(
+                appDataPath,
+                $"log-{DateTime.Now:dd-MM-yyyy}.json" // Daily rotating logs
+            );
+
+            configuration
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("System", LogEventLevel.Warning)
+                .WriteTo.Console()
+                .WriteTo.File(
+                    new CompactJsonFormatter(),
+                    logFilePath,
+                    rollingInterval: RollingInterval.Day,
+                    rollOnFileSizeLimit: true
+                )
+                .Enrich.FromLogContext()
+                .Enrich.WithProperty("Application", "ZenWealth");
+        });
+    }
+    
     /// <summary>
     /// Configures CORS for the application.
     /// </summary>
@@ -68,7 +102,7 @@ public static class DependencyInjection
     {
         services.AddIdentityApiEndpoints<User>()
             .AddEntityFrameworkStores<AppDbContext>();
-
+    
         services.Configure<IdentityOptions>(options =>
         {
             options.SignIn.RequireConfirmedEmail = true;

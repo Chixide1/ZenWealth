@@ -10,7 +10,7 @@ namespace Core.Application.Services;
 
 internal class AccountsService(
     ILogger<AccountsService> logger,
-    PlaidClient client,
+    IPlaidService plaidService,
     IAccountRepository accountRepository,
     IItemRepository itemRepository) : IAccountsService
 {
@@ -75,10 +75,7 @@ internal class AccountsService(
         var existingAccounts = await accountRepository.GetAccountsByItemIdAsync(item.Id);
 
         // Get latest account data from Plaid
-        var data = await client.AccountsGetAsync(new AccountsGetRequest
-        {
-            AccessToken = item.AccessToken
-        });
+        var data = await plaidService.GetAccountsAsync(item.AccessToken);
 
         var updatedCount = 0;
         var addedCount = 0;

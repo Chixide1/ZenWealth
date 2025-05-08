@@ -2,7 +2,6 @@
 using Core.Domain.Interfaces;
 using Core.Dtos;
 using Core.Models;
-using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Item;
 using Going.Plaid.Link;
@@ -22,7 +21,7 @@ internal class ItemsService(
     IAccountRepository accountRepository,
     ITransactionRepository transactionRepository,
     ILogger<ItemsService> logger,
-    PlaidClient client,
+    IPlaidService plaidService,
     IConfiguration config) : IItemsService
 {
     public async Task<bool> CheckItemExistsAsync(string userId)
@@ -124,10 +123,7 @@ internal class ItemsService(
             }
             
             // Exchange public token
-            var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
-            {
-                PublicToken = publicToken
-            });
+            var response = await plaidService.ExchangePublicTokenAsync(publicToken);
     
             if (response.Error != null)
             {
@@ -195,12 +191,9 @@ internal class ItemsService(
         
         logger.LogInformation("Retrieved item {ItemId} for user {UserId}", itemId, userId);
 
-        var response = await client.ItemRemoveAsync(new ItemRemoveRequest
-        {
-            AccessToken = item.AccessToken,
-        });
+        var response = await plaidService.RemoveItemAsync(item.AccessToken);
 
-        if (!response.IsSuccessStatusCode)
+        if (response.Error != null)
         {
             logger.LogWarning("Unable to remove the item {itemId} from Plaid for user {UserId}: {Error}",
                 itemId, userId, response.Error);
@@ -235,10 +228,7 @@ internal class ItemsService(
                 });
             }
     
-            var response = await client.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
-            {
-                PublicToken = publicToken
-            });
+            var response = await plaidService.ExchangePublicTokenAsync(publicToken);
     
             if (response.Error != null)
             {
@@ -282,33 +272,7 @@ internal class ItemsService(
         
         try
         {
-            var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest
-            {
-                User = new LinkTokenCreateRequestUser
-                {
-                    ClientUserId = userId
-                },
-                ClientName = "ZenWealth",
-                Products = [Products.Transactions],
-                Language = Language.English,
-                CountryCodes = [CountryCode.Gb],
-                Webhook = webhookUrl,
-                AccountFilters = new LinkTokenAccountFilters
-                {
-                    Depository = new DepositoryFilter
-                    {
-                        AccountSubtypes = [DepositoryAccountSubtype.All]
-                    },
-                    Credit = new CreditFilter
-                    {
-                        AccountSubtypes = [CreditAccountSubtype.All]
-                    },
-                    Other = new OtherFilter
-                    {
-                        AccountSubtypes = [OtherAccountSubtype.All]
-                    }
-                }
-            });
+            var response = await plaidService.CreateLinkTokenAsync(userId, webhookUrl);
 
             if (response.Error != null)
             {
@@ -351,37 +315,7 @@ internal class ItemsService(
                 logger.LogWarning("Plaid:WebhookUrl is empty");
             }
             
-            var response = await client.LinkTokenCreateAsync(new LinkTokenCreateRequest
-            {
-                User = new LinkTokenCreateRequestUser
-                {
-                    ClientUserId = userId
-                },
-                ClientName = "ZenWealth",
-                AccessToken = item.AccessToken,
-                Language = Language.English,
-                CountryCodes = [CountryCode.Gb],
-                Webhook = webhookUrl,
-                AccountFilters = new LinkTokenAccountFilters
-                {
-                    Depository = new DepositoryFilter
-                    {
-                        AccountSubtypes = [DepositoryAccountSubtype.All]
-                    },
-                    Credit = new CreditFilter
-                    {
-                        AccountSubtypes = [CreditAccountSubtype.All]
-                    },
-                    Other = new OtherFilter
-                    {
-                        AccountSubtypes = [OtherAccountSubtype.All]
-                    }
-                },
-                Update = new LinkTokenCreateRequestUpdate
-                {
-                    AccountSelectionEnabled = true
-                }
-            });
+            var response = await plaidService.CreateUpdateLinkTokenAsync(userId, item.AccessToken, webhookUrl);
 
             if (response.Error != null)
             {
@@ -461,14 +395,9 @@ internal class ItemsService(
         {
             try
             {
-                var request = new TransactionsSyncRequest()
-                {
-                    AccessToken = item.AccessToken,
-                    Cursor = item.Cursor
-                };
-                
-                var data = await client.TransactionsSyncAsync(request);
-                logger.LogInformation("Fetched {AddedCount} added, {ModifiedCount} modified, {RemovedCount} removed transactions for item {ItemId} and user {UserId}",
+                var data = await plaidService.SyncTransactionsAsync(item.AccessToken, item.Cursor);;
+                logger.LogInformation("Fetched {AddedCount} added, {ModifiedCount} modified, " +
+                                      "{RemovedCount} removed transactions for item {ItemId} and user {UserId}",
                     data.Added.Count, data.Modified.Count, data.Removed.Count, item.Id, userId
                 );
                 

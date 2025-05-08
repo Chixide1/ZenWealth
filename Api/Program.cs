@@ -1,5 +1,4 @@
 using Api;
-using Api.Extensions;
 using Api.Middleware;
 using Core;
 using Going.Plaid;
@@ -11,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureDbContext(builder.Configuration);
 builder.Services.ConfigureIdentity();
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication();
 builder.Services.ConfigureCors();
 builder.Services.ConfigureControllers();
 builder.Services.AddRepositories();
@@ -19,8 +17,7 @@ builder.Services.AddServices();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
-builder.Services.AddPlaid(builder.Configuration);
-builder.Services.AddSingleton<PlaidClient>();
+builder.Services.ConfigurePlaid(builder.Configuration);
 builder.Services.ConfigureEmail(builder.Configuration);
 
 builder.Host.UseSerilogLogging();

@@ -1,14 +1,17 @@
 ﻿using Core.Domain.Interfaces;
 using Core.Domain.Entities;
 using Core.Models;
+using Going.Plaid;
 using Infrastructure.ExternalServices;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+using Going.Plaid.Converters;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure;
 
@@ -66,5 +69,11 @@ public static class DependencyInjection
 
         // Register the email service
         services.AddScoped<IEmailService, AzureCommunicationEmailService>();
+    }
+
+    public static void ConfigurePlaid(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddPlaid(configuration.GetSection(PlaidOptions.SectionKey));
+        services.AddScoped<IPlaidService, PlaidService>();
     }
 }
