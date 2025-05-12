@@ -1,18 +1,14 @@
 <Solution>
-  <File Path="docker-compose.yaml" />
-  <Folder Name="/Solution Items/" Id="8ec462fd-d22e-90a8-e5ce-7e832ba40c5d">
+  <Folder Name="/Solution Items/">
     <File Path="Directory.Build.targets" />
     <File Path="docker-compose.yaml" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="Api\Api.csproj">
+  <Project Path="ZenWealth.Api\ZenWealth.Api.csproj">
     <BuildDependency Project="Web\Web.esproj" />
   </Project>
-  <Project Path="Core\Core.csproj" />
-  <Project Path="Infrastructure\Infrastructure.csproj" />
-  <Project Path="Tests/Tests.csproj" Id="f4b46d61-1408-4f5c-997e-4ea392ed93d2" />
-  <Project Path="Web\Web.esproj">
-    <Build />
-    <Deploy />
-  </Project>
+  <Project Path="ZenWealth.Core\ZenWealth.Core.csproj" />
+  <Project Path="ZenWealth.Infrastructure\ZenWealth.Infrastructure.csproj" />
+  <Project Path="ZenWealth.Tests\ZenWealth.Tests.csproj" />
+  <Project Path="ZenWealth.Web\ZenWealth.Web.esproj" />
 </Solution>
