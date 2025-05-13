@@ -4,6 +4,7 @@ using Going.Plaid.Transactions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.ComponentModel;
 using ZenWealth.Core.Application.Services;
 using ZenWealth.Core.Domain.Interfaces;
 using ZenWealth.Core.Dtos;

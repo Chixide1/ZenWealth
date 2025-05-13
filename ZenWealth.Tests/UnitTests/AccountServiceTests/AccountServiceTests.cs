@@ -16,7 +16,7 @@ using Item = ZenWealth.Core.Domain.Entities.Item;
 
 // It's good practice to put test classes in a separate test project
 // and use the same namespace structure as the code being tested, suffixed with .Tests
-namespace ZenWealth.Tests.UnitTests;
+namespace ZenWealth.Tests.UnitTests.AccountServiceTests;
 
 public class AccountServiceTests
 {

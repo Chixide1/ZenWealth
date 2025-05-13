@@ -1,12 +1,12 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.targets" />
-    <File Path="docker-compose.yaml" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="ZenWealth.Api\ZenWealth.Api.csproj">
-    <BuildDependency Project="Web\Web.esproj" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
   </Project>
+  <Project Path="ZenWealth.Api\ZenWealth.Api.csproj" />
   <Project Path="ZenWealth.Core\ZenWealth.Core.csproj" />
   <Project Path="ZenWealth.Infrastructure\ZenWealth.Infrastructure.csproj" />
   <Project Path="ZenWealth.Tests\ZenWealth.Tests.csproj" />

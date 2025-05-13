@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ZenWealth.Tests.UnitTests;
+namespace ZenWealth.Tests.UnitTests.BudgetServiceTests;
 
 public class BudgetServiceTests
 {

@@ -4,22 +4,21 @@
 ################################
 
 # Use the official Node.js Alpine image (adjust based on your project's requirements)
-# You can find the appropriate image on Docker Hub: https://hub.docker.com/_/node
-# In this example, we're using node:20-alpine3.20
-# run in termilnal commande line "node --version to get the version of your app"
 FROM node:20-alpine3.20 AS build
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json into the container
-COPY package*.json package-lock.json ./
+# Adjust path to be relative to the build context (root directory)
+COPY ./ZenWealth.Web/package.json ./ZenWealth.Web/package-lock.json ./
 
 # Install dependencies using npm
 RUN npm ci
 
 # Copy the project files into the working directory
-COPY ./ ./
+# Adjust to copy only what's needed for the web application
+COPY ./ZenWealth.Web/ ./
 
 # Build the React app for production
 RUN npm run build
@@ -31,7 +30,7 @@ RUN npm run build
 # Use the official NGINX image for production
 FROM nginx:stable-alpine AS production
 
-# copy nginx configuration in side conf.d folder adn remove the default conf so their are no conflicts
+# copy nginx configuration in side conf.d folder and remove the default conf so there are no conflicts
 RUN rm -rf /etc/nginx/conf.d/default.conf
 COPY --from=build /usr/src/app/nginx /etc/nginx/conf.d
 
@@ -42,4 +41,4 @@ COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 EXPOSE 80
 
 # Run Nginx in the foreground
-ENTRYPOINT ["nginx", "-g", "daemon off;"] 
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
