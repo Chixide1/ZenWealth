@@ -1,12 +1,12 @@
 name: zenwealth
 services:
-  zenwealth.api:
+  zenwealth-api:
     container_name: api
     build:
       context: .
       dockerfile: ZenWealth.Api/Dockerfile
 
-  zenwealth.web:
+  zenwealth-web:
     container_name: web
     build:
       context: .
