@@ -103,29 +103,41 @@ internal class TransactionRepository(AppDbContext context) : ITransactionReposit
 
     public async Task<int> AddRangeAsync(List<Transaction> transactions)
     {
-        if (transactions.Count > 0)
-        {
-            context.Transactions.AddRange(transactions);
-            return await context.SaveChangesAsync();
-        }
-
-        return 0;
+        if (transactions.Count <= 0) return 0;
+        
+        context.Transactions.AddRange(transactions);
+        return await context.SaveChangesAsync();
     }
     
     public async Task<List<MonthlySummaryDto>> GetMonthlyIncomeAndOutcomeAsync(string userId)
     {
-        return await context.Database.SqlQuery<MonthlySummaryDto>(
-            $"""
-             SELECT
-                 DATENAME(Month, Date) as Month,
-                 SUM(IIF(Amount < 0, Amount, 0)) AS Income,
-                 SUM(IIF(Amount > 0, Amount, 0) ) AS Expenditure
-             FROM Transactions
-             WHERE UserId = {userId} and Date > DATEADD(Year, -1, GETDATE())
-             GROUP BY Year(Date), MONTH(Date), DATENAME(Month, Date)
-             order by YEAR(Date), MONTH(Date)
-             """
-        ).ToListAsync();
+        var oneYearAgo = DateOnly.FromDateTime(DateTime.Now.AddYears(-1));
+        
+        var result = await context.Transactions
+            .Where(t => t.UserId == userId && t.Date > oneYearAgo)
+            .GroupBy(t => new 
+            { 
+                Year = t.Date.Year, 
+                Month = t.Date.Month
+            })
+            .Select(g => new 
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Income = g.Where(t => t.Amount < 0).Sum(t => t.Amount),
+                Expenditure = g.Where(t => t.Amount > 0).Sum(t => t.Amount)
+            })
+            .OrderBy(g => g.Year)
+            .ThenBy(g => g.Month)
+            .ToListAsync();
+            
+        // Now convert to month names client-side
+        return result.Select(r => new MonthlySummaryDto
+        {
+            Month = new DateTime(r.Year, r.Month, 1).ToString("MMMM"),
+            Income = r.Income,
+            Expenditure = r.Expenditure
+        }).ToList();
     }
 
     public async Task<List<TransactionDto>> GetRecentTransactionsAllAsync(string userId, int count)
@@ -160,19 +172,29 @@ internal class TransactionRepository(AppDbContext context) : ITransactionReposit
 
     public async Task<List<TopExpenseCategoryDto>> GetTopExpenseCategoriesAsync(string userId)
     {
-        return await context.Database.SqlQuery<TopExpenseCategoryDto>(
-            $"""
-             select top 3
-                 Category as Category,
-                 CategoryIconUrl as IconUrl,
-                 Sum(Amount) as Expenditure,
-                 (select SUM(Amount) from Transactions where Date > DATEADD(month, -1, GETDATE()) and Amount > 0) as Total
-             from Transactions
-             where UserId={userId} and Date > DATEADD(month, -1, GETDATE()) and Amount > 0
-             group by Category, CategoryIconUrl
-             order by Expenditure desc
-             """
-        ).ToListAsync();
+        var oneMonthAgo = DateOnly.FromDateTime(DateTime.Now.AddMonths(-1));
+        
+        // First, calculate the total expenditure for the last month
+        var totalExpenditure = await context.Transactions
+            .Where(t => t.Date > oneMonthAgo && t.Amount > 0)
+            .SumAsync(t => t.Amount);
+            
+        // Then, get the top 3 expense categories
+        var topCategories = await context.Transactions
+            .Where(t => t.UserId == userId && t.Date > oneMonthAgo && t.Amount > 0)
+            .GroupBy(t => new { t.Category, t.CategoryIconUrl })
+            .Select(g => new TopExpenseCategoryDto
+            {
+                Category = g.Key.Category,
+                IconUrl = g.Key.CategoryIconUrl,
+                Expenditure = g.Sum(t => t.Amount),
+                Total = totalExpenditure
+            })
+            .OrderByDescending(dto => dto.Expenditure)
+            .Take(3)
+            .ToListAsync();
+            
+        return topCategories;
     }
 
     public async Task<MinMaxAmountDto> GetMinMaxAmountAsync(string userId)

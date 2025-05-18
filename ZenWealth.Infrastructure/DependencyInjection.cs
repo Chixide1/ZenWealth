@@ -53,7 +53,7 @@ public static class DependencyInjection
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(
-                    configuration.GetConnectionString("PostgresConnection"),
+                    configuration.GetConnectionString("PostgreSqlConnection"),
                     npgsqlOptions => npgsqlOptions.MigrationsAssembly("ZenWealth.Infrastructure")));
         }
         else
