@@ -54,7 +54,7 @@ Manage connected banking institutions and account security settings.
 
 - [.NET 8.0+](https://dotnet.microsoft.com/download)
 - [Node.js 23.0+](https://nodejs.org/)
-- [SQL Server](https://www.microsoft.com/en-gb/sql-server/sql-server-downloads)
+- [SQL Server](https://www.microsoft.com/en-gb/sql-server/sql-server-downloads) or [PostgreSQL](https://www.postgresql.org/)
 - [A Plaid developer account](https://dashboard.plaid.com)
 - [An Azure Account](https://azure.microsoft.com/en-gb/products/communication-services)
 
@@ -102,9 +102,11 @@ Copy the below json to `appsettings.json` and update the values:
             "Microsoft.EntityFrameworkCore.Database.Command": "EF_CORE_LOG_LEVEL"
         }
     },
+    "DatabaseProvider": "PostgreSql",
     "ConnectionStrings": {
         "DefaultConnection": "DATABASE_CONN_STR",
-        "AzureCommunicationServices": "AZURE_COMMS_SERVICE_CONN_STR"
+        "AzureCommunicationServices": "AZURE_COMMS_SERVICE_CONN_STR",
+        "PostgreSqlConnection": ""
     },
     "AllowedHosts": "HOSTNAME",
     "Plaid": {
@@ -126,9 +128,12 @@ Copy the below json to `appsettings.json` and update the values:
   - `ASP.NET_CORE_LOG_LEVEL`: Logging level for ASP.NET Core components (e.g., "Warning")
   - `EF_CORE_LOG_LEVEL`: Logging level for Entity Framework Core (e.g., "Information")
 
+- **DatabaseProvider**: The database provider you want to use. Available options are Sql Server & PostgreSQL
+
 - **ConnectionStrings**:
-  - `DefaultConnection`: Your database connection string
+  - `DefaultConnection`: Connection string if you're using SqlServer
   - `AzureCommunicationServices`: Connection string for Azure Communication Services
+  - `PostgreSqlConnection`: Connection string if you're using PostgreSQL
 
 - **AllowedHosts**: Hostname where the application will run (e.g., "localhost" or your domain)
 

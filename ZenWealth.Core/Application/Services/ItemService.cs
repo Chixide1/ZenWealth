@@ -275,7 +275,7 @@ internal class ItemService(
         
         try
         {
-            var response = await plaidService.CreateLinkTokenAsync(userId, webhookUrl);
+            var response = await plaidService.CreateLinkTokenAsync(userId, "ZenWealth");
 
             if (response.Error != null)
             {
@@ -318,7 +318,7 @@ internal class ItemService(
                 logger.LogWarning("Plaid:WebhookUrl is empty");
             }
             
-            var response = await plaidService.CreateUpdateLinkTokenAsync(userId, item.AccessToken, webhookUrl);
+            var response = await plaidService.CreateUpdateLinkTokenAsync(userId, item.AccessToken, "ZenWealth");
 
             if (response.Error != null)
             {
