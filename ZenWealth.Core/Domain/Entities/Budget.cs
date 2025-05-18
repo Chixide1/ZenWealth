@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace ZenWealth.Core.Domain.Entities;
+﻿namespace ZenWealth.Core.Domain.Entities;
 
 public class Budget
 {
@@ -12,7 +10,6 @@ public class Budget
     /// <summary>
     /// <para>The associated user ID</para>
     /// </summary>
-    [Column(TypeName = "nvarchar(450)")]
     public required string UserId { get; init; }
     
     /// <summary>
@@ -23,13 +20,11 @@ public class Budget
     /// <summary>
     /// <para>The category which the budget is set for</para>
     /// </summary>
-    [Column(TypeName = "varchar(255)")]
     public required string Category { get; init; }
     
     /// <summary>
     /// <para>The budget limit which the amount shouldn't exceed</para>
     /// </summary>
-    [Column(TypeName = "decimal(10, 2)")]
     public required decimal Limit { get; set; }
 
     /// <summary>

@@ -1,37 +1,36 @@
-﻿using ZenWealth.Core.Application.Services;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using ZenWealth.Core.Application.Services;
 using ZenWealth.Core.Domain.Entities;
 using ZenWealth.Core.Domain.Interfaces;
 using ZenWealth.Core.Models;
 using ZenWealth.Core.Utils.Constants;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
+using ZenWealth.Tests.TestClasses;
 
 namespace ZenWealth.Tests.UnitTests.BudgetServiceTests;
 
 public class BudgetServiceTests
 {
-    private readonly Mock<ILogger<BudgetService>> _loggerMock;
+    #region BudgetServiceTests Setup
+    
     private readonly Mock<IBudgetRepository> _budgetRepositoryMock;
+    private readonly TestBudgetService _budgetService;
     private readonly Mock<ITransactionRepository> _transactionRepositoryMock;
-    private readonly BudgetService _budgetService;
 
     public BudgetServiceTests()
     {
-        _loggerMock = new Mock<ILogger<BudgetService>>();
+        var loggerMock = new Mock<ILogger<BudgetService>>();
         _budgetRepositoryMock = new Mock<IBudgetRepository>();
         _transactionRepositoryMock = new Mock<ITransactionRepository>();
-        _budgetService = new BudgetService(
-            _loggerMock.Object,
+        _budgetService = new TestBudgetService(
+            loggerMock.Object,
             _budgetRepositoryMock.Object,
             _transactionRepositoryMock.Object
         );
     }
-
+    
+    #endregion
+    
     #region AddBudgetAsync Tests
 
     [Fact]
@@ -101,19 +100,27 @@ public class BudgetServiceTests
     public async Task GetBudgetsAsync_WhenUserHasBudgets_ShouldReturnBudgetsWithSpendingInfo()
     {
         // Arrange
-        var userId = "user123";
+        const string userId = "user123";
         var currentDate = new DateOnly(2025, 5, 7); // Using current date from the test
-        
+        _budgetService.SetCurrentDate(currentDate);
+
         var userBudgets = new List<Budget>
         {
-            new Budget { Id = 1, UserId = userId, Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Limit = 500.00m, Day = 1 },
-            new Budget { Id = 2, UserId = userId, Category = ExpenseCategories.ENTERTAINMENT.ToString(), Limit = 200.00m, Day = 1 }
+            new()
+            {
+                Id = 1, UserId = userId, Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Limit = 500.00m,
+                Day = 1
+            },
+            new()
+            {
+                Id = 2, UserId = userId, Category = ExpenseCategories.ENTERTAINMENT.ToString(), Limit = 200.00m, Day = 1
+            }
         };
 
         var categoryTotals = new List<CategoryTotalDto>
         {
-            new CategoryTotalDto { Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Total = 250.00m },
-            new CategoryTotalDto { Category = ExpenseCategories.ENTERTAINMENT.ToString(), Total = 150.00m }
+            new() { Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Total = 250.00m },
+            new() { Category = ExpenseCategories.ENTERTAINMENT.ToString(), Total = 150.00m }
         };
 
         _budgetRepositoryMock
@@ -125,8 +132,10 @@ public class BudgetServiceTests
 
         _transactionRepositoryMock
             .Setup(repo => repo.GetTransactionsByCategoryAsync(
-                userId, 
-                It.Is<DateOnly>(d => d.Year == expectedBudgetDate.Year && d.Month == expectedBudgetDate.Month && d.Day == expectedBudgetDate.Day),
+                userId,
+                It.Is<DateOnly>(d =>
+                    d.Year == expectedBudgetDate.Year && d.Month == expectedBudgetDate.Month &&
+                    d.Day == expectedBudgetDate.Day),
                 null,
                 0))
             .ReturnsAsync(categoryTotals);
@@ -136,13 +145,13 @@ public class BudgetServiceTests
 
         // Assert
         Assert.Equal(2, result.Count);
-        
+
         // Check FOOD_AND_DRINK budget
         var foodBudget = result.First(b => b.Category == ExpenseCategories.FOOD_AND_DRINK.ToString());
         Assert.Equal(500.00m, foodBudget.Limit);
         Assert.Equal(250.00m, foodBudget.Spent);
         Assert.Equal(250.00m, foodBudget.Remaining);
-        
+
         // Check ENTERTAINMENT budget
         var entertainmentBudget = result.First(b => b.Category == ExpenseCategories.ENTERTAINMENT.ToString());
         Assert.Equal(200.00m, entertainmentBudget.Limit);
@@ -154,28 +163,30 @@ public class BudgetServiceTests
     public async Task GetBudgetsAsync_WhenBudgetDayIsAfterCurrentDay_ShouldUsePreviousMonth()
     {
         // Arrange
-        var userId = "user123";
+        const string userId = "user123";
         var testDate = new DateOnly(2025, 5, 7); // Current day is 7
+        _budgetService.SetCurrentDate(testDate);
 
         var userBudgets = new List<Budget>
         {
-            new() { Id = 1, UserId = userId, Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Limit = 500.00m, Day = 15 } // Budget day is 15
+            new()
+            {
+                Id = 1, UserId = userId, User = new User(), Category = nameof(ExpenseCategories.FOOD_AND_DRINK),
+                Limit = 500.00m, Day = 15
+            } // Budget day is 15
         };
 
         _budgetRepositoryMock
             .Setup(repo => repo.GetBudgetsByUserIdAsync(userId))
             .ReturnsAsync(userBudgets);
 
-        // Mock DateTime.Now to return our test date
-        var mockDateTime = new DateTime(testDate.Year, testDate.Month, testDate.Day);
-        
-        // Since budget day (15) is after current day (7), we should use April 15 as the budget start date
+        // Since budget day (15) is after the current day (7), we should use April 15 as the budget start date
         var expectedBudgetDate = new DateOnly(2025, 4, 15);
 
         _transactionRepositoryMock
             .Setup(repo => repo.GetTransactionsByCategoryAsync(
                 userId,
-                It.Is<DateOnly>(d => d.Year == expectedBudgetDate.Year && d.Month == expectedBudgetDate.Month && d.Day == expectedBudgetDate.Day),
+                It.IsAny<DateOnly>(),
                 null,
                 0))
             .ReturnsAsync([]);
@@ -196,16 +207,25 @@ public class BudgetServiceTests
     {
         // Arrange
         var userId = "user123";
-        
+        var currentDate = new DateOnly(2025, 5, 7);
+        _budgetService.SetCurrentDate(currentDate);
+
         var userBudgets = new List<Budget>
         {
-            new() { Id = 1, UserId = userId, Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Limit = 500.00m, Day = 1 },
-            new() { Id = 2, UserId = userId, Category = ExpenseCategories.ENTERTAINMENT.ToString(), Limit = 200.00m, Day = 1 }
+            new()
+            {
+                Id = 1, UserId = userId, Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Limit = 500.00m,
+                Day = 1
+            },
+            new()
+            {
+                Id = 2, UserId = userId, Category = ExpenseCategories.ENTERTAINMENT.ToString(), Limit = 200.00m, Day = 1
+            }
         };
 
         var categoryTotals = new List<CategoryTotalDto>
         {
-            new CategoryTotalDto { Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Total = 250.00m }
+            new() { Category = ExpenseCategories.FOOD_AND_DRINK.ToString(), Total = 250.00m }
             // No ENTERTAINMENT transactions
         };
 
@@ -215,7 +235,7 @@ public class BudgetServiceTests
 
         _transactionRepositoryMock
             .Setup(repo => repo.GetTransactionsByCategoryAsync(
-                userId, 
+                userId,
                 It.IsAny<DateOnly>(),
                 null,
                 0))
@@ -235,7 +255,9 @@ public class BudgetServiceTests
     {
         // Arrange
         var userId = "user123";
-        
+        var currentDate = new DateOnly(2025, 5, 7);
+        _budgetService.SetCurrentDate(currentDate);
+
         _budgetRepositoryMock
             .Setup(repo => repo.GetBudgetsByUserIdAsync(userId))
             .ReturnsAsync([]);
@@ -248,9 +270,9 @@ public class BudgetServiceTests
         _transactionRepositoryMock.Verify(
             repo => repo.GetTransactionsByCategoryAsync(
                 It.IsAny<string>(),
-                It.IsAny<DateOnly>(), 
-                null, 
-                0), 
+                It.IsAny<DateOnly>(),
+                null,
+                0),
             Times.Once);
     }
 
@@ -264,7 +286,7 @@ public class BudgetServiceTests
         // Arrange
         var userId = "user123";
         var category = "food_and_drink"; // Note: lowercase, the service should convert to uppercase
-        
+
         var budget = new Budget
         {
             Id = 1,
@@ -291,7 +313,7 @@ public class BudgetServiceTests
         // Arrange
         var userId = "user123";
         var category = ExpenseCategories.FOOD_AND_DRINK.ToString();
-        
+
         _budgetRepositoryMock
             .Setup(repo => repo.GetBudgetByUserIdAndCategoryAsync(userId, category))
             .ReturnsAsync((Budget?)null);

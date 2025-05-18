@@ -12,6 +12,11 @@ internal class BudgetService(
     ITransactionRepository transactionRepository
 ): IBudgetsService
 {
+    protected virtual DateOnly GetCurrentDate()
+    {
+        return DateOnly.FromDateTime(DateTime.Now);
+    }
+
     public async Task AddBudgetAsync(Budget budget)
     {
         var existingBudget = await budgetRepository.GetBudgetByUserIdAndCategoryAsync(budget.UserId, budget.Category);
@@ -39,7 +44,7 @@ internal class BudgetService(
 
     public async Task<List<BudgetDto>> GetBudgetsAsync(string userId)
     {
-        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var currentDate = GetCurrentDate();
         var userBudgets = await budgetRepository.GetBudgetsByUserIdAsync(userId);
         
         logger.LogInformation("Retrieved {BudgetCount} budgets for user {UserId}", userBudgets.Count, userId);
@@ -47,7 +52,7 @@ internal class BudgetService(
         var budgetDate = new DateOnly(currentDate.Year, currentDate.Month,
             userBudgets.Count > 0 ? userBudgets[0].Day : 1);
         // If budget day is after current day, use previous month
-        if (budgetDate > currentDate)
+        if (budgetDate.Day > currentDate.Day)
         {
             budgetDate = budgetDate.AddMonths(-1);
         }

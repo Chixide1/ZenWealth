@@ -1,10 +1,16 @@
-﻿using ZenWealth.Core.Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ZenWealth.Core.Domain.Entities;
+using ZenWealth.Infrastructure.Persistence.Configurations;
 
 namespace ZenWealth.Infrastructure.Persistence;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options)
+/// <summary>
+/// Base AppDbContext that uses the configuration factory to apply the correct database-specific configurations
+/// </summary>
+public class AppDbContext(
+    DbContextOptions options,
+    ConfigurationFactory configurationFactory)
     : IdentityDbContext<User>(options)
 {
     public DbSet<Item> Items { get; set; }
@@ -17,19 +23,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Transaction>()
-            .HasKey(t => t.Id)
-            .IsClustered(false);
-        
-        modelBuilder.Entity<Transaction>()
-            .HasIndex(t => new { t.Date, t.Id })
-            .IsDescending([true, true])
-            .IsClustered();
-
-        modelBuilder.Entity<Transaction>()
-            .HasIndex(t => new { t.Amount, t.Id })
-            .IsUnique();
-        
         base.OnModelCreating(modelBuilder);
+        
+        // Apply configurations through the factory
+        modelBuilder.ApplyConfiguration(configurationFactory.CreateAccountConfiguration());
+        modelBuilder.ApplyConfiguration(configurationFactory.CreateBudgetConfiguration());
+        modelBuilder.ApplyConfiguration(configurationFactory.CreateItemConfiguration());
+        modelBuilder.ApplyConfiguration(configurationFactory.CreateTransactionConfiguration());
+        modelBuilder.ApplyConfiguration(configurationFactory.CreateUserConfiguration());
     }
 }

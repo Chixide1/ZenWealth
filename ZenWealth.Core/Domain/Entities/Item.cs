@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace ZenWealth.Core.Domain.Entities;
+﻿namespace ZenWealth.Core.Domain.Entities;
 
 public class Item
 {
@@ -12,13 +10,11 @@ public class Item
     /// <summary>
     /// <para>The associated User ID</para>
     /// </summary>
-    [Column(TypeName = "nvarchar(450)")]
     public required string UserId { get; init; }
     
     /// <summary>
     /// <para>The Plaid Item ID</para>
     /// </summary>
-    [Column(TypeName = "varchar(150)")]
     public required string PlaidItemId { get; init; }
 
     /// <summary>
@@ -29,13 +25,11 @@ public class Item
     /// <summary>
     /// <para>The token which allows interaction with the user's bank to retrieve transaction information</para>
     /// </summary>
-    [Column(TypeName = "varchar(100)")]
     public required string AccessToken { get; set; }
 
     /// <summary>
     /// <para>Cursor used for fetching any future updates after the latest update provided in this response. The cursor obtained after all pages have been pulled (indicated by <c>has_more</c> being <c>false</c>) will be valid for at least 1 year. This cursor should be persisted for later calls. If transactions are not yet available, this will be an empty string.</para>
     /// </summary>
-    [Column(TypeName = "varchar(255)")]
     public string? Cursor { get; set; }
 
     //<summary>
@@ -46,7 +40,6 @@ public class Item
     /// <summary>
     /// <para>The Institution Name</para>
     /// </summary>
-    [Column(TypeName = "varchar(255)")]
     public required string InstitutionName { get; init; }
     
     /// <summary>

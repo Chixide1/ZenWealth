@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ZenWealth.Infrastructure.ExternalServices;
 using ZenWealth.Infrastructure.Persistence;
+using ZenWealth.Infrastructure.Persistence.Configurations;
 using ZenWealth.Infrastructure.Persistence.Repositories;
 
 namespace ZenWealth.Infrastructure;
@@ -35,20 +36,33 @@ public static class DependencyInjection
     /// <param name="configuration">The application configuration used to retrieve the connection string.</param>
     public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options =>
+        // Read the database provider from configuration
+        var dbProvider = configuration.GetValue<string>("DatabaseProvider") ?? "SqlServer";
+        
+        // Register the appropriate factory
+        var provider = dbProvider.ToLower() switch
         {
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                    sqlServerOptions => 
-                    {
-                        sqlServerOptions.CommandTimeout(60);
-                        sqlServerOptions.EnableRetryOnFailure(
-                            maxRetryCount: 3,
-                            maxRetryDelay: TimeSpan.FromSeconds(5),
-                            errorNumbersToAdd: [-2] // SQL timeout error code
-                        );
-                    })
-                .EnableSensitiveDataLogging();
-        });
+            "postgresql" => ConfigurationFactory.DatabaseProvider.PostgreSql,
+            _ => ConfigurationFactory.DatabaseProvider.SqlServer
+        };
+        
+        services.AddSingleton(new ConfigurationFactory(provider));
+        
+        // Register the DbContext with the appropriate connection
+        if (provider == ConfigurationFactory.DatabaseProvider.PostgreSql)
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(
+                    configuration.GetConnectionString("PostgresConnection"),
+                    npgsqlOptions => npgsqlOptions.MigrationsAssembly("ZenWealth.Infrastructure")));
+        }
+        else
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString("DefaultConnection"),
+                    sqlServerOptions => sqlServerOptions.MigrationsAssembly("ZenWealth.Infrastructure")));
+        }
     }
     
     /// <summary>

@@ -17,6 +17,7 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
       <PackageReference Include="Microsoft.Extensions.Azure" Version="1.11.0" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.4" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
     <ItemGroup>
@@ -24,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Persistence\Configurations\Postgres\" />
       <Folder Include="Persistence\Migrations\" />
     </ItemGroup>
 
