@@ -15,14 +15,14 @@ function RouteComponent() {
             <div className="flex items-center">
                 <Logo />
             </div>
-            <div className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] my-auto pb-10 sm:py-8 flex flex-col items-center">
+            <div className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] mt-auto mb-0 md:mb-6 pb-10 sm:py-8 flex flex-col items-center">
                 <h1 className="text-5xl sm:text-3xl font-semibold mb-2">Login</h1>
                 <p className="text-neutral-400 text-sm mb-6">
                     Welcome back, please login
                 </p>
                 <LoginForm />
             </div>
-            <p className="text-sm text-primary">
+            <p className="text-sm text-primary mb-auto">
                 Don't have an account?
                 <Link to={"/register"} className="text-secondary ms-1">
                     Register

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ZenWealth.Core.Domain.Entities;
 using ZenWealth.Infrastructure.Persistence.Configurations;
 
-namespace ZenWealth.Infrastructure.Persistence;
+namespace ZenWealth.Infrastructure;
 
 /// <summary>
 /// Base AppDbContext that uses the configuration factory to apply the correct database-specific configurations

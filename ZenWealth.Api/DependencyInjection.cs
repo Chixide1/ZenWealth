@@ -6,6 +6,7 @@ using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using ZenWealth.Infrastructure;
 
 namespace ZenWealth.Api;
 
