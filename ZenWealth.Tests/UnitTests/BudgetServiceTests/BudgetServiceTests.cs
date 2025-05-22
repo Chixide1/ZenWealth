@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using ZenWealth.Core.Application.Services;
+using ZenWealth.Core.Domain.Constants;
 using ZenWealth.Core.Domain.Entities;
 using ZenWealth.Core.Domain.Interfaces;
 using ZenWealth.Core.Models;
-using ZenWealth.Core.Utils.Constants;
 using ZenWealth.Tests.TestClasses;
 
 namespace ZenWealth.Tests.UnitTests.BudgetServiceTests;

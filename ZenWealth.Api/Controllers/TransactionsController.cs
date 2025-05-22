@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ZenWealth.Api.Dtos.Requests;
 using ZenWealth.Api.Dtos.Responses;
+using ZenWealth.Core.Domain.Constants;
 
 namespace ZenWealth.Api.Controllers;
 
@@ -41,7 +42,7 @@ public class TransactionsController(
 
         var transactions = await transactionsService.GetTransactionsAsync(user.Id, request);
 
-        if (request.Sort is not null && request.Sort.Contains("amount", StringComparison.CurrentCultureIgnoreCase))
+        if (request.Sort is TransactionSortOption.AMOUNT_ASC or TransactionSortOption.AMOUNT_DESC)
         {
             logger.LogInformation("Returning transactions sorted by amount for user {UserId}",
                 user.Id);

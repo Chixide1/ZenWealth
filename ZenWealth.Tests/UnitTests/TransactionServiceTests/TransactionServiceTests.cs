@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using ZenWealth.Core.Application.Services;
+using ZenWealth.Core.Domain.Constants;
 using ZenWealth.Core.Domain.Interfaces;
 using ZenWealth.Core.Dtos;
 using ZenWealth.Core.Models;
@@ -10,25 +11,24 @@ namespace ZenWealth.Tests.UnitTests.TransactionServiceTests;
 public partial class TransactionServiceTests
 {
     private readonly Mock<ITransactionRepository> _mockRepository;
-    private readonly Mock<ILogger<TransactionService>> _mockLogger;
     private readonly TransactionService _service;
 
     public TransactionServiceTests()
     {
         _mockRepository = new Mock<ITransactionRepository>();
-        _mockLogger = new Mock<ILogger<TransactionService>>();
-        _service = new TransactionService(_mockRepository.Object, _mockLogger.Object);
+        var mockLogger = new Mock<ILogger<TransactionService>>();
+        _service = new TransactionService(_mockRepository.Object, mockLogger.Object);
     }
 
     [Fact]
     public async Task GetTransactionsAsync_ReturnsTransactions_WhenRepositoryReturnsTransactions()
     {
         // Arrange
-        var userId = "user123";
+        const string userId = "user123";
         var transactionParams = new TransactionParams
         {
             PageSize = 10,
-            Sort = "date-desc"
+            Sort = TransactionSortOption.DATE_DESC
         };
 
         var expectedTransactions = new List<TransactionDto>
@@ -70,11 +70,11 @@ public partial class TransactionServiceTests
     public async Task GetTransactionsAsync_ReturnsEmptyList_WhenRepositoryReturnsEmptyList()
     {
         // Arrange
-        var userId = "user123";
+        const string userId = "user123";
         var transactionParams = new TransactionParams
         {
             PageSize = 10,
-            Sort = "date-desc"
+            Sort = TransactionSortOption.DATE_DESC
         };
 
         _mockRepository.Setup(r => r.GetTransactionsAsync(userId, transactionParams))
@@ -92,10 +92,10 @@ public partial class TransactionServiceTests
     public async Task GetTransactionsByCategoryAsync_ReturnsCategoryTotals_WhenRepositoryReturnsData()
     {
         // Arrange
-        var userId = "user123";
+        const string userId = "user123";
         var beginDate = new DateOnly(2025, 1, 1);
         var endDate = new DateOnly(2025, 5, 1);
-        var count = 5;
+        const int count = 5;
 
         var categoryTotals = new List<CategoryTotalDto>
         {

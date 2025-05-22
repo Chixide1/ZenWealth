@@ -1,10 +1,10 @@
 ﻿using ZenWealth.Core.Application.Interfaces;
 using ZenWealth.Core.Domain.Entities;
 using ZenWealth.Core.Models;
-using ZenWealth.Core.Utils.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ZenWealth.Core.Domain.Constants;
 
 namespace ZenWealth.Api.Controllers;
 

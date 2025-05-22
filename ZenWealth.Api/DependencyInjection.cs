@@ -1,4 +1,5 @@
-﻿using ZenWealth.Core.Domain.Entities;
+﻿using System.ComponentModel;
+using ZenWealth.Core.Domain.Entities;
 using Going.Plaid.Converters;
 using ZenWealth.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +7,8 @@ using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using ZenWealth.Api.ModelBinders;
+using ZenWealth.Core.Common.Converters;
 using ZenWealth.Infrastructure;
 
 namespace ZenWealth.Api;
@@ -75,8 +78,16 @@ public static class DependencyInjection
     /// </summary>
     public static void ConfigureControllers(this IServiceCollection services)
     {
-        services.AddControllers().AddJsonOptions(options =>
-            options.JsonSerializerOptions.AddPlaidConverters());
+        // TypeDescriptor.AddAttributes(typeof(TransactionSortOption),
+        //     new TypeConverterAttribute(typeof(TransactionSortOptionConverter)));
+        
+        services.AddControllers(options =>
+        {
+            options.ModelBinderProviders.Insert(0, new TransactionSortOptionModelBinderProvider());
+        }).AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.AddPlaidConverters();
+        });
     }
 
     /// <summary>

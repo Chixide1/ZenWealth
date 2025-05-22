@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace ZenWealth.Core.Utils.Constants;
+namespace ZenWealth.Core.Domain.Constants;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public enum ExpenseCategories

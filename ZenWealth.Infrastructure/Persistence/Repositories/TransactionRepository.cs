@@ -4,6 +4,7 @@ using ZenWealth.Core.Dtos;
 using ZenWealth.Core.Models;
 using ZenWealth.Core.Utils.Extensions;
 using Microsoft.EntityFrameworkCore;
+using ZenWealth.Core.Domain.Constants;
 
 namespace ZenWealth.Infrastructure.Persistence.Repositories;
 
@@ -52,35 +53,32 @@ internal class TransactionRepository(AppDbContext context) : ITransactionReposit
         }
 
         // Sorting
-        transactions = queryParams.Sort?.ToLower() switch
+        transactions = queryParams.Sort switch
         {
-            "amount-asc" => transactions.OrderBy(t => t.Amount)
+            TransactionSortOption.AMOUNT_ASC => transactions.OrderBy(t => t.Amount)
                 .ThenBy(t => t.Id),
-            "amount-desc" => transactions.OrderByDescending(t => t.Amount)
+            TransactionSortOption.AMOUNT_DESC => transactions.OrderByDescending(t => t.Amount)
                 .ThenByDescending(t => t.Id),
-            "date-asc"  => transactions.OrderBy(t => t.Date),
+            TransactionSortOption.DATE_ASC  => transactions.OrderBy(t => t.Date),
             _ => transactions.OrderByDescending(t => t.Date)
         };
 
         // Pagination
         if (queryParams.Cursor != 0)
         {
-            if (queryParams.Sort?.ToLower() == "amount-asc")
+            transactions = queryParams.Sort switch
             {
-                transactions = transactions.Where(t => t.Amount > queryParams.Amount || (t.Amount == queryParams.Amount && t.Id > queryParams.Cursor));
-            }
-            else if (queryParams.Sort?.ToLower() == "amount-desc")
-            {
-                transactions = transactions.Where(t => t.Amount < queryParams.Amount || (t.Amount == queryParams.Amount && t.Id < queryParams.Cursor));
-            }
-            else if (queryParams.Sort?.ToLower() == "date-asc")
-            {
-                transactions = transactions.Where(t => t.Date >= queryParams.Date && t.Id >= queryParams.Cursor && t.UserId == userId);
-            }
-            else
-            {
-                transactions = transactions.Where(t => t.Date <= queryParams.Date && t.Id <= queryParams.Cursor);
-            }
+                TransactionSortOption.AMOUNT_ASC => transactions.Where(t =>
+                    t.Amount > queryParams.Amount || (t.Amount == queryParams.Amount && t.Id > queryParams.Cursor)),
+                
+                TransactionSortOption.AMOUNT_DESC => transactions.Where(t =>
+                    t.Amount < queryParams.Amount || (t.Amount == queryParams.Amount && t.Id < queryParams.Cursor)),
+                
+                TransactionSortOption.DATE_ASC => transactions.Where(t =>
+                    t.Date >= queryParams.Date && t.Id >= queryParams.Cursor && t.UserId == userId),
+                
+                _ => transactions.Where(t => t.Date <= queryParams.Date && t.Id <= queryParams.Cursor)
+            };
         }
 
         // Final Query
