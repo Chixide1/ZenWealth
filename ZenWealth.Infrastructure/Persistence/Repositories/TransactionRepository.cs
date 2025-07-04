@@ -18,7 +18,8 @@ internal class TransactionRepository(AppDbContext context) : ITransactionReposit
         // Filters
         if (!string.IsNullOrWhiteSpace(queryParams.Name))
         {
-            transactions = transactions.Where(t => t.Name.StartsWith(queryParams.Name));
+            transactions = transactions.Where(t => t.Name.ToLower()
+                .StartsWith(queryParams.Name.ToLower()));
         }
         
         if (queryParams.MinAmount is not null)

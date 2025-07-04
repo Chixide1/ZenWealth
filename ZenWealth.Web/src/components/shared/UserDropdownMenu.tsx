@@ -8,13 +8,14 @@ import {Avatar, AvatarFallback} from "@/components/ui/avatar.tsx";
 import { useState } from "react";
 import {userDetailsAtom} from "@/lib/atoms.ts";
 import { useAtom } from "jotai";
-import { ChevronDown, LogOut, Settings, UserPlus } from "lucide-react";
+import {ChevronDown, LogOut, LucideProps, Settings, UserPlus} from "lucide-react";
 import api from "@/lib/api.ts";
 import Loading from "@/components/shared/Loading.tsx";
 import { useNavigate } from "@tanstack/react-router";
+import * as react from "react";
 
 type UserDropdownMenuItem = {
-    icon: React.ReactNode,
+    Icon: react.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & react.RefAttributes<SVGSVGElement>>,
     text: string,
     onSelect: () => void
 }
@@ -30,12 +31,12 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
 
     const UserDropdownMenuItems: UserDropdownMenuItem[] = [
         {
-            icon: <LogOut />,
+            Icon: LogOut,
             text: "Sign Out",
             onSelect: handleSignOut,
         },
         {
-            icon: <Settings />,
+            Icon: Settings,
             text: "Settings",
             onSelect: () => {
                 setIsDropdownOpen(false);
@@ -43,7 +44,7 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
             },
         },
         {
-            icon: <UserPlus />,
+            Icon: UserPlus,
             text: "Register",
             onSelect: () => { navigate({ to: "/register" });},
         }
@@ -69,10 +70,10 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
                 {(UserDropdownMenuItems.map(item => (
                     <DropdownMenuItem
                         key={item.text}
-                        className="cursor-pointer focus:text-secondary transition-colors duration-300 focus:bg-background"
+                        className="cursor-pointer [&>svg]:w-[1em] [&>svg]:h-[1em] sm:gap-2 gap-3 px-3 py-2 sm:px-2 sm:py-1.5 text-xl sm:text-base focus:text-secondary transition-colors duration-300 focus:bg-background"
                         onSelect={item.onSelect}
                     >
-                        {item.icon}
+                        <item.Icon className="" />
                         <span>{item.text}</span>
                     </DropdownMenuItem>
                 )))}

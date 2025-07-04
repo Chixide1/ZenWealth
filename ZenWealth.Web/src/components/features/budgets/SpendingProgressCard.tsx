@@ -15,6 +15,8 @@ export function SpendingProgressCard({className, budgets}: SpendingProgressCardP
         setTimeout(() => setMounted(true), 500);
     }, []);
     
+    console.log(budgets);
+    
     return (
         <div className={cn("rounded-lg bg-offblack border-neutral-800 border p-6", className)}>
             <div className="mb-6 flex items-center justify-between">

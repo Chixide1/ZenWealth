@@ -160,10 +160,9 @@ export function BudgetTable({ className, budgets }: BudgetTableProps) {
                                         onValueChange={updateDayForAllBudgets}
                                         disabled={isSaving}
                                     >
-                                        <SelectTrigger asChild className="p-0 text-xs" icon={false}>
-                                            <Button variant="accent" size="sm" className="[&_svg]:size-3 gap-1 px-2">
-                                                <FontAwesomeIcon icon={faCalendarDays} />
-                                            </Button>
+                                        <SelectTrigger className="p-0 w-auto h-auto bg-accent text-accent-foreground hover:bg-accent/80 rounded-md px-2 py-1 gap-1 flex items-center text-xs font-medium">
+                                            <FontAwesomeIcon icon={faCalendarDays} className="size-3" />
+                                            <span>Start Date</span>
                                         </SelectTrigger>
                                         <SelectContent className="w-fit !p-0 min-w-0 text-primary h-64" align="end" portal={false}>
                                             {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (

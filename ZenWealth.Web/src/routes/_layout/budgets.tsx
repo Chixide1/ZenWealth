@@ -16,7 +16,7 @@ function RouteComponent() {
     const [{data}] = useAtom(budgetsAtom);
     const budgets = getAllBudgets(data);
     
-    // console.log(data);
+    // console.log(budgets);
      
     return (
         <div className="p-4 pb-8 w-screen">
