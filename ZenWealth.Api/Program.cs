@@ -1,7 +1,6 @@
 using ZenWealth.Api;
 using ZenWealth.Api.Middleware;
 using ZenWealth.Core;
-using Going.Plaid;
 using ZenWealth.Infrastructure;
 using Serilog;
 
@@ -24,6 +23,7 @@ builder.Host.UseSerilogLogging();
 
 var app = builder.Build();
 
+await app.SeedDemoUser();
 app.UseDefaultFiles();
 app.MapStaticAssets();
 app.UseSerilogRequestLogging();

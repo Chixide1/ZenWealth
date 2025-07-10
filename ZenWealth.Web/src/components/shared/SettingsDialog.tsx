@@ -20,6 +20,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { ReauthenticateButton } from "@/components/features/link/ReauthenticateButton";
 import Loading from "@/components/shared/Loading.tsx";
+import {AxiosError} from "axios";
+import {ApiErrorResponse} from "@/types.ts";
 
 // ==================== TYPES ====================
 type SettingsSidebarItem = {
@@ -179,18 +181,28 @@ function AccountSection() {
     };
 
     const handleDeleteUser = async () => {
-        setIsLoading(true);
-        const response = await api.delete<DeleteUserResponse>("/User");
-        setIsLoading(false);
-
-        if(response.status === 200) {
-            toast({title: "Delete Status", description: "Your account has now been deleted"});
+        try {
+            const response = await api.delete<DeleteUserResponse>("/User");
+        
+            if(response.status === 200) {
+                toast({title: "Delete Status", description: "Your account has now been deleted"});
+                // Only navigate to login page on successful deletion
+                window.location.reload();
+            }
+            else {
+                toast({title: "Delete Status", description: response.data.errors[0].description, variant: "destructive"});
+            // No navigation - stay on current page
+            }
+        } catch (error) {
+            const { response } = error as AxiosError<DeleteUserResponse>;
+            console.error("Error deleting user:", error);
+            toast({
+                title: "Delete Error",
+                description: response?.data?.errors?.[0]?.description || "Failed to delete account",
+                variant: "destructive"
+            });
+        // No navigation - stay on current page
         }
-        else {
-            toast({title: "Delete Status", description: response.data.errors[0].description, variant: "destructive"});
-        }
-
-        window.location.reload();
     };
     
     return (
@@ -309,10 +321,11 @@ function SecuritySection() {
             if (response.status === 200) {
                 setSetupData(response.data);
             }
-        } catch {
+        } catch(error) {
+            const { response } = error as AxiosError<ApiErrorResponse>;
             toast({
-                title: "Error",
-                description: "Failed to setup MFA",
+                title: "MFA Error",
+                description: response?.data?.errors?.[0]?.description || "Failed to setup MFA",
                 variant: "destructive"
             });
         } finally {

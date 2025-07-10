@@ -113,12 +113,67 @@ public static class DependencyInjection
     public static void ConfigureIdentity(this IServiceCollection services)
     {
         services.AddIdentityApiEndpoints<User>()
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>();
-    
+
         services.Configure<IdentityOptions>(options =>
         {
             options.SignIn.RequireConfirmedEmail = true;
             options.User.RequireUniqueEmail = true;
         });
+    }
+    
+    /// <summary>
+    /// Seeds the DemoUser role if it doesn't exist.
+    /// </summary>
+    /// <param name="app">The web application.</param>
+    public static async Task SeedDemoUserRole(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    
+        if (!await roleManager.RoleExistsAsync("DemoUser"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("DemoUser"));
+        }
+    }
+
+    /// <summary>
+    /// Seeds a demo user with DemoUser role for development/testing purposes.
+    /// </summary>
+    /// <param name="app">The web application.</param>
+    public static async Task SeedDemoUser(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        
+        // Create DemoUser role if it doesn't exist
+        if (!await roleManager.RoleExistsAsync("DemoUser"))
+        {
+            await roleManager.CreateAsync(new IdentityRole("DemoUser"));
+        }
+        
+        // Create demo user if it doesn't exist
+        const string demoEmail = "demo@zenwealth.com";
+        const string demoUsername = "DemoUser";
+        const string demoPassword = "DemoUser123!";
+        
+        var existingUser = await userManager.FindByEmailAsync(demoEmail);
+        if (existingUser == null)
+        {
+            var demoUser = new User
+            {
+                UserName = demoUsername,
+                Email = demoEmail,
+                EmailConfirmed = true // Skip email confirmation for demo user
+            };
+            
+            var result = await userManager.CreateAsync(demoUser, demoPassword);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(demoUser, "DemoUser");
+            }
+        }
     }
 }

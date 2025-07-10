@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Web;
 using System.Security.Claims;
+using ZenWealth.Api.Common;
 using ZenWealth.Core.Utils.Helpers;
 using ZenWealth.Core.Domain.Entities;
 using ZenWealth.Core.Domain.Interfaces;
@@ -271,6 +272,13 @@ public class AuthController(
             return NotFound(new { message = "User not found." });
         }
 
+        var roles = await userManager.GetRolesAsync(user);
+
+        if (roles.Contains("DemoUser"))
+        {
+            return this.ForbidForDemoAccount();
+        }
+        
         logger.LogInformation("MFA setup initiated for user {UserId} ({Username})", 
             user.Id, LogUsername(user.UserName!));
 

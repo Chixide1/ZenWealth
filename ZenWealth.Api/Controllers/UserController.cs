@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ZenWealth.Api.Dtos.Responses;
+using ZenWealth.Api.Common;
 
 namespace ZenWealth.Api.Controllers;
 
@@ -41,6 +42,13 @@ public class UserController(UserManager<User> userManager,
         {
             logger.LogWarning("Unable to delete user - user is unauthorized");
             return Unauthorized();
+        }
+        
+        var roles = await userManager.GetRolesAsync(user);
+
+        if (roles.Contains("DemoUser"))
+        {
+            return this.ForbidForDemoAccount();
         }
 
         var items = await itemsService.GetItemsAsync(user.Id);

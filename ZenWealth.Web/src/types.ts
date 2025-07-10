@@ -103,3 +103,12 @@ export type Institution = {
     id: number,
     name: string,
 }
+
+export type IdentityError = {
+    code: string;
+    description: string;
+}
+
+export type ApiErrorResponse = {
+    errors: IdentityError[];
+}
