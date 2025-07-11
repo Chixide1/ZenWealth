@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Copy, User, Eye, EyeOff, Check } from 'lucide-react';
+import { Copy, Eye, EyeOff, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
