@@ -1,10 +1,15 @@
-﻿CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
-    "MigrationId" character varying(150) NOT NULL,
-    "ProductVersion" character varying(32) NOT NULL,
-    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
-);
+﻿-- Check if the __EFMigrationsHistory table exists before creating it (SQL Server standard)
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = '__EFMigrationsHistory')
+BEGIN
+    CREATE TABLE "__EFMigrationsHistory" (
+        "MigrationId" nvarchar(150) NOT NULL,
+        "ProductVersion" nvarchar(32) NOT NULL,
+        CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+    );
+END;
 
-START TRANSACTION;
+BEGIN TRANSACTION;
+
 CREATE TABLE "AspNetRoles" (
     "Id" nvarchar(450) NOT NULL,
     "Name" nvarchar(256),
@@ -33,7 +38,7 @@ CREATE TABLE "AspNetUsers" (
 );
 
 CREATE TABLE "AspNetRoleClaims" (
-    "Id" int NOT NULL,
+    "Id" int IDENTITY(1,1) NOT NULL,
     "RoleId" nvarchar(450) NOT NULL,
     "ClaimType" nvarchar(max),
     "ClaimValue" nvarchar(max),
@@ -42,7 +47,7 @@ CREATE TABLE "AspNetRoleClaims" (
 );
 
 CREATE TABLE "AspNetUserClaims" (
-    "Id" int NOT NULL,
+    "Id" int IDENTITY(1,1) NOT NULL,
     "UserId" nvarchar(450) NOT NULL,
     "ClaimType" nvarchar(max),
     "ClaimValue" nvarchar(max),
@@ -77,7 +82,7 @@ CREATE TABLE "AspNetUserTokens" (
 );
 
 CREATE TABLE "Budgets" (
-    "Id" int NOT NULL,
+    "Id" int IDENTITY(1,1) NOT NULL,
     "UserId" nvarchar(450) NOT NULL,
     "Category" varchar(255) NOT NULL,
     "Limit" decimal(10,2) NOT NULL,
@@ -87,7 +92,7 @@ CREATE TABLE "Budgets" (
 );
 
 CREATE TABLE "Items" (
-    "Id" int NOT NULL,
+    "Id" int IDENTITY(1,1) NOT NULL,
     "UserId" nvarchar(450) NOT NULL,
     "PlaidItemId" varchar(150) NOT NULL,
     "AccessToken" varchar(100) NOT NULL,
@@ -100,7 +105,7 @@ CREATE TABLE "Items" (
 );
 
 CREATE TABLE "Accounts" (
-    "Id" int NOT NULL,
+    "Id" int IDENTITY(1,1) NOT NULL,
     "ItemId" int NOT NULL,
     "UserId" nvarchar(450),
     "PlaidAccountId" varchar(100) NOT NULL,
@@ -117,7 +122,7 @@ CREATE TABLE "Accounts" (
 );
 
 CREATE TABLE "Transactions" (
-    "Id" int NOT NULL,
+    "Id" int IDENTITY(1,1) NOT NULL,
     "Name" varchar(255) NOT NULL,
     "Date" date NOT NULL,
     "PlaidTransactionId" varchar(100) NOT NULL,
@@ -163,7 +168,9 @@ CREATE INDEX "IX_Items_UserId" ON "Items" ("UserId");
 
 CREATE INDEX "IX_Transactions_AccountId" ON "Transactions" ("AccountId");
 
-CREATE UNIQUE INDEX "IX_Transactions_Amount_Id" ON "Transactions" ("Amount", "Id");
+-- Changed from UNIQUE to non-unique. An index on (Amount, Id) is useful for queries,
+-- but 'Id' being a primary key already ensures uniqueness of the combination.
+CREATE INDEX "IX_Transactions_Amount_Id" ON "Transactions" ("Amount", "Id");
 
 CREATE INDEX "IX_Transactions_Category" ON "Transactions" ("Category");
 

@@ -10,5 +10,8 @@
   <Project Path="ZenWealth.Core\ZenWealth.Core.csproj" />
   <Project Path="ZenWealth.Infrastructure\ZenWealth.Infrastructure.csproj" />
   <Project Path="ZenWealth.Tests\ZenWealth.Tests.csproj" />
-  <Project Path="ZenWealth.Web\ZenWealth.Web.esproj" />
+  <Project Path="ZenWealth.Web\ZenWealth.Web.esproj">
+    <Build />
+    <Deploy />
+  </Project>
 </Solution>

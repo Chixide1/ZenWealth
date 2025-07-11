@@ -43,8 +43,8 @@ export function NetWorthPieChart({ accounts, className }: NetWorthCardProps) {
                     </span>
                 </div>
             </CardHeader>
-            <CardContent className="flex md:flex-row flex-col pb-4 gap-4">
-                <ResponsiveContainer height={280} minWidth={200} minHeight={200} className="w-full order-first md:order-none">
+            <CardContent className="flex md:flex-row flex-col pb-4 gap-4 justify-center">
+                {debitAccounts.length > 0 && < ResponsiveContainer height={280} minWidth={200} minHeight={200} className="w-full order-first md:order-none">
                     <ChartContainer config={chartConfig}>
                         <PieChart>
                             <ChartTooltip content={<AccountsTooltip />} />
@@ -79,8 +79,8 @@ export function NetWorthPieChart({ accounts, className }: NetWorthCardProps) {
                             </Pie>
                         </PieChart>
                     </ChartContainer>
-                </ResponsiveContainer>
-                <ResponsiveContainer height={280} minWidth={200} minHeight={200} className="w-full order-first md:order-none">
+                </ResponsiveContainer>}
+                {creditAccounts.length > 0 && <ResponsiveContainer height={280} minWidth={200} minHeight={200} className="w-full order-first md:order-none">
                     <ChartContainer config={chartConfig}>
                         <PieChart>
                             <ChartTooltip content={<AccountsTooltip />} />
@@ -115,7 +115,7 @@ export function NetWorthPieChart({ accounts, className }: NetWorthCardProps) {
                             </Pie>
                         </PieChart>
                     </ChartContainer>
-                </ResponsiveContainer>
+                </ResponsiveContainer>}
             </CardContent>
         </Card>
     );

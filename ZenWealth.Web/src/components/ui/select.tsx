@@ -77,7 +77,6 @@ const SelectContent = React.forwardRef<
     "use no memo"; // eslint-disable-line
     
     const content = (
-        <SelectPrimitive.Portal>
             <SelectPrimitive.Content
                 ref={ref}
                 className={cn(
@@ -101,7 +100,6 @@ const SelectContent = React.forwardRef<
                 </SelectPrimitive.Viewport>
                 <SelectScrollDownButton />
             </SelectPrimitive.Content>
-        </SelectPrimitive.Portal>
     );
 
     return portal ? <SelectPrimitive.Portal>{content}</SelectPrimitive.Portal> : content;
