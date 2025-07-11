@@ -1,5 +1,5 @@
 ﻿import { LinkButton } from "@/components/features/link/LinkButton.tsx";
-import { LayoutDashboard, Plus, HelpCircle } from "lucide-react";
+import { LayoutDashboard, Plus } from "lucide-react";
 import { NavigationTabs, type NavItem } from "@/components/shared/NavigationTabs.tsx";
 import { Link, linkOptions } from "@tanstack/react-router";
 import Logo from "./Logo";
@@ -9,7 +9,6 @@ import {SettingsDialog} from "@/components/shared/SettingsDialog.tsx";
 import { useState } from "react";
 import {UserDropdownMenu} from "@/components/shared/UserDropdownMenu.tsx";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "../ui/button";
 
 const items: NavItem[] = [
     {
