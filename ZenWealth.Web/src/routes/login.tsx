@@ -3,6 +3,7 @@ import { LoginForm } from "@/components/features/identity/LoginForm.tsx";
 import Logo from "@/components/shared/Logo.tsx";
 import api from "@/lib/api";
 import { redirect } from "@tanstack/react-router";
+import CredentialsToast from "@/components/features/identity/CredentialsToast";
 
 export const Route = createFileRoute("/login")({
     beforeLoad: checkAuth,
@@ -11,18 +12,17 @@ export const Route = createFileRoute("/login")({
 
 function RouteComponent() {
     return (
-        <main className="h-safe-screen w-full flex flex-col items-center justify-center py-10">
-            <div className="flex items-center">
-                <Logo />
-            </div>
-            <div className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] mt-auto mb-0 md:mb-6 pb-10 sm:py-8 flex flex-col items-center">
+        <main className="h-safe-screen w-full flex flex-col items-center justify-center py-10 pb">
+            <CredentialsToast />
+            <Logo className="" />
+            <div className="text-primary sm:bg-background rounded-2xl w-full sm:w-[31rem] mt-10 md:mb-6 pb-10 sm:py-8 flex flex-col items-center">
                 <h1 className="text-5xl sm:text-3xl font-semibold mb-2">Login</h1>
                 <p className="text-neutral-400 text-sm mb-6">
                     Welcome back, please login
                 </p>
                 <LoginForm />
             </div>
-            <p className="text-sm text-primary mb-auto">
+            <p className="text-sm text-primary mb-44 sm:mb-28">
                 Don't have an account?
                 <Link to={"/register"} className="text-secondary ms-1">
                     Register

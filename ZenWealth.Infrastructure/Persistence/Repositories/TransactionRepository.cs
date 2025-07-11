@@ -185,7 +185,7 @@ internal class TransactionRepository(AppDbContext context) : ITransactionReposit
             .Select(g => new TopExpenseCategoryDto
             {
                 Category = g.Key.Category,
-                IconUrl = g.Key.CategoryIconUrl,
+                IconUrl = g.Key.CategoryIconUrl ?? "",
                 Expenditure = g.Sum(t => t.Amount),
                 Total = totalExpenditure
             })
