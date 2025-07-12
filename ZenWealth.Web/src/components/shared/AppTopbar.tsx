@@ -82,7 +82,7 @@ function HelpButton(){
             <PopoverTrigger className="bg-background w-10 h-10 md:w-8 md:h-8 rounded-full border-primary/20 border">
                 <FontAwesomeIcon className="text-primary" icon={faQuestion} strokeWidth={1.5} />
             </PopoverTrigger>
-            <PopoverContent className="w-80 bg-neutral-500 bg-neutral-700/90 backdrop-blur-sm border-neutral-600" align="end">
+            <PopoverContent className="w-80 bg-neutral-500 bg-neutral-700/90 backdrop-blur-sm border-neutral-600">
                 <div className="space-y-2 text-primary">
                     <h3 className="font-semibold ">Data Disclaimer</h3>
                     <div className="space-y-2 text-sm text-neutral-200">
