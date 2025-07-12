@@ -155,7 +155,7 @@ public static class DependencyInjection
         }
         
         // Create demo user if it doesn't exist
-        const string demoEmail = "demo@zenwealth.com";
+        const string demoEmail = "demo@zenwealth.ckdoestech.com";
         const string demoUsername = "DemoUser";
         const string demoPassword = "DemoUser123!";
         

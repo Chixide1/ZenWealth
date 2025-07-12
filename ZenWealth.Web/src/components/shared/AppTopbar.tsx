@@ -99,5 +99,5 @@ function HelpButton(){
                 </div>
             </PopoverContent>
         </Popover>
-    )
+    );
 }

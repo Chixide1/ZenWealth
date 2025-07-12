@@ -59,7 +59,7 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
                             {userDetails.userName ? userDetails.userName[0].toUpperCase() : "U"}
                         </AvatarFallback>
                     </Avatar>
-                    <span>{userDetails.userName ?
+                    <span className="hidden md:inline">{userDetails.userName ?
                         (userDetails.userName[0].toUpperCase() + userDetails.userName.slice(1)) :
                         "User"
                     }</span>
