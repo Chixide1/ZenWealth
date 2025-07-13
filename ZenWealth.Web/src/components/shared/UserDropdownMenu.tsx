@@ -70,7 +70,7 @@ export function UserDropdownMenu({ dialogStateSetter }: UserDropdownMenuProps) {
                 {(UserDropdownMenuItems.map(item => (
                     <DropdownMenuItem
                         key={item.text}
-                        className="cursor-pointer [&>svg]:w-[1em] [&>svg]:h-[1em] sm:gap-2 gap-3 px-3 py-2 sm:px-2 sm:py-1.5 text-xl sm:text-base focus:text-secondary transition-colors duration-300 focus:bg-background"
+                        className="cursor-pointer [&>svg]:w-[1em] [&>svg]:h-[1em] sm:gap-2 gap-3 px-3 py-2 sm:px-2 sm:py-1.5 text-lg sm:text-base focus:text-secondary transition-colors duration-300 focus:bg-background"
                         onSelect={item.onSelect}
                     >
                         <item.Icon className="" />
