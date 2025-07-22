@@ -7,6 +7,7 @@ using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using ZenWealth.Api.Common;
 using ZenWealth.Api.ModelBinders;
 using ZenWealth.Core.Common.Converters;
 using ZenWealth.Infrastructure;
@@ -19,11 +20,7 @@ public static class DependencyInjection
     {
         hostBuilder.UseSerilog((_, _, configuration) =>
         {
-            var appDataPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                "ZenWealth", "Logs"
-            );
-            Directory.CreateDirectory(appDataPath); // Create if missing
+            var appDataPath = FileHelper.GetLogDirectory();
 
             var logFilePath = Path.Combine(
                 appDataPath,
