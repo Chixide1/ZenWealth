@@ -20,8 +20,8 @@ public static class DependencyInjection
         hostBuilder.UseSerilog((_, _, configuration) =>
         {
             var appDataPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "ZenWealth-Api-Logs"
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                "ZenWealth", "Logs"
             );
             Directory.CreateDirectory(appDataPath); // Create if missing
 
