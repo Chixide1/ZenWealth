@@ -3,6 +3,7 @@ using ZenWealth.Api.Middleware;
 using ZenWealth.Core;
 using ZenWealth.Infrastructure;
 using Serilog;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,13 @@ builder.Services.ConfigureEmail(builder.Configuration);
 builder.Host.UseSerilogLogging();
 
 var app = builder.Build();
+
+// Apply database migrations
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+}
 
 await app.SeedDemoUserWithRetry();
 app.UseDefaultFiles();

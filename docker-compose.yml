@@ -22,14 +22,12 @@ services:
   zenwealth-db:
     container_name: db
     image: postgres:18
-    entrypoint: /docker-entrypoint.sh
     environment:
       POSTGRES_USER: zenwealth_app
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: zenwealth
     volumes:
-      - ./ZenWealth.Infrastructure/Persistence/Migrations/PostgreSql/entrypoint.sh:/docker-entrypoint.sh
-      - ./ZenWealth.Infrastructure/Persistence/Migrations/PostgreSql/script.sql:/docker-entrypoint-initdb.d/01-init.sql
+      # - ./ZenWealth.Infrastructure/Persistence/Migrations/PostgreSql/script.sql:/docker-entrypoint-initdb.d/01-init.sql
       - pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U zenwealth_app -d zenwealth"]
