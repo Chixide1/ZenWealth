@@ -173,4 +173,38 @@ public static class DependencyInjection
             }
         }
     }
+
+    /// <summary>
+    /// Seeds a demo user with retry logic to handle database startup delays.
+    /// Useful when running in Docker where the database may not be immediately available.
+    /// </summary>
+    /// <param name="app">The web application.</param>
+    public static async Task SeedDemoUserWithRetry(this WebApplication app)
+    {
+        const int maxRetries = 30;
+        const int delayMs = 1000;
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        {
+            try
+            {
+                await app.SeedDemoUser();
+                Log.Information("Demo user seeded successfully on attempt {Attempt}", attempt);
+                return;
+            }
+            catch (Exception ex)
+            {
+                if (attempt == maxRetries)
+                {
+                    Log.Error(ex, "Failed to seed demo user after {MaxRetries} attempts", maxRetries);
+                    throw;
+                }
+
+                Log.Warning("Demo user seeding failed on attempt {Attempt}/{MaxRetries}: {Message}. Retrying in {DelayMs}ms...",
+                    attempt, maxRetries, ex.Message, delayMs);
+
+                await Task.Delay(delayMs);
+            }
+        }
+    }
 }

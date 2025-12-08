@@ -23,7 +23,7 @@ builder.Host.UseSerilogLogging();
 
 var app = builder.Build();
 
-await app.SeedDemoUser();
+await app.SeedDemoUserWithRetry();
 app.UseDefaultFiles();
 app.MapStaticAssets();
 app.UseSerilogRequestLogging();
