@@ -3,6 +3,13 @@
     <File Path="Directory.Build.targets" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Terraform/">
+    <File Path="communications.tf" />
+    <File Path="main.tf" />
+    <File Path="output.tf" />
+    <File Path="terraform.tfvars" />
+    <File Path="variables.tf" />
+  </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
