@@ -1,4 +1,6 @@
 terraform {
+  backend "azurerm" {}
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -18,7 +20,7 @@ provider "azurerm" {
 
 locals {
 	project_name = "zenwealth"
-    resource_prefix = "ck-${local.project_name}"
+    resource_prefix = "${var.project_prefix}-${local.project_name}"
     location = "uksouth"
     data_location = "UK"
 }

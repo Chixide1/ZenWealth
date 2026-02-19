@@ -22,3 +22,7 @@ variable "domain_verified" {
   type = bool
   default = false
 }
+
+variable "project_prefix" {
+  type = string
+}

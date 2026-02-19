@@ -375,3 +375,4 @@ Client/nginx.conf
 /terraform.tfvars
 .terraform*
 terraform.*
+backend.tfvars

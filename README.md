@@ -146,6 +146,91 @@ Copy the below json to `appsettings.json` and update the values:
   - `SenderEmail`: Email address used for sending notifications
   - `FrontendBaseUrl`: Base URL of your frontend application (for links in emails)
 
+## Infrastructure as Code (Terraform)
+
+ZenWealth uses **Terraform** to manage Azure infrastructure, including:
+- Azure Resource Groups
+- Azure Communication Services (for email notifications)
+- Azure Email Communication Services with custom domain management
+
+### Prerequisites
+
+- [Terraform CLI](https://www.terraform.io/downloads) (v1.0+)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- An Azure subscription with appropriate permissions
+
+### Terraform Setup
+
+#### 1. Authenticate with Azure
+
+```bash
+az login
+```
+
+This opens a browser to authenticate. Alternatively, use a service principal by setting environment variables:
+```bash
+$env:ARM_CLIENT_ID = "your-client-id"
+$env:ARM_CLIENT_SECRET = "your-client-secret"
+$env:ARM_SUBSCRIPTION_ID = "your-subscription-id"
+$env:ARM_TENANT_ID = "your-tenant-id"
+```
+
+#### 2. Configure Backend State
+
+Edit `backend.tfvars` with your Azure Storage Account details:
+
+```hcl
+resource_group_name  = "standard"            # Resource group containing the storage account
+storage_account_name = "ckmainsa"           # Storage account name (must be globally unique)
+container_name       = "tfstate"            # Blob container for state
+key                  = "prod/zenwealth.tfstate"  # Path to state file
+```
+
+**Do not commit `backend.tfvars` to version control** — it is already in `.gitignore`.
+
+#### 3. Initialize Terraform
+
+From the repository root:
+
+```bash
+terraform init -reconfigure -backend-config=backend.tfvars
+```
+
+This initializes the local Terraform working directory and configures the remote backend in Azure Storage.
+
+#### 4. Plan and Apply Infrastructure
+
+**View planned changes:**
+```bash
+terraform plan
+```
+
+**Apply the infrastructure:**
+```bash
+terraform apply
+```
+
+Review the changes and type `yes` to confirm.
+
+### Terraform Files
+
+- **`main.tf`** — Provider configuration and Azure Resource Group
+- **`communications.tf`** — Azure Communication Services and Email Service resources
+- **`variables.tf`** — Input variable definitions
+- **`terraform.tfvars`** — Azure authentication variables (do not commit)
+- **`backend.tfvars`** — Remote backend configuration (do not commit)
+- **`output.tf`** — Output values (e.g., email verification records, connection strings)
+
+### Destroying Infrastructure
+
+To remove all Azure infrastructure:
+
+```bash
+terraform destroy
+```
+
+**⚠️ Warning:** This will delete all resources defined in Terraform. Be sure you have backups of any important data.
+
 ## Environment Variables
 
 - `VITE_ASPNETCORE_URLS`: The Api URL which will be referenced by the frontend application.
