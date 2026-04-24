@@ -29,5 +29,8 @@ export default defineConfig({
         exclude: ["js-big-decimal"]
     },
     base: "/",
+    server: {
+        port: 3000
+    }
 });
 
