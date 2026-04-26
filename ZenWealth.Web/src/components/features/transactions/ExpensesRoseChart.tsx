@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 import { Surface, Sector, PolarGrid } from "recharts";
 import { cn, currencyParser, debitColors } from "@/lib/utils.ts";
 import { CategoryTotal } from "@/types.ts";
@@ -8,14 +8,21 @@ import { useAtom } from "jotai";
 import { categoryTotalsParamsAtom} from "@/lib/atoms.ts";
 import { DateRange } from "react-day-picker";
 
+type TooltipState = {
+    active: boolean;
+    index: number;
+    cursorX: number;
+    cursorY: number;
+} | null;
+
 type ExpensesRoseChartProps = {
     data: CategoryTotal[],
     className?: string;
 }
 
 function ExpensesRose({ data }: { data: CategoryTotal[] }) {
-    // State for tracking active tooltip
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    // Tooltip state management
+    const [tooltipState, setTooltipState] = useState<TooltipState>(null);
 
     // Animation state
     const [animationProgress, setAnimationProgress] = useState(0);
@@ -103,25 +110,29 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
         };
     }, []);
 
-    // Calculate tooltip X position
-    const calculateTooltipX = (index: number) => {
-        // Get the middle angle of the segment
-        const middleAngle = ((index * angle + (index + 1) * angle) / 2) * (Math.PI / 180);
-        const radius = getRadius(data[index].total);
+    // Calculate tooltip position relative to cursor
+    const calculateTooltipPosition = useCallback((cursorX: number, cursorY: number) => {
+        const TOOLTIP_WIDTH = 160;
+        const TOOLTIP_HEIGHT = 90;
+        const TOOLTIP_OFFSET = 12;
 
-        // Calculate position with offset to place tooltip next to segment
-        return centerX + Math.cos(middleAngle) * (radius / 2) - 60; // 60px offset for tooltip width
-    };
+        let x = cursorX + TOOLTIP_OFFSET;
+        let y = cursorY - TOOLTIP_HEIGHT / 2;
 
-    // Calculate tooltip Y position
-    const calculateTooltipY = (index: number) => {
-        // Get the middle angle of the segment
-        const middleAngle = ((index * angle + (index + 1) * angle) / 2) * (Math.PI / 180);
-        const radius = getRadius(data[index].total);
+        // If tooltip goes off the right edge of viewport, position it to the left of cursor
+        if (x + TOOLTIP_WIDTH > window.innerWidth - 8) {
+            x = cursorX - TOOLTIP_WIDTH - TOOLTIP_OFFSET;
+        }
 
-        // Calculate position with offset
-        return centerY + Math.sin(middleAngle) * (radius / 2) - 40; // 40px offset for tooltip height
-    };
+        // Keep Y within viewport bounds
+        if (y < 8) {
+            y = 8;
+        } else if (y + TOOLTIP_HEIGHT > window.innerHeight - 8) {
+            y = window.innerHeight - TOOLTIP_HEIGHT - 8;
+        }
+
+        return { x: Math.max(8, x), y };
+    }, []);
 
     return (
         <div className="w-full h-auto max-h-[31rem] relative flex flex-col" ref={containerRef}>
@@ -145,7 +156,7 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
                 {/* Expense segments with hover effects */}
                 {data.map((expense, index) => {
                     const radius = getRadius(expense.total);
-                    const isActive = activeIndex === index;
+                    const isActive = tooltipState?.index === index;
 
                     return (
                         <Sector
@@ -159,8 +170,26 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
                             cornerRadius={10}
                             startAngle={index * angle + startAngleMargin}
                             endAngle={(index + 1) * angle - endAngleMargin}
-                            onMouseEnter={() => setActiveIndex(index)}
-                            onMouseLeave={() => setActiveIndex(null)}
+                            onMouseEnter={(e: React.MouseEvent<SVGGElement>) => {
+                                setTooltipState({ 
+                                    active: true, 
+                                    index, 
+                                    cursorX: e.clientX, 
+                                    cursorY: e.clientY 
+                                });
+                            }}
+                            onMouseMove={(e: React.MouseEvent<SVGGElement>) => {
+                                if (tooltipState?.index === index) {
+                                    setTooltipState(prev => 
+                                        prev ? { 
+                                            ...prev, 
+                                            cursorX: e.clientX, 
+                                            cursorY: e.clientY 
+                                        } : null
+                                    );
+                                }
+                            }}
+                            onMouseLeave={() => setTooltipState(null)}
                             className="cursor-pointer transition-all duration-300"
                         />
                     );
@@ -174,22 +203,44 @@ function ExpensesRose({ data }: { data: CategoryTotal[] }) {
             </div>
 
             {/* Custom tooltip */}
-            {activeIndex !== null && animationProgress === 1 && (
-                <div
-                    className="absolute w-fit h-fit pointer-events-none bg-neutral-600/70 backdrop-blur-sm shadow-md rounded text-primary"
-                    style={{
-                        top: calculateTooltipY(activeIndex),
-                        left: calculateTooltipX(activeIndex)
-                    }}
-                >
-                    <div className="bg-transparent px-2 m-2 border-l-4 text-nowrap text-sm" style={{borderColor: debitColors[activeIndex]}}>
-                        <p className="font-bold">{data[activeIndex].category.replace(/_/g, " ")}</p>
-                        <p className="">{currencyParser.format(data[activeIndex].total)}</p>
-                        <p className="text-xs text-neutral-dimension">
-                            {Math.round((data[activeIndex].total / totalSpending) * 100)}% of total
-                        </p>
-                    </div>
-                </div>
+            {tooltipState?.active && tooltipState.index !== null && animationProgress === 1 && (
+                (() => {
+                    const position = calculateTooltipPosition(tooltipState.cursorX, tooltipState.cursorY);
+                    const expense = data[tooltipState.index];
+                    const percentage = Math.round((expense.total / totalSpending) * 100);
+
+                    return (
+                        <div
+                            className="fixed pointer-events-none bg-neutral-700/80 backdrop-blur-sm shadow-lg rounded-md border border-neutral-600 z-20"
+                            style={{
+                                top: `${position.y}px`,
+                                left: `${position.x}px`,
+                                width: "160px",
+                                padding: "10px 12px"
+                            }}
+                        >
+                            <p className="font-semibold text-sm text-white mb-2">
+                                {expense.category.replace(/_/g, " ")}
+                            </p>
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                                <span className="flex items-center gap-2 text-xs text-neutral-300">
+                                    <span
+                                        className="w-2 h-2 rounded-full"
+                                        style={{ backgroundColor: debitColors[tooltipState.index] }}
+                                    />
+                                    Amount
+                                </span>
+                                <span className="font-semibold text-xs text-white">
+                                    {currencyParser.format(expense.total)}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                                <span className="text-xs text-neutral-400">% of total</span>
+                                <span className="font-semibold text-xs text-white">{percentage}%</span>
+                            </div>
+                        </div>
+                    );
+                })()
             )}
         </div>
     );

@@ -3,9 +3,12 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
+      "composeLaunchAction": "None",
+      "composeLaunchServiceName": "zenwealth-api",
       "serviceActions": {
         "zenwealth-api": "StartDebugging",
-        "zenwealth-web": "StartDebugging"
+        "zenwealth-web": "DoNotStart",
+        "zenwealth-db": "StartWithoutDebugging"
       }
     }
   }

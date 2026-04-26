@@ -26,7 +26,7 @@ function LayoutComponent() {
     return (
         <main className="w-full h-safe-screen flex flex-col overflow-hidden min-w-[350px]">
             <AppTopbar />
-            <ScrollArea className="w-full dvh max-w-screen-[1700px] mx-auto">
+            <ScrollArea className="w-full dvh mx-auto">
                 <Outlet />
             </ScrollArea>
         </main>
